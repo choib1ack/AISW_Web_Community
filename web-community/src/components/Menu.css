@@ -1,4 +1,5 @@
 .Menu-logo {
+    padding: 7px 30px;
     background-color: Transparent;
     background-repeat: no-repeat;
     border: none;
@@ -11,6 +12,7 @@
 }
 
 .Menu-button {
+    padding: 7px 30px;
     background-color: Transparent;
     background-repeat: no-repeat;
     border: none;
@@ -20,8 +22,6 @@
     font-size: calc(8px + 1vmin);
     color: dimgrey;
     font-weight: bold;
-    padding-left: 30px;
-    padding-right: 30px;
     transition: all ease 0.3s;
 }
 .Menu-button:hover{
