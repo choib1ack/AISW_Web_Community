@@ -1,27 +1,27 @@
 .Menu-logo {
+    padding: 7px 30px;
     background-color: Transparent;
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
     overflow: hidden;
-    outline: none;
+    outline: none !important;
     font-size: calc(10px + 1vmin);
     color: lightgrey;
     font-weight: bold;
 }
 
 .Menu-button {
+    padding: 7px 30px;
     background-color: Transparent;
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
     overflow: hidden;
-    outline: none;
+    outline: none !important;
     font-size: calc(8px + 1vmin);
     color: dimgrey;
     font-weight: bold;
-    padding-left: 30px;
-    padding-right: 30px;
     transition: all ease 0.3s;
 }
 .Menu-button:hover{

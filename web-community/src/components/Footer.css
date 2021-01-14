@@ -1,0 +1,14 @@
+.Footer {
+    margin-top: 1rem;
+    position: fixed;
+    bottom: 0;
+    /*left: 0;*/
+    width: 100%;
+}
+
+.Footer-p {
+    text-align: left;
+    font-size: calc(6px + 1vmin);
+    color: #d0d0d0;
+    margin: 15px 0px;
+}
