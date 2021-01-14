@@ -6,7 +6,7 @@
     cursor: pointer;
     overflow: hidden;
     outline: none !important;
-    font-size: calc(10px + 1vmin);
+    font-size: 14px;
     color: lightgrey;
     font-weight: bold;
 }
@@ -19,12 +19,12 @@
     cursor: pointer;
     overflow: hidden;
     outline: none !important;
-    font-size: calc(8px + 1vmin);
+    font-size: 14px;
     color: dimgrey;
     font-weight: bold;
-    transition: all ease 0.3s;
+    transition: all ease 0.1s;
 }
 .Menu-button:hover{
     color:#6CBACB;
-    transition: all ease 0.3s;
+    transition: all ease 0.1s;
 }
