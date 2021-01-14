@@ -1,6 +1,5 @@
 import React from 'react';
 import './Menu.css';
-import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Grid from "@material-ui/core/Grid";
@@ -8,13 +7,13 @@ import Grid from "@material-ui/core/Grid";
 export default function Menu() {
     return (
         <Grid>
-            <Row style={{borderBottom: 'solid 1px #d0d0d0'}}>
-                <Col xs={3} style={{padding: '15px'}}>
+            <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
+                <Col xs={3}>
                     <button className="Menu-logo">
                         가천대학교 AI&소프트웨어학부
                     </button>
                 </Col>
-                <Col xs={6} style={{padding: '15px'}}>
+                <Col xs={6}>
                     <button className="Menu-button">
                         공지사항
                     </button>
@@ -31,7 +30,7 @@ export default function Menu() {
                         공모전/대외활동
                     </button>
                 </Col>
-                <Col xs={3} style={{padding: '15px'}}>
+                <Col xs={3}>
                     <button className="Menu-button">
                         로그인
                     </button>
