@@ -14,3 +14,7 @@
     color:#FFFFFF !important;
     transition: all ease 0.3s;
 }
+
+.col-align{
+    align-self: center;
+}
