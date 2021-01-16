@@ -30,8 +30,8 @@ tbody tr:hover{
 }
 .select-btn{
     float:left;
-    margin-right: 1rem;
-    border:0px;
+    margin: 0.5rem;
+    border: 0;
 }
 .on{
     background-color: #6CBACB !important;
