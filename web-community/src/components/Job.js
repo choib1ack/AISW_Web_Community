@@ -9,8 +9,19 @@ import './Job.css';
 import Card from "react-bootstrap/Card";
 import placeImage from "../icon/place.svg";
 import monitorImage from "../icon/monitor.svg";
+import Pagination from "react-bootstrap/Pagination";
 
 export default function Job() {
+    let active = 2;
+    let items = [];
+    for (let number = 1; number <= 5; number++) {
+        items.push(
+            <Pagination.Item key={number} active={number === active}>
+                {number}
+            </Pagination.Item>,
+        );
+    }
+
     return (
         <Container className="Job">
             <Row style={{marginBottom: '2rem'}}>
@@ -41,14 +52,19 @@ export default function Job() {
                 <Button className={classNames("select-btn", "off")}>서버/백엔드</Button>
             </Row>
 
-            <Row className="mb-3">
-                <Col className="pl-0 pr-0">
-                    <JobCard/>
-                </Col>
-                <Col className="pl-0 pr-0">
-                    <JobCard/>
-                </Col>
-            </Row>
+            <div style={{marginBottom: '2rem'}}>
+                <Row className="mb-3">
+                    <Col className="pl-0 pr-0">
+                        <JobCard/>
+                    </Col>
+                    <Col className="pl-0 pr-0">
+                        <JobCard/>
+                    </Col>
+                </Row>
+            </div>
+
+            <Pagination size="sm" className="align-self-center">{items}</Pagination>
+
         </Container>
     )
 }
