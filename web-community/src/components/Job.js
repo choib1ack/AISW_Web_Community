@@ -65,14 +65,14 @@ function JobCard() {
 
                 <Card.Text className="mb-0">
                     <div className="d-inline-block">
-                        <img src={placeImage} style={{width: "20px", height: "20px", marginRight: "5px"}}/>
-                        <p className="d-inline-block mr-3">
+                        <img src={placeImage} style={{width: "22px", height: "22px", marginRight: "5px"}}/>
+                        <p className="d-inline-block mr-3" style={{fontSize: '13px'}}>
                             서울시 강남구
                         </p>
                     </div>
                     <div className="d-inline-block">
                         <img src={monitorImage} style={{width: "16px", height: "16px", marginRight: "5px"}}/>
-                        <p className="d-inline-block">
+                        <p className="d-inline-block" style={{fontSize: '13px'}}>
                             신입, 인턴
                         </p>
                     </div>
