@@ -57,4 +57,10 @@ input::placeholder{
     color:#D4D4D4;
     font-size: 14px;
 }
-
+.page-link{
+    color:#6CBACB;
+}
+.page-item.active .page-link{
+    background-color: #6CBACB;
+    border-color: #6CBACB;
+}

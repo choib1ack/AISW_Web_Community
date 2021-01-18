@@ -1,5 +1,4 @@
 import React from "react";
-import './Notice.css';
 import Container from "react-bootstrap/Container";
 import Table from "react-bootstrap/Table";
 import fileImage from "../icon/file.svg";
@@ -11,7 +10,7 @@ import Button from "react-bootstrap/Button";
 import classNames from 'classnames';
 import Pagination from "react-bootstrap/Pagination";
 
-function Notice() {
+function Board() {
     let active = 2;
     let items = [];
     for (let number = 1; number <= 5; number++) {
@@ -22,15 +21,14 @@ function Notice() {
         );
     }
     return (
-        <div className="Notice">
+        <div className="Board">
             <Container >
-                <p className={"title"}>공지사항</p>
+                <p className={"title"}>게시판</p>
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
                         <Button className={classNames("select-btn", "on")}>전체</Button>
-                        <Button className={classNames("select-btn", "off")}>학과사무실</Button>
-                        <Button className={classNames("select-btn", "off")}>학생회</Button>
-                        <Button className={classNames("select-btn", "off")}>학교 홈페이지</Button>
+                        <Button className={classNames("select-btn", "off")}>자유게시판</Button>
+                        <Button className={classNames("select-btn", "off")}>과목별게시판</Button>
                     </Col>
                     <Col lg={6} md={4} sm={12}>
                         <img src={searchImage} style={{float: "right", marginLeft:"10px", height:"25px"}} />
@@ -129,11 +127,17 @@ function Notice() {
                     </tr>
                     </tbody>
                 </Table>
-                <Pagination size="sm" className="align-self-center" style={{marginBottom: '3rem', marginTop: '3rem'}}>{items}</Pagination>
+                <Row>
+                    <Col lg={12} md={12} sm={12}>
+                        <Button className={classNames("select-btn", "on")}
+                                style={{float:'right'}}>글쓰기</Button>
+                    </Col>
+                </Row>
+                <Pagination size="sm" className="align-self-center" style={{marginBottom: '3rem'}}>{items}</Pagination>
             </Container>
         </div>
     );
 }
 
-export default Notice;
+export default Board;
 
