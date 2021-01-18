@@ -12,7 +12,15 @@ import classNames from 'classnames';
 import Pagination from "react-bootstrap/Pagination";
 
 function Notice() {
-
+    let active = 2;
+    let items = [];
+    for (let number = 1; number <= 5; number++) {
+        items.push(
+            <Pagination.Item key={number} active={number === active}>
+                {number}
+            </Pagination.Item>,
+        );
+    }
     return (
         <div className="Notice">
             <Container >
@@ -121,7 +129,7 @@ function Notice() {
                     </tr>
                     </tbody>
                 </Table>
-                <p style={{textAlign:"center"}}><br/><br/>페이징 넣어야하는데 모르겠다아아아<br/><br/><br/></p>
+                <Pagination size="sm" className="align-self-center" style={{marginBottom: '3rem', marginTop: '3rem'}}>{items}</Pagination>
             </Container>
         </div>
     );
