@@ -6,16 +6,24 @@ import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Notice from "./components/Notice";
 import Job from "./components/Job";
+import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
+import Home from "./components/Home";
 
 function App() {
     return (
-        <div className="App">
-            <Menu/>
-                {/*<Login/>*/}
-                {/*<Notice/>*/}
-                <Job/>
-            <Footer/>
-        </div>
+        <Router>
+            <div className="App">
+                <Menu/>
+
+                {/*<Switch>*/}
+                {/*    <Route exact path="/">*/}
+                {/*        <Home/>*/}
+                {/*    </Route>*/}
+                {/*</Switch>*/}
+
+                <Footer/>
+            </div>
+        </Router>
     );
 }
 

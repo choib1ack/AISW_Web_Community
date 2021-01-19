@@ -129,7 +129,7 @@ function Notice() {
                     </tr>
                     </tbody>
                 </Table>
-                <Pagination size="sm" className="align-self-center" style={{marginBottom: '3rem', marginTop: '3rem'}}>{items}</Pagination>
+                <Pagination size="sm" className="align-self-center justify-content-center" style={{marginBottom: '3rem', marginTop: '3rem'}}>{items}</Pagination>
             </Container>
         </div>
     );
