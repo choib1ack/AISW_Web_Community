@@ -8,6 +8,7 @@ import Home from "./Home";
 import Login from "./Login";
 import Notice from "./Notice";
 import Job from "./Job";
+import ContestInfo from "./ContestInfo";
 
 export default function Menu() {
 
@@ -41,9 +42,11 @@ export default function Menu() {
                                 채용정보
                             </button>
                         </Link>
-                        <button className="Menu-button">
-                            공모전/대외활동
-                        </button>
+                        <Link to="/contestInfo">
+                            <button className="Menu-button">
+                                공모전/대외활동
+                            </button>
+                        </Link>
                     </Col>
                     <Col xs={3}>
                         <Link to="/login">
@@ -63,6 +66,7 @@ export default function Menu() {
                 <Route path="/login" component={Login}/>
                 <Route path="/notice" component={Notice}/>
                 <Route path="/job" component={Job}/>
+                <Route path="/contestInfo" component={ContestInfo}/>
             </Switch>
         </Router>
     );
