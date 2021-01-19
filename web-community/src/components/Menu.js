@@ -8,6 +8,7 @@ import Home from "./Home";
 import Login from "./Login";
 import Notice from "./Notice";
 import Job from "./Job";
+import Board from "./Board";
 
 export default function Menu() {
 
@@ -30,9 +31,11 @@ export default function Menu() {
                                 공지사항
                             </button>
                         </Link>
-                        <button className="Menu-button">
-                            게시판
-                        </button>
+                        <Link to="/board">
+                            <button className="Menu-button">
+                                게시판
+                            </button>
+                        </Link>
                         <button className="Menu-button">
                             학과정보
                         </button>
@@ -62,6 +65,7 @@ export default function Menu() {
                 <Route exact path="/" component={Home}/>
                 <Route path="/login" component={Login}/>
                 <Route path="/notice" component={Notice}/>
+                <Route path="/board" component={Board}/>
                 <Route path="/job" component={Job}/>
             </Switch>
         </Router>
