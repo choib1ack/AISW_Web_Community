@@ -23,50 +23,52 @@ export default function Job() {
     }
 
     return (
-        <Container className="Job">
-            <Row style={{marginBottom: '2rem'}}>
-                <Col className="col-align">
-                    <p className={"title"} style={{marginTop: 0, marginBottom: 0}}>채용 정보</p>
-                </Col>
-                <Col>
-                    <img src={searchImage} style={{float: "right", marginLeft: "10px", height: "25px"}}/>
-                    <input type="text" className={"search-box"} placeholder={'검색'}/>
-                </Col>
-            </Row>
-            <Row style={{marginBottom: '2rem'}}>
-                <Col>
-                    <Button className={classNames("select-btn", "on")}>JAVA</Button>
-                    <Button className={classNames("select-btn", "off")}>Spring</Button>
-                    <Button className={classNames("select-btn", "off")}>Node.js</Button>
-                    <Button className={classNames("select-btn", "off")}>Django</Button>
-                    <Button className={classNames("select-btn", "off")}>React.js</Button>
-                    <Button className={classNames("select-btn", "off")}>Vue.js</Button>
-                    <Button className={classNames("select-btn", "off")}>Javascript</Button>
-                    <Button className={classNames("select-btn", "off")}>Python</Button>
-                    <Button className={classNames("select-btn", "off")}>Kotlin</Button>
-                    <Button className={classNames("select-btn", "off")}>C++</Button>
-                    <Button className={classNames("select-btn", "off")}>웹 풀스택</Button>
-                    <Button className={classNames("select-btn", "off")}>웹 프론트엔드</Button>
-                    <Button className={classNames("select-btn", "off")}>웹 백엔드</Button>
-                    <Button className={classNames("select-btn", "off")}>안드로이드</Button>
-                    <Button className={classNames("select-btn", "off")}>ios</Button>
-                    <Button className={classNames("select-btn", "off")}>서버/백엔드</Button>
-                </Col>
-            </Row>
-
-            <div style={{marginBottom: '2rem'}}>
-                <Row className="mb-3">
+        <div>
+            <Container >
+                <Row style={{marginBottom: '1rem'}}>
                     <Col>
-                        <JobCard/>
+                        <p className={"title"} style={{marginBottom: 0}}>채용 정보</p>
                     </Col>
-                    <Col>
-                        <JobCard/>
+                    <Col style={{marginTop: '3rem'}}>
+                        <img src={searchImage} style={{float: "right", marginLeft: "10px", height: "25px"}}/>
+                        <input type="text" className={"search-box"} placeholder={'검색'}/>
                     </Col>
                 </Row>
-            </div>
+                <Row style={{marginBottom: '2rem'}}>
+                    <Col>
+                        <Button className={classNames("select-btn", "on")}>JAVA</Button>
+                        <Button className={classNames("select-btn", "off")}>Spring</Button>
+                        <Button className={classNames("select-btn", "off")}>Node.js</Button>
+                        <Button className={classNames("select-btn", "off")}>Django</Button>
+                        <Button className={classNames("select-btn", "off")}>React.js</Button>
+                        <Button className={classNames("select-btn", "off")}>Vue.js</Button>
+                        <Button className={classNames("select-btn", "off")}>Javascript</Button>
+                        <Button className={classNames("select-btn", "off")}>Python</Button>
+                        <Button className={classNames("select-btn", "off")}>Kotlin</Button>
+                        <Button className={classNames("select-btn", "off")}>C++</Button>
+                        <Button className={classNames("select-btn", "off")}>웹 풀스택</Button>
+                        <Button className={classNames("select-btn", "off")}>웹 프론트엔드</Button>
+                        <Button className={classNames("select-btn", "off")}>웹 백엔드</Button>
+                        <Button className={classNames("select-btn", "off")}>안드로이드</Button>
+                        <Button className={classNames("select-btn", "off")}>ios</Button>
+                        <Button className={classNames("select-btn", "off")}>서버/백엔드</Button>
+                    </Col>
+                </Row>
 
-            <Pagination size="sm" className="align-self-center justify-content-center">{items}</Pagination>
-        </Container>
+                <div >
+                    <Row className="mb-3">
+                        <Col>
+                            <JobCard/>
+                        </Col>
+                        <Col>
+                            <JobCard/>
+                        </Col>
+                    </Row>
+                </div>
+
+                <Pagination size="sm" className="align-self-center justify-content-center" style={{marginBottom: '3rem', marginTop: '3rem'}}>{items}</Pagination>
+            </Container>
+        </div>
     )
 }
 
