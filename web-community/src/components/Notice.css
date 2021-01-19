@@ -28,23 +28,7 @@ tbody tr:hover{
     margin-top: 3rem;
     font-weight: bold;
 }
-.select-btn{
-    float:left;
-    margin: 0.5rem;
-    border: 0;
-}
-.on{
-    background-color: #6CBACB !important;
-    color: #ffffff !important;
-}
-.off{
-    background-color: #F4F4F4 !important;
-    color: #B8B8B8 !important;
-}
-.off:hover{
-    background-color: #6CBACB !important;
-    color: #ffffff !important;
-}
+
 .search-box{
     float: right;
     border-radius: 5px;
@@ -56,11 +40,4 @@ tbody tr:hover{
 input::placeholder{
     color:#D4D4D4;
     font-size: 14px;
-}
-.page-link{
-    color:#6CBACB;
-}
-.page-item.active .page-link{
-    background-color: #6CBACB;
-    border-color: #6CBACB;
 }

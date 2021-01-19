@@ -18,6 +18,33 @@
 .col-align{
     align-self: center;
 }
+.select-btn{
+    float:left;
+    margin: 0.5rem;
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.on{
+    background-color: #6CBACB !important;
+    color: #ffffff !important;
+}
+.off{
+    background-color: #F4F4F4 !important;
+    color: #B8B8B8 !important;
+}
+.off:hover{
+    background-color: #6CBACB !important;
+    color: #ffffff !important;
+}
+.page-link{
+    color:#6CBACB !important;
+}
+.page-item.active .page-link{
+    background-color: #6CBACB !important;
+    border-color: #6CBACB !important;
+    color: #ffffff !important;
+}
 body{
     overflow-x: hidden;
 }
