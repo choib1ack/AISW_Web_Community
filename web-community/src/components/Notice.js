@@ -9,18 +9,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from 'classnames';
-import Pagination from "react-bootstrap/Pagination";
+import Pagination from "./PaginationCustom";
 
 function Notice() {
-    let active = 2;
-    let items = [];
-    for (let number = 1; number <= 5; number++) {
-        items.push(
-            <Pagination.Item key={number} active={number === active}>
-                {number}
-            </Pagination.Item>,
-        );
-    }
     return (
         <div className="Notice">
             <Container >
@@ -129,7 +120,7 @@ function Notice() {
                     </tr>
                     </tbody>
                 </Table>
-                <Pagination size="sm" className="align-self-center justify-content-center" style={{marginBottom: '3rem', marginTop: '3rem'}}>{items}</Pagination>
+                <Pagination active={1}/>
             </Container>
         </div>
     );

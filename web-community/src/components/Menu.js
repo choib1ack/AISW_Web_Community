@@ -10,6 +10,7 @@ import Notice from "./Notice";
 import Job from "./Job";
 import Board from "./Board";
 import ContestInfo from "./ContestInfo";
+import Board from "./Board";
 
 export default function Menu() {
 
