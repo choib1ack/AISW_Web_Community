@@ -5,7 +5,6 @@ import Button from "react-bootstrap/Button";
 import classNames from "classnames";
 import searchImage from "../icon/search.svg";
 import React from "react";
-import './Job.css';
 import Card from "react-bootstrap/Card";
 import placeImage from "../icon/place.svg";
 import monitorImage from "../icon/monitor.svg";
@@ -13,7 +12,7 @@ import Pagination from "./PaginationCustom";
 
 export default function Job() {
     return (
-        <div>
+        <div className="Job">
             <Container >
                 <Row style={{marginBottom: '1rem'}}>
                     <Col>

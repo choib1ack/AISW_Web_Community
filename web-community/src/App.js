@@ -8,6 +8,8 @@ import Notice from "./components/Notice";
 import Job from "./components/Job";
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 import Home from "./components/Home";
+import NoticeDetail from "./components/NoticeDetail";
+import BoardDetail from "./components/BoardDetail";
 
 function App() {
     return (
@@ -15,6 +17,8 @@ function App() {
             <div className="App">
                 <Menu/>
 
+                <NoticeDetail/>
+                <BoardDetail/>
                 {/*<Switch>*/}
                 {/*    <Route exact path="/">*/}
                 {/*        <Home/>*/}

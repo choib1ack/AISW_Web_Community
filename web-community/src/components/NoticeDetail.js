@@ -5,13 +5,12 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
-
 export default function NoticeDetail() {
     return (
         <div className="NoticeDetail">
             <Container>
                 <p className={"title"}>공지사항</p>
-                <div className="text-left mt-5 mb-3"
+                <div className="text-left mt-5 mb-4"
                      style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
                     <div style={{
                         backgroundColor: "#EFF7F9",
@@ -20,7 +19,7 @@ export default function NoticeDetail() {
                         paddingBottom: '10px'
                     }}>
                         <p style={{color: "#6CBACB", fontSize: '14px'}} className="mb-1">학과사무실></p>
-                        <p className="d-inline-block mr-1">ICT학점연계프로젝트인턴십 사업 안내 </p>
+                        <p style={{fontSize: '18px'}} className="d-inline-block mr-1">ICT학점연계프로젝트인턴십 사업 안내 </p>
                         <img src={fileImage} className="d-inline-block"/>
 
                         <div>
@@ -50,19 +49,25 @@ export default function NoticeDetail() {
                     </div>
                 </div>
 
-                <Row style={{marginBottom: '3rem'}}>
-                    <Col lg={12} md={12} sm={12}>
-                        <Button className="float-left btn-sm" style={{
-                            backgroundColor: 'white',
-                            color: 'black',
-                            borderColor: '#D4D4D4',
-                            boxShadow: 'none',
-                            width: '100px',
-                            borderRadius: 0
-                        }}>목록</Button>
-                    </Col>
-                </Row>
+                <ListButton/>
             </Container>
         </div>
+    )
+}
+
+export function ListButton() {
+    return (
+        <Row style={{marginBottom: '3rem'}}>
+            <Col lg={12} md={12} sm={12}>
+                <Button className="float-left btn-sm" style={{
+                    backgroundColor: 'white',
+                    color: 'black',
+                    borderColor: '#D4D4D4',
+                    boxShadow: 'none',
+                    width: '100px',
+                    borderRadius: 0
+                }}>목록</Button>
+            </Col>
+        </Row>
     )
 }
