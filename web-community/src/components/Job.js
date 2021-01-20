@@ -9,19 +9,9 @@ import './Job.css';
 import Card from "react-bootstrap/Card";
 import placeImage from "../icon/place.svg";
 import monitorImage from "../icon/monitor.svg";
-import Pagination from "react-bootstrap/Pagination";
+import Pagination from "./PaginationCustom";
 
 export default function Job() {
-    let active = 2;
-    let items = [];
-    for (let number = 1; number <= 5; number++) {
-        items.push(
-            <Pagination.Item key={number} active={number === active}>
-                {number}
-            </Pagination.Item>,
-        );
-    }
-
     return (
         <Container className="Job">
             <Row style={{marginBottom: '2rem'}}>
@@ -65,7 +55,7 @@ export default function Job() {
                 </Row>
             </div>
 
-            <Pagination size="sm" className="align-self-center justify-content-center">{items}</Pagination>
+            <Pagination active={1}/>
         </Container>
     )
 }
