@@ -8,27 +8,22 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from 'classnames';
-import Pagination from "react-bootstrap/Pagination";
+import Pagination from "./PaginationCustom";
 
 function Board() {
-    let active = 2;
-    let items = [];
-    for (let number = 1; number <= 5; number++) {
-        items.push(
-            <Pagination.Item key={number} active={number === active}>
-                {number}
-            </Pagination.Item>,
-        );
-    }
+
     return (
         <div className="Board">
             <Container >
                 <p className={"title"}>게시판</p>
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
-                        <Button className={classNames("select-btn", "on")}>전체</Button>
-                        <Button className={classNames("select-btn", "off")}>자유게시판</Button>
-                        <Button className={classNames("select-btn", "off")}>과목별게시판</Button>
+                        <SelectButton title='전체' active='true'/>
+                        <SelectButton title='자유게시판' active={false}/>
+                        <SelectButton title='과목별게시판' active={false}/>
+                        {/*<Button className={classNames("select-btn", "on")}>전체</Button>*/}
+                        {/*<Button className={classNames("select-btn", "off")}>자유게시판</Button>*/}
+                        {/*<Button className={classNames("select-btn", "off")}>과목별게시판</Button>*/}
                     </Col>
                     <Col lg={6} md={4} sm={12}>
                         <img src={searchImage} style={{float: "right", marginLeft:"10px", height:"25px"}} />
@@ -133,7 +128,7 @@ function Board() {
                                 style={{float:'right'}}>글쓰기</Button>
                     </Col>
                 </Row>
-                <Pagination size="sm" className="align-self-center justify-content-center" style={{marginBottom: '3rem'}}>{items}</Pagination>
+                <Pagination active={1}/>
             </Container>
         </div>
     );
@@ -141,3 +136,17 @@ function Board() {
 
 export default Board;
 
+function SelectButton(props){
+    let btnStyle = {
+        float:'left',
+        margin: '0.5rem',
+        border: '0',
+        outline: 'none',
+        boxShadow: 'none',
+        backgroundColor: props.active? '#6CBACB':'#F4F4F4',
+        color: props.active? '#ffffff':'#B8B8B8'
+    }
+    return(
+        <Button style={btnStyle}>{props.title}</Button>
+    );
+}
