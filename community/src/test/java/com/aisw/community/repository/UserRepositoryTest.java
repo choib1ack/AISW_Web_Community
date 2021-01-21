@@ -17,12 +17,12 @@ public class UserRepositoryTest extends CommunityApplicationTests{
 
     @Test
     public void create(){
-        String name = "Test05";
-        String email = "Test05@gmail.com";
-        String password = "Test05";
-        String phoneNumber = "010-5555-5555";
+        String name = "Test06";
+        String email = "Test06@gmail.com";
+        String password = "Test06";
+        String phoneNumber = "010-6666-6666";
         Integer grade = 1;
-        Integer studentId = 202055555;
+        Integer studentId = 202066666;
         Integer level = 1;
         String job = "Student";
         Integer gender = 1;
