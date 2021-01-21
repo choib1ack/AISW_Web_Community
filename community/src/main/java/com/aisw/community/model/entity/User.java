@@ -48,10 +48,10 @@ public class User {
     private Integer gender;
 
     private String university;
-딩
+
     private String college;
 
     private String department;
 
-    // todo user table과 관련된 table 연관관계 코
+    // todo user table과 관련된 table 연관관계 설정
 }
