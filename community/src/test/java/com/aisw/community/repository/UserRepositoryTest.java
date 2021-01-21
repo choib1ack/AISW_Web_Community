@@ -5,9 +5,6 @@ import com.aisw.community.model.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -20,16 +17,12 @@ public class UserRepositoryTest extends CommunityApplicationTests{
 
     @Test
     public void create(){
-        String name = "Test03";
-        String email = "Test03@gmail.com";
-        String password = "Test03";
-        String phoneNumber = "010-3333-3333";
+        String name = "Test05";
+        String email = "Test05@gmail.com";
+        String password = "Test05";
+        String phoneNumber = "010-5555-5555";
         Integer grade = 1;
-        Integer studentId = 202033333;
-        LocalDateTime createdAt = LocalDateTime.now();
-        String createdBy = "AdminServer";
-        LocalDateTime updatedAt = LocalDateTime.now();
-        String updatedBy = "AdminServer";
+        Integer studentId = 202055555;
         Integer level = 1;
         String job = "Student";
         Integer gender = 1;
@@ -44,10 +37,6 @@ public class UserRepositoryTest extends CommunityApplicationTests{
                 .phoneNumber(phoneNumber)
                 .grade(grade)
                 .studentId(studentId)
-                .createdAt(createdAt)
-                .createdBy(createdBy)
-                .updatedAt(updatedAt)
-                .updatedBy(updatedBy)
                 .level(level)
                 .job(job)
                 .gender(gender)
@@ -73,14 +62,13 @@ public class UserRepositoryTest extends CommunityApplicationTests{
     @Test
     @Transactional
     public void update(){
-        Optional<User> user = userRepository.findById(1L);
+        Optional<User> user = userRepository.findById(5L);
 
         user.ifPresent(selectUser ->{
             selectUser.setPassword("pppp1111");
-            selectUser.setUpdatedBy("Update Method");
 
             User newUser = userRepository.save(selectUser);
-            System.out.println("user : " + selectUser);
+            System.out.println("user : " + newUser);
         });
 
     }

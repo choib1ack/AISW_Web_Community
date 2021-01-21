@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-public class User {
+public class AdminUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,10 +32,6 @@ public class User {
 
     private String phoneNumber;
 
-    private Integer grade;
-
-    private Integer studentId;
-
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -48,17 +44,6 @@ public class User {
     @LastModifiedBy
     private String updatedBy;
 
-    private Integer level;
+    private String role;
 
-    private String job;
-
-    private Integer gender;
-
-    private String university;
-
-    private String college;
-
-    private String department;
-
-    // todo user table과 관련된 table 연관관계 설정
 }
