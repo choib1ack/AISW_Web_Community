@@ -21,8 +21,10 @@ public class University {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 학교 공지 0, 학과 공지 1, 학생회 공지1
     private Long level;
 
+    // 공통 0, 글로벌1,  메디컬2
     private Long campus;
 
     private Long universityContentId;
