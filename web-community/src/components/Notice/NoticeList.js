@@ -11,8 +11,25 @@ import fileImage from "../../icon/file.svg";
 import Pagination from "../PaginationCustom";
 import React from "react";
 import {Link} from "react-router-dom";
+import noticeData from "./notice-list.json";
 
 export default function NoticeList({match}) {
+    const list = noticeData.map(noticeData => {
+        return (
+            <tr>
+                <td>{noticeData.no ? noticeData.no : '공지'}</td>
+                <td key={noticeData.title}>
+                    <Link to={`${match.url}/10`} style={{color: 'black'}}>
+                        {noticeData.title}
+                    </Link>
+                </td>
+                <td>가천대학교</td>
+                <td key={noticeData.date}>{noticeData.date}</td>
+                <td key={noticeData.file}>{noticeData.file ? 1 : 0}</td>
+            </tr>
+        )
+    });
+
     return (
         <div className="Notice">
             <Container>
@@ -43,6 +60,7 @@ export default function NoticeList({match}) {
                     </tr>
                     </thead>
                     <tbody>
+                    {list}
                     <tr>
                         <td>10</td>
                         <td>
