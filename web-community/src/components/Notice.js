@@ -10,12 +10,13 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from 'classnames';
 import Pagination from "./PaginationCustom";
+import Title from "./Title";
 
 function Notice() {
     return (
         <div className="Notice">
             <Container >
-                <p className={"title"}>공지사항</p>
+                <Title text='공지사항' type='1'/>
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
                         <Button className={classNames("select-btn", "on")}>전체</Button>

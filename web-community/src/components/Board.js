@@ -9,13 +9,14 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from 'classnames';
 import Pagination from "./PaginationCustom";
+import Title from "./Title";
 
 function Board() {
 
     return (
         <div className="Board">
             <Container >
-                <p className={"title"}>게시판</p>
+                <Title text='게시판' type='1'/>
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
                         <SelectButton title='전체' active='true'/>
