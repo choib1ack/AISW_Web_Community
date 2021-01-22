@@ -46,4 +46,5 @@ public class AdminUser {
 
     private String role;
 
+    // todo admin_user table과 관련된 table 연관관계 설정
 }
