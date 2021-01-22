@@ -19,12 +19,9 @@ public class NoticeRepositoryTest extends CommunityApplicationTests {
     @Test
     public void create() {
         Long category = 1L;
-        Long userId = 1L;
-
 
         Notice notice = Notice.builder()
                 .category(category)
-                .userId(userId)
                 .build();
 
         Notice newNotice = noticeRepository.save(notice);
@@ -32,11 +29,14 @@ public class NoticeRepositoryTest extends CommunityApplicationTests {
     }
 
     @Test
+    @Transactional
     public void read() {
         Optional<Notice> notice = noticeRepository.findById(1L);
 
         notice.ifPresent(readNotice -> {
-            System.out.println(readNotice);
+            readNotice.getUniversityList().stream().forEach(university -> {
+                System.out.println(university.getId());
+            });
         });
     }
 

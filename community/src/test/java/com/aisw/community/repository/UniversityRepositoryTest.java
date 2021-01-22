@@ -19,15 +19,11 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
     public void create() {
         Long level = 1L;
         Long campus = 0L;
-        Long universityContentId = 1L;
-        Long noticeId = 1L;
 
 
         University university = University.builder()
                 .level(level)
                 .campus(campus)
-                .universityContentId(universityContentId)
-                .noticeId(noticeId)
                 .build();
 
         University newUniversity = universityRepository.save(university);
@@ -39,7 +35,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         Optional<University> university = universityRepository.findById(1L);
 
         university.ifPresent(readUniversity -> {
-            System.out.println(readUniversity);
+            System.out.println(readUniversity.getUniversityContent());
         });
     }
 

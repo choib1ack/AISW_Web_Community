@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -59,6 +60,9 @@ public class User {
     private String college;
 
     private String department;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Notice> noticeList;
 
     // todo user table과 관련된 table 연관관계 설정
 }

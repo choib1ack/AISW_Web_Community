@@ -1,20 +1,16 @@
 package com.aisw.community.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"user"})
 public class Notice {
 
     @Id
@@ -24,5 +20,9 @@ public class Notice {
     // 학교 공지 0, 학과 공지1, 학생회 공지2
     private Long category;
 
-    private Long userId;
+    @ManyToOne
+    private User user; // user id
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
+    private List<University> universityList;
 }
