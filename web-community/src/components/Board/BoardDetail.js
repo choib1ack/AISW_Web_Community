@@ -2,7 +2,7 @@ import React from "react";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import userImage from "../../icon/user.svg";
-import {ListButton} from "../Notice/NoticeDetail";
+import {ListButton} from "../ListButton";
 import arrowImage from "../../icon/arrow.svg";
 import sendImage from "../../icon/send.svg";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -49,7 +49,6 @@ export default function BoardDetail() {
                         <CommentInput/>
                     </div>
                 </div>
-
                 <ListButton/>
             </Container>
         </div>
@@ -100,11 +99,11 @@ export function ReplyBox() {
 export function CommentInput() {
     return (
         <div className="mt-5 mb-3">
-            <Checkbox label='익명' defaultChecked />
+            <Checkbox label='익명' defaultChecked/>
 
             <InputGroup className="border-1" style={{borderRadius: '10px', border: 'solid 1px #E3E3E3'}}>
                 <FormControl
-                    style={{border: 'none', height: '100px', margin: '10px', verticalAlign: 'text-top', resize:'none'}}
+                    style={{border: 'none', height: '100px', margin: '10px', verticalAlign: 'text-top', resize: 'none'}}
                     placeholder="댓글을 남겨보세요."
                     aria-describedby="basic-addon2"
                     as="textarea"
