@@ -5,11 +5,13 @@ import classNames from 'classnames';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
+import Title from "../Title";
+
 function NewBoard() {
     return (
         <div className="NewBoard">
             <Container>
-                <p className={"title"}>새 게시글 작성</p>
+                <Title text='새 게시글 작성' type='1'/>
                 <Form style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>
                         <Col>

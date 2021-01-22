@@ -1,15 +1,10 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
 import fileImage from "../../icon/file.svg";
-import Button from "react-bootstrap/Button";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 import Title from "../Title";
-import {useHistory} from "react-router-dom";
+import {ListButton} from "../ListButton";
 
 export default function NoticeDetail() {
-    let history = useHistory();
-
     return (
         <div className="NoticeDetail">
             <Container>
@@ -56,22 +51,5 @@ export default function NoticeDetail() {
                 <ListButton/>
             </Container>
         </div>
-    )
-}
-
-export function ListButton() {
-    return (
-        <Row style={{marginBottom: '3rem'}}>
-            <Col lg={12} md={12} sm={12}>
-                <Button className="float-left btn-sm" style={{
-                    backgroundColor: 'white',
-                    color: 'black',
-                    borderColor: '#D4D4D4',
-                    boxShadow: 'none',
-                    width: '100px',
-                    borderRadius: 0
-                }}>목록</Button>
-            </Col>
-        </Row>
     )
 }

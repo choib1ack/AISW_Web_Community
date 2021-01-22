@@ -11,11 +11,18 @@ import classNames from "classnames";
 import Pagination from "../PaginationCustom";
 import React from "react";
 import {Link} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 export default function BoardList({match}) {
+    let history = useHistory();
+
+    function handleClick() {
+        history.push("/newBoard");
+    }
+
     return (
         <div className="Board">
-            <Container >
+            <Container>
                 <Title text='게시판' type='1'/>
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
@@ -27,7 +34,7 @@ export default function BoardList({match}) {
                         {/*<Button className={classNames("select-btn", "off")}>과목별게시판</Button>*/}
                     </Col>
                     <Col lg={6} md={4} sm={12}>
-                        <img src={searchImage} style={{float: "right", marginLeft:"10px", height:"25px"}} />
+                        <img src={searchImage} style={{float: "right", marginLeft: "10px", height: "25px"}}/>
                         <input type="text" className={"search-box"} placeholder={'검색'}/>
                         {/*style={{background:`url(${searchImage})`, backgroundRepeat:'no-repeat'}}>*/}
 
@@ -130,7 +137,9 @@ export default function BoardList({match}) {
                 <Row>
                     <Col lg={12} md={12} sm={12}>
                         <Button className={classNames("select-btn", "on")}
-                                style={{float:'right'}}>글쓰기</Button>
+                                style={{float: 'right'}} onClick={() => handleClick()}>
+                            글쓰기
+                        </Button>
                     </Col>
                 </Row>
                 <Pagination active={1}/>
@@ -139,17 +148,17 @@ export default function BoardList({match}) {
     );
 }
 
-function SelectButton(props){
+function SelectButton(props) {
     let btnStyle = {
-        float:'left',
+        float: 'left',
         margin: '0.5rem',
         border: '0',
         outline: 'none',
         boxShadow: 'none',
-        backgroundColor: props.active? '#6CBACB':'#F4F4F4',
-        color: props.active? '#ffffff':'#B8B8B8'
+        backgroundColor: props.active ? '#6CBACB' : '#F4F4F4',
+        color: props.active ? '#ffffff' : '#B8B8B8'
     }
-    return(
+    return (
         <Button style={btnStyle}>{props.title}</Button>
     );
 }
