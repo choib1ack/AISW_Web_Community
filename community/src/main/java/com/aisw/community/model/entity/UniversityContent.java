@@ -28,9 +28,9 @@ public class UniversityContent {
 
     private String attachmentFile;
 
-    private Integer status;
+    private Long status;
 
-    private Integer views;
+    private Long views;
 
     private String createdBy;
 

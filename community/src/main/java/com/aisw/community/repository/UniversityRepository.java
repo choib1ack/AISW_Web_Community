@@ -1,11 +1,11 @@
 package com.aisw.community.repository;
 
-import com.aisw.community.model.entity.UniversityContent;
+import com.aisw.community.model.entity.University;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UniversityContentRepository extends JpaRepository<UniversityContent, Long> {
+public interface UniversityRepository extends JpaRepository<University, Long> {
 
 //    Optional<UniversityContent> findByUniversityContentId(String universityContentId);
 }

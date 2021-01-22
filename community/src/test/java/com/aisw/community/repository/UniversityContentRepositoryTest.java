@@ -1,14 +1,11 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.University;
 import com.aisw.community.model.entity.UniversityContent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -24,8 +21,8 @@ public class UniversityContentRepositoryTest extends CommunityApplicationTests {
         String title = "test";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        Integer status = 2;
-        Integer views = 0;
+        Long status = 2L;
+        Long views = 0L;
         String createdBy = "tester";
         LocalDateTime createdAt = LocalDateTime.now();
 
