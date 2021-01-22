@@ -48,7 +48,7 @@ export default function BoardList({match}) {
                     <tr>
                         <td>10</td>
                         <td>
-                            <Link to={`${match.url}/10`}>
+                            <Link to={`${match.url}/10`} style={{color: 'black'}}>
                                 [멀티캠퍼스] 코딩테스트 대회 안내 파일
                             </Link>
                         </td>

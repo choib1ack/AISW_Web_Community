@@ -41,7 +41,7 @@ export default function Menu() {
                             </button>
                         </Link>
 
-                        <Link to="/job">
+                        <Link to="/jobInfo">
                             <button className="Menu-button">
                                 채용정보
                             </button>

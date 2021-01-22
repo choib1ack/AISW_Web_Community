@@ -25,7 +25,7 @@ function App() {
                         <Route path="/notice" component={Notice}/>
                         <Route path="/board" component={Board}/>
                         <Route path="/deptInfo" component={DeptInfo}/>
-                        <Route path="/job" component={JobInfo}/>
+                        <Route path="/jobInfo" component={JobInfo}/>
                         <Route path="/contestInfo" component={ContestInfo}/>
                     </Switch>
                 </main>

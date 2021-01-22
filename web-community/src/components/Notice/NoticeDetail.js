@@ -5,8 +5,11 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Title from "../Title";
+import {useHistory} from "react-router-dom";
 
 export default function NoticeDetail() {
+    let history = useHistory();
+
     return (
         <div className="NoticeDetail">
             <Container>
