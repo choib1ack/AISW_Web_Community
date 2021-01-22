@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class UserRepositoryTest extends CommunityApplicationTests{
@@ -55,7 +54,11 @@ public class UserRepositoryTest extends CommunityApplicationTests{
         Optional<User> user = userRepository.findById(1L);
 
         user.ifPresent(selectUser ->{
-            System.out.println("user : " + selectUser);
+            selectUser.getNoticeList().stream().forEach(notice -> {
+                notice.getUniversityList().stream().forEach(university -> {
+                    System.out.println(university.getId());
+                });
+            });
         });
     }
 
