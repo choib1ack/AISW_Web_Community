@@ -36,7 +36,7 @@ public class Department {
 
     private LocalDateTime updatedAt;
     
-    // 학교 공지 0, 학과 공지 1, 학생회 공지1
+    // 학과 공지 1
     private Long level;
 
     @ManyToOne

@@ -17,9 +17,6 @@ public class Notice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 학교 공지 0, 학과 공지1, 학생회 공지2
-    private Long category;
-
     @ManyToOne
     private User user; // user id
 
