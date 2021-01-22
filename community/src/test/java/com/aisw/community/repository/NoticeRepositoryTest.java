@@ -18,10 +18,7 @@ public class NoticeRepositoryTest extends CommunityApplicationTests {
 
     @Test
     public void create() {
-        Long category = 1L;
-
         Notice notice = Notice.builder()
-                .category(category)
                 .build();
 
         Notice newNotice = noticeRepository.save(notice);
@@ -46,7 +43,6 @@ public class NoticeRepositoryTest extends CommunityApplicationTests {
         Optional<Notice> notice = noticeRepository.findById(1L);
 
         notice.ifPresent(readNotice -> {
-            readNotice.setCategory(2L);
 
             noticeRepository.save(readNotice);
         });
