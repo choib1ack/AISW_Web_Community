@@ -1,6 +1,7 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
+import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.University;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class UniversityRepositoryTest extends CommunityApplicationTests {
+public class DepartmentRepositoryTest extends CommunityApplicationTests {
 
     // Dependency Injection (DI)
     @Autowired
-    private UniversityRepository universityRepository;
+    private DepartmentRepository departmentRepository;
 
     @Test
     public void create() {
@@ -26,9 +27,8 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         String createdBy = "tester";
         LocalDateTime createdAt = LocalDateTime.now();
         Long level = 1L;
-        Long campus = 0L;
 
-        University university = University.builder()
+        Department department = Department.builder()
                 .title(title)
                 .content(content)
                 .attachmentFile(attachmentFile)
@@ -37,48 +37,46 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
                 .createdBy(createdBy)
                 .createdAt(createdAt)
                 .level(level)
-                .campus(campus)
                 .build();
 
-        University newUniversity = universityRepository.save(university);
-        System.out.println("newUniversity: " + newUniversity);
+        Department newDepartment = departmentRepository.save(department);
+        System.out.println("newDepartment: " + newDepartment);
     }
 
     @Test
     public void read() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<Department> department = departmentRepository.findById(1L);
 
-        university.ifPresent(readUniversity -> {
-            System.out.println(readUniversity);
+        department.ifPresent(readDepartment -> {
+            System.out.println(readDepartment);
         });
     }
 
     @Test
     @Transactional
     public void update() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<Department> department = departmentRepository.findById(1L);
 
-        university.ifPresent(readUniversity -> {
-            readUniversity.setLevel(2L);
-            readUniversity.setCampus(1L);
+        department.ifPresent(readDepartment -> {
+            readDepartment.setLevel(2L);
 
-            universityRepository.save(readUniversity);
+            departmentRepository.save(readDepartment);
         });
     }
 
     @Test
     @Transactional
     public void delete() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<Department> department = departmentRepository.findById(1L);
 
-        Assertions.assertTrue(university.isPresent());
+        Assertions.assertTrue(department.isPresent());
 
-        university.ifPresent(readUniversity -> {
-            universityRepository.delete(readUniversity);
+        department.ifPresent(readDepartment -> {
+            departmentRepository.delete(readDepartment);
         });
 
-        Optional<University> deleteUniversity = universityRepository.findById(1L);
+        Optional<Department> deleteDepartment = departmentRepository.findById(1L);
 
-        Assertions.assertFalse(deleteUniversity.isPresent());
+        Assertions.assertFalse(deleteDepartment.isPresent());
     }
 }

@@ -25,4 +25,10 @@ public class Notice {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
     private List<University> universityList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
+    private List<Department> departmentList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
+    private List<Council> councilList;
 }

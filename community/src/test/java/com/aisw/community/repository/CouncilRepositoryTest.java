@@ -1,7 +1,8 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.University;
+import com.aisw.community.model.entity.Council;
+import com.aisw.community.model.entity.Department;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class UniversityRepositoryTest extends CommunityApplicationTests {
+public class CouncilRepositoryTest extends CommunityApplicationTests {
 
     // Dependency Injection (DI)
     @Autowired
-    private UniversityRepository universityRepository;
+    private CouncilRepository councilRepository;
 
     @Test
     public void create() {
@@ -26,9 +27,8 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         String createdBy = "tester";
         LocalDateTime createdAt = LocalDateTime.now();
         Long level = 1L;
-        Long campus = 0L;
 
-        University university = University.builder()
+        Council council = Council.builder()
                 .title(title)
                 .content(content)
                 .attachmentFile(attachmentFile)
@@ -37,48 +37,46 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
                 .createdBy(createdBy)
                 .createdAt(createdAt)
                 .level(level)
-                .campus(campus)
                 .build();
 
-        University newUniversity = universityRepository.save(university);
-        System.out.println("newUniversity: " + newUniversity);
+        Council newCouncil = councilRepository.save(council);
+        System.out.println("newCouncil: " + newCouncil);
     }
 
     @Test
     public void read() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<Council> council = councilRepository.findById(1L);
 
-        university.ifPresent(readUniversity -> {
-            System.out.println(readUniversity);
+        council.ifPresent(readCouncil -> {
+            System.out.println(readCouncil);
         });
     }
 
     @Test
     @Transactional
     public void update() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<Council> council = councilRepository.findById(1L);
 
-        university.ifPresent(readUniversity -> {
-            readUniversity.setLevel(2L);
-            readUniversity.setCampus(1L);
+        council.ifPresent(readCouncil -> {
+            readCouncil.setLevel(2L);
 
-            universityRepository.save(readUniversity);
+            councilRepository.save(readCouncil);
         });
     }
 
     @Test
     @Transactional
     public void delete() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<Council> council = councilRepository.findById(1L);
 
-        Assertions.assertTrue(university.isPresent());
+        Assertions.assertTrue(council.isPresent());
 
-        university.ifPresent(readUniversity -> {
-            universityRepository.delete(readUniversity);
+        council.ifPresent(readCouncil -> {
+            councilRepository.delete(readCouncil);
         });
 
-        Optional<University> deleteUniversity = universityRepository.findById(1L);
+        Optional<Council> deleteCouncil = councilRepository.findById(1L);
 
-        Assertions.assertFalse(deleteUniversity.isPresent());
+        Assertions.assertFalse(deleteCouncil.isPresent());
     }
 }
