@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class UniversityRepositoryTest extends CommunityApplicationTests {
@@ -17,11 +18,24 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
 
     @Test
     public void create() {
+        String title = "test";
+        String content = "test Content";
+        String attachmentFile = "test attachment";
+        Long status = 2L;
+        Long views = 0L;
+        String createdBy = "tester";
+        LocalDateTime createdAt = LocalDateTime.now();
         Long level = 1L;
         Long campus = 0L;
 
-
         University university = University.builder()
+                .title(title)
+                .content(content)
+                .attachmentFile(attachmentFile)
+                .status(status)
+                .views(views)
+                .createdBy(createdBy)
+                .createdAt(createdAt)
                 .level(level)
                 .campus(campus)
                 .build();
@@ -35,7 +49,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         Optional<University> university = universityRepository.findById(1L);
 
         university.ifPresent(readUniversity -> {
-            System.out.println(readUniversity.getUniversityContent());
+            System.out.println(readUniversity);
         });
     }
 
