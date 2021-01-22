@@ -1,20 +1,21 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
-import userImage from "../icon/user.svg";
-import {ListButton} from "./NoticeDetail";
-import arrowImage from "../icon/arrow.svg";
-import sendImage from "../icon/send.svg";
+import userImage from "../../icon/user.svg";
+import {ListButton} from "../Notice/NoticeDetail";
+import arrowImage from "../../icon/arrow.svg";
+import sendImage from "../../icon/send.svg";
 import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 import {Checkbox} from "semantic-ui-react";
+import Title from "../Title";
 
 export default function BoardDetail() {
     return (
         <div className="BoardDetail">
             <Container>
-                <p className={"title"}>게시판</p>
+                <Title text='게시판' type='1'/>
                 <div className="text-left mt-5 mb-4"
                      style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
                     <div style={{
@@ -40,7 +41,7 @@ export default function BoardDetail() {
                     <hr/>
 
                     <div className="p-3">
-                        <p style={{color: "#6CBACB", fontSize: '16px'}} className=" font-weight-bold">댓글</p>
+                        <Title text='댓글' type='2'/>
                         <CommentBox/>
                         <CommentBox/>
                         <ReplyBox/>

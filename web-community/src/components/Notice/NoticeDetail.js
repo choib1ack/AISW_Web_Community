@@ -1,15 +1,19 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import fileImage from "../icon/file.svg";
+import fileImage from "../../icon/file.svg";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
+import Title from "../Title";
+import {useHistory} from "react-router-dom";
 
 export default function NoticeDetail() {
+    let history = useHistory();
+
     return (
         <div className="NoticeDetail">
             <Container>
-                <p className={"title"}>공지사항</p>
+                <Title text='공지사항' type='1'/>
                 <div className="text-left mt-5 mb-4"
                      style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
                     <div style={{

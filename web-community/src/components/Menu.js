@@ -6,18 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import {BrowserRouter as Router, Switch, Route, Link, useRouteMatch} from "react-router-dom";
 import Home from "./Home";
 import Login from "./Login";
-import Notice from "./Notice";
-import Job from "./Job";
-import Board from "./Board";
+import Notice from "./Notice/Notice";
+import JobInfo from "./JobInfo";
+import Board from "./Board/Board";
 import ContestInfo from "./ContestInfo";
 import DeptInfo from "./DeptInfo";
 
 export default function Menu() {
-
-    let match = useRouteMatch();
-
     return (
-        <Router>
+        <div>
             <Grid>
                 <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>
@@ -44,7 +41,7 @@ export default function Menu() {
                             </button>
                         </Link>
 
-                        <Link to="/job">
+                        <Link to="/jobInfo">
                             <button className="Menu-button">
                                 채용정보
                             </button>
@@ -68,15 +65,16 @@ export default function Menu() {
                 </Row>
             </Grid>
 
-            <Switch>
-                <Route exact path="/" component={Home}/>
-                <Route path="/login" component={Login}/>
-                <Route path="/notice" component={Notice}/>
-                <Route path="/board" component={Board}/>
-                <Route path="/deptInfo" component={DeptInfo}/>
-                <Route path="/job" component={Job}/>
-                <Route path="/contestInfo" component={ContestInfo}/>
-            </Switch>
-        </Router>
+            {/*<Switch>*/}
+            {/*    <Route exact path="/" component={Home}/>*/}
+            {/*    <Route path="/login" component={Login}/>*/}
+            {/*    <Route path="/notice" component={Notice}/>*/}
+            {/*    <Route path="/board" component={Board}/>*/}
+            {/*    <Route path="/deptInfo" component={DeptInfo}/>*/}
+            {/*    <Route path="/job" component={JobInfo}/>*/}
+            {/*    <Route path="/contestInfo" component={ContestInfo}/>*/}
+            {/*</Switch>*/}
+
+        </div>
     );
 }

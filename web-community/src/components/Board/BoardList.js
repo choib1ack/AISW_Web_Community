@@ -1,21 +1,22 @@
-import React from "react";
 import Container from "react-bootstrap/Container";
-import Table from "react-bootstrap/Table";
-import fileImage from "../icon/file.svg";
-import photoImage from "../icon/photo.svg";
-import searchImage from "../icon/search.svg";
+import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import searchImage from "../../icon/search.svg";
+import Table from "react-bootstrap/Table";
+import photoImage from "../../icon/photo.svg";
+import fileImage from "../../icon/file.svg";
 import Button from "react-bootstrap/Button";
-import classNames from 'classnames';
-import Pagination from "./PaginationCustom";
+import classNames from "classnames";
+import Pagination from "../PaginationCustom";
+import React from "react";
+import {Link} from "react-router-dom";
 
-function Board() {
-
+export default function BoardList({match}) {
     return (
         <div className="Board">
             <Container >
-                <p className={"title"}>게시판</p>
+                <Title text='게시판' type='1'/>
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
                         <SelectButton title='전체' active='true'/>
@@ -46,7 +47,11 @@ function Board() {
                     <tbody>
                     <tr>
                         <td>10</td>
-                        <td>[멀티캠퍼스] 코딩테스트 대회 안내 파일</td>
+                        <td>
+                            <Link to={`${match.url}/10`} style={{color: 'black'}}>
+                                [멀티캠퍼스] 코딩테스트 대회 안내 파일
+                            </Link>
+                        </td>
                         <td>양희림</td>
                         <td>2021-01-16</td>
                         <td>1</td>
@@ -133,8 +138,6 @@ function Board() {
         </div>
     );
 }
-
-export default Board;
 
 function SelectButton(props){
     let btnStyle = {

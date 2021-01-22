@@ -5,12 +5,13 @@ import Col from "react-bootstrap/Col";
 import contestImage1 from "../image/contest1.svg";
 import ContestInfoCard from "./ComponentInfoCard";
 import Pagination from "./PaginationCustom";
+import Title from "./Title";
 
 function ContestInfo() {
     return (
         <div className='ContestInfo'>
             <Container>
-                <p className={"title"}>공모전/대외활동</p>
+                <Title text='공모전 / 대외활동' type='1'/>
                 <Row style={{marginTop: '3rem'}}>
                     <Col lg={3} md={4} sm={6}>
                         <ContestInfoCard image={contestImage1}
