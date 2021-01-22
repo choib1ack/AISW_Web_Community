@@ -6,9 +6,9 @@ import Grid from "@material-ui/core/Grid";
 import {BrowserRouter as Router, Switch, Route, Link, useRouteMatch} from "react-router-dom";
 import Home from "./Home";
 import Login from "./Login";
-import Notice from "./Notice";
+import Notice from "./Notice/Notice";
 import JobInfo from "./JobInfo";
-import Board from "./Board";
+import Board from "./Board/Board";
 import ContestInfo from "./ContestInfo";
 import DeptInfo from "./DeptInfo";
 

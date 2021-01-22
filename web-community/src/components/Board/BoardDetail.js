@@ -1,15 +1,15 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
-import userImage from "../icon/user.svg";
-import {ListButton} from "./NoticeDetail";
-import arrowImage from "../icon/arrow.svg";
-import sendImage from "../icon/send.svg";
+import userImage from "../../icon/user.svg";
+import {ListButton} from "../Notice/NoticeDetail";
+import arrowImage from "../../icon/arrow.svg";
+import sendImage from "../../icon/send.svg";
 import InputGroup from "react-bootstrap/InputGroup";
 import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 import {Checkbox} from "semantic-ui-react";
-import Title from "./Title";
+import Title from "../Title";
 
 export default function BoardDetail() {
     return (

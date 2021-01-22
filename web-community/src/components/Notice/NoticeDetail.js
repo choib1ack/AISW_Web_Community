@@ -1,10 +1,10 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import fileImage from "../icon/file.svg";
+import fileImage from "../../icon/file.svg";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import Title from "./Title";
+import Title from "../Title";
 
 export default function NoticeDetail() {
     return (
