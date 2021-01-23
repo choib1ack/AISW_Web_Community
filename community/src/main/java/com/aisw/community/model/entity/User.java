@@ -19,6 +19,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
+@ToString(exclude = {"noticeList", "boardList"})
 public class User {
 
     @Id
@@ -67,6 +68,4 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Board> boardList;
-
-    // todo user table과 관련된 table 연관관계 설정
 }

@@ -1,6 +1,12 @@
 package com.aisw.community.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"board"})
+@EntityListeners(AuditingEntityListener.class)
 public class Free {
 
     @Id
@@ -33,13 +41,17 @@ public class Free {
     // 자유게시판 0
     private Long level;
 
-    private String createdBy;
-
+    @CreatedDate
     private LocalDateTime createdAt;
 
-    private String updatedBy;
+    @CreatedBy
+    private String createdBy;
 
+    @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @LastModifiedBy
+    private String updatedBy;
 
     @ManyToOne
     private Board board; // board id
