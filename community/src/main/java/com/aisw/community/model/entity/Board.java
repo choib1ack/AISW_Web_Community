@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user"})
+@ToString(exclude = {"user", "freeList", "qnaList"})
 public class Board {
 
     @Id

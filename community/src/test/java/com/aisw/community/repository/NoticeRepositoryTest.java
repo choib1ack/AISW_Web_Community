@@ -32,7 +32,13 @@ public class NoticeRepositoryTest extends CommunityApplicationTests {
 
         notice.ifPresent(readNotice -> {
             readNotice.getUniversityList().stream().forEach(university -> {
-                System.out.println(university.getId());
+                System.out.println(university.getTitle());
+            });
+            readNotice.getDepartmentList().stream().forEach(department -> {
+                System.out.println(department.getTitle());
+            });
+            readNotice.getCouncilList().stream().forEach(council -> {
+                System.out.println(council.getTitle());
             });
         });
     }

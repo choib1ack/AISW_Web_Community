@@ -56,7 +56,21 @@ public class UserRepositoryTest extends CommunityApplicationTests{
         user.ifPresent(selectUser ->{
             selectUser.getNoticeList().stream().forEach(notice -> {
                 notice.getUniversityList().stream().forEach(university -> {
-                    System.out.println(university.getId());
+                    System.out.println(university.getTitle());
+                });
+                notice.getDepartmentList().stream().forEach(department -> {
+                    System.out.println(department.getTitle());
+                });
+                notice.getCouncilList().stream().forEach(council -> {
+                    System.out.println(council.getTitle());
+                });
+            });
+            selectUser.getBoardList().stream().forEach(board -> {
+                board.getFreeList().stream().forEach(free -> {
+                    System.out.println(free.getTitle());
+                });
+                board.getQnaList().stream().forEach(qna -> {
+                    System.out.println(qna.getTitle());
                 });
             });
         });

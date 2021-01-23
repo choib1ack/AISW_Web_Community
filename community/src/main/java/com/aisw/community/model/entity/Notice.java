@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"user"})
+@ToString(exclude = {"user", "universityList", "departmentList", "councilList"})
 public class Notice {
 
     @Id
