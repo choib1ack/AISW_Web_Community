@@ -1,6 +1,7 @@
 package com.aisw.community.model.entity;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"user", "freeList", "qnaList"})
 public class Board {
 
