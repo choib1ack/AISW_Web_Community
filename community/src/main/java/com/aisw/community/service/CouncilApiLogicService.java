@@ -61,7 +61,7 @@ public class CouncilApiLogicService implements CrudInterface<CouncilApiRequest, 
 
                     return council;
                 })
-                .map(department -> councilRepository.save(department))
+                .map(council -> councilRepository.save(council))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -69,8 +69,8 @@ public class CouncilApiLogicService implements CrudInterface<CouncilApiRequest, 
     @Override
     public Header delete(Long id) {
         return councilRepository.findById(id)
-                .map(department -> {
-                    councilRepository.delete(department);
+                .map(council -> {
+                    councilRepository.delete(council);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

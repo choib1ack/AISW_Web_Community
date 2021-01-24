@@ -1,0 +1,107 @@
+package com.aisw.community.service;
+
+import com.aisw.community.ifs.CrudInterface;
+import com.aisw.community.model.entity.Free;
+import com.aisw.community.model.entity.Qna;
+import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.FreeApiRequest;
+import com.aisw.community.model.network.request.QnaApiRequest;
+import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.QnaApiResponse;
+import com.aisw.community.repository.BoardRepository;
+import com.aisw.community.repository.FreeRepository;
+import com.aisw.community.repository.QnaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class QnaApiLogicService implements CrudInterface<QnaApiRequest, QnaApiResponse> {
+
+    @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private QnaRepository qnaRepository;
+
+    @Override
+    public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
+        QnaApiRequest qnaApiRequest = request.getData();
+
+        Qna qna = Qna.builder()
+                .title(qnaApiRequest.getTitle())
+                .content(qnaApiRequest.getContent())
+                .attachmentFile(qnaApiRequest.getAttachmentFile())
+                .status(qnaApiRequest.getStatus())
+                .views(qnaApiRequest.getViews())
+                .likes(qnaApiRequest.getLikes())
+                .subject(qnaApiRequest.getSubject())
+                .level(qnaApiRequest.getLevel())
+                .board(boardRepository.getOne(qnaApiRequest.getBoardId()))
+                .build();
+
+        Qna newQna = qnaRepository.save(qna);
+        return response(newQna);
+    }
+
+    @Override
+    public Header<QnaApiResponse> read(Long id) {
+        return qnaRepository.findById(id)
+                .map(this::response)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    @Override
+    public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
+        QnaApiRequest qnaApiRequest = request.getData();
+
+        return qnaRepository.findById(qnaApiRequest.getId())
+                .map(qna -> {
+                    qna
+                            .setTitle(qnaApiRequest.getTitle())
+                            .setContent(qnaApiRequest.getContent())
+                            .setAttachmentFile(qnaApiRequest.getAttachmentFile())
+                            .setStatus(qnaApiRequest.getStatus())
+                            .setViews(qnaApiRequest.getViews())
+                            .setLevel(qnaApiRequest.getLevel())
+                            .setLikes(qnaApiRequest.getLikes())
+                            .setSubject(qnaApiRequest.getSubject())
+                            .setBoard(boardRepository.getOne(qnaApiRequest.getBoardId()));
+
+                    return qna;
+                })
+                .map(qna -> qnaRepository.save(qna))
+                .map(this::response)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    @Override
+    public Header delete(Long id) {
+        return qnaRepository.findById(id)
+                .map(qna -> {
+                    qnaRepository.delete(qna);
+                    return Header.OK();
+                })
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private Header<QnaApiResponse> response(Qna qna) {
+        QnaApiResponse qnaApiResponse = QnaApiResponse.builder()
+                .id(qna.getId())
+                .title(qna.getTitle())
+                .content(qna.getContent())
+                .attachmentFile(qna.getAttachmentFile())
+                .status(qna.getStatus())
+                .createdAt(qna.getCreatedAt())
+                .createdBy(qna.getCreatedBy())
+                .updatedAt(qna.getUpdatedAt())
+                .updatedBy(qna.getUpdatedBy())
+                .views(qna.getViews())
+                .level(qna.getLevel())
+                .likes(qna.getLikes())
+                .subject(qna.getSubject())
+                .boardId(qna.getBoard().getId())
+                .build();
+
+        return Header.OK(qnaApiResponse);
+    }
+}
