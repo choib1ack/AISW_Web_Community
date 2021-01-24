@@ -2,6 +2,8 @@ package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.University;
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.Campus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,12 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         String title = "test";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        Long status = 2L;
+        BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
         String createdBy = "tester";
         LocalDateTime createdAt = LocalDateTime.now();
         Long level = 1L;
-        Long campus = 0L;
+        Campus campus = Campus.COMMON;
 
         University university = University.builder()
                 .title(title)
@@ -60,7 +62,6 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
 
         university.ifPresent(readUniversity -> {
             readUniversity.setLevel(2L);
-            readUniversity.setCampus(1L);
 
             universityRepository.save(readUniversity);
         });

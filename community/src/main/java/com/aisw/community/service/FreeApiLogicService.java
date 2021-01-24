@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
@@ -16,13 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FreeApiLogicService implements CrudInterface<FreeApiRequest, FreeApiResponse> {
+public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResponse, Free> {
 
     @Autowired
     private BoardRepository boardRepository;
-
-    @Autowired
-    private FreeRepository freeRepository;
 
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
@@ -38,13 +36,13 @@ public class FreeApiLogicService implements CrudInterface<FreeApiRequest, FreeAp
                 .board(boardRepository.getOne(freeApiRequest.getBoardId()))
                 .build();
 
-        Free newFree = freeRepository.save(free);
+        Free newFree = baseRepository.save(free);
         return response(newFree);
     }
 
     @Override
     public Header<FreeApiResponse> read(Long id) {
-        return freeRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -53,7 +51,7 @@ public class FreeApiLogicService implements CrudInterface<FreeApiRequest, FreeAp
     public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
-        return freeRepository.findById(freeApiRequest.getId())
+        return baseRepository.findById(freeApiRequest.getId())
                 .map(free -> {
                     free
                             .setTitle(freeApiRequest.getTitle())
@@ -66,16 +64,16 @@ public class FreeApiLogicService implements CrudInterface<FreeApiRequest, FreeAp
 
                     return free;
                 })
-                .map(free -> freeRepository.save(free))
+                .map(free -> baseRepository.save(free))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return freeRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(free -> {
-                    freeRepository.delete(free);
+                    baseRepository.delete(free);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

@@ -15,10 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BoardApiLogicService implements CrudInterface<BoardApiRequest, BoardApiResponse> {
-
-    @Autowired
-    private BoardRepository boardRepository;
+public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiResponse, Board> {
 
     @Autowired
     private UserRepository userRepository;
@@ -30,14 +27,14 @@ public class BoardApiLogicService implements CrudInterface<BoardApiRequest, Boar
         Board board = Board.builder()
                 .user(userRepository.getOne(boardApiRequest.getUserId()))
                 .build();
-        Board newBoard = boardRepository.save(board);
+        Board newBoard = baseRepository.save(board);
 
         return response(newBoard);
     }
 
     @Override
     public Header<BoardApiResponse> read(Long id) {
-        return boardRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -46,21 +43,21 @@ public class BoardApiLogicService implements CrudInterface<BoardApiRequest, Boar
     public Header<BoardApiResponse> update(Header<BoardApiRequest> request) {
         BoardApiRequest boardApiRequest = request.getData();
 
-        return boardRepository.findById(boardApiRequest.getId())
+        return baseRepository.findById(boardApiRequest.getId())
                 .map(board -> {
                     board.setUser(userRepository.getOne(boardApiRequest.getUserId()));
                     return board;
                 })
-                .map(board -> boardRepository.save(board))
+                .map(board -> baseRepository.save(board))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return boardRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(board -> {
-                    boardRepository.delete(board);
+                    baseRepository.delete(board);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

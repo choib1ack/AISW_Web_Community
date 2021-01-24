@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.entity.University;
@@ -14,13 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UniversityApiLogicService implements CrudInterface<UniversityApiRequest, UniversityApiResponse> {
+public class UniversityApiLogicService extends BaseService<UniversityApiRequest, UniversityApiResponse, University> {
 
     @Autowired
     private NoticeRepository noticeRepository;
-
-    @Autowired
-    private UniversityRepository universityRepository;
 
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
@@ -37,13 +35,13 @@ public class UniversityApiLogicService implements CrudInterface<UniversityApiReq
                 .notice(noticeRepository.getOne(universityApiRequest.getNoticeId()))
                 .build();
 
-        University newUniversity = universityRepository.save(university);
+        University newUniversity = baseRepository.save(university);
         return response(newUniversity);
     }
 
     @Override
     public Header<UniversityApiResponse> read(Long id) {
-        return universityRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -52,7 +50,7 @@ public class UniversityApiLogicService implements CrudInterface<UniversityApiReq
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
-        return universityRepository.findById(universityApiRequest.getId())
+        return baseRepository.findById(universityApiRequest.getId())
                 .map(university -> {
                     university
                             .setTitle(universityApiRequest.getTitle())
@@ -66,16 +64,16 @@ public class UniversityApiLogicService implements CrudInterface<UniversityApiReq
 
                     return university;
                 })
-                .map(university -> universityRepository.save(university))
+                .map(university -> baseRepository.save(university))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return universityRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(university -> {
-                    universityRepository.delete(university);
+                    baseRepository.delete(university);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

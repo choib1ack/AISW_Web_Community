@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Notice;
@@ -13,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NoticeApiLogicService implements CrudInterface<NoticeApiRequest, NoticeApiResponse> {
-
-    @Autowired
-    private NoticeRepository noticeRepository;
+public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeApiResponse, Notice> {
 
     @Autowired
     private UserRepository userRepository;
@@ -28,14 +26,14 @@ public class NoticeApiLogicService implements CrudInterface<NoticeApiRequest, No
         Notice notice = Notice.builder()
                 .user(userRepository.getOne(noticeApiRequest.getUserId()))
                 .build();
-        Notice newNotice = noticeRepository.save(notice);
+        Notice newNotice = baseRepository.save(notice);
 
         return response(newNotice);
     }
 
     @Override
     public Header<NoticeApiResponse> read(Long id) {
-        return noticeRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -44,21 +42,21 @@ public class NoticeApiLogicService implements CrudInterface<NoticeApiRequest, No
     public Header<NoticeApiResponse> update(Header<NoticeApiRequest> request) {
         NoticeApiRequest noticeApiRequest = request.getData();
 
-        return noticeRepository.findById(noticeApiRequest.getId())
+        return baseRepository.findById(noticeApiRequest.getId())
                 .map(notice -> {
                     notice.setUser(userRepository.getOne(noticeApiRequest.getUserId()));
                     return notice;
                 })
-                .map(notice -> noticeRepository.save(notice))
+                .map(notice -> baseRepository.save(notice))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return noticeRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(notice -> {
-                    noticeRepository.delete(notice);
+                    baseRepository.delete(notice);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

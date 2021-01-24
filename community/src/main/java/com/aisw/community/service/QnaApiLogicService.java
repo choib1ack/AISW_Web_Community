@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Qna;
@@ -15,13 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class QnaApiLogicService implements CrudInterface<QnaApiRequest, QnaApiResponse> {
+public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiResponse, Qna> {
 
     @Autowired
     private BoardRepository boardRepository;
-
-    @Autowired
-    private QnaRepository qnaRepository;
 
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
@@ -38,13 +36,13 @@ public class QnaApiLogicService implements CrudInterface<QnaApiRequest, QnaApiRe
                 .board(boardRepository.getOne(qnaApiRequest.getBoardId()))
                 .build();
 
-        Qna newQna = qnaRepository.save(qna);
+        Qna newQna = baseRepository.save(qna);
         return response(newQna);
     }
 
     @Override
     public Header<QnaApiResponse> read(Long id) {
-        return qnaRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -53,7 +51,7 @@ public class QnaApiLogicService implements CrudInterface<QnaApiRequest, QnaApiRe
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
-        return qnaRepository.findById(qnaApiRequest.getId())
+        return baseRepository.findById(qnaApiRequest.getId())
                 .map(qna -> {
                     qna
                             .setTitle(qnaApiRequest.getTitle())
@@ -67,16 +65,16 @@ public class QnaApiLogicService implements CrudInterface<QnaApiRequest, QnaApiRe
 
                     return qna;
                 })
-                .map(qna -> qnaRepository.save(qna))
+                .map(qna -> baseRepository.save(qna))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return qnaRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(qna -> {
-                    qnaRepository.delete(qna);
+                    baseRepository.delete(qna);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

@@ -3,6 +3,7 @@ package com.aisw.community.repository;
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         String title = "test";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        Long status = 2L;
+        BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
         String createdBy = "tester";
         LocalDateTime createdAt = LocalDateTime.now();

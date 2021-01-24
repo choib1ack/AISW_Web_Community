@@ -11,13 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CouncilApiLogicService implements CrudInterface<CouncilApiRequest, CouncilApiResponse> {
+public class CouncilApiLogicService extends BaseService<CouncilApiRequest, CouncilApiResponse, Council> {
 
     @Autowired
     private NoticeRepository noticeRepository;
-
-    @Autowired
-    private CouncilRepository councilRepository;
 
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
@@ -33,13 +30,13 @@ public class CouncilApiLogicService implements CrudInterface<CouncilApiRequest, 
                 .notice(noticeRepository.getOne(councilApiRequest.getNoticeId()))
                 .build();
 
-        Council newCouncil = councilRepository.save(council);
+        Council newCouncil = baseRepository.save(council);
         return response(newCouncil);
     }
 
     @Override
     public Header<CouncilApiResponse> read(Long id) {
-        return councilRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -48,7 +45,7 @@ public class CouncilApiLogicService implements CrudInterface<CouncilApiRequest, 
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
-        return councilRepository.findById(councilApiRequest.getId())
+        return baseRepository.findById(councilApiRequest.getId())
                 .map(council -> {
                     council
                             .setTitle(councilApiRequest.getTitle())
@@ -61,16 +58,16 @@ public class CouncilApiLogicService implements CrudInterface<CouncilApiRequest, 
 
                     return council;
                 })
-                .map(council -> councilRepository.save(council))
+                .map(council -> baseRepository.save(council))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return councilRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(council -> {
-                    councilRepository.delete(council);
+                    baseRepository.delete(council);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
@@ -12,11 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UserApiLogicService implements CrudInterface<UserApiRequest, UserApiResponse> {
-
-    @Autowired
-    private UserRepository userRepository;
-
+public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
 
     // 1. request data
     // 2. user create
@@ -35,10 +32,6 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 .phoneNumber(userApiRequest.getPhoneNumber())
                 .grade(userApiRequest.getGrade())
                 .studentId(userApiRequest.getStudentId())
-                .createdAt(userApiRequest.getCreatedAt())
-                .createdBy(userApiRequest.getCreatedBy())
-                .updatedAt(userApiRequest.getUpdatedAt())
-                .updatedBy(userApiRequest.getUpdatedBy())
                 .level(userApiRequest.getLevel())
                 .job(userApiRequest.getJob())
                 .gender(userApiRequest.getGender())
@@ -47,7 +40,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 .department(userApiRequest.getDepartment())
                 .build();
 
-        User newUser = userRepository.save(user);
+        User newUser = baseRepository.save(user);
 
         // 3. created user -> userApiResponse return : public Header<UserApiResponse> response(User user){}
         return response(newUser);
@@ -56,7 +49,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
     @Override
     public Header<UserApiResponse> read(Long id) {
         // id -> repository getOne, getById
-        Optional<User> optional = userRepository.findById(id);
+        Optional<User> optional = baseRepository.findById(id);
 
         // user -> userApiResponse return
         return optional
@@ -72,7 +65,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
         UserApiRequest userApiRequest = request.getData();
 
         // 2. id -> user data find
-        Optional<User> optional = userRepository.findById(userApiRequest.getId());
+        Optional<User> optional = baseRepository.findById(userApiRequest.getId());
 
         return optional.map(user ->{
             // 3. data -> update
@@ -83,10 +76,6 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                     .setPhoneNumber(userApiRequest.getPhoneNumber())
                     .setGrade(userApiRequest.getGrade())
                     .setStudentId(userApiRequest.getStudentId())
-                    .setCreatedAt(userApiRequest.getCreatedAt())
-                    .setCreatedBy(userApiRequest.getCreatedBy())
-                    .setUpdatedAt(userApiRequest.getUpdatedAt())
-                    .setUpdatedBy(userApiRequest.getUpdatedBy())
                     .setLevel(userApiRequest.getLevel())
                     .setJob(userApiRequest.getJob())
                     .setGender(userApiRequest.getGender())
@@ -94,7 +83,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                     .setCollege(userApiRequest.getCollege())
                     .setDepartment(userApiRequest.getDepartment());
             return user;
-        }).map(user -> userRepository.save(user))
+        }).map(user -> baseRepository.save(user))
                 .map(user -> response(user))
                 .orElseGet(() -> Header.ERROR("No Data"));
     }
@@ -102,12 +91,12 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
     @Override
     public Header delete(Long id) {
         // 1. id -> repository -> user
-        Optional<User> optional = userRepository.findById(id);
+        Optional<User> optional = baseRepository.findById(id);
 
         // 2. repository -> delete
         // 3. response return
         return optional.map(user -> {
-            userRepository.delete(user);
+            baseRepository.delete(user);
             return Header.OK();
         }).orElseGet(() -> Header.ERROR("No Data"));
     }

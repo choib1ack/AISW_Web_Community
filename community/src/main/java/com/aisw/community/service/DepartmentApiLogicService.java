@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.network.Header;
@@ -11,13 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DepartmentApiLogicService implements CrudInterface<DepartmentApiRequest, DepartmentApiResponse> {
+public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest, DepartmentApiResponse, Department> {
 
     @Autowired
     private NoticeRepository noticeRepository;
-
-    @Autowired
-    private DepartmentRepository departmentRepository;
 
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
@@ -33,13 +31,13 @@ public class DepartmentApiLogicService implements CrudInterface<DepartmentApiReq
                 .notice(noticeRepository.getOne(departmentApiRequest.getNoticeId()))
                 .build();
 
-        Department newDepartment = departmentRepository.save(department);
+        Department newDepartment = baseRepository.save(department);
         return response(newDepartment);
     }
 
     @Override
     public Header<DepartmentApiResponse> read(Long id) {
-        return departmentRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
@@ -48,7 +46,7 @@ public class DepartmentApiLogicService implements CrudInterface<DepartmentApiReq
     public Header<DepartmentApiResponse> update(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        return departmentRepository.findById(departmentApiRequest.getId())
+        return baseRepository.findById(departmentApiRequest.getId())
                 .map(department -> {
                     department
                             .setTitle(departmentApiRequest.getTitle())
@@ -61,16 +59,16 @@ public class DepartmentApiLogicService implements CrudInterface<DepartmentApiReq
 
                     return department;
                 })
-                .map(department -> departmentRepository.save(department))
+                .map(department -> baseRepository.save(department))
                 .map(this::response)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
     public Header delete(Long id) {
-        return departmentRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(department -> {
-                    departmentRepository.delete(department);
+                    baseRepository.delete(department);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

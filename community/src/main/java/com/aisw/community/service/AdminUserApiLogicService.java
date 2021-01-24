@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AdminUserApiLogicService implements CrudInterface<AdminUserApiRequest, AdminUserApiResponse> {
-
-    @Autowired
-    private AdminUserRepository adminUserRepository;
+public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, AdminUserApiResponse, AdminUser> {
 
     @Override
     public Header<AdminUserApiResponse> create(Header<AdminUserApiRequest> request) {
@@ -29,14 +26,14 @@ public class AdminUserApiLogicService implements CrudInterface<AdminUserApiReque
                 .role(adminUserApiRequest.getRole())
                 .build();
 
-        AdminUser newAdminUser = adminUserRepository.save(adminUser);
+        AdminUser newAdminUser = baseRepository.save(adminUser);
 
         return response(newAdminUser);
     }
 
     @Override
     public Header<AdminUserApiResponse> read(Long id) {
-        Optional<AdminUser> optional = adminUserRepository.findById(id);
+        Optional<AdminUser> optional = baseRepository.findById(id);
 
         return optional.map(adminUser -> response(adminUser))
                 .orElseGet(() -> Header.ERROR("No Data"));
@@ -46,7 +43,7 @@ public class AdminUserApiLogicService implements CrudInterface<AdminUserApiReque
     public Header<AdminUserApiResponse> update(Header<AdminUserApiRequest> request) {
         AdminUserApiRequest adminUserApiRequest = request.getData();
 
-        Optional<AdminUser> optional = adminUserRepository.findById(adminUserApiRequest.getId());
+        Optional<AdminUser> optional = baseRepository.findById(adminUserApiRequest.getId());
 
         return optional.map(adminUser -> {
 
@@ -57,17 +54,17 @@ public class AdminUserApiLogicService implements CrudInterface<AdminUserApiReque
                     .setRole(adminUserApiRequest.getRole());
 
             return adminUser;
-        }).map(adminUser -> adminUserRepository.save(adminUser))
+        }).map(adminUser -> baseRepository.save(adminUser))
                 .map(adminUser -> response(adminUser))
                 .orElseGet(() -> Header.ERROR("No Data"));
     }
 
     @Override
     public Header delete(Long id) {
-        Optional<AdminUser> optional = adminUserRepository.findById(id);
+        Optional<AdminUser> optional = baseRepository.findById(id);
 
         return optional.map(adminUser -> {
-            adminUserRepository.delete(adminUser);
+            baseRepository.delete(adminUser);
             return Header.OK();
         }).orElseGet(() -> Header.ERROR("No Data"));
     }
