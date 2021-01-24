@@ -1,5 +1,7 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.Campus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -31,8 +33,8 @@ public class University {
 
     private String attachmentFile;
 
-    // 긴급0, 상단고정1, 일반2
-    private Long status;
+    @Enumerated(EnumType.STRING)
+    private BulletinStatus status;
 
     private Long views;
 
@@ -51,8 +53,8 @@ public class University {
     // 학교 공지 0
     private Long level;
 
-    // 공통 0, 글로벌1,  메디컬2
-    private Long campus;
+    @Enumerated(EnumType.STRING)
+    private Campus campus;
 
     @ManyToOne
     private Notice notice; // notice id

@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.request;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class DepartmentApiRequest {
     private String attachmentFile;
 
     // 긴급0, 상단고정1, 일반2
-    private Long status;
+    private BulletinStatus status;
 
     private Long views;
 

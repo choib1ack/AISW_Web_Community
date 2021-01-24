@@ -21,9 +21,6 @@ public class FreeApiResponse {
 
     private String attachmentFile;
 
-    // 긴급0, 상단고정1, 일반2
-    private Long status;
-
     private Long views;
 
     private Long likes;

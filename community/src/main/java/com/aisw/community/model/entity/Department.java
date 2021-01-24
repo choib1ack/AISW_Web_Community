@@ -1,5 +1,6 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -31,8 +32,8 @@ public class Department {
 
     private String attachmentFile;
 
-    // 긴급0, 상단고정1, 일반2
-    private Long status;
+    @Enumerated(EnumType.STRING)
+    private BulletinStatus status;
 
     private Long views;
 
