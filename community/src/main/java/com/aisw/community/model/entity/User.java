@@ -53,14 +53,19 @@ public class User {
     // 가입하지 않으면 0, 재학생 1, 학생회 2, 직원(조교, 교수) 3, 관리자 4
     private Integer level;
 
+    // TODO: enum
     private String job;
 
+    // TODO: enum
     private Integer gender;
 
+    // TODO: enum
     private String university;
 
+    // TODO: enum
     private String college;
 
+    // TODO: enum
     private String department;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
