@@ -2,15 +2,21 @@ package com.aisw.community.service;
 
 import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
+import com.aisw.community.model.entity.University;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.UserApiRequest;
+import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.model.network.response.UserApiResponse;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
@@ -43,7 +49,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         User newUser = baseRepository.save(user);
 
         // 3. created user -> userApiResponse return : public Header<UserApiResponse> response(User user){}
-        return response(newUser);
+        return Header.OK(response(newUser));
     }
 
     @Override
@@ -54,6 +60,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         // user -> userApiResponse return
         return optional
                 .map(user -> response(user))
+                .map(Header::OK)
                 .orElseGet(
                         () -> Header.ERROR("No Data")
                 );
@@ -85,6 +92,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
             return user;
         }).map(user -> baseRepository.save(user))
                 .map(user -> response(user))
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("No Data"));
     }
 
@@ -101,7 +109,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         }).orElseGet(() -> Header.ERROR("No Data"));
     }
 
-    private Header<UserApiResponse> response(User user){
+    private UserApiResponse response(User user){
         // user -> userApiResponse return
         UserApiResponse userApiResponse = UserApiResponse.builder()
                 .name(user.getName())
@@ -123,6 +131,17 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .build();
 
         // Header + data
-        return Header.OK(userApiResponse);
+        return userApiResponse;
+    }
+
+    @Override
+    public Header<List<UserApiResponse>> search(Pageable pageable) {
+        Page<User> users = baseRepository.findAll(pageable);
+
+        List<UserApiResponse> userApiResponseList = users.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(userApiResponseList);
     }
 }

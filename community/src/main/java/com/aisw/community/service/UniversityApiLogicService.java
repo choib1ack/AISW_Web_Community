@@ -3,16 +3,23 @@ package com.aisw.community.service;
 import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Notice;
+import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
+import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UniversityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UniversityApiLogicService extends BaseService<UniversityApiRequest, UniversityApiResponse, University> {
@@ -36,13 +43,14 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 .build();
 
         University newUniversity = baseRepository.save(university);
-        return response(newUniversity);
+        return Header.OK(response(newUniversity));
     }
 
     @Override
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -66,6 +74,7 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 })
                 .map(university -> baseRepository.save(university))
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -79,7 +88,7 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private Header<UniversityApiResponse> response(University university) {
+    private UniversityApiResponse response(University university) {
         UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
@@ -96,6 +105,17 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 .noticeId(university.getNotice().getId())
                 .build();
 
-        return Header.OK(universityApiResponse);
+        return universityApiResponse;
+    }
+
+    @Override
+    public Header<List<UniversityApiResponse>> search(Pageable pageable) {
+        Page<University> universities = baseRepository.findAll(pageable);
+
+        List<UniversityApiResponse> universityApiResponseList = universities.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(universityApiResponseList);
     }
 }

@@ -14,7 +14,12 @@ import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.FreeRepository;
 import com.aisw.community.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResponse, Free> {
@@ -37,13 +42,14 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .build();
 
         Free newFree = baseRepository.save(free);
-        return response(newFree);
+        return Header.OK(response(newFree));
     }
 
     @Override
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -66,6 +72,7 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 })
                 .map(free -> baseRepository.save(free))
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -79,7 +86,7 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private Header<FreeApiResponse> response(Free free) {
+    private FreeApiResponse response(Free free) {
         FreeApiResponse freeApiResponse = FreeApiResponse.builder()
                 .id(free.getId())
                 .title(free.getTitle())
@@ -95,6 +102,17 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .boardId(free.getBoard().getId())
                 .build();
 
-        return Header.OK(freeApiResponse);
+        return freeApiResponse;
+    }
+
+    @Override
+    public Header<List<FreeApiResponse>> search(Pageable pageable) {
+        Page<Free> frees = baseRepository.findAll(pageable);
+
+        List<FreeApiResponse> freeApiResponseList = frees.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(freeApiResponseList);
     }
 }
