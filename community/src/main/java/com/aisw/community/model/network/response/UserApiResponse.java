@@ -56,3 +56,5 @@ public class UserApiResponse {
     private String department;
 
 }
+
+// TODO: get 할 때 id, 생성자, 생성일자, 수정자, 수정일자 null로 뜸
