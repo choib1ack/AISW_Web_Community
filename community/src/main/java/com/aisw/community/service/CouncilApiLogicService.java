@@ -1,14 +1,21 @@
 package com.aisw.community.service;
 
 import com.aisw.community.ifs.CrudInterface;
+import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.CouncilApiRequest;
+import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.repository.CouncilRepository;
 import com.aisw.community.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CouncilApiLogicService extends BaseService<CouncilApiRequest, CouncilApiResponse, Council> {
@@ -31,13 +38,14 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 .build();
 
         Council newCouncil = baseRepository.save(council);
-        return response(newCouncil);
+        return Header.OK(response(newCouncil));
     }
 
     @Override
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -60,6 +68,7 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 })
                 .map(council -> baseRepository.save(council))
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -73,7 +82,7 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private Header<CouncilApiResponse> response(Council council) {
+    private CouncilApiResponse response(Council council) {
         CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())
@@ -89,6 +98,17 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 .noticeId(council.getNotice().getId())
                 .build();
 
-        return Header.OK(councilApiResponse);
+        return councilApiResponse;
+    }
+
+    @Override
+    public Header<List<CouncilApiResponse>> search(Pageable pageable) {
+        Page<Council> councils = baseRepository.findAll(pageable);
+
+        List<CouncilApiResponse> councilApiResponseList = councils.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(councilApiResponseList);
     }
 }

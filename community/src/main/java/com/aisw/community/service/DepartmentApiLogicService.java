@@ -2,14 +2,21 @@ package com.aisw.community.service;
 
 import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
+import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
+import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest, DepartmentApiResponse, Department> {
@@ -32,13 +39,14 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .build();
 
         Department newDepartment = baseRepository.save(department);
-        return response(newDepartment);
+        return Header.OK(response(newDepartment));
     }
 
     @Override
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -61,6 +69,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 })
                 .map(department -> baseRepository.save(department))
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -74,7 +83,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private Header<DepartmentApiResponse> response(Department department) {
+    private DepartmentApiResponse response(Department department) {
         DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())
@@ -90,6 +99,17 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .noticeId(department.getNotice().getId())
                 .build();
 
-        return Header.OK(departmentApiResponse);
+        return departmentApiResponse;
+    }
+
+    @Override
+    public Header<List<DepartmentApiResponse>> search(Pageable pageable) {
+        Page<Department> departments = baseRepository.findAll(pageable);
+
+        List<DepartmentApiResponse> departmentApiResponseList = departments.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(departmentApiResponseList);
     }
 }

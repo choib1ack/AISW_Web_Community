@@ -7,9 +7,13 @@ import com.aisw.community.model.network.request.AdminUserApiRequest;
 import com.aisw.community.model.network.response.AdminUserApiResponse;
 import com.aisw.community.repository.AdminUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, AdminUserApiResponse, AdminUser> {
@@ -28,7 +32,7 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
 
         AdminUser newAdminUser = baseRepository.save(adminUser);
 
-        return response(newAdminUser);
+        return Header.OK(response(newAdminUser));
     }
 
     @Override
@@ -36,6 +40,7 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
         Optional<AdminUser> optional = baseRepository.findById(id);
 
         return optional.map(adminUser -> response(adminUser))
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("No Data"));
     }
 
@@ -56,6 +61,7 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
             return adminUser;
         }).map(adminUser -> baseRepository.save(adminUser))
                 .map(adminUser -> response(adminUser))
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("No Data"));
     }
 
@@ -69,7 +75,7 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
         }).orElseGet(() -> Header.ERROR("No Data"));
     }
 
-    public Header<AdminUserApiResponse> response(AdminUser adminUser){
+    public AdminUserApiResponse response(AdminUser adminUser){
         AdminUserApiResponse adminUserApiResponse = AdminUserApiResponse.builder()
                 .name(adminUser.getName())
                 .email(adminUser.getEmail())
@@ -78,6 +84,17 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
                 .role(adminUser.getRole())
                 .build();
 
-        return Header.OK(adminUserApiResponse);
+        return adminUserApiResponse;
+    }
+
+    @Override
+    public Header<List<AdminUserApiResponse>> search(Pageable pageable) {
+        Page<AdminUser> adminUsers = baseRepository.findAll(pageable);
+
+        List<AdminUserApiResponse> adminUserApiResponseList = adminUsers.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(adminUserApiResponseList);
     }
 }

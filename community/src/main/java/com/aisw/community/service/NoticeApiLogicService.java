@@ -11,7 +11,12 @@ import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeApiResponse, Notice> {
@@ -28,13 +33,14 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
                 .build();
         Notice newNotice = baseRepository.save(notice);
 
-        return response(newNotice);
+        return Header.OK(response(newNotice));
     }
 
     @Override
     public Header<NoticeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -49,6 +55,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
                 })
                 .map(notice -> baseRepository.save(notice))
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -62,12 +69,23 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private Header<NoticeApiResponse> response(Notice notice) {
+    private NoticeApiResponse response(Notice notice) {
         NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
                 .id(notice.getId())
                 .userId(notice.getUser().getId())
                 .build();
 
-        return Header.OK(noticeApiResponse);
+        return noticeApiResponse;
+    }
+
+    @Override
+    public Header<List<NoticeApiResponse>> search(Pageable pageable) {
+        Page<Notice> notices = baseRepository.findAll(pageable);
+
+        List<NoticeApiResponse> noticeApiResponseList = notices.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(noticeApiResponseList);
     }
 }

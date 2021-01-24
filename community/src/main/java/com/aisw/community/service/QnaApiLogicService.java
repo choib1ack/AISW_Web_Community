@@ -3,17 +3,24 @@ package com.aisw.community.service;
 import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Free;
+import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.repository.BoardRepository;
 import com.aisw.community.repository.FreeRepository;
 import com.aisw.community.repository.QnaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiResponse, Qna> {
@@ -37,13 +44,14 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .build();
 
         Qna newQna = baseRepository.save(qna);
-        return response(newQna);
+        return Header.OK(response(newQna));
     }
 
     @Override
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -67,6 +75,7 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 })
                 .map(qna -> baseRepository.save(qna))
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -80,7 +89,7 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private Header<QnaApiResponse> response(Qna qna) {
+    private QnaApiResponse response(Qna qna) {
         QnaApiResponse qnaApiResponse = QnaApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
@@ -97,6 +106,17 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .boardId(qna.getBoard().getId())
                 .build();
 
-        return Header.OK(qnaApiResponse);
+        return qnaApiResponse;
+    }
+
+    @Override
+    public Header<List<QnaApiResponse>> search(Pageable pageable) {
+        Page<Qna> qnas = baseRepository.findAll(pageable);
+
+        List<QnaApiResponse> qnaApiResponseList = qnas.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(qnaApiResponseList);
     }
 }
