@@ -1,15 +1,9 @@
 package com.aisw.community.service;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.University;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.UserApiRequest;
-import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.model.network.response.UserApiResponse;
-import com.aisw.community.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -118,10 +112,10 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .phoneNumber(user.getPhoneNumber())
                 .grade(user.getGrade())
                 .studentId(user.getStudentId())
-//                .createdAt(user.getCreatedAt())
-//                .createdBy(user.getCreatedBy())
-//                .updatedAt(user.getUpdatedAt())
-//                .updatedBy(user.getUpdatedBy())
+                .createdAt(user.getCreatedAt())
+                .createdBy(user.getCreatedBy())
+                .updatedAt(user.getUpdatedAt())
+                .updatedBy(user.getUpdatedBy())
                 .level(user.getLevel())
                 .job(user.getJob())
                 .gender(user.getGender())

@@ -81,6 +81,10 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
                 .email(adminUser.getEmail())
                 .password(adminUser.getPassword())
                 .phoneNumber(adminUser.getPhoneNumber())
+                .createdAt(adminUser.getCreatedAt())
+                .createdBy(adminUser.getCreatedBy())
+                .updatedAt(adminUser.getUpdatedAt())
+                .updatedBy(adminUser.getUpdatedBy())
                 .role(adminUser.getRole())
                 .build();
 
