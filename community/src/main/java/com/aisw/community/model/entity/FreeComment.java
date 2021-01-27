@@ -4,13 +4,10 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -18,28 +15,15 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board", "qnaCommentList"})
+@ToString(exclude = {"free"})
 @EntityListeners(AuditingEntityListener.class)
-public class Qna {
+public class FreeComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
-
     private String content;
-
-    private String attachmentFile;
-
-    private Long views;
-
-    private Long likes;
-
-    private String subject;
-    
-    // 질문게시판 1
-    private Long level;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -47,15 +31,10 @@ public class Qna {
     @CreatedBy
     private String createdBy;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private Long isAnonymous;
 
-    @LastModifiedBy
-    private String updatedBy;
+    private Long likes;
 
     @ManyToOne
-    private Board board; // board id
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "qna")
-    private List<QnaComment> qnaCommentList;
+    private Free free;
 }

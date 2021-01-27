@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board"})
+@ToString(exclude = {"board", "freeCommentList"})
 @EntityListeners(AuditingEntityListener.class)
 public class Free {
 
@@ -52,4 +53,7 @@ public class Free {
 
     @ManyToOne
     private Board board; // board id
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "free")
+    private List<FreeComment> freeCommentList;
 }
