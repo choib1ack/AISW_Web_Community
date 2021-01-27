@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e16d2a0d-e20b-4bec-8f89-faaf0bfcf22f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+    <list default="true" id="aa2b415b-42a6-4ba6-afb4-76f4a35e6edb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/web-community/.idea/workspace.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -10,9 +10,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectId" id="1neNApcr9paRm8UVCC5TEUF0jPP" />
+  <component name="ProjectId" id="1neN0itzpP2JVK7Jtxy7EBF53XW" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -20,26 +20,21 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="TERMINAL_CUSTOM_COMMANDS_GOT_IT" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="nodejs_package_manager_path" value="yarn" />
+    <property name="nodejs_package_manager_path" value="npm" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e16d2a0d-e20b-4bec-8f89-faaf0bfcf22f" name="Default Changelist" comment="" />
-      <created>1611746455326</created>
+      <changelist id="aa2b415b-42a6-4ba6-afb4-76f4a35e6edb" name="Default Changelist" comment="" />
+      <created>1611746374910</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1611746455326</updated>
-      <workItem from="1611746459376" duration="372000" />
+      <updated>1611746374910</updated>
+      <workItem from="1611746381919" duration="17000" />
     </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="2" />
   </component>
 </project>

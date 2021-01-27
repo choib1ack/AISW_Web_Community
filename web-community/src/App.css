@@ -1,0 +1,55 @@
+.App {
+    text-align: center;
+}
+
+.blue-button{
+    padding: 7px 14px;
+    background-color: #6CBACB !important;
+    color: white !important;
+    border-radius: 3px;
+    transition: all ease 0.3s;
+}
+.blue-button:hover{
+    background-color: #508893 !important;
+    color:#FFFFFF !important;
+    transition: all ease 0.3s;
+}
+
+.col-align{
+    align-self: center;
+}
+.select-btn{
+    float:left;
+    margin: 0.5rem;
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.on{
+    background-color: #6CBACB !important;
+    color: #ffffff !important;
+}
+.off{
+    background-color: #F4F4F4 !important;
+    color: #B8B8B8 !important;
+}
+.off:hover{
+    background-color: #6CBACB !important;
+    color: #ffffff !important;
+}
+.page-link{
+    color:#6CBACB !important;
+}
+.page-item.active .page-link{
+    background-color: #6CBACB !important;
+    border-color: #6CBACB !important;
+    color: #ffffff !important;
+}
+@media (min-width: 1200px){
+    .container, .container-lg, .container-md, .container-sm, .container-xl {
+        max-width: 1000px !important;
+    }
+}
+body{
+    overflow-x: hidden;
+}
