@@ -1,5 +1,7 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.*;
+import com.aisw.community.model.enumclass.Department;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -19,6 +21,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
+@ToString(exclude = {"noticeList", "boardList"})
 public class User {
 
     @Id
@@ -33,7 +36,8 @@ public class User {
 
     private String phoneNumber;
 
-    private Integer grade;
+    @Enumerated(EnumType.STRING)
+    private Grade grade;
 
     private Integer studentId;
 
@@ -50,23 +54,27 @@ public class User {
     private String updatedBy;
 
     // 가입하지 않으면 0, 재학생 1, 학생회 2, 직원(조교, 교수) 3, 관리자 4
-    private Integer level;
+    @Enumerated(EnumType.STRING)
+    private Level level;
 
-    private String job;
+    @Enumerated(EnumType.STRING)
+    private Job job;
 
-    private Integer gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
-    private String university;
+    @Enumerated(EnumType.STRING)
+    private Campus university;
 
-    private String college;
+    @Enumerated(EnumType.STRING)
+    private College college;
 
-    private String department;
+    @Enumerated(EnumType.STRING)
+    private Department department;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Notice> noticeList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Board> boardList;
-
-    // todo user table과 관련된 table 연관관계 설정
 }

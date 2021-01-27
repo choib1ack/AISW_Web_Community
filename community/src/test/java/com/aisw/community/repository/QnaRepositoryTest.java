@@ -22,7 +22,6 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
         String title = "test";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        Long status = 2L;
         Long views = 0L;
         String createdBy = "tester";
         LocalDateTime createdAt = LocalDateTime.now();
@@ -34,7 +33,6 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
                 .title(title)
                 .content(content)
                 .attachmentFile(attachmentFile)
-                .status(status)
                 .views(views)
                 .createdBy(createdBy)
                 .createdAt(createdAt)

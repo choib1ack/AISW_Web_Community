@@ -1,6 +1,14 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.Campus;
 import lombok.*;
+import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Accessors(chain = true)
 @ToString(exclude = {"notice"})
+@EntityListeners(AuditingEntityListener.class)
 public class University {
 
     @Id
@@ -23,24 +33,28 @@ public class University {
 
     private String attachmentFile;
 
-    // 긴급0, 상단고정1, 일반2
-    private Long status;
+    @Enumerated(EnumType.STRING)
+    private BulletinStatus status;
 
     private Long views;
 
-    private String createdBy;
-
+    @CreatedDate
     private LocalDateTime createdAt;
 
-    private String updatedBy;
+    @CreatedBy
+    private String createdBy;
 
+    @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @LastModifiedBy
+    private String updatedBy;
 
     // 학교 공지 0
     private Long level;
 
-    // 공통 0, 글로벌1,  메디컬2
-    private Long campus;
+    @Enumerated(EnumType.STRING)
+    private Campus campus;
 
     @ManyToOne
     private Notice notice; // notice id

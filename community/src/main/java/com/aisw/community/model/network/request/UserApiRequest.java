@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.request;
 
+import com.aisw.community.model.enumclass.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,31 +28,27 @@ public class UserApiRequest {
 
     private String phoneNumber;
 
-    private Integer grade;
+    private Grade grade;
 
     private Integer studentId;
 
-    @CreatedDate
     private LocalDateTime createdAt;
 
-    @CreatedBy
     private String createdBy;
 
-    @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @LastModifiedBy
     private String updatedBy;
 
-    private Integer level;
+    private Level level;
 
-    private String job;
+    private Job job;
 
-    private Integer gender;
+    private Gender gender;
 
-    private String university;
+    private Campus university;
 
-    private String college;
+    private College college;
 
-    private String department;
+    private Department department;
 }

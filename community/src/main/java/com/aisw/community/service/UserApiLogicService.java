@@ -1,22 +1,19 @@
 package com.aisw.community.service;
 
-import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.UserApiRequest;
 import com.aisw.community.model.network.response.UserApiResponse;
-import com.aisw.community.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class UserApiLogicService implements CrudInterface<UserApiRequest, UserApiResponse> {
-
-    @Autowired
-    private UserRepository userRepository;
-
+public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
 
     // 1. request data
     // 2. user create
@@ -35,10 +32,6 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 .phoneNumber(userApiRequest.getPhoneNumber())
                 .grade(userApiRequest.getGrade())
                 .studentId(userApiRequest.getStudentId())
-                .createdAt(userApiRequest.getCreatedAt())
-                .createdBy(userApiRequest.getCreatedBy())
-                .updatedAt(userApiRequest.getUpdatedAt())
-                .updatedBy(userApiRequest.getUpdatedBy())
                 .level(userApiRequest.getLevel())
                 .job(userApiRequest.getJob())
                 .gender(userApiRequest.getGender())
@@ -47,20 +40,21 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 .department(userApiRequest.getDepartment())
                 .build();
 
-        User newUser = userRepository.save(user);
+        User newUser = baseRepository.save(user);
 
         // 3. created user -> userApiResponse return : public Header<UserApiResponse> response(User user){}
-        return response(newUser);
+        return Header.OK(response(newUser));
     }
 
     @Override
     public Header<UserApiResponse> read(Long id) {
         // id -> repository getOne, getById
-        Optional<User> optional = userRepository.findById(id);
+        Optional<User> optional = baseRepository.findById(id);
 
         // user -> userApiResponse return
         return optional
                 .map(user -> response(user))
+                .map(Header::OK)
                 .orElseGet(
                         () -> Header.ERROR("No Data")
                 );
@@ -72,7 +66,7 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
         UserApiRequest userApiRequest = request.getData();
 
         // 2. id -> user data find
-        Optional<User> optional = userRepository.findById(userApiRequest.getId());
+        Optional<User> optional = baseRepository.findById(userApiRequest.getId());
 
         return optional.map(user ->{
             // 3. data -> update
@@ -83,10 +77,6 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                     .setPhoneNumber(userApiRequest.getPhoneNumber())
                     .setGrade(userApiRequest.getGrade())
                     .setStudentId(userApiRequest.getStudentId())
-                    .setCreatedAt(userApiRequest.getCreatedAt())
-                    .setCreatedBy(userApiRequest.getCreatedBy())
-                    .setUpdatedAt(userApiRequest.getUpdatedAt())
-                    .setUpdatedBy(userApiRequest.getUpdatedBy())
                     .setLevel(userApiRequest.getLevel())
                     .setJob(userApiRequest.getJob())
                     .setGender(userApiRequest.getGender())
@@ -94,25 +84,26 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                     .setCollege(userApiRequest.getCollege())
                     .setDepartment(userApiRequest.getDepartment());
             return user;
-        }).map(user -> userRepository.save(user))
+        }).map(user -> baseRepository.save(user))
                 .map(user -> response(user))
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("No Data"));
     }
 
     @Override
     public Header delete(Long id) {
         // 1. id -> repository -> user
-        Optional<User> optional = userRepository.findById(id);
+        Optional<User> optional = baseRepository.findById(id);
 
         // 2. repository -> delete
         // 3. response return
         return optional.map(user -> {
-            userRepository.delete(user);
+            baseRepository.delete(user);
             return Header.OK();
         }).orElseGet(() -> Header.ERROR("No Data"));
     }
 
-    private Header<UserApiResponse> response(User user){
+    private UserApiResponse response(User user){
         // user -> userApiResponse return
         UserApiResponse userApiResponse = UserApiResponse.builder()
                 .name(user.getName())
@@ -121,10 +112,10 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 .phoneNumber(user.getPhoneNumber())
                 .grade(user.getGrade())
                 .studentId(user.getStudentId())
-//                .createdAt(user.getCreatedAt())
-//                .createdBy(user.getCreatedBy())
-//                .updatedAt(user.getUpdatedAt())
-//                .updatedBy(user.getUpdatedBy())
+                .createdAt(user.getCreatedAt())
+                .createdBy(user.getCreatedBy())
+                .updatedAt(user.getUpdatedAt())
+                .updatedBy(user.getUpdatedBy())
                 .level(user.getLevel())
                 .job(user.getJob())
                 .gender(user.getGender())
@@ -134,6 +125,17 @@ public class UserApiLogicService implements CrudInterface<UserApiRequest, UserAp
                 .build();
 
         // Header + data
-        return Header.OK(userApiResponse);
+        return userApiResponse;
+    }
+
+    @Override
+    public Header<List<UserApiResponse>> search(Pageable pageable) {
+        Page<User> users = baseRepository.findAll(pageable);
+
+        List<UserApiResponse> userApiResponseList = users.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(userApiResponseList);
     }
 }
