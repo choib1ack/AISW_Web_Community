@@ -12,6 +12,7 @@ import DeptInfo from "./components/DeptInfo";
 import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
 import NewBoard from "./components/Board/NewBoard";
+import Join from "./components/Join";
 
 function App() {
     return (
@@ -29,6 +30,7 @@ function App() {
                         <Route path="/jobInfo" component={JobInfo}/>
                         <Route path="/contestInfo" component={ContestInfo}/>
                         <Route path="/newBoard" component={NewBoard}/>
+                        <Route path="/join" component={Join}/>
                     </Switch>
                 </main>
 
