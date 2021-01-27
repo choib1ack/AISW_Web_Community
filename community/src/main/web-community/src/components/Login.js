@@ -8,7 +8,7 @@ export default function Login() {
     return (
         <Container className="Login">
             <h3 className="font-weight-bold mb-5">
-                로그인 / 회원가입
+                로그인
             </h3>
             <h6 className="mb-4" style={{color: '#D4D4D4'}}>
                 가천대학교 AI&소프트웨어학부에 오신 걸 환영합니다.
