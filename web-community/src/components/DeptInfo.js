@@ -17,6 +17,9 @@ function DeptInfo() {
         <div className="DeptInfo">
             <Container >
 
+                <Title text='자주 묻는 질문' type='1'/>
+                <FAQ/>
+
                 <Title text='교육과정' type='1'/>
                 <Title text='AI 전공' type='2'/>
                 <img src = {AICur} style={{width:'80%'}}/>
@@ -55,8 +58,7 @@ function DeptInfo() {
                     - 산학과제 수행 (졸업작품 이수를 위해 의무적으로 1회 이상 수행해야 함.)<br/>
                 </p>
 
-                <Title text='자주 묻는 질문' type='1'/>
-                <FAQ/>
+
             </Container>
         </div>
     );
