@@ -58,9 +58,11 @@ export default function Menu() {
                                 로그인
                             </button>
                         </Link>
-                        <button className="Menu-button blue-button">
-                            회원가입
-                        </button>
+                        <Link to="/join">
+                            <button className="Menu-button blue-button">
+                                회원가입
+                            </button>
+                        </Link>
                     </Col>
                 </Row>
             </Grid>
