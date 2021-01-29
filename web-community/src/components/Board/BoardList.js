@@ -12,15 +12,28 @@ import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import {useHistory} from "react-router-dom";
+import axios from "axios";
+import SelectButton from "../SelectButton";
 
 function BoardList({match}) {
     let history = useHistory();
     const [category, setCategory] = useState(0);
 
-    let lists;
+    let lists; // 글 리스트
 
     function handleClick() {
         history.push("/newBoard");
+    }
+    const request = async (category, page) => {
+        setCategory(category);
+        let url = "/board"
+        switch (category) {
+            case 1: url+="/free"; break;
+            case 2: url+="/qna"; break;
+        }
+        url+="?page="+page;
+        const response = await axios.get(url);
+        console.log(response.data);
     }
 
     return (
@@ -31,15 +44,15 @@ function BoardList({match}) {
                     <Col lg={6} md={8} sm={12}>
                         <SelectButton
                             id='0' title='전체' active={category}
-                            onClick={()=>setCategory(0)}
+                            onClick={()=>request(0, 1)}
                         />
                         <SelectButton
                             id='1' title='자유게시판' active={category}
-                            onClick={()=>setCategory(1)}
+                            onClick={()=>request(1, 1)}
                             />
                         <SelectButton
                             id='2' title='과목별게시판' active={category}
-                            onClick={()=>setCategory(2)}
+                            onClick={()=>request(2, 1)}
                         />
                     </Col>
                     <Col lg={6} md={4} sm={12}>
@@ -77,6 +90,8 @@ function BoardList({match}) {
 
 // 게시판 카테고리에 맞는 리스트를 만들어주는 함수
 // 0: 전체, 1: 자유게시판, 2: 과목별게시판
+// 근데 생각해보니 어짜피 카테고리별로 데이터가 넘어올거니까 굳이 구분안해줘도 될듯...?
+// 일단 테스트 데이터로 보류
 function makeList(match, category) {
     // test data
     let data = [
@@ -174,26 +189,4 @@ function makeList(match, category) {
     }
 
     return lists;
-}
-
-function SelectButton(props) {
-    let active;
-    if(props.active == props.id){
-        active = true;
-    }else{
-        active = false;
-    }
-
-    let btnStyle = {
-        float: 'left',
-        margin: '0.5rem',
-        border: '0',
-        outline: 'none',
-        boxShadow: 'none',
-        backgroundColor: active ? '#6CBACB' : '#F4F4F4',
-        color: active ? '#ffffff' : '#B8B8B8'
-    }
-    return (
-        <Button style={btnStyle} onClick={props.onClick}>{props.title}</Button>
-    );
 }
