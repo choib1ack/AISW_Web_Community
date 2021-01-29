@@ -148,7 +148,7 @@ export default function BoardList({match}) {
     );
 }
 
-function SelectButton(props) {
+export function SelectButton(props) {
     let btnStyle = {
         float: 'left',
         margin: '0.5rem',
