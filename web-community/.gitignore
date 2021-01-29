@@ -30,3 +30,4 @@ yarn-error.log*
 .cache
 
 package-lock.json
+.idea/workspace.xml
