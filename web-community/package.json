@@ -44,5 +44,7 @@
   },
   "devDependencies": {
     "semantic-ui-react": "2.0.2"
-  }
+  },
+  "proxy": "http://localhost:8080"
+
 }
