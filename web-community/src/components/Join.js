@@ -1,14 +1,49 @@
 import Form from "react-bootstrap/Form";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import './Join.css';
 import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
-import {SelectButton} from "./Board/BoardList";
 import classNames from "classnames";
+import {useForm} from "react-hook-form";
+import axios from 'axios';
 
 export default function Join({match}) {
+    const [agree, setAgree] = useState(false);
+    const {register, handleSubmit, watch, errors, setValue} = useForm();
+
+    async function test(data) {
+        // try {
+        //     let res = await axios.get('http://localhost:8080/user')
+        //     console.log(res);
+        // } catch (e) {
+        //     console.log(e.response) // undefined
+        // }
+
+        await axios.post("http://localhost:8080/user", data,
+            {
+                headers: {
+                    "Content-Type": `application/json`
+                }
+            }
+        ).then((res) => {
+            console.log(res)
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log(errorObject);
+        })
+    }
+
+    const onSubmit = data => {
+        if (agree) {
+            console.log(data);
+            test(data);
+        } else {
+            console.log("동의해주세요.");
+        }
+    }
+
     return (
         <Container className="p-5">
             <h3 className="font-weight-bold mb-5">
@@ -18,20 +53,23 @@ export default function Join({match}) {
             <Row>
                 <Col/>
                 <Col sm={12} md={10} lg={8}>
-                    <Form className="text-left">
-                        <Form.Group controlId="formGridEmail">
+                    <Form onSubmit={handleSubmit(onSubmit)} className="text-left">
+                        <Form.Group>
                             <Form.Label>이메일</Form.Label>
-                            <Form.Control type="email" placeholder="Enter email"/>
+                            <Form.Control required type="email" placeholder="E-mail"
+                                          name="email" ref={register}/>
                         </Form.Group>
-                        <Form.Group controlId="formGridPassword">
+                        <Form.Group>
                             <Form.Label>비밀번호</Form.Label>
-                            <Form.Control type="password" placeholder="Password"/>
+                            <Form.Control required type="password" placeholder="Password"
+                                          name="password" ref={register}/>
                         </Form.Group>
 
                         <Form.Row>
-                            <Form.Group sm={9} as={Col} controlId="formGridAddress1">
+                            <Form.Group sm={9} as={Col}>
                                 <Form.Label>이름</Form.Label>
-                                <Form.Control placeholder="ex) 홍길동"/>
+                                <Form.Control required type="text" placeholder="ex) 홍길동"
+                                              name="name" ref={register}/>
                             </Form.Group>
 
                             <Form.Group as={Col} style={{alignSelf: 'center'}}>
@@ -39,75 +77,83 @@ export default function Join({match}) {
                                 <Form.Row>
                                     <Col style={{textAlign: 'center'}}>
                                         <Form.Check
+                                            required
                                             type="radio"
                                             label="남"
                                             name="formHorizontalRadios"
-                                            id="formHorizontalRadios1"
+                                            ref={register({name: 'gender', value: 1})}
                                         />
                                     </Col>
                                     <Col>
                                         <Form.Check
+                                            required
                                             type="radio"
                                             label="여"
                                             name="formHorizontalRadios"
-                                            id="formHorizontalRadios2"
+                                            ref={register({name: 'gender', value: 2})}
                                         />
                                     </Col>
                                 </Form.Row>
                             </Form.Group>
                         </Form.Row>
 
-                        <Form.Group controlId="formGridAddress2">
+                        <Form.Group>
                             <Form.Label>전화번호</Form.Label>
-                            <Form.Control placeholder="ex) 010-0000-0000"/>
+                            <Form.Control required type="text" placeholder="ex) 010-0000-0000"
+                                          name="phone_number" ref={register}/>
                         </Form.Group>
 
                         <Form.Row>
-                            <Form.Group as={Col} controlId="formGridState">
+                            <Form.Group as={Col}>
                                 <Form.Label>직업</Form.Label>
-                                <Form.Control as="select">
-                                    <option>재학생</option>
-                                    <option>졸업생</option>
-                                    <option>학생회</option>
-                                    <option>직원</option>
+                                <Form.Control as="select" name="job" ref={register}>
+                                    <option value="재학생">재학생</option>
+                                    <option value="졸업생">졸업생</option>
+                                    <option value="학생회">학생회</option>
+                                    <option value="직원">직원</option>
                                 </Form.Control>
                             </Form.Group>
 
-                            <Form.Group as={Col} controlId="formGridZip">
+                            <Form.Group as={Col}>
                                 <Form.Label>학번</Form.Label>
-                                <Form.Control placeholder="ex) 201533662"/>
+                                <Form.Control required type="text" placeholder="ex) 201533662"
+                                              name="student_id" ref={register}/>
                             </Form.Group>
 
                             <Form.Group as={Col}>
                                 <Form.Label>학년</Form.Label>
-                                <Form.Control as="select" default="해당없음">
-                                    <option>해당없음</option>
-                                    <option>1학년</option>
-                                    <option>2학년</option>
-                                    <option>3학년</option>
-                                    <option>4학년</option>
+                                <Form.Control as="select" default="해당없음"
+                                              name="grade" ref={register}>
+                                    <option value="">해당없음</option>
+                                    <option value={1}>1학년</option>
+                                    <option value={2}>2학년</option>
+                                    <option value={3}>3학년</option>
+                                    <option value={4}>4학년</option>
                                 </Form.Control>
                             </Form.Group>
                         </Form.Row>
 
                         <Form.Row>
-                            <Form.Group as={Col} controlId="formGridZip">
+                            <Form.Group as={Col}>
                                 <Form.Label>단과대학</Form.Label>
-                                <Form.Control placeholder="ex) IT융합대학"/>
+                                <Form.Control required type="text" placeholder="ex) IT융합대학"
+                                              name="college" ref={register}/>
                             </Form.Group>
-                            <Form.Group as={Col} controlId="formGridZip">
+                            <Form.Group as={Col}>
                                 <Form.Label>학과</Form.Label>
-                                <Form.Control placeholder="ex) 소프트웨어학과"/>
+                                <Form.Control required type="text" placeholder="ex) 소프트웨어학과"
+                                              name="department" ref={register}/>
                             </Form.Group>
                         </Form.Row>
 
-                        <Form.Group id="formGridCheckbox" style={{textAlign: 'right', marginTop: '50px'}}>
-                            <Form.Check type="checkbox" label="개인정보 수집에 동의합니다."/>
+                        <Form.Group style={{textAlign: 'right', marginTop: '50px'}}>
+                            <Form.Check type="checkbox" label="개인정보 수집에 동의합니다." onClick={() => setAgree(!agree)}/>
                         </Form.Group>
 
                         <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                             <Button className={classNames("select-btn", "off")} style={{width: '80px'}}>취소</Button>
-                            <Button className={classNames("select-btn", "on")} style={{width: '80px'}}>확인</Button>
+                            <Button className={classNames("select-btn", "on")} style={{width: '80px'}}
+                                    type="submit">확인</Button>
                         </div>
                     </Form>
                 </Col>
