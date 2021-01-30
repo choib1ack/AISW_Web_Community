@@ -48,13 +48,13 @@ function FAQ(props) {
         {Q: '트랙은 어떻게 선택하는건가요?', A: '3개이상 들으세요!'}
     ];
     let items = [];
-    for (let i = 0; i < Object.keys(data).length; i++) {
+    for (let i = 1; i < Object.keys(data).length+1; i++) {
         items.push(
             // <p key={i}>{data[i].Q}/{data[i].A}</p>
             <Card key={i} style={{border:'0px'}}>
-                <CustomToggle eventKey={i}>{data[i].Q}</CustomToggle>
+                <CustomToggle eventKey={i}>{data[i-1].Q}</CustomToggle>
                 <Accordion.Collapse eventKey={i}>
-                    <Card.Body style={{fontSize:'13px'}}>{data[i].A}</Card.Body>
+                    <Card.Body style={{fontSize:'13px'}}>{data[i-1].A}</Card.Body>
                 </Accordion.Collapse>
             </Card>
         );
@@ -63,7 +63,7 @@ function FAQ(props) {
         <div className='FAQ'>
             <Accordion style={{textAlign:'left'}}>
                 {/*<Card style={{border:'0px'}}>*/}
-                {/*    <CustomToggle eventKey="0">{data[1].Q}</CustomToggle>*/}
+                {/*    <CustomToggle eventKey="0">{data[0].Q}</CustomToggle>*/}
                 {/*    <Accordion.Collapse eventKey="0">*/}
                 {/*        <Card.Body style={{fontSize:'13px'}}>{data[0].A}</Card.Body>*/}
                 {/*    </Accordion.Collapse>*/}
