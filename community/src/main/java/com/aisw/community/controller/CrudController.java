@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Component
+@CrossOrigin("*")
 public abstract class CrudController<Req, Res, Entity> implements CrudInterface<Req, Res> {
 
     @Autowired(required = false)
