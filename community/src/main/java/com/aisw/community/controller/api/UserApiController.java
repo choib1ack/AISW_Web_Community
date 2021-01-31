@@ -27,7 +27,15 @@ public class UserApiController implements AuthService {
     @Override
     @PostMapping("/signup")
     public Header<UserApiResponse> signUpUser(@RequestBody Header<UserApiRequest> request) {
-        return authLogicService.signUpUser(request);
+        String email = request.getData().getEmail();
+        Integer studentId = request.getData().getStudentId();
+
+        if(!authLogicService.emailDoubleCheck(email))
+            return Header.ERROR("Email Already Exists");
+        else if(!authLogicService.sidDoubleCheck(studentId))
+            return Header.ERROR("Student Id Already Exists");
+        else
+            return authLogicService.signUpUser(request);
     }
 
     @Override

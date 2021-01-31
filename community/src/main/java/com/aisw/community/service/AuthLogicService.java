@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
@@ -45,6 +46,8 @@ public class AuthLogicService implements AuthService {
                 .role(userApiRequest.getRole())
                 .build();
 
+        System.out.println(user.getPassword());
+
         User newUser = userRepository.save(user);
 
         return Header.OK(response(newUser));
@@ -66,6 +69,24 @@ public class AuthLogicService implements AuthService {
             return Header.ERROR("Email Not Exists");
     }
 
+    public boolean emailDoubleCheck(String email){
+        Optional<User> optional = userRepository.findByEmail(email);
+
+        if(optional.isPresent())
+            return false;
+        else
+            return true;
+    }
+
+    public boolean sidDoubleCheck(Integer studentId){
+        Optional<User> optional = userRepository.findByStudentId(studentId);
+
+        if(optional.isPresent())
+            return false;
+        else
+            return true;
+
+    }
     public UserApiResponse loginCheck(User user, String password){
         String pw = user.getPassword();
 //        pw = encoder.encode(pw);
