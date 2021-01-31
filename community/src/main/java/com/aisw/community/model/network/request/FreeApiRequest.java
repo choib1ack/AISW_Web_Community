@@ -1,9 +1,13 @@
 package com.aisw.community.model.network.request;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Data
 @AllArgsConstructor
@@ -19,6 +23,8 @@ public class FreeApiRequest {
 
     private String attachmentFile;
 
+    private BulletinStatus status;
+
     private Long views;
 
     private Long likes;
@@ -26,5 +32,8 @@ public class FreeApiRequest {
     // 학교 공지 0
     private Long level;
 
-    private Long boardId;
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
+
+    private Long userId;
 }

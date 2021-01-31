@@ -9,12 +9,74 @@ import Table from "react-bootstrap/Table";
 import photoImage from "../../icon/photo.svg";
 import fileImage from "../../icon/file.svg";
 import Pagination from "../PaginationCustom";
-import React from "react";
+import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import noticeData from "./notice-list.json";
+import axios from 'axios';
+import SelectButton from "../SelectButton";
 
 export default function NoticeList({match}) {
-    const list = noticeData.map(noticeData => {
+
+    const [category, setCategory] = useState(0);
+
+    let lists; // 글 리스트
+
+    const request = async (category, page) => {
+        setCategory(category);
+        let url = "/notice"
+        switch (category) {
+            case 1: url+="/university"; break;
+            case 2: url+="/department"; break;
+            case 3: url+="/council"; break;
+        }
+        url+="?page="+page;
+        const response = await axios.get(url);
+        console.log(response.data);
+    }
+
+    return (
+        <div className="Notice">
+            <Container>
+                <Title text='공지사항' type='1'/>
+                <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
+                    <Col lg={6} md={8} sm={12}>
+                        <SelectButton id='0' title='전체' active={category}
+                                      onClick={()=>request(0, 1)}/>
+                        <SelectButton id='1' title='학교 홈페이지' active={category}
+                                      onClick={()=>request(1, 1)}/>
+                        <SelectButton id='2' title='학과사무실' active={category}
+                                      onClick={()=>request(2, 1)}/>
+                        <SelectButton id='3' title='학생회' active={category}
+                                      onClick={()=>request(3, 1)}/>
+                    </Col>
+                    <Col lg={6} md={4} sm={12}>
+                        <img src={searchImage} style={{float: "right", marginLeft: "10px", height: "25px"}}/>
+                        <input type="text" className={"search-box"} placeholder={'검색'}/>
+
+                    </Col>
+                </Row>
+                <Table>
+                    <thead>
+                    <tr>
+                        <th style={{width: "10%"}}>no</th>
+                        <th style={{width: "55%"}}>제목</th>
+                        <th style={{width: "10%"}}>작성자</th>
+                        <th style={{width: "10%"}}>등록일</th>
+                        <th style={{width: "10%"}}>조회</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {lists = makeList(match)}
+
+                    </tbody>
+                </Table>
+                <Pagination active={1}/>
+            </Container>
+        </div>
+    )
+}
+function makeList(match) {
+    const lists = noticeData.map(noticeData => {
         return (
             <tr>
                 <td>{noticeData.no ? noticeData.no : '공지'}</td>
@@ -29,122 +91,5 @@ export default function NoticeList({match}) {
             </tr>
         )
     });
-
-    return (
-        <div className="Notice">
-            <Container>
-                <Title text='공지사항' type='1'/>
-                <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
-                    <Col lg={6} md={8} sm={12}>
-                        <Button className={classNames("select-btn", "on")}>전체</Button>
-                        <Button className={classNames("select-btn", "off")}>학과사무실</Button>
-                        <Button className={classNames("select-btn", "off")}>학생회</Button>
-                        <Button className={classNames("select-btn", "off")}>학교 홈페이지</Button>
-                    </Col>
-                    <Col lg={6} md={4} sm={12}>
-                        <img src={searchImage} style={{float: "right", marginLeft: "10px", height: "25px"}}/>
-                        <input type="text" className={"search-box"} placeholder={'검색'}/>
-                        {/*style={{background:`url(${searchImage})`, backgroundRepeat:'no-repeat'}}>*/}
-
-                    </Col>
-                </Row>
-                {/*table 내 내용은 데이터에 맞게 가져오도록 처리 필요*/}
-                <Table>
-                    <thead>
-                    <tr>
-                        <th style={{width: "10%"}}>no</th>
-                        <th style={{width: "55%"}}>제목</th>
-                        <th style={{width: "10%"}}>작성자</th>
-                        <th style={{width: "10%"}}>등록일</th>
-                        <th style={{width: "10%"}}>조회</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {list}
-                    <tr>
-                        <td>10</td>
-                        <td>
-                            <Link to={`${match.url}/10`} style={{color: 'black'}}>
-                                [멀티캠퍼스] 코딩테스트 대회 안내 파일
-                            </Link>
-                        </td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>9</td>
-                        <td>AI·소프트웨어학부 플러스친구 안내
-                            <img src={photoImage} style={{marginLeft: '5px'}}/>
-                        </td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>산학과제 배정 공고</td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>7</td>
-                        <td>ICT학점연계프로젝트인턴십 사업 안내</td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>6</td>
-                        <td>21학번 새내기 단톡방 개설 안내</td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>5</td>
-                        <td>AI·소프트웨어학부 플러스친구 안내
-                            <img src={photoImage} style={{marginLeft: '5px'}}/>
-                        </td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>ICT학점연계프로젝트인턴십 사업 안내</td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>산학과제 배정 공고</td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>ICT학점연계프로젝트인턴십 사업 안내</td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>[멀티캠퍼스] 코딩테스트 대회 안내 파일
-                            <img src={fileImage} style={{marginLeft: '5px'}}/>
-                        </td>
-                        <td>양희림</td>
-                        <td>2021-01-16</td>
-                        <td>1</td>
-                    </tr>
-                    </tbody>
-                </Table>
-                <Pagination active={1}/>
-            </Container>
-        </div>
-    )
+    return lists;
 }

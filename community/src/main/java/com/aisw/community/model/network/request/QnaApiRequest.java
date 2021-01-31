@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.request;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,8 @@ public class QnaApiRequest {
 
     private String attachmentFile;
 
+    private BulletinStatus status;
+
     private Long views;
 
     private Long likes;
@@ -28,5 +31,8 @@ public class QnaApiRequest {
 
     private String subject;
 
-    private Long boardId;
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
+
+    private Long userId;
 }

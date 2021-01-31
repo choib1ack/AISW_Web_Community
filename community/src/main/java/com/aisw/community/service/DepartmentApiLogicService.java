@@ -6,8 +6,10 @@ import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
+import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,17 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     @Autowired
     private NoticeRepository noticeRepository;
 
+    @Autowired
+    private NoticeApiLogicService noticeApiLogicService;
+
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
+
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
+                .userId(request.getData().getUserId())
+                .build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
@@ -35,7 +45,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .status(departmentApiRequest.getStatus())
                 .views(departmentApiRequest.getViews())
                 .level(departmentApiRequest.getLevel())
-                .notice(noticeRepository.getOne(departmentApiRequest.getNoticeId()))
+                .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
         Department newDepartment = baseRepository.save(department);
@@ -62,8 +72,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                             .setAttachmentFile(departmentApiRequest.getAttachmentFile())
                             .setStatus(departmentApiRequest.getStatus())
                             .setViews(departmentApiRequest.getViews())
-                            .setLevel(departmentApiRequest.getLevel())
-                            .setNotice(noticeRepository.getOne(departmentApiRequest.getNoticeId()));
+                            .setLevel(departmentApiRequest.getLevel());
 
                     return department;
                 })
@@ -77,6 +86,12 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     public Header delete(Long id) {
         return baseRepository.findById(id)
                 .map(department -> {
+                    noticeRepository.findById(department.getNotice().getId())
+                            .map(notice -> {
+                                noticeRepository.delete(notice);
+                                return Header.OK();
+                            })
+                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                     baseRepository.delete(department);
                     return Header.OK();
                 })
