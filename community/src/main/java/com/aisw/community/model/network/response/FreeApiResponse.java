@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.response;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,8 @@ public class FreeApiResponse {
     private String content;
 
     private String attachmentFile;
+
+    private BulletinStatus status;
 
     private Long views;
 

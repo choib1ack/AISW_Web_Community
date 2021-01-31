@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.request;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,8 @@ public class QnaApiRequest {
     private String content;
 
     private String attachmentFile;
+
+    private BulletinStatus status;
 
     private Long views;
 

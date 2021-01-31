@@ -1,9 +1,13 @@
 package com.aisw.community.model.network.request;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +22,8 @@ public class FreeApiRequest {
     private String content;
 
     private String attachmentFile;
+
+    private BulletinStatus status;
 
     private Long views;
 

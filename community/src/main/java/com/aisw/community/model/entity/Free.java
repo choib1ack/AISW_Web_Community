@@ -1,5 +1,6 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -31,6 +32,9 @@ public class Free {
     private String content;
 
     private String attachmentFile;
+
+    @Enumerated(EnumType.STRING)
+    private BulletinStatus status;
 
     private Long views;
 
