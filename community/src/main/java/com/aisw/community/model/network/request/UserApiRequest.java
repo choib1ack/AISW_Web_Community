@@ -51,4 +51,6 @@ public class UserApiRequest {
     private College college;
 
     private Department department;
+
+    private UserRole role;
 }
