@@ -39,6 +39,9 @@ public class Free {
     // 자유게시판 0
     private Long level;
 
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
