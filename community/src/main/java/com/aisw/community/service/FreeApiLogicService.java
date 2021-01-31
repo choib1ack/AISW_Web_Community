@@ -5,8 +5,10 @@ import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.request.FreeApiRequest;
+import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
 import com.aisw.community.repository.BoardRepository;
@@ -27,9 +29,17 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
     @Autowired
     private BoardRepository boardRepository;
 
+    @Autowired
+    private BoardApiLogicService boardApiLogicService;
+
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
+
+        BoardApiRequest boardApiRequest = BoardApiRequest.builder()
+                .userId(request.getData().getUserId())
+                .build();
+        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(boardApiRequest)).getData();
 
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
@@ -37,8 +47,9 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .attachmentFile(freeApiRequest.getAttachmentFile())
                 .views(freeApiRequest.getViews())
                 .likes(freeApiRequest.getLikes())
+                .isAnonymous(freeApiRequest.getIsAnonymous())
                 .level(freeApiRequest.getLevel())
-                .board(boardRepository.getOne(freeApiRequest.getBoardId()))
+                .board(boardRepository.getOne(boardApiResponse.getId()))
                 .build();
 
         Free newFree = baseRepository.save(free);
@@ -66,7 +77,7 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                             .setViews(freeApiRequest.getViews())
                             .setLevel(freeApiRequest.getLevel())
                             .setLikes(freeApiRequest.getLikes())
-                            .setBoard(boardRepository.getOne(freeApiRequest.getBoardId()));
+                            .setIsAnonymous(freeApiRequest.getIsAnonymous());
 
                     return free;
                 })
@@ -80,6 +91,12 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
     public Header delete(Long id) {
         return baseRepository.findById(id)
                 .map(free -> {
+                    boardRepository.findById(free.getBoard().getId())
+                            .map(board -> {
+                                boardRepository.delete(board);
+                                return Header.OK();
+                            })
+                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                     baseRepository.delete(free);
                     return Header.OK();
                 })
@@ -99,6 +116,7 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .views(free.getViews())
                 .level(free.getLevel())
                 .likes(free.getLikes())
+                .isAnonymous(free.getIsAnonymous())
                 .boardId(free.getBoard().getId())
                 .build();
 

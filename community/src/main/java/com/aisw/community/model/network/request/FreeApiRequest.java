@@ -26,5 +26,8 @@ public class FreeApiRequest {
     // 학교 공지 0
     private Long level;
 
-    private Long boardId;
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
+
+    private Long userId;
 }
