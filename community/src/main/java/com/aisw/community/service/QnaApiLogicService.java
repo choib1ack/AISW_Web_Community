@@ -6,8 +6,11 @@ import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.FreeApiRequest;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.QnaApiRequest;
+import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.QnaApiResponse;
@@ -28,9 +31,17 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
     @Autowired
     private BoardRepository boardRepository;
 
+    @Autowired
+    private BoardApiLogicService boardApiLogicService;
+
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
+
+        BoardApiRequest boardApiRequest = BoardApiRequest.builder()
+                .userId(request.getData().getUserId())
+                .build();
+        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(boardApiRequest)).getData();
 
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
@@ -39,8 +50,9 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .views(qnaApiRequest.getViews())
                 .likes(qnaApiRequest.getLikes())
                 .subject(qnaApiRequest.getSubject())
+                .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .level(qnaApiRequest.getLevel())
-                .board(boardRepository.getOne(qnaApiRequest.getBoardId()))
+                .board(boardRepository.getOne(boardApiResponse.getId()))
                 .build();
 
         Qna newQna = baseRepository.save(qna);
@@ -68,8 +80,8 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                             .setViews(qnaApiRequest.getViews())
                             .setLevel(qnaApiRequest.getLevel())
                             .setLikes(qnaApiRequest.getLikes())
-                            .setSubject(qnaApiRequest.getSubject())
-                            .setBoard(boardRepository.getOne(qnaApiRequest.getBoardId()));
+                            .setIsAnonymous(qnaApiRequest.getIsAnonymous())
+                            .setSubject(qnaApiRequest.getSubject());
 
                     return qna;
                 })
@@ -83,6 +95,12 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
     public Header delete(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> {
+                    boardRepository.findById(qna.getBoard().getId())
+                            .map(board -> {
+                                boardRepository.delete(board);
+                                return Header.OK();
+                            })
+                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                     baseRepository.delete(qna);
                     return Header.OK();
                 })
@@ -102,6 +120,7 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .views(qna.getViews())
                 .level(qna.getLevel())
                 .likes(qna.getLikes())
+                .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
                 .boardId(qna.getBoard().getId())
                 .build();
