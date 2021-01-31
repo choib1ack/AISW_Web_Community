@@ -5,8 +5,10 @@ import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.CouncilApiRequest;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.CouncilApiResponse;
+import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.CouncilRepository;
 import com.aisw.community.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,17 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     @Autowired
     private NoticeRepository noticeRepository;
 
+    @Autowired
+    private NoticeApiLogicService noticeApiLogicService;
+
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
+
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
+                .userId(request.getData().getUserId())
+                .build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
@@ -34,7 +44,7 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 .status(councilApiRequest.getStatus())
                 .views(councilApiRequest.getViews())
                 .level(councilApiRequest.getLevel())
-                .notice(noticeRepository.getOne(councilApiRequest.getNoticeId()))
+                .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
         Council newCouncil = baseRepository.save(council);
@@ -61,8 +71,7 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                             .setAttachmentFile(councilApiRequest.getAttachmentFile())
                             .setStatus(councilApiRequest.getStatus())
                             .setViews(councilApiRequest.getViews())
-                            .setLevel(councilApiRequest.getLevel())
-                            .setNotice(noticeRepository.getOne(councilApiRequest.getNoticeId()));
+                            .setLevel(councilApiRequest.getLevel());
 
                     return council;
                 })
@@ -76,6 +85,12 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     public Header delete(Long id) {
         return baseRepository.findById(id)
                 .map(council -> {
+                    noticeRepository.findById(council.getNotice().getId())
+                            .map(notice -> {
+                                noticeRepository.delete(notice);
+                                return Header.OK();
+                            })
+                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                     baseRepository.delete(council);
                     return Header.OK();
                 })

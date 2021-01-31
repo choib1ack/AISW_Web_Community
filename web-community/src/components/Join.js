@@ -36,6 +36,20 @@ export default function Join({match}) {
     }
 
     const onSubmit = data => {
+        const object1 = { "name": "Test03",
+            "email": "Test02@gmail.com",
+            "password": "pppoop22",
+            "phone_number": "010-2222-2222",
+            "grade": "SENIOR",
+            "student_id": 202022223,
+            "level": "NOT_SUBSCRIBED",
+            "job": "STUDENT",
+            "gender": "MALE",
+            "university": "GLOBAL",
+            "college": "IT_CONVERGENCE",
+            "department": "SOFTWARE"
+        }
+        data = object1;
         if (agree) {
             console.log(data);
             test(data);

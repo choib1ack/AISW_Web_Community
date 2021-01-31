@@ -1,5 +1,6 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -32,11 +33,17 @@ public class Qna {
 
     private String attachmentFile;
 
+    @Enumerated(EnumType.STRING)
+    private BulletinStatus status;
+
     private Long views;
 
     private Long likes;
 
     private String subject;
+
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
     
     // 질문게시판 1
     private Long level;

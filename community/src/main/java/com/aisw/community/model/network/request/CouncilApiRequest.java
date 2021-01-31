@@ -28,5 +28,5 @@ public class CouncilApiRequest {
     // 학교 공지 0
     private Long level;
 
-    private Long noticeId;
+    private Long userId;
 }
