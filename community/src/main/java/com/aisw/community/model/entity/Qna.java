@@ -37,6 +37,9 @@ public class Qna {
     private Long likes;
 
     private String subject;
+
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
     
     // 질문게시판 1
     private Long level;

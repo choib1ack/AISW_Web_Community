@@ -25,6 +25,9 @@ public class FreeApiResponse {
 
     private Long likes;
 
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
+
     private LocalDateTime createdAt;
 
     private String createdBy;
