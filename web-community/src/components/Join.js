@@ -21,33 +21,36 @@ export default function Join({match}) {
         //     console.log(e.response) // undefined
         // }
 
-        await axios.post("http://localhost:8080/user", data,
+        await axios.post("http://localhost:8080/user",
             {
                 headers: {
                     "Content-Type": `application/json`
-                }
+                },
+                data
             }
         ).then((res) => {
             console.log(res)
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러");
             console.log(errorObject);
         })
     }
 
     const onSubmit = data => {
-        const object1 = { "name": "Test03",
-            "email": "Test02@gmail.com",
-            "password": "pppoop22",
-            "phone_number": "010-2222-2222",
-            "grade": "SENIOR",
-            "student_id": 202022223,
-            "level": "NOT_SUBSCRIBED",
-            "job": "STUDENT",
-            "gender": "MALE",
-            "university": "GLOBAL",
-            "college": "IT_CONVERGENCE",
-            "department": "SOFTWARE"
+        const object1 = {
+            name: 'Test04',
+            email: 'Test04@gmail.com',
+            password: 'pppoop22',
+            phone_number: '010-2222-2222',
+            grade: 'SENIOR',
+            student_id: 202222230,
+            level: 'NOT_SUBSCRIBED',
+            job: 'STUDENT',
+            gender: 'MALE',
+            university: 'GLOBAL',
+            college: 'IT_CONVERGENCE',
+            department: 'SOFTWARE'
         }
         data = object1;
         if (agree) {
