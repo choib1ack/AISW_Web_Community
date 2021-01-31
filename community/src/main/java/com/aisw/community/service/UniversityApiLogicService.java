@@ -27,9 +27,17 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     @Autowired
     private NoticeRepository noticeRepository;
 
+    @Autowired
+    private NoticeApiLogicService noticeApiLogicService;
+
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
+
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
+                .userId(request.getData().getUserId())
+                .build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
@@ -39,7 +47,7 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 .views(universityApiRequest.getViews())
                 .level(universityApiRequest.getLevel())
                 .campus(universityApiRequest.getCampus())
-                .notice(noticeRepository.getOne(universityApiRequest.getNoticeId()))
+                .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
         University newUniversity = baseRepository.save(university);
@@ -67,8 +75,7 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                             .setStatus(universityApiRequest.getStatus())
                             .setViews(universityApiRequest.getViews())
                             .setLevel(universityApiRequest.getLevel())
-                            .setCampus(universityApiRequest.getCampus())
-                            .setNotice(noticeRepository.getOne(universityApiRequest.getNoticeId()));
+                            .setCampus(universityApiRequest.getCampus());
 
                     return university;
                 })
@@ -82,6 +89,12 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     public Header delete(Long id) {
         return baseRepository.findById(id)
                 .map(university -> {
+                    noticeRepository.findById(university.getNotice().getId())
+                            .map(notice -> {
+                                noticeRepository.delete(notice);
+                                return Header.OK();
+                            })
+                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                     baseRepository.delete(university);
                     return Header.OK();
                 })

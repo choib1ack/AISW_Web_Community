@@ -23,7 +23,8 @@ public class QnaCommentApiResponse {
 
     private String createdBy;
 
-    private Long isAnonymous;
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
 
     private Long likes;
 

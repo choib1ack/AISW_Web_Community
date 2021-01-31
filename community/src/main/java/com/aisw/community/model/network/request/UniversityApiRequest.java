@@ -38,5 +38,5 @@ public class UniversityApiRequest {
     // 공통 0, 글로벌1,  메디컬2
     private Campus campus;
 
-    private Long noticeId;
+    private Long userId;
 }
