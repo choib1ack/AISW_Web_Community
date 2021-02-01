@@ -20,6 +20,7 @@ export default function NoticeList({match}) {
     const [category, setCategory] = useState(0);
 
     let lists; // 글 리스트
+    let data;
 
     const request = async (category, page) => {
         setCategory(category);
@@ -32,6 +33,7 @@ export default function NoticeList({match}) {
         url+="?page="+page;
         const response = await axios.get(url);
         console.log(response.data);
+        lists = () => makeList(match, data);
     }
 
     return (
@@ -41,13 +43,13 @@ export default function NoticeList({match}) {
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
                         <SelectButton id='0' title='전체' active={category}
-                                      onClick={()=>request(0, 1)}/>
+                                      onClick={() => request(0, "1")}/>
                         <SelectButton id='1' title='학교 홈페이지' active={category}
-                                      onClick={()=>request(1, 1)}/>
+                                      onClick={() => request(1, "1")}/>
                         <SelectButton id='2' title='학과사무실' active={category}
-                                      onClick={()=>request(2, 1)}/>
+                                      onClick={() => request(2, "1")}/>
                         <SelectButton id='3' title='학생회' active={category}
-                                      onClick={()=>request(3, 1)}/>
+                                      onClick={() => request(3, "1")}/>
                     </Col>
                     <Col lg={6} md={4} sm={12}>
                         <img src={searchImage} style={{float: "right", marginLeft: "10px", height: "25px"}}/>
@@ -66,30 +68,45 @@ export default function NoticeList({match}) {
                     </tr>
                     </thead>
                     <tbody>
-                    {lists = makeList(match)}
+                    {lists = () => request(1, "1")}
 
                     </tbody>
                 </Table>
                 <Pagination active={1}/>
             </Container>
         </div>
-    )
+    );
 }
-function makeList(match) {
-    const lists = noticeData.map(noticeData => {
-        return (
-            <tr>
-                <td>{noticeData.no ? noticeData.no : '공지'}</td>
-                <td key={noticeData.title}>
-                    <Link to={`${match.url}/10`} style={{color: 'black'}}>
-                        {noticeData.title}
+
+function makeList(match, data) {
+    let noticeData = data;
+    let status = (status) =>{
+        switch (status) {
+            case 0:
+                return "긴급";
+            case 1:
+                return "상단 고정";
+            case 2:
+                return "일반";
+        }
+    }
+
+    let lists = [];
+    for (let i = 0; i < Object.keys(noticeData.data).length; i++) {
+        lists.push(
+            <tr key={noticeData.data[i].id}>
+                <td>{()=>status(noticeData.data[i].status)}</td>
+                <td>
+                    <Link to={`${match.url}/${noticeData.data[i].id}`} style={{color: 'black'}}>
+                        {noticeData.data[i].title}
                     </Link>
                 </td>
                 <td>가천대학교</td>
-                <td key={noticeData.date}>{noticeData.date}</td>
-                <td key={noticeData.file}>{noticeData.file ? 1 : 0}</td>
+                <td>{noticeData.data[i].created_at}</td>
+                <td>{noticeData.data[i].attachment_file != null ? 1 : 0}</td>
             </tr>
-        )
-    });
+        );
+    }
+
     return lists;
 }
