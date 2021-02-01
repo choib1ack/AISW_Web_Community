@@ -12,19 +12,16 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"user", "freeList", "qnaList"})
+@ToString(exclude = {"freeList", "qnaList"})
 public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private User user; // user id
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "board")
+    private Free free;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
-    private List<Free> freeList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
-    private List<Qna> qnaList;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "board")
+    private Qna qna;
 }

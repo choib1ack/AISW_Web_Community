@@ -23,9 +23,6 @@ import java.util.stream.Collectors;
 @Service
 public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeApiResponse, Notice> {
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Override
     public Header<NoticeApiResponse> create(Header<NoticeApiRequest> request) {
         NoticeApiRequest noticeApiRequest = request.getData();

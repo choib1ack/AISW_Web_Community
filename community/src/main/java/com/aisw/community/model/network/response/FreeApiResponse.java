@@ -42,5 +42,7 @@ public class FreeApiResponse {
     // 학교 공지 0
     private Long level;
 
+    private Long userId;
+
     private Long boardId;
 }

@@ -81,5 +81,8 @@ public class User {
     private List<Council> councilList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Board> boardList;
+    private List<Free> freeList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Qna> qnaList;
 }
