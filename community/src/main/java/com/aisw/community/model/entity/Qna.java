@@ -60,7 +60,7 @@ public class Qna {
     @LastModifiedBy
     private String updatedBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user; // user id
 
     @OneToOne

@@ -52,7 +52,7 @@ public class Department {
     // 학과 공지 1
     private Long level;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user; // user id
 
     @OneToOne
