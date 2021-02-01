@@ -56,7 +56,7 @@ public class University {
     @Enumerated(EnumType.STRING)
     private Campus campus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user; // user id
 
     @OneToOne
