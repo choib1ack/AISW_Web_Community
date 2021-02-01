@@ -4,27 +4,32 @@ import com.aisw.community.ifs.AuthService;
 import com.aisw.community.model.LoginParam;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.LoginApiRequest;
 import com.aisw.community.model.network.request.UserApiRequest;
-import com.aisw.community.model.network.response.LoginApiResponse;
 import com.aisw.community.model.network.response.UserApiResponse;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AuthLogicService implements AuthService {
+public class AuthLogicService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
 
-//    private PasswordEncoder encoder;
+    private PasswordEncoder encoder;
 
-    @Override
+//    @Override
     public Header<UserApiResponse> signUpUser(Header<UserApiRequest> request){
         // 1. request data
         UserApiRequest userApiRequest = request.getData();
@@ -53,15 +58,16 @@ public class AuthLogicService implements AuthService {
         return Header.OK(response(newUser));
     }
 
-    @Override
+//    @Override
     public Header<UserApiResponse> loginUser(Header<LoginParam> request) {
         String email = request.getData().getEmail();
         String password = request.getData().getPassword();
-//        password = encoder.encode(loginParam.getPassword());
+        password = encoder.encode(password);
         Optional<User> optional = userRepository.findByEmail(email);
 
         if(optional.isPresent()){
-            return optional.map(user -> loginCheck(user, password))
+            String finalPassword = password;
+            return optional.map(user -> loginCheck(user, finalPassword))
                     .map(Header::OK)
                     .orElseGet(() -> Header.ERROR("Wrong Password"));
         }
@@ -89,7 +95,7 @@ public class AuthLogicService implements AuthService {
     }
     public UserApiResponse loginCheck(User user, String password){
         String pw = user.getPassword();
-//        pw = encoder.encode(pw);
+        pw = encoder.encode(pw);
         if(pw.equals(password))
             return response(user);
         else
@@ -123,4 +129,17 @@ public class AuthLogicService implements AuthService {
         return userApiResponse;
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> optional = userRepository.findByEmail(email);
+
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+
+        authorities.add(new SimpleGrantedAuthority("STUDENT"));
+
+//        return new User(user);
+
+        return null;
+    }
 }

@@ -1,9 +1,7 @@
 package com.aisw.community.controller.api;
 
-import com.aisw.community.controller.CrudController;
 import com.aisw.community.ifs.AuthService;
 import com.aisw.community.model.LoginParam;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.UserApiRequest;
 import com.aisw.community.model.network.response.UserApiResponse;
@@ -11,6 +9,8 @@ import com.aisw.community.service.AuthLogicService;
 import com.aisw.community.service.UserApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -47,5 +47,10 @@ public class UserApiController implements AuthService {
     @PostMapping("")
     public Header<UserApiResponse> create(@RequestBody Header<UserApiRequest> request){
         return userApiLogicService.create(request);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return authLogicService.loadUserByUsername(email);
     }
 }
