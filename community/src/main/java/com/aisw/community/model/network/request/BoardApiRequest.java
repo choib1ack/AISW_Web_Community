@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class BoardApiRequest {
 
     private Long id;
-
-    private Long userId;
 }

@@ -27,8 +27,8 @@ public class UserRepositoryTest extends CommunityApplicationTests{
         Job job = Job.STUDENT;
         Gender gender = Gender.MALE;
         Campus university = Campus.GLOBAL;
-        College college = College.IT_CONVERGENCE;
-        Department department = Department.SOFTWARE;
+        CollegeName collegeName = CollegeName.IT_CONVERGENCE;
+        DepartmentName departmentName = DepartmentName.SOFTWARE;
 
         User user = User.builder()
                 .name(name)
@@ -41,8 +41,8 @@ public class UserRepositoryTest extends CommunityApplicationTests{
                 .job(job)
                 .gender(gender)
                 .university(university)
-                .college(college)
-                .department(department)
+                .collegeName(collegeName)
+                .departmentName(departmentName)
                 .build();
 
         User newUser = userRepository.save(user);
@@ -54,27 +54,27 @@ public class UserRepositoryTest extends CommunityApplicationTests{
     public void read(){
         Optional<User> user = userRepository.findById(1L);
 
-        user.ifPresent(selectUser ->{
-            selectUser.getNoticeList().stream().forEach(notice -> {
-                notice.getUniversityList().stream().forEach(university -> {
-                    System.out.println(university.getTitle());
-                });
-                notice.getDepartmentList().stream().forEach(department -> {
-                    System.out.println(department.getTitle());
-                });
-                notice.getCouncilList().stream().forEach(council -> {
-                    System.out.println(council.getTitle());
-                });
-            });
-            selectUser.getBoardList().stream().forEach(board -> {
-                board.getFreeList().stream().forEach(free -> {
-                    System.out.println(free.getTitle());
-                });
-                board.getQnaList().stream().forEach(qna -> {
-                    System.out.println(qna.getTitle());
-                });
-            });
-        });
+//        user.ifPresent(selectUser ->{
+////            selectUser.getNoticeList().stream().forEach(notice -> {
+////                notice.getUniversityList().stream().forEach(university -> {
+////                    System.out.println(university.getTitle());
+////                });
+////                notice.getDepartmentList().stream().forEach(department -> {
+////                    System.out.println(department.getTitle());
+////                });
+////                notice.getCouncilList().stream().forEach(council -> {
+////                    System.out.println(council.getTitle());
+////                });
+////            });
+//            selectUser.getBoardList().stream().forEach(board -> {
+//                board.getFreeList().stream().forEach(free -> {
+//                    System.out.println(free.getTitle());
+//                });
+//                board.getQnaList().stream().forEach(qna -> {
+//                    System.out.println(qna.getTitle());
+//                });
+//            });
+//        });
     }
 
     @Test

@@ -17,6 +17,7 @@ import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.repository.BoardRepository;
 import com.aisw.community.repository.FreeRepository;
 import com.aisw.community.repository.QnaRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,9 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
     private BoardRepository boardRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private BoardApiLogicService boardApiLogicService;
 
     @Override
@@ -39,7 +43,6 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
         QnaApiRequest qnaApiRequest = request.getData();
 
         BoardApiRequest boardApiRequest = BoardApiRequest.builder()
-                .userId(request.getData().getUserId())
                 .build();
         BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(boardApiRequest)).getData();
 
@@ -53,6 +56,7 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .subject(qnaApiRequest.getSubject())
                 .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .level(qnaApiRequest.getLevel())
+                .user(userRepository.getOne(qnaApiRequest.getUserId()))
                 .board(boardRepository.getOne(boardApiResponse.getId()))
                 .build();
 
@@ -125,6 +129,7 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
+                .userId(qna.getUser().getId())
                 .boardId(qna.getBoard().getId())
                 .build();
 

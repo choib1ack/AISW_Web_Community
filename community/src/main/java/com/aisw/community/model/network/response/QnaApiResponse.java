@@ -44,5 +44,7 @@ public class QnaApiResponse {
 
     private String subject;
 
+    private Long userId;
+
     private Long boardId;
 }

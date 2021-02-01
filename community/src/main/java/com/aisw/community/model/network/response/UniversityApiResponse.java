@@ -6,10 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -45,6 +41,8 @@ public class UniversityApiResponse {
 
     // 공통 0, 글로벌1,  메디컬2
     private Campus campus;
+
+    private Long userId;
 
     private Long noticeId;
 }

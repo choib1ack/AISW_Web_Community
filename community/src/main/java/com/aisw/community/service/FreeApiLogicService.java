@@ -11,10 +11,7 @@ import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
-import com.aisw.community.repository.BoardRepository;
-import com.aisw.community.repository.DepartmentRepository;
-import com.aisw.community.repository.FreeRepository;
-import com.aisw.community.repository.NoticeRepository;
+import com.aisw.community.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +27,9 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
     private BoardRepository boardRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private BoardApiLogicService boardApiLogicService;
 
     @Override
@@ -37,7 +37,6 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
         FreeApiRequest freeApiRequest = request.getData();
 
         BoardApiRequest boardApiRequest = BoardApiRequest.builder()
-                .userId(request.getData().getUserId())
                 .build();
         BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(boardApiRequest)).getData();
 
@@ -50,6 +49,7 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .likes(freeApiRequest.getLikes())
                 .isAnonymous(freeApiRequest.getIsAnonymous())
                 .level(freeApiRequest.getLevel())
+                .user(userRepository.getOne(freeApiRequest.getUserId()))
                 .board(boardRepository.getOne(boardApiResponse.getId()))
                 .build();
 
@@ -120,6 +120,7 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .level(free.getLevel())
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
+                .userId(free.getUser().getId())
                 .boardId(free.getBoard().getId())
                 .build();
 

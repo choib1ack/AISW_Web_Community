@@ -12,6 +12,4 @@ import lombok.NoArgsConstructor;
 public class BoardApiResponse {
 
     private Long id;
-
-    private Long userId;
 }

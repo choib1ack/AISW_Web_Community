@@ -24,15 +24,11 @@ import java.util.stream.Collectors;
 @Service
 public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiResponse, Board> {
 
-    @Autowired
-    private UserRepository userRepository;
-
     @Override
     public Header<BoardApiResponse> create(Header<BoardApiRequest> request) {
         BoardApiRequest boardApiRequest = request.getData();
 
         Board board = Board.builder()
-                .user(userRepository.getOne(boardApiRequest.getUserId()))
                 .build();
         Board newBoard = baseRepository.save(board);
 
@@ -49,17 +45,19 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
 
     @Override
     public Header<BoardApiResponse> update(Header<BoardApiRequest> request) {
-        BoardApiRequest boardApiRequest = request.getData();
+//        BoardApiRequest boardApiRequest = request.getData();
 
-        return baseRepository.findById(boardApiRequest.getId())
-                .map(board -> {
-                    board.setUser(userRepository.getOne(boardApiRequest.getUserId()));
-                    return board;
-                })
-                .map(board -> baseRepository.save(board))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+//        return baseRepository.findById(boardApiRequest.getId())
+//                .map(board -> {
+//                    board.setUser(userRepository.getOne(boardApiRequest.getUserId()));
+//                    return board;
+//                })
+//                .map(board -> baseRepository.save(board))
+//                .map(this::response)
+//                .map(Header::OK)
+//                .orElseGet(() -> Header.ERROR("데이터 없음"));
+
+        return Header.ERROR("데이터 없음");
     }
 
     @Override
@@ -75,7 +73,6 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
     private BoardApiResponse response(Board board) {
         BoardApiResponse boardApiResponse = BoardApiResponse.builder()
                 .id(board.getId())
-                .userId(board.getUser().getId())
                 .build();
 
         return boardApiResponse;
