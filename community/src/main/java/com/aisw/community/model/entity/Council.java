@@ -53,5 +53,8 @@ public class Council {
     private Long level;
 
     @ManyToOne
+    private User user; // user id
+
+    @OneToOne
     private Notice notice; // notice id
 }

@@ -11,6 +11,7 @@ import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.CouncilRepository;
 import com.aisw.community.repository.NoticeRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,9 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     private NoticeRepository noticeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private NoticeApiLogicService noticeApiLogicService;
 
     @Override
@@ -33,7 +37,6 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
         CouncilApiRequest councilApiRequest = request.getData();
 
         NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
-                .userId(request.getData().getUserId())
                 .build();
         NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
@@ -44,6 +47,7 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 .status(councilApiRequest.getStatus())
                 .views(councilApiRequest.getViews())
                 .level(councilApiRequest.getLevel())
+                .user(userRepository.getOne(councilApiRequest.getUserId()))
                 .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
@@ -110,6 +114,7 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 .updatedBy(council.getUpdatedBy())
                 .views(council.getViews())
                 .level(council.getLevel())
+                .userId(council.getUser().getId())
                 .noticeId(council.getNotice().getId())
                 .build();
 

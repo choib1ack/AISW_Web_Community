@@ -1,18 +1,13 @@
 package com.aisw.community.service;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.Notice;
-import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.repository.NoticeRepository;
-import com.aisw.community.repository.UniversityRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +23,9 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     private NoticeRepository noticeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private NoticeApiLogicService noticeApiLogicService;
 
     @Override
@@ -35,7 +33,6 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
         UniversityApiRequest universityApiRequest = request.getData();
 
         NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
-                .userId(request.getData().getUserId())
                 .build();
         NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
@@ -47,6 +44,7 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 .views(universityApiRequest.getViews())
                 .level(universityApiRequest.getLevel())
                 .campus(universityApiRequest.getCampus())
+                .user(userRepository.getOne(universityApiRequest.getUserId()))
                 .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
@@ -115,6 +113,7 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 .views(university.getViews())
                 .level(university.getLevel())
                 .campus(university.getCampus())
+                .userId(university.getUser().getId())
                 .noticeId(university.getNotice().getId())
                 .build();
 

@@ -31,7 +31,6 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
         NoticeApiRequest noticeApiRequest = request.getData();
 
         Notice notice = Notice.builder()
-                .user(userRepository.getOne(noticeApiRequest.getUserId()))
                 .build();
         Notice newNotice = baseRepository.save(notice);
 
@@ -48,17 +47,18 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
 
     @Override
     public Header<NoticeApiResponse> update(Header<NoticeApiRequest> request) {
-        NoticeApiRequest noticeApiRequest = request.getData();
-
-        return baseRepository.findById(noticeApiRequest.getId())
-                .map(notice -> {
-                    notice.setUser(userRepository.getOne(noticeApiRequest.getUserId()));
-                    return notice;
-                })
-                .map(notice -> baseRepository.save(notice))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+//        NoticeApiRequest noticeApiRequest = request.getData();
+//
+//        return baseRepository.findById(noticeApiRequest.getId())
+//                .map(notice -> {
+//                    notice.setUser(userRepository.getOne(noticeApiRequest.getUserId()));
+//                    return notice;
+//                })
+//                .map(notice -> baseRepository.save(notice))
+//                .map(this::response)
+//                .map(Header::OK)
+//                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        return Header.ERROR("데이터 없음");
     }
 
     @Override
@@ -74,7 +74,9 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
     private NoticeApiResponse response(Notice notice) {
         NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
                 .id(notice.getId())
-                .userId(notice.getUser().getId())
+                .university(notice.getUniversity())
+                .department(notice.getDepartment())
+                .council(notice.getCouncil())
                 .build();
 
         return noticeApiResponse;

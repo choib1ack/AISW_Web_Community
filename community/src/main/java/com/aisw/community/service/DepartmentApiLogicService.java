@@ -12,6 +12,7 @@ import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.NoticeRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,9 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     private NoticeRepository noticeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private NoticeApiLogicService noticeApiLogicService;
 
     @Override
@@ -34,7 +38,6 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
         DepartmentApiRequest departmentApiRequest = request.getData();
 
         NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
-                .userId(request.getData().getUserId())
                 .build();
         NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
@@ -45,6 +48,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .status(departmentApiRequest.getStatus())
                 .views(departmentApiRequest.getViews())
                 .level(departmentApiRequest.getLevel())
+                .user(userRepository.getOne(departmentApiRequest.getUserId()))
                 .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
@@ -111,6 +115,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .updatedBy(department.getUpdatedBy())
                 .views(department.getViews())
                 .level(department.getLevel())
+                .userId(department.getUser().getId())
                 .noticeId(department.getNotice().getId())
                 .build();
 

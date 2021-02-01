@@ -12,22 +12,19 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"user", "universityList", "departmentList", "councilList"})
+@ToString(exclude = {"university", "department", "council"})
 public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private User user; // user id
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "notice")
+    private University university;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<University> universityList;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "notice")
+    private Department department;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<Department> departmentList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<Council> councilList;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "notice")
+    private Council council;
 }

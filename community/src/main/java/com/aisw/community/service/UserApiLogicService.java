@@ -36,8 +36,8 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .job(userApiRequest.getJob())
                 .gender(userApiRequest.getGender())
                 .university(userApiRequest.getUniversity())
-                .college(userApiRequest.getCollege())
-                .department(userApiRequest.getDepartment())
+                .collegeName(userApiRequest.getCollegeName())
+                .departmentName(userApiRequest.getDepartmentName())
                 .build();
 
         User newUser = baseRepository.save(user);
@@ -81,8 +81,8 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                     .setJob(userApiRequest.getJob())
                     .setGender(userApiRequest.getGender())
                     .setUniversity(userApiRequest.getUniversity())
-                    .setCollege(userApiRequest.getCollege())
-                    .setDepartment(userApiRequest.getDepartment());
+                    .setCollegeName(userApiRequest.getCollegeName())
+                    .setDepartmentName(userApiRequest.getDepartmentName());
             return user;
         }).map(user -> baseRepository.save(user))
                 .map(user -> response(user))
@@ -120,8 +120,8 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .job(user.getJob())
                 .gender(user.getGender())
                 .university(user.getUniversity())
-                .college(user.getCollege())
-                .department(user.getDepartment())
+                .collegeName(user.getCollegeName())
+                .departmentName(user.getDepartmentName())
                 .build();
 
         // Header + data

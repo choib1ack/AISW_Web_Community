@@ -1,7 +1,6 @@
 package com.aisw.community.model.entity;
 
 import com.aisw.community.model.enumclass.*;
-import com.aisw.community.model.enumclass.Department;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -67,13 +66,19 @@ public class User {
     private Campus university;
 
     @Enumerated(EnumType.STRING)
-    private College college;
+    private CollegeName collegeName;
 
     @Enumerated(EnumType.STRING)
-    private Department department;
+    private DepartmentName departmentName;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Notice> noticeList;
+    private List<University> universityList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Department> departmentList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Council> councilList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Board> boardList;

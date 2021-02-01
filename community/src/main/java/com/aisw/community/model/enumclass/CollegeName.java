@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum College {
+public enum CollegeName {
     BUSINESS_ADMINISTRATION(0, "경영대학"),
     SOCIAL_SCIENCE(1, "사회과학대학"),
     HUMANITIES(2, "인문대학"),
