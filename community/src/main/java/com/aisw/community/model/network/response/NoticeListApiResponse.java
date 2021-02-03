@@ -1,8 +1,5 @@
 package com.aisw.community.model.network.response;
 
-import com.aisw.community.model.entity.Council;
-import com.aisw.community.model.entity.Department;
-import com.aisw.community.model.entity.University;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +11,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NoticeApiResponse {
+public class NoticeListApiResponse {
 
     private Long id;
+
+    private String category;
+
+    private String title;
+
+    private String created_by;
+
+    private LocalDateTime created_at;
+
+    private Long views;
 }

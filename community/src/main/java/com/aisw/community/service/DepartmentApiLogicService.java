@@ -37,8 +37,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
-                .build();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().build();
         NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Department department = Department.builder()

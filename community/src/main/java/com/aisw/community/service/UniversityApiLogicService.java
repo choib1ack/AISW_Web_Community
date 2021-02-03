@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.NoticeApiRequest;
@@ -32,8 +33,7 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
-        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
-                .build();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().build();
         NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         University university = University.builder()
