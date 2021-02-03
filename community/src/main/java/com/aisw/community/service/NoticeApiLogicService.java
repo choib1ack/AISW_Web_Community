@@ -102,8 +102,8 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
                         .id(university.getId())
                         .category("university")
                         .title(university.getTitle())
-                        .created_by(university.getCreatedBy())
-                        .created_at(university.getCreatedAt())
+                        .createdBy(university.getCreatedBy())
+                        .createdAt(university.getCreatedAt())
                         .views(university.getViews())
                         .build();
 
@@ -114,8 +114,8 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
                         .id(department.getId())
                         .category("department")
                         .title(department.getTitle())
-                        .created_by(department.getCreatedBy())
-                        .created_at(department.getCreatedAt())
+                        .createdBy(department.getCreatedBy())
+                        .createdAt(department.getCreatedAt())
                         .views(department.getViews())
                         .build();
 
@@ -127,8 +127,8 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
                         .id(council.getId())
                         .category("council")
                         .title(council.getTitle())
-                        .created_by(council.getCreatedBy())
-                        .created_at(council.getCreatedAt())
+                        .createdBy(council.getCreatedBy())
+                        .createdAt(council.getCreatedAt())
                         .views(council.getViews())
                         .build();
 

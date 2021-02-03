@@ -19,9 +19,9 @@ public class BoardListApiResponse {
 
     private String title;
 
-    private String created_by;
+    private String createdBy;
 
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     private Long views;
 }

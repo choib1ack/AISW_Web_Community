@@ -27,7 +27,7 @@ public class BoardApiController extends CrudController<BoardApiRequest, BoardApi
     private BoardApiLogicService boardApiLogicService;
 
     @GetMapping("/main")
-    public Header<List<BoardListApiResponse>> searchList(@PageableDefault(sort = "id",
+    public Header<List<BoardListApiResponse>> searchList(@PageableDefault(sort = "createdAt",
             direction = Sort.Direction.DESC) Pageable pageable) {
         return boardApiLogicService.searchList(pageable);
     }

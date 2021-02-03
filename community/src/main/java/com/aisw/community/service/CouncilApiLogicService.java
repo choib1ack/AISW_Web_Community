@@ -36,7 +36,8 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
-        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().build();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
+                .build();
         NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Council council = Council.builder()

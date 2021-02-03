@@ -99,8 +99,8 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
                         .id(free.getId())
                         .category("free")
                         .title(free.getTitle())
-                        .created_by(free.getCreatedBy())
-                        .created_at(free.getCreatedAt())
+                        .createdBy(free.getCreatedBy())
+                        .createdAt(free.getCreatedAt())
                         .views(free.getViews())
                         .build();
 
@@ -111,8 +111,8 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
                         .id(qna.getId())
                         .category("qna")
                         .title(qna.getTitle())
-                        .created_by(qna.getCreatedBy())
-                        .created_at(qna.getCreatedAt())
+                        .createdBy(qna.getCreatedBy())
+                        .createdAt(qna.getCreatedAt())
                         .views(qna.getViews())
                         .build();
 

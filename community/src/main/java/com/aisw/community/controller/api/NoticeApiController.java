@@ -27,7 +27,7 @@ public class NoticeApiController extends CrudController<NoticeApiRequest, Notice
     private NoticeApiLogicService noticeApiLogicService;
 
     @GetMapping("/main")
-    public Header<List<NoticeListApiResponse>> searchList(@PageableDefault(sort = "id",
+    public Header<List<NoticeListApiResponse>> searchList(@PageableDefault(sort = "createdAt",
             direction = Sort.Direction.DESC) Pageable pageable) {
             return noticeApiLogicService.searchList(pageable);
     }
