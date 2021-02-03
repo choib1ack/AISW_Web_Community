@@ -7,9 +7,7 @@ import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.NoticeApiRequest;
-import com.aisw.community.model.network.response.AdminUserApiResponse;
-import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.NoticeApiResponse;
+import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.BoardRepository;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
@@ -18,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,5 +86,43 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
                 .collect(Collectors.toList());
 
         return Header.OK(boardApiResponseList);
+    }
+
+    public Header<List<BoardListApiResponse>> searchList(Pageable pageable) {
+        Page<Board> boards = baseRepository.findAll(pageable);
+
+        List<BoardListApiResponse> boardListApiResponseList = new ArrayList<>();
+
+        boards.stream().map(board -> {
+            board.getFreeList().stream().forEach(free -> {
+                BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
+                        .id(free.getId())
+                        .category("free")
+                        .title(free.getTitle())
+                        .createdBy(free.getCreatedBy())
+                        .createdAt(free.getCreatedAt())
+                        .views(free.getViews())
+                        .build();
+
+                boardListApiResponseList.add(boardListApiResponse);
+            });
+            board.getQnaList().stream().forEach(qna -> {
+                BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
+                        .id(qna.getId())
+                        .category("qna")
+                        .title(qna.getTitle())
+                        .createdBy(qna.getCreatedBy())
+                        .createdAt(qna.getCreatedAt())
+                        .views(qna.getViews())
+                        .build();
+
+                boardListApiResponseList.add(boardListApiResponse);
+            });
+
+            return boardListApiResponseList;
+        })
+                .collect(Collectors.toList());
+
+        return Header.OK(boardListApiResponseList);
     }
 }

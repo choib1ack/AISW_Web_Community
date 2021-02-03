@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,10 +17,4 @@ import lombok.NoArgsConstructor;
 public class NoticeApiResponse {
 
     private Long id;
-
-    private University university;
-
-    private Department department;
-
-    private Council council;
 }

@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,9 +20,9 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "board")
-    private Free free;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
+    private List<Free> freeList;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "board")
-    private Qna qna;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
+    private List<Qna> qnaList;
 }

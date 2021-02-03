@@ -63,7 +63,7 @@ public class Qna {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user; // user id
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Board board; // board id
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "qna")

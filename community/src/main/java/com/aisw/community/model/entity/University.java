@@ -59,6 +59,6 @@ public class University {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user; // user id
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Notice notice; // notice id
 }
