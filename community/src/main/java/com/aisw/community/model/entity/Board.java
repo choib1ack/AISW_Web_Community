@@ -19,9 +19,9 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "board")
-    private Free free;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
+    private List<Free> freeList;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "board")
-    private Qna qna;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
+    private List<Qna> qnaList;
 }
