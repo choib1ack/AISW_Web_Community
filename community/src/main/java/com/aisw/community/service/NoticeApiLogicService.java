@@ -5,6 +5,7 @@ import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Notice;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
@@ -93,7 +94,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
             notice.getUniversityList().stream().forEach(university -> {
                 NoticeListApiResponse noticeListApiResponse = NoticeListApiResponse.builder()
                         .id(university.getId())
-                        .category("university")
+                        .category(NoticeCategory.UNIVERSITY)
                         .title(university.getTitle())
                         .createdBy(university.getCreatedBy())
                         .createdAt(university.getCreatedAt())
@@ -105,7 +106,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
             notice.getDepartmentList().stream().forEach(department -> {
                 NoticeListApiResponse noticeListApiResponse = NoticeListApiResponse.builder()
                         .id(department.getId())
-                        .category("department")
+                        .category(NoticeCategory.DEPARTMENT)
                         .title(department.getTitle())
                         .createdBy(department.getCreatedBy())
                         .createdAt(department.getCreatedAt())
@@ -118,7 +119,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
             notice.getCouncilList().stream().forEach(council -> {
                 NoticeListApiResponse noticeListApiResponse = NoticeListApiResponse.builder()
                         .id(council.getId())
-                        .category("council")
+                        .category(NoticeCategory.COUNCIL)
                         .title(council.getTitle())
                         .createdBy(council.getCreatedBy())
                         .createdAt(council.getCreatedAt())

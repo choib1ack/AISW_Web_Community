@@ -4,6 +4,7 @@ import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.AdminUser;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Notice;
+import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.NoticeApiRequest;
@@ -89,7 +90,7 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
             board.getFreeList().stream().forEach(free -> {
                 BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
                         .id(free.getId())
-                        .category("free")
+                        .category(BoardCategory.FREE)
                         .title(free.getTitle())
                         .createdBy(free.getCreatedBy())
                         .createdAt(free.getCreatedAt())
@@ -101,7 +102,7 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
             board.getQnaList().stream().forEach(qna -> {
                 BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
                         .id(qna.getId())
-                        .category("qna")
+                        .category(BoardCategory.QNA)
                         .title(qna.getTitle())
                         .createdBy(qna.getCreatedBy())
                         .createdAt(qna.getCreatedAt())
