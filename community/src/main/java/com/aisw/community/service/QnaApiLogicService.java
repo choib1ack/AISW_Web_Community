@@ -1,22 +1,11 @@
 package com.aisw.community.service;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.BoardApiRequest;
-import com.aisw.community.model.network.request.FreeApiRequest;
-import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.FreeApiResponse;
-import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.repository.BoardRepository;
-import com.aisw.community.repository.FreeRepository;
-import com.aisw.community.repository.QnaRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -42,9 +31,7 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
-        BoardApiRequest boardApiRequest = BoardApiRequest.builder()
-                .build();
-        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(boardApiRequest)).getData();
+        BoardApiResponse boardApiResponse = boardApiLogicService.create().getData();
 
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())

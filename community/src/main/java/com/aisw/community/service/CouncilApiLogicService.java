@@ -1,15 +1,10 @@
 package com.aisw.community.service;
 
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.CouncilApiRequest;
-import com.aisw.community.model.network.request.NoticeApiRequest;
-import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.repository.CouncilRepository;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +31,7 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
-        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
-                .build();
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
 
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())

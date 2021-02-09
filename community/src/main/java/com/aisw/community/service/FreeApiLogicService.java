@@ -1,15 +1,9 @@
 package com.aisw.community.service;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.BoardApiRequest;
-import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
 import com.aisw.community.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +30,7 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
-        BoardApiRequest boardApiRequest = BoardApiRequest.builder()
-                .build();
-        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(boardApiRequest)).getData();
+        BoardApiResponse boardApiResponse = boardApiLogicService.create().getData();
 
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())

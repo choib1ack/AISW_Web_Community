@@ -1,16 +1,10 @@
 package com.aisw.community.service;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
-import com.aisw.community.model.network.request.NoticeApiRequest;
-import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +31,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().build();
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
 
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
