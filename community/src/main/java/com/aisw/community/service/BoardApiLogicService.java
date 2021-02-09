@@ -4,6 +4,7 @@ import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.AdminUser;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Notice;
+import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.NoticeApiRequest;
@@ -25,10 +26,7 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
 
     @Override
     public Header<BoardApiResponse> create(Header<BoardApiRequest> request) {
-        BoardApiRequest boardApiRequest = request.getData();
-
-        Board board = Board.builder()
-                .build();
+        Board board = Board.builder().build();
         Board newBoard = baseRepository.save(board);
 
         return Header.OK(response(newBoard));
@@ -44,19 +42,13 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
 
     @Override
     public Header<BoardApiResponse> update(Header<BoardApiRequest> request) {
-//        BoardApiRequest boardApiRequest = request.getData();
+        BoardApiRequest boardApiRequest = request.getData();
 
-//        return baseRepository.findById(boardApiRequest.getId())
-//                .map(board -> {
-//                    board.setUser(userRepository.getOne(boardApiRequest.getUserId()));
-//                    return board;
-//                })
-//                .map(board -> baseRepository.save(board))
-//                .map(this::response)
-//                .map(Header::OK)
-//                .orElseGet(() -> Header.ERROR("데이터 없음"));
-
-        return Header.ERROR("데이터 없음");
+        return baseRepository.findById(boardApiRequest.getId())
+                .map(board -> baseRepository.save(board))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
@@ -72,6 +64,7 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
     private BoardApiResponse response(Board board) {
         BoardApiResponse boardApiResponse = BoardApiResponse.builder()
                 .id(board.getId())
+                .cratedAt(board.getCreatedAt())
                 .build();
 
         return boardApiResponse;
@@ -97,7 +90,7 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
             board.getFreeList().stream().forEach(free -> {
                 BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
                         .id(free.getId())
-                        .category("free")
+                        .category(BoardCategory.FREE)
                         .title(free.getTitle())
                         .createdBy(free.getCreatedBy())
                         .createdAt(free.getCreatedAt())
@@ -109,7 +102,7 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
             board.getQnaList().stream().forEach(qna -> {
                 BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
                         .id(qna.getId())
-                        .category("qna")
+                        .category(BoardCategory.QNA)
                         .title(qna.getTitle())
                         .createdBy(qna.getCreatedBy())
                         .createdAt(qna.getCreatedAt())

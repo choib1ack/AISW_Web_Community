@@ -15,4 +15,6 @@ import java.time.LocalDateTime;
 public class BoardApiResponse {
 
     private Long id;
+
+    private LocalDateTime cratedAt;
 }

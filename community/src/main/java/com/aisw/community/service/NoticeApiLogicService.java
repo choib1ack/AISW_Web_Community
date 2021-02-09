@@ -5,6 +5,7 @@ import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Notice;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
@@ -23,16 +24,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeApiResponse, Notice> {
 
     @Override
     public Header<NoticeApiResponse> create(Header<NoticeApiRequest> request) {
-        NoticeApiRequest noticeApiRequest = request.getData();
-
-        Notice notice = Notice.builder()
-                .build();
+        Notice notice = Notice.builder().build();
+        System.out.println(notice.getCreatedAt());
         Notice newNotice = baseRepository.save(notice);
 
         return Header.OK(response(newNotice));
@@ -48,18 +46,13 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
 
     @Override
     public Header<NoticeApiResponse> update(Header<NoticeApiRequest> request) {
-//        NoticeApiRequest noticeApiRequest = request.getData();
-//
-//        return baseRepository.findById(noticeApiRequest.getId())
-//                .map(notice -> {
-//                    notice.setUser(userRepository.getOne(noticeApiRequest.getUserId()));
-//                    return notice;
-//                })
-//                .map(notice -> baseRepository.save(notice))
-//                .map(this::response)
-//                .map(Header::OK)
-//                .orElseGet(() -> Header.ERROR("데이터 없음"));
-        return Header.ERROR("데이터 없음");
+        NoticeApiRequest noticeApiRequest = request.getData();
+
+        return baseRepository.findById(noticeApiRequest.getId())
+                .map(notice -> baseRepository.save(notice))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
@@ -75,6 +68,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
     private NoticeApiResponse response(Notice notice) {
         NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
                 .id(notice.getId())
+                .cratedAt(notice.getCreatedAt())
                 .build();
 
         return noticeApiResponse;
@@ -100,7 +94,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
             notice.getUniversityList().stream().forEach(university -> {
                 NoticeListApiResponse noticeListApiResponse = NoticeListApiResponse.builder()
                         .id(university.getId())
-                        .category("university")
+                        .category(NoticeCategory.UNIVERSITY)
                         .title(university.getTitle())
                         .createdBy(university.getCreatedBy())
                         .createdAt(university.getCreatedAt())
@@ -112,7 +106,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
             notice.getDepartmentList().stream().forEach(department -> {
                 NoticeListApiResponse noticeListApiResponse = NoticeListApiResponse.builder()
                         .id(department.getId())
-                        .category("department")
+                        .category(NoticeCategory.DEPARTMENT)
                         .title(department.getTitle())
                         .createdBy(department.getCreatedBy())
                         .createdAt(department.getCreatedAt())
@@ -125,7 +119,7 @@ public class NoticeApiLogicService extends BaseService<NoticeApiRequest, NoticeA
             notice.getCouncilList().stream().forEach(council -> {
                 NoticeListApiResponse noticeListApiResponse = NoticeListApiResponse.builder()
                         .id(council.getId())
-                        .category("council")
+                        .category(NoticeCategory.COUNCIL)
                         .title(council.getTitle())
                         .createdBy(council.getCreatedBy())
                         .createdAt(council.getCreatedAt())

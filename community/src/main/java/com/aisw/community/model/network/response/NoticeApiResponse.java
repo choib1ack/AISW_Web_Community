@@ -17,4 +17,6 @@ import java.time.LocalDateTime;
 public class NoticeApiResponse {
 
     private Long id;
+
+    private LocalDateTime cratedAt;
 }

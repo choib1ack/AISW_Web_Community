@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.response;
 
+import com.aisw.community.model.enumclass.NoticeCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class NoticeListApiResponse {
 
     private Long id;
 
-    private String category;
+    private NoticeCategory category;
 
     private String title;
 
