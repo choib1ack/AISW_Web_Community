@@ -13,7 +13,7 @@ export default function MakeNoticeList(props) {
         switch (category) {
             case 0:
                 // 요거 전체로 바꿔야함
-                url += "/university";
+                url += "/main";
                 break;
             case 1:
                 url += "/university";
