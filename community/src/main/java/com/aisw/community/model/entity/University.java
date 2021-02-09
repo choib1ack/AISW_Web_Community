@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"notice"})
+@ToString(exclude = {"notice", "user"})
 @EntityListeners(AuditingEntityListener.class)
 public class University {
 
@@ -56,6 +56,9 @@ public class University {
     @Enumerated(EnumType.STRING)
     private Campus campus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user; // user id
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Notice notice; // notice id
 }

@@ -5,10 +5,11 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Department {
-    SOFTWARE(0, "소프트웨어학과"),
-    AI(1, "인공지능학과");
+public enum BoardCategory {
+    FREE(0, "자유게시판", "자유게시판 게시글"),
+    QNA(1, "질문게시판", "질문게시판 게시글");
 
     private Integer id;
     private String title;
+    private String description;
 }

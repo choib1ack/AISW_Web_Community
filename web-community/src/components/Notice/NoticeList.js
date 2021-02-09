@@ -2,37 +2,17 @@ import Container from "react-bootstrap/Container";
 import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-import classNames from "classnames";
 import searchImage from "../../icon/search.svg";
 import Table from "react-bootstrap/Table";
-import photoImage from "../../icon/photo.svg";
-import fileImage from "../../icon/file.svg";
 import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
-import {Link} from "react-router-dom";
-import noticeData from "./notice-list.json";
-import axios from 'axios';
 import SelectButton from "../SelectButton";
+import MakeNoticeList from "./MakeNoticeList"
 
 export default function NoticeList({match}) {
 
     const [category, setCategory] = useState(0);
-
-    let lists; // 글 리스트
-
-    const request = async (category, page) => {
-        setCategory(category);
-        let url = "/notice"
-        switch (category) {
-            case 1: url+="/university"; break;
-            case 2: url+="/department"; break;
-            case 3: url+="/council"; break;
-        }
-        url+="?page="+page;
-        const response = await axios.get(url);
-        console.log(response.data);
-    }
+    const [page, setPage] = useState(1);
 
     return (
         <div className="Notice">
@@ -41,13 +21,13 @@ export default function NoticeList({match}) {
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
                         <SelectButton id='0' title='전체' active={category}
-                                      onClick={()=>request(0, 1)}/>
+                                      onClick={()=>setCategory(0)}/>
                         <SelectButton id='1' title='학교 홈페이지' active={category}
-                                      onClick={()=>request(1, 1)}/>
+                                      onClick={()=>setCategory(1)}/>
                         <SelectButton id='2' title='학과사무실' active={category}
-                                      onClick={()=>request(2, 1)}/>
+                                      onClick={()=>setCategory(2)}/>
                         <SelectButton id='3' title='학생회' active={category}
-                                      onClick={()=>request(3, 1)}/>
+                                      onClick={()=>setCategory(3)}/>
                     </Col>
                     <Col lg={6} md={4} sm={12}>
                         <img src={searchImage} style={{float: "right", marginLeft: "10px", height: "25px"}}/>
@@ -66,30 +46,17 @@ export default function NoticeList({match}) {
                     </tr>
                     </thead>
                     <tbody>
-                    {lists = makeList(match)}
-
+                    <MakeNoticeList
+                        category={category}
+                        match={match}/>
+                    {/*{console.log(category)}*/}
                     </tbody>
                 </Table>
                 <Pagination active={1}/>
             </Container>
         </div>
-    )
+    );
 }
-function makeList(match) {
-    const lists = noticeData.map(noticeData => {
-        return (
-            <tr>
-                <td>{noticeData.no ? noticeData.no : '공지'}</td>
-                <td key={noticeData.title}>
-                    <Link to={`${match.url}/10`} style={{color: 'black'}}>
-                        {noticeData.title}
-                    </Link>
-                </td>
-                <td>가천대학교</td>
-                <td key={noticeData.date}>{noticeData.date}</td>
-                <td key={noticeData.file}>{noticeData.file ? 1 : 0}</td>
-            </tr>
-        )
-    });
-    return lists;
-}
+
+
+

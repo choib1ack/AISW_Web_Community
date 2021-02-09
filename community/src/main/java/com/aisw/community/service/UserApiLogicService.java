@@ -4,11 +4,8 @@ import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.UserApiRequest;
 import com.aisw.community.model.network.response.UserApiResponse;
-import com.aisw.community.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +14,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
-
-    @Autowired
-    private UserRepository userRepository;
 
     // 1. request data
     // 2. user create
@@ -30,7 +24,6 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         // 1. request data
         UserApiRequest userApiRequest = request.getData();
 
-        System.out.println(userApiRequest);
         // 2. user create
         User user = User.builder()
                 .name(userApiRequest.getName())
@@ -43,11 +36,9 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .job(userApiRequest.getJob())
                 .gender(userApiRequest.getGender())
                 .university(userApiRequest.getUniversity())
-                .college(userApiRequest.getCollege())
-                .department(userApiRequest.getDepartment())
-                .role(userApiRequest.getRole())
+                .collegeName(userApiRequest.getCollegeName())
+                .departmentName(userApiRequest.getDepartmentName())
                 .build();
-
 
         User newUser = baseRepository.save(user);
 
@@ -90,8 +81,8 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                     .setJob(userApiRequest.getJob())
                     .setGender(userApiRequest.getGender())
                     .setUniversity(userApiRequest.getUniversity())
-                    .setCollege(userApiRequest.getCollege())
-                    .setDepartment(userApiRequest.getDepartment());
+                    .setCollegeName(userApiRequest.getCollegeName())
+                    .setDepartmentName(userApiRequest.getDepartmentName());
             return user;
         }).map(user -> baseRepository.save(user))
                 .map(user -> response(user))
@@ -115,7 +106,6 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
     private UserApiResponse response(User user){
         // user -> userApiResponse return
         UserApiResponse userApiResponse = UserApiResponse.builder()
-                .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())
@@ -130,9 +120,8 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 .job(user.getJob())
                 .gender(user.getGender())
                 .university(user.getUniversity())
-                .college(user.getCollege())
-                .department(user.getDepartment())
-                .role(user.getRole())
+                .collegeName(user.getCollegeName())
+                .departmentName(user.getDepartmentName())
                 .build();
 
         // Header + data
@@ -141,52 +130,12 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
 
     @Override
     public Header<List<UserApiResponse>> search(Pageable pageable) {
-        return null;
-    }
+        Page<User> users = baseRepository.findAll(pageable);
 
-//    // Login Api
-//    public Header<UserApiResponse> login(Header<UserApiRequest> request){
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        UserApiRequest userApiRequest = request.getData();
-//        String inputEmail = userApiRequest.getEmail();
-//        String inputPw = encoder.encode(userApiRequest.getPassword());
-//
-//        System.out.println(inputPw);
-//        Optional<User> optional = userRepository.findByEmail(inputEmail);
-//
-//        // 1. Check input email exists in database
-//        // If exists, input email's password is same with password in database
-//        if(optional.isPresent()) {
-//            // If same, return OK
-//            return optional.map(user -> passwordCheck(user, inputPw))
-//                    .map(Header::OK)
-//                    .orElseGet(() -> Header.ERROR("Wrong Password"));
-//                    // If not same, return error with description("Wrong password")
-//        }
-//        // If not exists, return error with description("Email Not Exists")
-//        else{
-//            return Header.ERROR("Email Not Exists");
-//        }
-//    }
-//
-//    //Check input email's password is same with password in database
-//    // 1. If same, send User Info to http
-//    // 2. If not same, return null
-//    private UserApiResponse passwordCheck(User user, String pw){
-//        if(user.getPassword() == pw)
-//            return response(user);
-//        else
-//            return null;
-//    }
-//
-//    @Override
-//    public Header<List<UserApiResponse>> search(Pageable pageable) {
-//        Page<User> users = baseRepository.findAll(pageable);
-//
-//        List<UserApiResponse> userApiResponseList = users.stream()
-//                .map(this::response)
-//                .collect(Collectors.toList());
-//
-//        return Header.OK(userApiResponseList);
-//    }
+        List<UserApiResponse> userApiResponseList = users.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
+
+        return Header.OK(userApiResponseList);
+    }
 }

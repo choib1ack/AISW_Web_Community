@@ -1,7 +1,6 @@
 package com.aisw.community.model.entity;
 
 import com.aisw.community.model.enumclass.*;
-import com.aisw.community.model.enumclass.Department;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -9,27 +8,20 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-//import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.core.authority.SimpleGrantedAuthority;
-//import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Entity
-@Getter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
 @ToString(exclude = {"noticeList", "boardList"})
-public class User{
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,18 +66,23 @@ public class User{
     private Campus university;
 
     @Enumerated(EnumType.STRING)
-    private College college;
+    private CollegeName collegeName;
 
     @Enumerated(EnumType.STRING)
-    private Department department;
-
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private DepartmentName departmentName;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Notice> noticeList;
+    private List<University> universityList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Board> boardList;
+    private List<Department> departmentList;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Council> councilList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Free> freeList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Qna> qnaList;
 }

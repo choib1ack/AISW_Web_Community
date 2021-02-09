@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board", "qnaCommentList"})
+@ToString(exclude = {"user", "board", "qnaCommentList"})
 @EntityListeners(AuditingEntityListener.class)
 public class Qna {
 
@@ -60,7 +60,10 @@ public class Qna {
     @LastModifiedBy
     private String updatedBy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user; // user id
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Board board; // board id
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "qna")

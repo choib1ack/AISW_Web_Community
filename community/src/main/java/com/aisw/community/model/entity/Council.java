@@ -52,6 +52,9 @@ public class Council {
     // 학생회 공지1
     private Long level;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user; // user id
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Notice notice; // notice id
 }

@@ -1,17 +1,12 @@
 package com.aisw.community.service;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
-import com.aisw.community.model.network.request.NoticeApiRequest;
-import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.NoticeRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,16 +22,16 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     private NoticeRepository noticeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private NoticeApiLogicService noticeApiLogicService;
 
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder()
-                .userId(request.getData().getUserId())
-                .build();
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
 
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
@@ -45,6 +40,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .status(departmentApiRequest.getStatus())
                 .views(departmentApiRequest.getViews())
                 .level(departmentApiRequest.getLevel())
+                .user(userRepository.getOne(departmentApiRequest.getUserId()))
                 .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
@@ -111,6 +107,7 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .updatedBy(department.getUpdatedBy())
                 .views(department.getViews())
                 .level(department.getLevel())
+                .userId(department.getUser().getId())
                 .noticeId(department.getNotice().getId())
                 .build();
 
