@@ -1,17 +1,10 @@
 package com.aisw.community.service;
 
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.AdminUser;
 import com.aisw.community.model.entity.Board;
-import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.BoardApiRequest;
-import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.BoardRepository;
-import com.aisw.community.repository.NoticeRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,40 +15,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiResponse, Board> {
+public class BoardApiLogicService {
 
-    @Override
-    public Header<BoardApiResponse> create(Header<BoardApiRequest> request) {
+    @Autowired
+    private BoardRepository boardRepository;
+
+    public Header<BoardApiResponse> create() {
         Board board = Board.builder().build();
-        Board newBoard = baseRepository.save(board);
+        Board newBoard = boardRepository.save(board);
 
         return Header.OK(response(newBoard));
     }
 
-    @Override
-    public Header<BoardApiResponse> read(Long id) {
-        return baseRepository.findById(id)
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
-
-    @Override
-    public Header<BoardApiResponse> update(Header<BoardApiRequest> request) {
-        BoardApiRequest boardApiRequest = request.getData();
-
-        return baseRepository.findById(boardApiRequest.getId())
-                .map(board -> baseRepository.save(board))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
-
-    @Override
     public Header delete(Long id) {
-        return baseRepository.findById(id)
+        return boardRepository.findById(id)
                 .map(board -> {
-                    baseRepository.delete(board);
+                    boardRepository.delete(board);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -70,19 +45,8 @@ public class BoardApiLogicService extends BaseService<BoardApiRequest, BoardApiR
         return boardApiResponse;
     }
 
-    @Override
-    public Header<List<BoardApiResponse>> search(Pageable pageable) {
-        Page<Board> boards = baseRepository.findAll(pageable);
-
-        List<BoardApiResponse> boardApiResponseList = boards.stream()
-                .map(this::response)
-                .collect(Collectors.toList());
-
-        return Header.OK(boardApiResponseList);
-    }
-
     public Header<List<BoardListApiResponse>> searchList(Pageable pageable) {
-        Page<Board> boards = baseRepository.findAll(pageable);
+        Page<Board> boards = boardRepository.findAll(pageable);
 
         List<BoardListApiResponse> boardListApiResponseList = new ArrayList<>();
 
