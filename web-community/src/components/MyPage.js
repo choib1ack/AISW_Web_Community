@@ -5,11 +5,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PersonImage from "../image/person.svg"
-import userImage from "../icon/user.svg";
-import Card from "react-bootstrap/Card";
-import {Link} from "react-router-dom";
-import photoImage from "../icon/photo.svg";
-import fileImage from "../icon/file.svg";
 
 export default function MyPage() {
     const [modalShow, setModalShow] = useState(false);
@@ -26,55 +21,55 @@ export default function MyPage() {
 }
 
 function MydModalWithGrid(props) {
+
     return (
-        <Modal {...props} aria-labelledby="contained-modal-title-vcenter">
-            <Modal.Header closeButton style={{border: 'none'}}>
-                <Modal.Title
-                    id="contained-modal-title-vcenter"
-                    style={{fontSize: '16px'}}
-                >
-                    내 정보
-                </Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="show-grid" style={{padding: "0px"}}>
-                <Container style={{padding: 'none'}}>
+        <div>
+            <Modal {...props} aria-labelledby="contained-modal-title-vcenter">
+                <Modal.Header closeButton style={{border: 'none'}}>
+                    <Modal.Title
+                        id="contained-modal-title-vcenter"
+                        style={{fontSize: '16px'}}
+                    >
+                        내 정보
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="show-grid" style={{padding: "0px"}}>
+                    <Container style={{padding: 'none'}}>
 
-                    <Row style={{margin: "20px 30px"}}>
-                        <Col xs={1} md={1}>
-                            <img src={PersonImage}/>
-                        </Col>
-                        <Col xs={8} md={8}>
+                        <Row style={{margin: "20px 30px"}}>
+                            <Col xs={1} md={1}>
+                                <img src={PersonImage}/>
+                            </Col>
+                            <Col xs={8} md={8}>
 
-                            <div style={{marginLeft: "10px"}}>
-                                <p style={{fontSize: '14px', marginBottom: "0px"}}>양희림</p>
-                                <p style={{fontSize: '12px', color: '#8C8C8C'}}>IT융합대학 소프트웨어학과 17</p>
-                            </div>
-                        </Col>
-                        <Col xs={3} md={3}
-                             style={{textAlign: 'center', fontSize: '12px', color: '#8C8C8C'}}>
-                            로그아웃
-                        </Col>
-                    </Row>
-                    <p style={{color:'#6CBACB', margin:'5px'}}>알림</p>
-                    <div style={{
-                        height: '200px',
-                        backgroundColor: '#EFF7F9',
-                        border: '1px solid #E3E3E3',
-                        overflow: 'auto',
-                        borderRadius: '10px'
-                    }}>
-                        {makeAlertList()}
-                    </div>
-                </Container>
-            </Modal.Body>
-            {/*<Modal.Footer>*/}
-            {/*    <Button onClick={props.onHide}>Close</Button>*/}
-            {/*</Modal.Footer>*/}
-        </Modal>
+                                <div style={{marginLeft: "10px"}}>
+                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>양희림</p>
+                                    <p style={{fontSize: '12px', color: '#8C8C8C'}}>IT융합대학 소프트웨어학과 17</p>
+                                </div>
+                            </Col>
+                            <Col xs={3} md={3}
+                                 style={{textAlign: 'center', fontSize: '12px', color: '#8C8C8C'}}>
+                                <p style={{cursor: 'pointer'}}>로그아웃</p>
+                            </Col>
+                        </Row>
+                        <p style={{color: '#6CBACB', margin: '5px'}}>알림</p>
+                        <div style={{
+                            height: '200px',
+                            backgroundColor: '#EFF7F9',
+                            border: '1px solid #E3E3E3',
+                            overflow: 'auto',
+                            borderRadius: '10px'
+                        }}>
+                            {makeAlertList()}
+                        </div>
+                    </Container>
+                </Modal.Body>
+            </Modal>
+        </div>
     );
 }
 
-function makeAlertList() {
+function makeAlertList(props) {
     let style = {
         borderRadius: '10px',
         backgroundColor: '#FFFFFF',
@@ -83,6 +78,7 @@ function makeAlertList() {
         padding: '15px',
         height: '70px'
     }
+    // let data = props.data;
     let data = [
         {
             location: '자유게시판',
