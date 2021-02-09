@@ -46,9 +46,9 @@ public class AuthLogicService implements UserDetailsService {
                 .job(userApiRequest.getJob())
                 .gender(userApiRequest.getGender())
                 .university(userApiRequest.getUniversity())
-                .college(userApiRequest.getCollege())
-                .department(userApiRequest.getDepartment())
-                .role(userApiRequest.getRole())
+                .collegeName(userApiRequest.getCollegeName())
+                .departmentName(userApiRequest.getDepartmentName())
+//                .role(userApiRequest.getRole())
                 .build();
 
         System.out.println(user.getPassword());
@@ -120,9 +120,9 @@ public class AuthLogicService implements UserDetailsService {
                 .job(user.getJob())
                 .gender(user.getGender())
                 .university(user.getUniversity())
-                .college(user.getCollege())
-                .department(user.getDepartment())
-                .role(user.getRole())
+                .collegeName(user.getCollegeName())
+                .departmentName(user.getDepartmentName())
+//                .role(user.getRole())
                 .build();
 
         // Header + data
