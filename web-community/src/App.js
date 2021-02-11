@@ -29,7 +29,6 @@ function App() {
                         <Route path="/deptInfo" component={DeptInfo}/>
                         <Route path="/jobInfo" component={JobInfo}/>
                         <Route path="/contestInfo" component={ContestInfo}/>
-                        <Route path="/newBoard" component={NewBoard}/>
                         <Route path="/join" component={Join}/>
                     </Switch>
                 </main>

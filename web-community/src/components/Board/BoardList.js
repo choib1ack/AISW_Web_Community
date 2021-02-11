@@ -16,15 +16,11 @@ import axios from "axios";
 import SelectButton from "../SelectButton";
 import MakeNoticeList from "../Notice/MakeNoticeList";
 import MakeBoardList from "./MakeBoardList";
+import {WriteButton} from "../WriteButton";
 
 function BoardList({match}) {
-    let history = useHistory();
     const [category, setCategory] = useState(0);
     const [page, setPage] = useState(1);
-
-    function handleClick() {
-        history.push("/newBoard");
-    }
 
     return (
         <div className="Board">
@@ -34,15 +30,15 @@ function BoardList({match}) {
                     <Col lg={6} md={8} sm={12}>
                         <SelectButton
                             id='0' title='전체' active={category}
-                            onClick={()=>setCategory(0)}
+                            onClick={() => setCategory(0)}
                         />
                         <SelectButton
                             id='1' title='자유게시판' active={category}
-                            onClick={()=>setCategory(1)}
-                            />
+                            onClick={() => setCategory(1)}
+                        />
                         <SelectButton
                             id='2' title='과목별게시판' active={category}
-                            onClick={()=>setCategory(2)}
+                            onClick={() => setCategory(2)}
                         />
                     </Col>
                     <Col lg={6} md={4} sm={12}>
@@ -66,20 +62,16 @@ function BoardList({match}) {
                         match={match}/>
                     </tbody>
                 </Table>
-                <Row>
-                    <Col lg={12} md={12} sm={12}>
-                        <Button className={classNames("select-btn", "on")}
-                                style={{float: 'right'}} onClick={() => handleClick()}>
-                            글쓰기
-                        </Button>
-                    </Col>
-                </Row>
+
+                <WriteButton match={match} type={'newBoard'}/>
+
                 <Pagination active={1}/>
             </Container>
         </div>
     );
-}export default BoardList;
+}
 
+export default BoardList;
 
 // 게시판 카테고리에 맞는 리스트를 만들어주는 함수
 // 0: 전체, 1: 자유게시판, 2: 과목별게시판

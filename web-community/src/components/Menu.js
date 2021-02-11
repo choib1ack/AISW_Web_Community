@@ -4,13 +4,6 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Grid from "@material-ui/core/Grid";
 import {BrowserRouter as Router, Switch, Route, Link, useRouteMatch} from "react-router-dom";
-import Home from "./Home";
-import Login from "./Login";
-import Notice from "./Notice/Notice";
-import JobInfo from "./JobInfo";
-import Board from "./Board/Board";
-import ContestInfo from "./ContestInfo";
-import DeptInfo from "./DeptInfo";
 
 export default function Menu() {
     return (
@@ -66,16 +59,6 @@ export default function Menu() {
                     </Col>
                 </Row>
             </Grid>
-
-            {/*<Switch>*/}
-            {/*    <Route exact path="/" component={Home}/>*/}
-            {/*    <Route path="/login" component={Login}/>*/}
-            {/*    <Route path="/notice" component={Notice}/>*/}
-            {/*    <Route path="/board" component={Board}/>*/}
-            {/*    <Route path="/deptInfo" component={DeptInfo}/>*/}
-            {/*    <Route path="/job" component={JobInfo}/>*/}
-            {/*    <Route path="/contestInfo" component={ContestInfo}/>*/}
-            {/*</Switch>*/}
 
         </div>
     );

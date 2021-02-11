@@ -8,6 +8,7 @@ import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
 import SelectButton from "../SelectButton";
 import MakeNoticeList from "./MakeNoticeList"
+import {WriteButton} from "../WriteButton";
 
 export default function NoticeList({match}) {
 
@@ -52,6 +53,9 @@ export default function NoticeList({match}) {
                     {/*{console.log(category)}*/}
                     </tbody>
                 </Table>
+
+                <WriteButton match={match} type={'newNotice'}/>
+
                 <Pagination active={1}/>
             </Container>
         </div>
