@@ -5,6 +5,7 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.FreeCommentApiResponse;
 import com.aisw.community.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

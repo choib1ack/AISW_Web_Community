@@ -24,7 +24,7 @@ public class QnaCommentApiLogicService extends BaseService<QnaCommentApiRequest,
         QnaCommentApiRequest qnaCommentApiRequest = request.getData();
 
         QnaComment qnaComment = QnaComment.builder()
-                .content(qnaCommentApiRequest.getContent())
+                .comment(qnaCommentApiRequest.getComment())
                 .likes(qnaCommentApiRequest.getLikes())
                 .isAnonymous(qnaCommentApiRequest.getIsAnonymous())
                 .qna(qnaRepository.getOne(qnaCommentApiRequest.getQnaId()))
@@ -49,7 +49,7 @@ public class QnaCommentApiLogicService extends BaseService<QnaCommentApiRequest,
         return baseRepository.findById(qnaCommentApiRequest.getId())
                 .map(qnaComment -> {
                     qnaComment
-                            .setContent(qnaCommentApiRequest.getContent())
+                            .setComment(qnaCommentApiRequest.getComment())
                             .setLikes(qnaCommentApiRequest.getLikes())
                             .setIsAnonymous(qnaCommentApiRequest.getIsAnonymous())
                             .setQna(qnaRepository.getOne(qnaCommentApiRequest.getQnaId()));
@@ -75,7 +75,7 @@ public class QnaCommentApiLogicService extends BaseService<QnaCommentApiRequest,
     private QnaCommentApiResponse response(QnaComment qnaComment) {
         QnaCommentApiResponse qnaCommentApiResponse = QnaCommentApiResponse.builder()
                 .id(qnaComment.getId())
-                .content(qnaComment.getContent())
+                .comment(qnaComment.getComment())
                 .createdAt(qnaComment.getCreatedAt())
                 .createdBy(qnaComment.getCreatedBy())
                 .likes(qnaComment.getLikes())

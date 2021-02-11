@@ -15,7 +15,7 @@ public class FreeCommentApiResponse {
 
     private Long id;
 
-    private String content;
+    private String comment;
 
     private LocalDateTime createdAt;
 
