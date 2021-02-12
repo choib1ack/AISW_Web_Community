@@ -2,6 +2,7 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.QnaApiResponse;
@@ -131,6 +132,13 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(qnaApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(qnas.getTotalElements())
+                .totalPages(qnas.getTotalPages())
+                .currentElements(qnas.getNumberOfElements())
+                .currentPage(qnas.getNumber())
+                .build();
+
+        return Header.OK(qnaApiResponseList, pagination);
     }
 }

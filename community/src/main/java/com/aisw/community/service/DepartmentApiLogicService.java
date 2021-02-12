@@ -2,6 +2,7 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
@@ -122,6 +123,13 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(departmentApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(departments.getTotalElements())
+                .totalPages(departments.getTotalPages())
+                .currentElements(departments.getNumberOfElements())
+                .currentPage(departments.getNumber())
+                .build();
+
+        return Header.OK(departmentApiResponseList, pagination);
     }
 }

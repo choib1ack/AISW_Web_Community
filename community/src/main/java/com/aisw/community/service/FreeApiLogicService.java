@@ -2,6 +2,7 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
@@ -128,6 +129,13 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(freeApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(frees.getTotalElements())
+                .totalPages(frees.getTotalPages())
+                .currentElements(frees.getNumberOfElements())
+                .currentPage(frees.getNumber())
+                .build();
+
+        return Header.OK(freeApiResponseList, pagination);
     }
 }

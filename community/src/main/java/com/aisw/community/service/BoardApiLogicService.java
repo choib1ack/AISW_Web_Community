@@ -3,6 +3,7 @@ package com.aisw.community.service;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,13 @@ public class BoardApiLogicService {
         })
                 .collect(Collectors.toList());
 
-        return Header.OK(boardListApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(boards.getTotalElements())
+                .totalPages(boards.getTotalPages())
+                .currentElements(boards.getNumberOfElements())
+                .currentPage(boards.getNumber())
+                .build();
+
+        return Header.OK(boardListApiResponseList, pagination);
     }
 }

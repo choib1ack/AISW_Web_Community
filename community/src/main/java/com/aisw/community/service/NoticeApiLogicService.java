@@ -3,6 +3,7 @@ package com.aisw.community.service;
 import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.NoticeListApiResponse;
 import com.aisw.community.repository.NoticeRepository;
@@ -97,6 +98,13 @@ public class NoticeApiLogicService {
         })
                 .collect(Collectors.toList());
 
-        return Header.OK(noticeListApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(notices.getTotalElements())
+                .totalPages(notices.getTotalPages())
+                .currentElements(notices.getNumberOfElements())
+                .currentPage(notices.getNumber())
+                .build();
+
+        return Header.OK(noticeListApiResponseList, pagination);
     }
 }

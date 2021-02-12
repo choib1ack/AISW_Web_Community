@@ -2,6 +2,7 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CouncilApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
@@ -122,6 +123,13 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(councilApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(councils.getTotalElements())
+                .totalPages(councils.getTotalPages())
+                .currentElements(councils.getNumberOfElements())
+                .currentPage(councils.getNumber())
+                .build();
+
+        return Header.OK(councilApiResponseList, pagination);
     }
 }

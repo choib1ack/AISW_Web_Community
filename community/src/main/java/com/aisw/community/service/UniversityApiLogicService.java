@@ -2,6 +2,7 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.UniversityApiResponse;
@@ -125,6 +126,13 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(universityApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(universities.getTotalElements())
+                .totalPages(universities.getTotalPages())
+                .currentElements(universities.getNumberOfElements())
+                .currentPage(universities.getNumber())
+                .build();
+
+        return Header.OK(universityApiResponseList, pagination);
     }
 }
