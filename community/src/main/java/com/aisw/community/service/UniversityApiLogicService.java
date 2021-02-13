@@ -7,6 +7,7 @@ import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.repository.NoticeRepository;
+import com.aisw.community.repository.UniversityRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,13 +18,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UniversityApiLogicService extends BaseService<UniversityApiRequest, UniversityApiResponse, University> {
+public class UniversityApiLogicService extends PostService<UniversityApiRequest, UniversityApiResponse, University> {
 
     @Autowired
     private NoticeRepository noticeRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UniversityRepository universityRepository;
 
     @Autowired
     private NoticeApiLogicService noticeApiLogicService;
@@ -122,6 +126,32 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     public Header<List<UniversityApiResponse>> search(Pageable pageable) {
         Page<University> universities = baseRepository.findAll(pageable);
 
+        return getListHeader(universities);
+    }
+
+    @Override
+    public Header<List<UniversityApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<University> universities = universityRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(universities);
+    }
+
+    @Override
+    public Header<List<UniversityApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<University> universities = universityRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(universities);
+    }
+
+    @Override
+    public Header<List<UniversityApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<University> universities = universityRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(universities);
+    }
+
+    private Header<List<UniversityApiResponse>> getListHeader(Page<University> universities) {
         List<UniversityApiResponse> universityApiResponseList = universities.stream()
                 .map(this::response)
                 .collect(Collectors.toList());

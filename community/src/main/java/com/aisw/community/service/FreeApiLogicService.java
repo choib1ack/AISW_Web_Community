@@ -1,10 +1,12 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
 import com.aisw.community.model.network.response.FreeCommentApiResponse;
 import com.aisw.community.repository.*;
@@ -17,13 +19,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResponse, Free> {
+public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResponse, Free> {
 
     @Autowired
     private BoardRepository boardRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FreeRepository freeRepository;
 
     @Autowired
     private BoardApiLogicService boardApiLogicService;
@@ -125,6 +130,32 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
     public Header<List<FreeApiResponse>> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
 
+        return getListHeader(frees);
+    }
+
+    @Override
+    public Header<List<FreeApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Free> frees = freeRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(frees);
+    }
+
+    @Override
+    public Header<List<FreeApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(frees);
+    }
+
+    @Override
+    public Header<List<FreeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<Free> frees = freeRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(frees);
+    }
+
+    private Header<List<FreeApiResponse>> getListHeader(Page<Free> frees) {
         List<FreeApiResponse> freeApiResponseList = frees.stream()
                 .map(this::response)
                 .collect(Collectors.toList());

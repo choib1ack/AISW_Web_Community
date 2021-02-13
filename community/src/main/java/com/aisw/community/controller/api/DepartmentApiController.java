@@ -1,6 +1,7 @@
 package com.aisw.community.controller.api;
 
 import com.aisw.community.controller.CrudController;
+import com.aisw.community.controller.PostController;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
@@ -11,5 +12,5 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/notice/department")
-public class DepartmentApiController extends CrudController<DepartmentApiRequest, DepartmentApiResponse, Department> {
+public class DepartmentApiController extends PostController<DepartmentApiRequest, DepartmentApiResponse, Department> {
 }

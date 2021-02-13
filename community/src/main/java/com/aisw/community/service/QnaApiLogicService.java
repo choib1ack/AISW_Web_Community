@@ -1,12 +1,15 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.FreeApiResponse;
 import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.repository.BoardRepository;
+import com.aisw.community.repository.QnaRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,13 +20,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiResponse, Qna> {
 
     @Autowired
     private BoardRepository boardRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private QnaRepository qnaRepository;
 
     @Autowired
     private BoardApiLogicService boardApiLogicService;
@@ -128,6 +134,32 @@ public class QnaApiLogicService extends BaseService<QnaApiRequest, QnaApiRespons
     public Header<List<QnaApiResponse>> search(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
 
+        return getListHeader(qnas);
+    }
+
+    @Override
+    public Header<List<QnaApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Qna> qnas = qnaRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(qnas);
+    }
+
+    @Override
+    public Header<List<QnaApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(qnas);
+    }
+
+    @Override
+    public Header<List<QnaApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<Qna> qnas = qnaRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(qnas);
+    }
+
+    private Header<List<QnaApiResponse>> getListHeader(Page<Qna> qnas) {
         List<QnaApiResponse> qnaApiResponseList = qnas.stream()
                 .map(this::response)
                 .collect(Collectors.toList());

@@ -1,11 +1,14 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Council;
+import com.aisw.community.model.entity.University;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CouncilApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
+import com.aisw.community.model.network.response.UniversityApiResponse;
+import com.aisw.community.repository.CouncilRepository;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +20,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CouncilApiLogicService extends BaseService<CouncilApiRequest, CouncilApiResponse, Council> {
+public class CouncilApiLogicService extends PostService<CouncilApiRequest, CouncilApiResponse, Council> {
 
     @Autowired
     private NoticeRepository noticeRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CouncilRepository councilRepository;
 
     @Autowired
     private NoticeApiLogicService noticeApiLogicService;
@@ -119,6 +125,32 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     public Header<List<CouncilApiResponse>> search(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
 
+        return getListHeader(councils);
+    }
+
+    @Override
+    public Header<List<CouncilApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Council> councils = councilRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(councils);
+    }
+
+    @Override
+    public Header<List<CouncilApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<Council> councils = councilRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(councils);
+    }
+
+    @Override
+    public Header<List<CouncilApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<Council> councils = councilRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(councils);
+    }
+
+    private Header<List<CouncilApiResponse>> getListHeader(Page<Council> councils) {
         List<CouncilApiResponse> councilApiResponseList = councils.stream()
                 .map(this::response)
                 .collect(Collectors.toList());
