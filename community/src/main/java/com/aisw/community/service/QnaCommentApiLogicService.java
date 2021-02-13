@@ -3,9 +3,11 @@ package com.aisw.community.service;
 import com.aisw.community.model.entity.FreeComment;
 import com.aisw.community.model.entity.QnaComment;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeCommentApiRequest;
 import com.aisw.community.model.network.request.QnaCommentApiRequest;
 import com.aisw.community.model.network.response.FreeCommentApiResponse;
+import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.model.network.response.QnaCommentApiResponse;
 import com.aisw.community.repository.QnaCommentRepository;
 import com.aisw.community.repository.QnaRepository;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QnaCommentApiLogicService {
@@ -64,16 +67,19 @@ public class QnaCommentApiLogicService {
     }
 
     public Header<List<QnaCommentApiResponse>> searchByPost(Long id, Pageable pageable) {
-        Page<QnaComment> qnaComments = qnaCommentRepository.findAll(pageable);
+        Page<QnaComment> qnaComments = qnaCommentRepository.findAllByQnaId(id, pageable);
 
-        List<QnaCommentApiResponse> qnaCommentApiResponseList = new ArrayList<>();
-        qnaComments.stream().forEach(qnaComment -> {
-            if(qnaComment.getQna().getId() == id) {
-                QnaCommentApiResponse qnaCommentApiResponse = response(qnaComment);
-                qnaCommentApiResponseList.add(qnaCommentApiResponse);
-            }
-        });
+        List<QnaCommentApiResponse> qnaCommentApiResponseList = qnaComments.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
 
-        return Header.OK(qnaCommentApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(qnaComments.getTotalElements())
+                .totalPages(qnaComments.getTotalPages())
+                .currentElements(qnaComments.getNumberOfElements())
+                .currentPage(qnaComments.getNumber())
+                .build();
+
+        return Header.OK(qnaCommentApiResponseList, pagination);
     }
 }

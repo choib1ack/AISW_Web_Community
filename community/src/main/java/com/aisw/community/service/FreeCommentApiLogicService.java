@@ -2,9 +2,12 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.FreeComment;
+import com.aisw.community.model.entity.QnaComment;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeCommentApiRequest;
 import com.aisw.community.model.network.response.FreeCommentApiResponse;
+import com.aisw.community.model.network.response.QnaCommentApiResponse;
 import com.aisw.community.repository.FreeCommentRepository;
 import com.aisw.community.repository.FreeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,16 +66,19 @@ public class FreeCommentApiLogicService {
     }
 
     public Header<List<FreeCommentApiResponse>> searchByPost(Long id, Pageable pageable) {
-        Page<FreeComment> freeComments = freeCommentRepository.findAll(pageable);
+        Page<FreeComment> freeComments = freeCommentRepository.findAllByFreeId(id, pageable);
 
-        List<FreeCommentApiResponse> freeCommentApiResponseList = new ArrayList<>();
-        freeComments.stream().forEach(freeComment -> {
-                    if(freeComment.getFree().getId() == id) {
-                        FreeCommentApiResponse freeCommentApiResponse = response(freeComment);
-                        freeCommentApiResponseList.add(freeCommentApiResponse);
-                    }
-                });
+        List<FreeCommentApiResponse> freeCommentApiResponseList = freeComments.stream()
+                .map(this::response)
+                .collect(Collectors.toList());
 
-        return Header.OK(freeCommentApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(freeComments.getTotalElements())
+                .totalPages(freeComments.getTotalPages())
+                .currentElements(freeComments.getNumberOfElements())
+                .currentPage(freeComments.getNumber())
+                .build();
+
+        return Header.OK(freeCommentApiResponseList, pagination);
     }
 }
