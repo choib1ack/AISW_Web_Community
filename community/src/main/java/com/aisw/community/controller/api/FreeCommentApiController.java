@@ -3,8 +3,6 @@ package com.aisw.community.controller.api;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.FreeCommentApiRequest;
 import com.aisw.community.model.network.response.FreeCommentApiResponse;
-import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.model.network.response.NoticeListApiResponse;
 import com.aisw.community.service.FreeCommentApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +36,6 @@ public class FreeCommentApiController {
     public Header<List<FreeCommentApiResponse>> searchByFree(
             @PathVariable Long id,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return freeCommentApiLogicService.searchByFree(id, pageable);
+        return freeCommentApiLogicService.searchByPost(id, pageable);
     }
 }

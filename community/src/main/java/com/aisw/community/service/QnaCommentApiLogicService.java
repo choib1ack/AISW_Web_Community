@@ -63,7 +63,7 @@ public class QnaCommentApiLogicService {
         return freeCommentApiResponse;
     }
 
-    public Header<List<QnaCommentApiResponse>> searchByFree(Long id, Pageable pageable) {
+    public Header<List<QnaCommentApiResponse>> searchByPost(Long id, Pageable pageable) {
         Page<QnaComment> qnaComments = qnaCommentRepository.findAll(pageable);
 
         List<QnaCommentApiResponse> qnaCommentApiResponseList = new ArrayList<>();

@@ -62,7 +62,7 @@ public class FreeCommentApiLogicService {
         return freeCommentApiResponse;
     }
 
-    public Header<List<FreeCommentApiResponse>> searchByFree(Long id, Pageable pageable) {
+    public Header<List<FreeCommentApiResponse>> searchByPost(Long id, Pageable pageable) {
         Page<FreeComment> freeComments = freeCommentRepository.findAll(pageable);
 
         List<FreeCommentApiResponse> freeCommentApiResponseList = new ArrayList<>();

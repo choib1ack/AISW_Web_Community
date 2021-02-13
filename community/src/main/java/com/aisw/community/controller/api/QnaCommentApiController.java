@@ -1,10 +1,7 @@
 package com.aisw.community.controller.api;
 
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.FreeCommentApiRequest;
 import com.aisw.community.model.network.request.QnaCommentApiRequest;
-import com.aisw.community.model.network.response.FreeCommentApiResponse;
-import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.model.network.response.QnaCommentApiResponse;
 import com.aisw.community.service.QnaCommentApiLogicService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +36,6 @@ public class QnaCommentApiController {
     public Header<List<QnaCommentApiResponse>> searchByFree(
             @PathVariable Long id,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return qnaCommentApiLogicService.searchByFree(id, pageable);
+        return qnaCommentApiLogicService.searchByPost(id, pageable);
     }
 }
