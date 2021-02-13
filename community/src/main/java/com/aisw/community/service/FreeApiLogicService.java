@@ -2,13 +2,14 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
+import com.aisw.community.model.enumclass.BoardCategory;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.FreeApiRequest;
-import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.DepartmentApiResponse;
-import com.aisw.community.model.network.response.FreeApiResponse;
-import com.aisw.community.model.network.response.FreeCommentApiResponse;
+import com.aisw.community.model.network.request.NoticeApiRequest;
+import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,8 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
-        BoardApiResponse boardApiResponse = boardApiLogicService.create().getData();
+        BoardApiRequest noticeApiRequest = BoardApiRequest.builder().category(BoardCategory.FREE).build();
+        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())

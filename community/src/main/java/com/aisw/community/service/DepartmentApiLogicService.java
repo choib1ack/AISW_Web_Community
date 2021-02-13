@@ -2,9 +2,11 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
@@ -38,7 +40,8 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().category(NoticeCategory.DEPARTMENT).build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())

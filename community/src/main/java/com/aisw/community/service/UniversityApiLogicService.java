@@ -1,8 +1,10 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.University;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.UniversityApiResponse;
@@ -36,7 +38,8 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().category(NoticeCategory.UNIVERSITY).build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         University university = University.builder()
                 .title(universityApiRequest.getTitle())

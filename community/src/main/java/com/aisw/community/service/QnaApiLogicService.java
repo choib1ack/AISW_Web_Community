@@ -2,8 +2,10 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Qna;
+import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
@@ -38,7 +40,8 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
-        BoardApiResponse boardApiResponse = boardApiLogicService.create().getData();
+        BoardApiRequest noticeApiRequest = BoardApiRequest.builder().category(BoardCategory.FREE).build();
+        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())

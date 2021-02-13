@@ -1,6 +1,9 @@
 package com.aisw.community.controller.api;
 
+import com.aisw.community.controller.BoardController;
+import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.NoticeListApiResponse;
 import com.aisw.community.service.NoticeApiLogicService;
@@ -16,24 +19,5 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/notice")
-public class NoticeApiController {
-
-    @Autowired
-    private NoticeApiLogicService noticeApiLogicService;
-
-    @PostMapping("")
-    public Header<NoticeApiResponse> create() {
-        return noticeApiLogicService.create();
-    }
-
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return noticeApiLogicService.delete(id);
-    }
-
-    @GetMapping("/main")
-    public Header<List<NoticeListApiResponse>> searchList(@PageableDefault(sort = "createdAt",
-            direction = Sort.Direction.DESC) Pageable pageable) {
-            return noticeApiLogicService.searchList(pageable);
-    }
+public class NoticeApiController extends BoardController<NoticeApiRequest, NoticeListApiResponse, NoticeApiResponse, Notice> {
 }

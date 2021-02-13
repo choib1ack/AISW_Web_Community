@@ -1,5 +1,6 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BoardCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,6 +23,8 @@ public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private BoardCategory category;
 
     @CreatedDate
     private LocalDateTime createdAt;
