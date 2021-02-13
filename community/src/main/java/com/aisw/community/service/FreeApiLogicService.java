@@ -1,11 +1,15 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
+import com.aisw.community.model.enumclass.BoardCategory;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.FreeApiRequest;
-import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.FreeApiResponse;
-import com.aisw.community.model.network.response.FreeCommentApiResponse;
+import com.aisw.community.model.network.request.NoticeApiRequest;
+import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResponse, Free> {
+public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResponse, Free> {
 
     @Autowired
     private BoardRepository boardRepository;
@@ -25,13 +29,17 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
     private UserRepository userRepository;
 
     @Autowired
+    private FreeRepository freeRepository;
+
+    @Autowired
     private BoardApiLogicService boardApiLogicService;
 
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
-        BoardApiResponse boardApiResponse = boardApiLogicService.create().getData();
+        BoardApiRequest noticeApiRequest = BoardApiRequest.builder().category(BoardCategory.FREE).build();
+        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
@@ -124,10 +132,43 @@ public class FreeApiLogicService extends BaseService<FreeApiRequest, FreeApiResp
     public Header<List<FreeApiResponse>> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
 
+        return getListHeader(frees);
+    }
+
+    @Override
+    public Header<List<FreeApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Free> frees = freeRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(frees);
+    }
+
+    @Override
+    public Header<List<FreeApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(frees);
+    }
+
+    @Override
+    public Header<List<FreeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<Free> frees = freeRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(frees);
+    }
+
+    private Header<List<FreeApiResponse>> getListHeader(Page<Free> frees) {
         List<FreeApiResponse> freeApiResponseList = frees.stream()
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(freeApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(frees.getTotalElements())
+                .totalPages(frees.getTotalPages())
+                .currentElements(frees.getNumberOfElements())
+                .currentPage(frees.getNumber())
+                .build();
+
+        return Header.OK(freeApiResponseList, pagination);
     }
 }
