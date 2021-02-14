@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,12 +62,23 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
     @Override
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(this::response)
-                .map(Header::OK)
+                .map(council -> {
+                    CouncilApiRequest councilApiRequest = CouncilApiRequest.builder()
+                            .id(council.getId())
+                            .title(council.getTitle())
+                            .content(council.getContent())
+                            .attachmentFile(council.getAttachmentFile())
+                            .status(council.getStatus())
+                            .views(council.getViews() + 1)
+                            .level(council.getLevel())
+                            .build();
+                    return update(Header.OK(councilApiRequest));
+                })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
