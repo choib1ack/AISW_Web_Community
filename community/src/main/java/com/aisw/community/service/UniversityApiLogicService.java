@@ -4,6 +4,7 @@ import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,12 +62,24 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     @Override
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(this::response)
-                .map(Header::OK)
+                .map(university -> {
+                    UniversityApiRequest universityApiRequest = UniversityApiRequest.builder()
+                            .id(university.getId())
+                            .title(university.getTitle())
+                            .content(university.getContent())
+                            .attachmentFile(university.getAttachmentFile())
+                            .status(university.getStatus())
+                            .views(university.getViews() + 1)
+                            .level(university.getLevel())
+                            .campus(university.getCampus())
+                            .build();
+                    return update(Header.OK(universityApiRequest));
+                })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 

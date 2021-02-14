@@ -6,6 +6,7 @@ import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.BoardApiRequest;
+import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,12 +66,26 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
     @Override
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(this::response)
-                .map(Header::OK)
+                .map(qna -> {
+                    QnaApiRequest qnaApiRequest = QnaApiRequest.builder()
+                            .id(qna.getId())
+                            .title(qna.getTitle())
+                            .content(qna.getContent())
+                            .attachmentFile(qna.getAttachmentFile())
+                            .status(qna.getStatus())
+                            .views(qna.getViews() + 1)
+                            .level(qna.getLevel())
+                            .likes(qna.getLikes())
+                            .isAnonymous(qna.getIsAnonymous())
+                            .subject(qna.getSubject())
+                            .build();
+                    return update(Header.OK(qnaApiRequest));
+                })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
