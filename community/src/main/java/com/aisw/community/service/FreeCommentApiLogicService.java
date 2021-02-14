@@ -1,72 +1,51 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.FreeComment;
+import com.aisw.community.model.entity.QnaComment;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeCommentApiRequest;
 import com.aisw.community.model.network.response.FreeCommentApiResponse;
+import com.aisw.community.model.network.response.QnaCommentApiResponse;
+import com.aisw.community.repository.FreeCommentRepository;
 import com.aisw.community.repository.FreeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeCommentApiLogicService extends BaseService<FreeCommentApiRequest, FreeCommentApiResponse, FreeComment> {
+public class FreeCommentApiLogicService {
 
     @Autowired
     private FreeRepository freeRepository;
 
-    @Override
+    @Autowired
+    private FreeCommentRepository freeCommentRepository;
+
     public Header<FreeCommentApiResponse> create(Header<FreeCommentApiRequest> request) {
         FreeCommentApiRequest freeCommentApiRequest = request.getData();
 
         FreeComment freeComment = FreeComment.builder()
-                .content(freeCommentApiRequest.getContent())
+                .comment(freeCommentApiRequest.getComment())
                 .likes(freeCommentApiRequest.getLikes())
                 .isAnonymous(freeCommentApiRequest.getIsAnonymous())
                 .free(freeRepository.getOne(freeCommentApiRequest.getFreeId()))
                 .build();
 
-        FreeComment newFreeComment = baseRepository.save(freeComment);
+        FreeComment newFreeComment = freeCommentRepository.save(freeComment);
         return Header.OK(response(newFreeComment));
     }
 
-    @Override
-    public Header<FreeCommentApiResponse> read(Long id) {
-        return baseRepository.findById(id)
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
-
-    @Override
-    public Header<FreeCommentApiResponse> update(Header<FreeCommentApiRequest> request) {
-        FreeCommentApiRequest freeCommentApiRequest = request.getData();
-
-        return baseRepository.findById(freeCommentApiRequest.getId())
-                .map(freeComment -> {
-                    freeComment
-                            .setContent(freeCommentApiRequest.getContent())
-                            .setLikes(freeCommentApiRequest.getLikes())
-                            .setIsAnonymous(freeCommentApiRequest.getIsAnonymous())
-                            .setFree(freeRepository.getOne(freeCommentApiRequest.getFreeId()));
-
-                    return freeComment;
-                })
-                .map(freeComment -> baseRepository.save(freeComment))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
-
-    @Override
     public Header delete(Long id) {
-        return baseRepository.findById(id)
+        return freeCommentRepository.findById(id)
                 .map(freeComment -> {
-                    baseRepository.delete(freeComment);
+                    freeCommentRepository.delete(freeComment);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -75,7 +54,7 @@ public class FreeCommentApiLogicService extends BaseService<FreeCommentApiReques
     private FreeCommentApiResponse response(FreeComment freeComment) {
         FreeCommentApiResponse freeCommentApiResponse = FreeCommentApiResponse.builder()
                 .id(freeComment.getId())
-                .content(freeComment.getContent())
+                .comment(freeComment.getComment())
                 .createdAt(freeComment.getCreatedAt())
                 .createdBy(freeComment.getCreatedBy())
                 .likes(freeComment.getLikes())
@@ -86,14 +65,20 @@ public class FreeCommentApiLogicService extends BaseService<FreeCommentApiReques
         return freeCommentApiResponse;
     }
 
-    @Override
-    public Header<List<FreeCommentApiResponse>> search(Pageable pageable) {
-        Page<FreeComment> freeComments = baseRepository.findAll(pageable);
+    public Header<List<FreeCommentApiResponse>> searchByPost(Long id, Pageable pageable) {
+        Page<FreeComment> freeComments = freeCommentRepository.findAllByFreeId(id, pageable);
 
         List<FreeCommentApiResponse> freeCommentApiResponseList = freeComments.stream()
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(freeCommentApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(freeComments.getTotalElements())
+                .totalPages(freeComments.getTotalPages())
+                .currentElements(freeComments.getNumberOfElements())
+                .currentPage(freeComments.getNumber())
+                .build();
+
+        return Header.OK(freeCommentApiResponseList, pagination);
     }
 }

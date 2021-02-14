@@ -20,7 +20,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"noticeList", "boardList"})
+@ToString(exclude = {"universityList", "departmentList", "councilList", "freeList", "qnaList"})
 public class User {
 
     @Id

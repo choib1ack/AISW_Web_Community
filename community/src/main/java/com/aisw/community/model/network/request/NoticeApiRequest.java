@@ -1,5 +1,7 @@
 package com.aisw.community.model.network.request;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,16 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FreeCommentApiRequest {
+public class NoticeApiRequest {
 
     private Long id;
 
-    private String comment;
-
-    // 익명 true, 비익명 false
-    private Boolean isAnonymous;
-
-    private Long likes;
-
-    private Long freeId;
+    private NoticeCategory category;
 }

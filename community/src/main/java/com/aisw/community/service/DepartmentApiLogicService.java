@@ -1,10 +1,16 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
+import com.aisw.community.model.network.request.NoticeApiRequest;
+import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
+import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest, DepartmentApiResponse, Department> {
+public class DepartmentApiLogicService extends PostService<DepartmentApiRequest, DepartmentApiResponse, Department> {
 
     @Autowired
     private NoticeRepository noticeRepository;
@@ -25,13 +31,17 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     private UserRepository userRepository;
 
     @Autowired
+    private DepartmentRepository departmentRepository;
+
+    @Autowired
     private NoticeApiLogicService noticeApiLogicService;
 
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().category(NoticeCategory.DEPARTMENT).build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
@@ -118,10 +128,43 @@ public class DepartmentApiLogicService extends BaseService<DepartmentApiRequest,
     public Header<List<DepartmentApiResponse>> search(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
 
+        return getListHeader(departments);
+    }
+
+    @Override
+    public Header<List<DepartmentApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Department> departments = departmentRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(departments);
+    }
+
+    @Override
+    public Header<List<DepartmentApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<Department> departments = departmentRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(departments);
+    }
+
+    @Override
+    public Header<List<DepartmentApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<Department> departments = departmentRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(departments);
+    }
+
+    private Header<List<DepartmentApiResponse>> getListHeader(Page<Department> departments) {
         List<DepartmentApiResponse> departmentApiResponseList = departments.stream()
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(departmentApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(departments.getTotalElements())
+                .totalPages(departments.getTotalPages())
+                .currentElements(departments.getNumberOfElements())
+                .currentPage(departments.getNumber())
+                .build();
+
+        return Header.OK(departmentApiResponseList, pagination);
     }
 }
