@@ -10,12 +10,10 @@ export default function NoticeDetail({match}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // console.log(match);
-
     const { notice_category } = match.params;
     const { id } = match.params;
     const url = match.url;
-    console.log(notice_category+"/"+id+"/"+url);
+
     const Category = (c) => {
         switch (c) {
             case "university":
@@ -45,8 +43,6 @@ export default function NoticeDetail({match}) {
                 setError(null);
                 setNoticeDetailData(null);
                 setLoading(true);
-                // console.log("url : " + url(match.params.category, match.params.id));
-                // const response = await axios.get({match.url});
                 const response = await axios.get(url);
                 console.log(response.data);
                 setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
@@ -57,12 +53,12 @@ export default function NoticeDetail({match}) {
         };
 
         fetchNoticeData();
-    }, []);
+    }, []); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <tr><td colSpan={5}>로딩중..</td></tr>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
     if (!noticeDetailData) return null;
-    // if (Object.keys(noticeDetailData).length==0) return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
+
     return (
         <div className="NoticeDetail">
 

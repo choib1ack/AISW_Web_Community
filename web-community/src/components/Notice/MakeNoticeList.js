@@ -39,7 +39,6 @@ export default function MakeNoticeList(props) {
             case 3:
                 return "council";
         }
-        return url;
     }
 
     const status = (status) =>{
@@ -75,16 +74,11 @@ export default function MakeNoticeList(props) {
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
-                // 요청이 시작 할 때에는 error 와 users 를 초기화하고
                 setError(null);
                 setNoticeData(null);
-                // loading 상태를 true 로 바꿉니다.
                 setLoading(true);
-                console.log("url : "+url(props.category));
                 const response = await axios.get(url(props.category));
-                // const response = await axios.get("/notice/university");
-                console.log(response.data);
-                setNoticeData(response.data.data); // 데이터는 response.data 안에 들어있습니다.
+                setNoticeData(response.data.data); // 데이터는 response.data 안에 있음
             } catch (e) {
                 setError(e);
             }
@@ -101,14 +95,12 @@ export default function MakeNoticeList(props) {
     return (
         <>
             {noticeData.map(data => (
-
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ? 
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
                     <td>
                             {data.title}
-                            {/*<img src={photoImage} style={attachment(data.attachment_file)}/>*/}
                             <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
                     <td>{data.created_by}</td>
