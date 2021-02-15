@@ -17,7 +17,7 @@ public class QnaCommentApiRequest {
 
     private Long id;
 
-    private String content;
+    private String comment;
 
     // 익명 true, 비익명 false
     private Boolean isAnonymous;

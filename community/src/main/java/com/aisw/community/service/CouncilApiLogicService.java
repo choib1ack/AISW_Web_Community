@@ -1,22 +1,29 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Council;
+import com.aisw.community.model.entity.University;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CouncilApiRequest;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
+import com.aisw.community.model.network.response.UniversityApiResponse;
+import com.aisw.community.repository.CouncilRepository;
 import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CouncilApiLogicService extends BaseService<CouncilApiRequest, CouncilApiResponse, Council> {
+public class CouncilApiLogicService extends PostService<CouncilApiRequest, CouncilApiResponse, Council> {
 
     @Autowired
     private NoticeRepository noticeRepository;
@@ -25,13 +32,17 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     private UserRepository userRepository;
 
     @Autowired
+    private CouncilRepository councilRepository;
+
+    @Autowired
     private NoticeApiLogicService noticeApiLogicService;
 
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().category(NoticeCategory.COUNCIL).build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
@@ -51,12 +62,23 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     @Override
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(this::response)
-                .map(Header::OK)
+                .map(council -> {
+                    CouncilApiRequest councilApiRequest = CouncilApiRequest.builder()
+                            .id(council.getId())
+                            .title(council.getTitle())
+                            .content(council.getContent())
+                            .attachmentFile(council.getAttachmentFile())
+                            .status(council.getStatus())
+                            .views(council.getViews() + 1)
+                            .level(council.getLevel())
+                            .build();
+                    return update(Header.OK(councilApiRequest));
+                })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
@@ -118,10 +140,43 @@ public class CouncilApiLogicService extends BaseService<CouncilApiRequest, Counc
     public Header<List<CouncilApiResponse>> search(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
 
+        return getListHeader(councils);
+    }
+
+    @Override
+    public Header<List<CouncilApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Council> councils = councilRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(councils);
+    }
+
+    @Override
+    public Header<List<CouncilApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<Council> councils = councilRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(councils);
+    }
+
+    @Override
+    public Header<List<CouncilApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<Council> councils = councilRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(councils);
+    }
+
+    private Header<List<CouncilApiResponse>> getListHeader(Page<Council> councils) {
         List<CouncilApiResponse> councilApiResponseList = councils.stream()
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(councilApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(councils.getTotalElements())
+                .totalPages(councils.getTotalPages())
+                .currentElements(councils.getNumberOfElements())
+                .currentPage(councils.getNumber())
+                .build();
+
+        return Header.OK(councilApiResponseList, pagination);
     }
 }

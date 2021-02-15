@@ -1,6 +1,6 @@
 package com.aisw.community.model.network.response;
 
-import jdk.vm.ci.meta.Local;
+import com.aisw.community.model.enumclass.BoardCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 public class BoardApiResponse {
 
     private Long id;
+
+    private BoardCategory category;
 
     private LocalDateTime cratedAt;
 }

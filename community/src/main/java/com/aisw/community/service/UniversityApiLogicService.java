@@ -1,22 +1,28 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.University;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.DepartmentApiRequest;
+import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.repository.NoticeRepository;
+import com.aisw.community.repository.UniversityRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UniversityApiLogicService extends BaseService<UniversityApiRequest, UniversityApiResponse, University> {
+public class UniversityApiLogicService extends PostService<UniversityApiRequest, UniversityApiResponse, University> {
 
     @Autowired
     private NoticeRepository noticeRepository;
@@ -25,13 +31,17 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     private UserRepository userRepository;
 
     @Autowired
+    private UniversityRepository universityRepository;
+
+    @Autowired
     private NoticeApiLogicService noticeApiLogicService;
 
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create().getData();
+        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().category(NoticeCategory.UNIVERSITY).build();
+        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
@@ -52,12 +62,24 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     @Override
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(this::response)
-                .map(Header::OK)
+                .map(university -> {
+                    UniversityApiRequest universityApiRequest = UniversityApiRequest.builder()
+                            .id(university.getId())
+                            .title(university.getTitle())
+                            .content(university.getContent())
+                            .attachmentFile(university.getAttachmentFile())
+                            .status(university.getStatus())
+                            .views(university.getViews() + 1)
+                            .level(university.getLevel())
+                            .campus(university.getCampus())
+                            .build();
+                    return update(Header.OK(universityApiRequest));
+                })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
@@ -121,10 +143,43 @@ public class UniversityApiLogicService extends BaseService<UniversityApiRequest,
     public Header<List<UniversityApiResponse>> search(Pageable pageable) {
         Page<University> universities = baseRepository.findAll(pageable);
 
+        return getListHeader(universities);
+    }
+
+    @Override
+    public Header<List<UniversityApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<University> universities = universityRepository.findAllByCreatedByContaining(writer, pageable);
+
+        return getListHeader(universities);
+    }
+
+    @Override
+    public Header<List<UniversityApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<University> universities = universityRepository.findAllByTitleContaining(title, pageable);
+
+        return getListHeader(universities);
+    }
+
+    @Override
+    public Header<List<UniversityApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<University> universities = universityRepository
+                .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(universities);
+    }
+
+    private Header<List<UniversityApiResponse>> getListHeader(Page<University> universities) {
         List<UniversityApiResponse> universityApiResponseList = universities.stream()
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(universityApiResponseList);
+        Pagination pagination = Pagination.builder()
+                .totalElements(universities.getTotalElements())
+                .totalPages(universities.getTotalPages())
+                .currentElements(universities.getNumberOfElements())
+                .currentPage(universities.getNumber())
+                .build();
+
+        return Header.OK(universityApiResponseList, pagination);
     }
 }

@@ -23,7 +23,7 @@ public class FreeComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
+    private String comment;
 
     @CreatedDate
     private LocalDateTime createdAt;
