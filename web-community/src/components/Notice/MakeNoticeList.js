@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {Link} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import fileImage from "../../icon/file.svg";
 
 export default function MakeNoticeList(props) {
@@ -66,6 +66,12 @@ export default function MakeNoticeList(props) {
         return style;
     }
 
+    // <tr> 전체에 링크 연결
+    let history = useHistory();
+    const ToLink = (url) =>{
+        history.push(url);
+    }
+
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
@@ -95,19 +101,21 @@ export default function MakeNoticeList(props) {
     return (
         <>
             {noticeData.map(data => (
-                <tr key={data.notice_id}>
+
+                <tr key={data.notice_id}
+                    onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ? 
+                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
                     <td>
-                        <Link to={`${props.match.url}${categoryName(props.category) == 0 ? data.category.toLowerCase() : categoryName(props.category)}/${data.id}`} style={{color: 'black'}}>
                             {data.title}
                             {/*<img src={photoImage} style={attachment(data.attachment_file)}/>*/}
                             <img src={fileImage} style={attachment(data.attachment_file)}/>
-                        </Link>
                     </td>
                     <td>{data.created_by}</td>
                     <td>{data.created_at.substring(0,10)}</td>
                     <td>{data.views}</td>
                 </tr>
+
             ))}
         </>
     );
