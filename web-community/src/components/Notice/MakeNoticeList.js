@@ -28,6 +28,20 @@ export default function MakeNoticeList(props) {
         return url;
     }
 
+    const categoryName = (category) => {
+        switch (category) {
+            case 0:
+                return 0;
+            case 1:
+                return "university";
+            case 2:
+                return "department";
+            case 3:
+                return "council";
+        }
+        return url;
+    }
+
     const status = (status) =>{
         switch (status) {
             case "URGENT":
@@ -81,10 +95,10 @@ export default function MakeNoticeList(props) {
     return (
         <>
             {noticeData.map(data => (
-                <tr key={data.id}>
+                <tr key={data.notice_id}>
                     <td>{status(data.status)}</td>
                     <td>
-                        <Link to={`${props.match.url}/${data.id}`} style={{color: 'black'}}>
+                        <Link to={`${props.match.url}${categoryName(props.category) == 0 ? data.category.toLowerCase() : categoryName(props.category)}/${data.id}`} style={{color: 'black'}}>
                             {data.title}
                             {/*<img src={photoImage} style={attachment(data.attachment_file)}/>*/}
                             <img src={fileImage} style={attachment(data.attachment_file)}/>

@@ -9,7 +9,7 @@ function Notice({match}) {
     return (
         <>
             <Route exact path={match.path} component={NoticeList}/>
-            <Route path={`${match.path}/noticeDetail/:id`} component={NoticeDetail}/>
+            <Route path={`${match.path}/:notice_category/:id`} component={NoticeDetail}/>
             <Route path={`${match.path}/newNotice`} component={NewNotice}/>
         </>
     );
