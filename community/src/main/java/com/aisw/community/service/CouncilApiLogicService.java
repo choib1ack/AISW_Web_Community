@@ -63,18 +63,10 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
     @Override
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(council -> {
-                    CouncilApiRequest councilApiRequest = CouncilApiRequest.builder()
-                            .id(council.getId())
-                            .title(council.getTitle())
-                            .content(council.getContent())
-                            .attachmentFile(council.getAttachmentFile())
-                            .status(council.getStatus())
-                            .views(council.getViews() + 1)
-                            .level(council.getLevel())
-                            .build();
-                    return update(Header.OK(councilApiRequest));
-                })
+                .map(council -> council.setViews(council.getViews() + 1))
+                .map(council -> baseRepository.save(council))
+                .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 

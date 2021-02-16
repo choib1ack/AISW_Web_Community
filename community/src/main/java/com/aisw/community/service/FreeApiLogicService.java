@@ -62,22 +62,13 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
     }
 
     @Override
+    @Transactional
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(free -> {
-                    FreeApiRequest freeApiRequest = FreeApiRequest.builder()
-                            .id(free.getId())
-                            .title(free.getTitle())
-                            .content(free.getContent())
-                            .attachmentFile(free.getAttachmentFile())
-                            .status(free.getStatus())
-                            .views(free.getViews() + 1)
-                            .level(free.getLevel())
-                            .likes(free.getLikes())
-                            .isAnonymous(free.getIsAnonymous())
-                            .build();
-                    return update(Header.OK(freeApiRequest));
-                })
+                .map(free -> free.setViews(free.getViews() + 1))
+                .map(free -> baseRepository.save(free))
+                .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -187,5 +178,15 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
                 .build();
 
         return Header.OK(freeApiResponseList, pagination);
+    }
+
+    @Transactional
+    public Header<FreeApiResponse> pressLikes(Long id) {
+        return baseRepository.findById(id)
+                .map(free -> free.setLikes(free.getLikes() + 1))
+                .map(free -> baseRepository.save(free))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 }

@@ -64,18 +64,10 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     @Override
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(department -> {
-                    DepartmentApiRequest departmentApiRequest = DepartmentApiRequest.builder()
-                            .id(department.getId())
-                            .title(department.getTitle())
-                            .content(department.getContent())
-                            .attachmentFile(department.getAttachmentFile())
-                            .status(department.getStatus())
-                            .views(department.getViews() + 1)
-                            .level(department.getLevel())
-                            .build();
-                    return update(Header.OK(departmentApiRequest));
-                })
+                .map(department -> department.setViews(department.getViews() + 1))
+                .map(department -> baseRepository.save(department))
+                .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 

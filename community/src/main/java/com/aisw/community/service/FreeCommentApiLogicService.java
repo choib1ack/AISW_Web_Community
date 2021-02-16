@@ -15,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeCommentApiLogicService {
+public class FreeCommentApiLogicService extends CommentService<FreeCommentApiRequest, FreeCommentApiResponse, FreeComment>{
 
     @Autowired
     private FreeRepository freeRepository;
@@ -32,8 +33,11 @@ public class FreeCommentApiLogicService {
     @Autowired
     private FreeCommentRepository freeCommentRepository;
 
+    @Override
     public Header<FreeCommentApiResponse> create(Header<FreeCommentApiRequest> request) {
         FreeCommentApiRequest freeCommentApiRequest = request.getData();
+
+        System.out.println(request);
 
         FreeComment freeComment = FreeComment.builder()
                 .writer(userRepository.getOne(freeCommentApiRequest.getUserId()).getName())
@@ -44,14 +48,15 @@ public class FreeCommentApiLogicService {
                 .user(userRepository.getOne(freeCommentApiRequest.getUserId()))
                 .build();
 
-        FreeComment newFreeComment = freeCommentRepository.save(freeComment);
+        FreeComment newFreeComment = baseRepository.save(freeComment);
         return Header.OK(response(newFreeComment));
     }
 
+    @Override
     public Header delete(Long id) {
-        return freeCommentRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(freeComment -> {
-                    freeCommentRepository.delete(freeComment);
+                    baseRepository.delete(freeComment);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -71,6 +76,7 @@ public class FreeCommentApiLogicService {
         return freeCommentApiResponse;
     }
 
+    @Override
     public Header<List<FreeCommentApiResponse>> searchByPost(Long id, Pageable pageable) {
         Page<FreeComment> freeComments = freeCommentRepository.findAllByFreeId(id, pageable);
 
@@ -86,5 +92,16 @@ public class FreeCommentApiLogicService {
                 .build();
 
         return Header.OK(freeCommentApiResponseList, pagination);
+    }
+
+    @Override
+    @Transactional
+    public Header<FreeCommentApiResponse> pressLikes(Long id) {
+        return baseRepository.findById(id)
+                .map(freeComment -> freeComment.setLikes(freeComment.getLikes() + 1))
+                .map(freeComment -> baseRepository.save(freeComment))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 }

@@ -16,13 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaCommentApiLogicService {
+public class QnaCommentApiLogicService extends CommentService<QnaCommentApiRequest, QnaCommentApiResponse, QnaComment> {
 
     @Autowired
     private QnaRepository qnaRepository;
@@ -33,6 +34,7 @@ public class QnaCommentApiLogicService {
     @Autowired
     private QnaCommentRepository qnaCommentRepository;
 
+    @Override
     public Header<QnaCommentApiResponse> create(Header<QnaCommentApiRequest> request) {
         QnaCommentApiRequest qnaCommentApiRequest = request.getData();
 
@@ -45,14 +47,15 @@ public class QnaCommentApiLogicService {
                 .user(userRepository.getOne(qnaCommentApiRequest.getUserId()))
                 .build();
 
-        QnaComment newQnaComment = qnaCommentRepository.save(qnaComment);
+        QnaComment newQnaComment = baseRepository.save(qnaComment);
         return Header.OK(response(newQnaComment));
     }
 
+    @Override
     public Header delete(Long id) {
-        return qnaCommentRepository.findById(id)
+        return baseRepository.findById(id)
                 .map(qnaComment -> {
-                    qnaCommentRepository.delete(qnaComment);
+                    baseRepository.delete(qnaComment);
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -72,6 +75,7 @@ public class QnaCommentApiLogicService {
         return freeCommentApiResponse;
     }
 
+    @Override
     public Header<List<QnaCommentApiResponse>> searchByPost(Long id, Pageable pageable) {
         Page<QnaComment> qnaComments = qnaCommentRepository.findAllByQnaId(id, pageable);
 
@@ -87,5 +91,16 @@ public class QnaCommentApiLogicService {
                 .build();
 
         return Header.OK(qnaCommentApiResponseList, pagination);
+    }
+
+    @Override
+    @Transactional
+    public Header<QnaCommentApiResponse> pressLikes(Long id) {
+        return baseRepository.findById(id)
+                .map(qnaComment -> qnaComment.setLikes(qnaComment.getLikes() + 1))
+                .map(qnaComment -> baseRepository.save(qnaComment))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 }

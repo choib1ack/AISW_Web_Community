@@ -63,19 +63,10 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     @Override
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(university -> {
-                    UniversityApiRequest universityApiRequest = UniversityApiRequest.builder()
-                            .id(university.getId())
-                            .title(university.getTitle())
-                            .content(university.getContent())
-                            .attachmentFile(university.getAttachmentFile())
-                            .status(university.getStatus())
-                            .views(university.getViews() + 1)
-                            .level(university.getLevel())
-                            .campus(university.getCampus())
-                            .build();
-                    return update(Header.OK(universityApiRequest));
-                })
+                .map(university -> university.setViews(university.getViews() + 1))
+                .map(university -> baseRepository.save(university))
+                .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 

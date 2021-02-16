@@ -67,21 +67,10 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
     @Override
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
-                .map(qna -> {
-                    QnaApiRequest qnaApiRequest = QnaApiRequest.builder()
-                            .id(qna.getId())
-                            .title(qna.getTitle())
-                            .content(qna.getContent())
-                            .attachmentFile(qna.getAttachmentFile())
-                            .status(qna.getStatus())
-                            .views(qna.getViews() + 1)
-                            .level(qna.getLevel())
-                            .likes(qna.getLikes())
-                            .isAnonymous(qna.getIsAnonymous())
-                            .subject(qna.getSubject())
-                            .build();
-                    return update(Header.OK(qnaApiRequest));
-                })
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> baseRepository.save(qna))
+                .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -193,5 +182,15 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
                 .build();
 
         return Header.OK(qnaApiResponseList, pagination);
+    }
+
+    @Transactional
+    public Header<QnaApiResponse> pressLikes(Long id) {
+        return baseRepository.findById(id)
+                .map(qna -> qna.setLikes(qna.getLikes() + 1))
+                .map(qna -> baseRepository.save(qna))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 }
