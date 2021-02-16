@@ -194,4 +194,14 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
 
         return Header.OK(qnaApiResponseList, pagination);
     }
+
+    @Transactional
+    public Header<QnaApiResponse> pressLikes(Long id) {
+        return baseRepository.findById(id)
+                .map(qna -> qna.setLikes(qna.getLikes() + 1))
+                .map(qna -> baseRepository.save(qna))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
 }
