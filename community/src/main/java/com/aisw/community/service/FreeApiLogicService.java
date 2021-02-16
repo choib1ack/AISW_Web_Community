@@ -45,6 +45,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
 
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
+                .writer(userRepository.getOne(freeApiRequest.getUserId()).getName())
                 .content(freeApiRequest.getContent())
                 .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
@@ -125,6 +126,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
         FreeApiResponse freeApiResponse = FreeApiResponse.builder()
                 .id(free.getId())
                 .title(free.getTitle())
+                .writer(free.getWriter())
                 .content(free.getContent())
                 .attachmentFile(free.getAttachmentFile())
                 .status(free.getStatus())

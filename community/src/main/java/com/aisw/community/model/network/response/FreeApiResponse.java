@@ -20,6 +20,8 @@ public class FreeApiResponse {
 
     private String content;
 
+    private String writer;
+
     private String attachmentFile;
 
     private BulletinStatus status;

@@ -47,6 +47,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
 
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
+                .writer(userRepository.getOne(departmentApiRequest.getUserId()).getName())
                 .content(departmentApiRequest.getContent())
                 .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
@@ -121,6 +122,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
         DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())
+                .writer(department.getWriter())
                 .content(department.getContent())
                 .attachmentFile(department.getAttachmentFile())
                 .status(department.getStatus())

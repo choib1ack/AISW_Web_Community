@@ -25,4 +25,6 @@ public class QnaCommentApiRequest {
     private Long likes;
 
     private Long qnaId;
+
+    private Long userId;
 }

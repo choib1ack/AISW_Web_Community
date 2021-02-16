@@ -11,6 +11,7 @@ import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.model.network.response.QnaCommentApiResponse;
 import com.aisw.community.repository.QnaCommentRepository;
 import com.aisw.community.repository.QnaRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,16 +28,21 @@ public class QnaCommentApiLogicService {
     private QnaRepository qnaRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private QnaCommentRepository qnaCommentRepository;
 
     public Header<QnaCommentApiResponse> create(Header<QnaCommentApiRequest> request) {
         QnaCommentApiRequest qnaCommentApiRequest = request.getData();
 
         QnaComment qnaComment = QnaComment.builder()
+                .writer(userRepository.getOne(qnaCommentApiRequest.getUserId()).getName())
                 .comment(qnaCommentApiRequest.getComment())
                 .likes(qnaCommentApiRequest.getLikes())
                 .isAnonymous(qnaCommentApiRequest.getIsAnonymous())
                 .qna(qnaRepository.getOne(qnaCommentApiRequest.getQnaId()))
+                .user(userRepository.getOne(qnaCommentApiRequest.getUserId()))
                 .build();
 
         QnaComment newQnaComment = qnaCommentRepository.save(qnaComment);
@@ -55,9 +61,9 @@ public class QnaCommentApiLogicService {
     private QnaCommentApiResponse response(QnaComment qnaComment) {
         QnaCommentApiResponse freeCommentApiResponse = QnaCommentApiResponse.builder()
                 .id(qnaComment.getId())
+                .writer(qnaComment.getWriter())
                 .comment(qnaComment.getComment())
                 .createdAt(qnaComment.getCreatedAt())
-                .createdBy(qnaComment.getCreatedBy())
                 .likes(qnaComment.getLikes())
                 .isAnonymous(qnaComment.getIsAnonymous())
                 .qnaId(qnaComment.getQna().getId())

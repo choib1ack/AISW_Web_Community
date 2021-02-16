@@ -45,6 +45,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
 
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
+                .writer(userRepository.getOne(universityApiRequest.getUserId()).getName())
                 .content(universityApiRequest.getContent())
                 .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
@@ -122,6 +123,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
         UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
+                .writer(university.getWriter())
                 .content(university.getContent())
                 .attachmentFile(university.getAttachmentFile())
                 .status(university.getStatus())

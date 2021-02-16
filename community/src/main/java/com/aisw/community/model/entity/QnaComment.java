@@ -15,13 +15,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"qna"})
+@ToString(exclude = {"qna", "user"})
 @EntityListeners(AuditingEntityListener.class)
 public class QnaComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String writer;
 
     private String comment;
 
@@ -38,4 +40,7 @@ public class QnaComment {
 
     @ManyToOne
     private Qna qna;
+
+    @ManyToOne
+    private User user;
 }

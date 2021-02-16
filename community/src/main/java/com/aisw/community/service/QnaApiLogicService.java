@@ -47,6 +47,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
 
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
+                .writer(userRepository.getOne(qnaApiRequest.getUserId()).getName())
                 .content(qnaApiRequest.getContent())
                 .attachmentFile(qnaApiRequest.getAttachmentFile())
                 .status(qnaApiRequest.getStatus())
@@ -130,6 +131,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
         QnaApiResponse qnaApiResponse = QnaApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
+                .writer(qna.getWriter())
                 .content(qna.getContent())
                 .attachmentFile(qna.getAttachmentFile())
                 .status(qna.getStatus())

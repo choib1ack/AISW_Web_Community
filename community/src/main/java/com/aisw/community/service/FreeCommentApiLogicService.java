@@ -10,6 +10,7 @@ import com.aisw.community.model.network.response.FreeCommentApiResponse;
 import com.aisw.community.model.network.response.QnaCommentApiResponse;
 import com.aisw.community.repository.FreeCommentRepository;
 import com.aisw.community.repository.FreeRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,16 +27,21 @@ public class FreeCommentApiLogicService {
     private FreeRepository freeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private FreeCommentRepository freeCommentRepository;
 
     public Header<FreeCommentApiResponse> create(Header<FreeCommentApiRequest> request) {
         FreeCommentApiRequest freeCommentApiRequest = request.getData();
 
         FreeComment freeComment = FreeComment.builder()
+                .writer(userRepository.getOne(freeCommentApiRequest.getUserId()).getName())
                 .comment(freeCommentApiRequest.getComment())
                 .likes(freeCommentApiRequest.getLikes())
                 .isAnonymous(freeCommentApiRequest.getIsAnonymous())
                 .free(freeRepository.getOne(freeCommentApiRequest.getFreeId()))
+                .user(userRepository.getOne(freeCommentApiRequest.getUserId()))
                 .build();
 
         FreeComment newFreeComment = freeCommentRepository.save(freeComment);
@@ -54,9 +60,9 @@ public class FreeCommentApiLogicService {
     private FreeCommentApiResponse response(FreeComment freeComment) {
         FreeCommentApiResponse freeCommentApiResponse = FreeCommentApiResponse.builder()
                 .id(freeComment.getId())
+                .writer(freeComment.getWriter())
                 .comment(freeComment.getComment())
                 .createdAt(freeComment.getCreatedAt())
-                .createdBy(freeComment.getCreatedBy())
                 .likes(freeComment.getLikes())
                 .isAnonymous(freeComment.getIsAnonymous())
                 .freeId(freeComment.getFree().getId())

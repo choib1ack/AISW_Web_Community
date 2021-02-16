@@ -46,6 +46,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
 
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
+                .writer(userRepository.getOne(councilApiRequest.getUserId()).getName())
                 .content(councilApiRequest.getContent())
                 .attachmentFile(councilApiRequest.getAttachmentFile())
                 .status(councilApiRequest.getStatus())
@@ -120,6 +121,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
         CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())
+                .writer(council.getWriter())
                 .content(council.getContent())
                 .attachmentFile(council.getAttachmentFile())
                 .status(council.getStatus())
