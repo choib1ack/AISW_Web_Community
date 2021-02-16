@@ -15,13 +15,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"free"})
+@ToString(exclude = {"free", "user"})
 @EntityListeners(AuditingEntityListener.class)
 public class FreeComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String writer;
 
     private String comment;
 
@@ -38,4 +40,7 @@ public class FreeComment {
 
     @ManyToOne
     private Free free;
+
+    @ManyToOne
+    private User user;
 }

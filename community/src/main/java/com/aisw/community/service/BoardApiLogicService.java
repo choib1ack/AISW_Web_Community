@@ -64,7 +64,7 @@ public class BoardApiLogicService extends BoardService<BoardApiRequest, BoardLis
                             .category(BoardCategory.FREE)
                             .title(free.getTitle())
                             .status(free.getStatus())
-                            .createdBy(free.getCreatedBy())
+                            .writer(free.getWriter())
                             .createdAt(free.getCreatedAt())
                             .views(free.getViews())
                             .build();
@@ -79,7 +79,7 @@ public class BoardApiLogicService extends BoardService<BoardApiRequest, BoardLis
                             .category(BoardCategory.QNA)
                             .title(qna.getTitle())
                             .status(qna.getStatus())
-                            .createdBy(qna.getCreatedBy())
+                            .writer(qna.getWriter())
                             .createdAt(qna.getCreatedAt())
                             .views(qna.getViews())
                             .build();
