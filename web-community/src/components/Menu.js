@@ -7,7 +7,7 @@ import {BrowserRouter as Router, Switch, Route, Link, useRouteMatch} from "react
 
 export default function Menu() {
     return (
-        <div>
+        <div className="Menu">
             <Grid>
                 <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>

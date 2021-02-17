@@ -17,22 +17,22 @@ import Join from "./components/Join";
 function App() {
     return (
         <Router>
-            <div className="App">
+            <div className="App" style={{height:"100%"}}>
                 <Menu/>
-
-                <main>
-                    <Switch>
-                        <Route exact path="/" component={Home}/>
-                        <Route path="/login" component={Login}/>
-                        <Route path="/notice" component={Notice}/>
-                        <Route path="/board" component={Board}/>
-                        <Route path="/deptInfo" component={DeptInfo}/>
-                        <Route path="/jobInfo" component={JobInfo}/>
-                        <Route path="/contestInfo" component={ContestInfo}/>
-                        <Route path="/join" component={Join}/>
-                    </Switch>
-                </main>
-
+                <div style={{minHeight:"100%"}}>
+                    <main>
+                        <Switch>
+                            <Route exact path="/" component={Home}/>
+                            <Route path="/login" component={Login}/>
+                            <Route path="/notice" component={Notice}/>
+                            <Route path="/board" component={Board}/>
+                            <Route path="/deptInfo" component={DeptInfo}/>
+                            <Route path="/jobInfo" component={JobInfo}/>
+                            <Route path="/contestInfo" component={ContestInfo}/>
+                            <Route path="/join" component={Join}/>
+                        </Switch>
+                    </main>
+                </div>
                 <Footer/>
             </div>
         </Router>
