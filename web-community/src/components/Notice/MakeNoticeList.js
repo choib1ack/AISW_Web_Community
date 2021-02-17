@@ -8,11 +8,14 @@ export default function MakeNoticeList(props) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    let is_search = props.is_search;
+    let search_type = props.search_type;
+    let search_text = props.search_text;
+
     const url = (category, page) => {
         let url = "/notice"
         switch (category) {
             case 0:
-                // 요거 전체로 바꿔야함
                 url += "/main";
                 break;
             case 1:
@@ -24,6 +27,19 @@ export default function MakeNoticeList(props) {
             case 3:
                 url += "/council";
                 break;
+        }
+        if(is_search){
+            switch (search_type) {
+                case "select_title":
+                    url += "/search/title?title="+search_text;
+                    break;
+                case "select_title_content":
+                    url += "/search/title&content?title="+search_text+"&content="+search_text;
+                    break;
+                case "select_writer":
+                    url += "/search/writer?writer="+search_text;
+                    break;
+            }
         }
         return url;
     }
@@ -86,7 +102,7 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category]);
+    }, [props.category, props.is_search]);
 
     if (loading) return <tr><td colSpan={5}>로딩중..</td></tr>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
