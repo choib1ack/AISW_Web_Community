@@ -13,9 +13,9 @@ import {WriteButton} from "../WriteButton";
 export default function NoticeList({match}) {
 
     const [category, setCategory] = useState(0);
-    const [isSearch, setIsSearch] = useState(false); // 0:제목, 1:제목+내용, 2:작성자
-    const [searchType, setSearchType] = useState("select_title"); // 0:제목, 1:제목+내용, 2:작성자
-    const [searchText, setSearchText] = useState(null); // 0:제목, 1:제목+내용, 2:작성자
+    const [isSearch, setIsSearch] = useState(false);
+    const [searchType, setSearchType] = useState("select_title");
+    const [searchText, setSearchText] = useState(null);
     const [page, setPage] = useState(1);
 
     const handleSearchTextChange = (event) =>{
