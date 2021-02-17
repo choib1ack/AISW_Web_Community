@@ -15,11 +15,11 @@ public class FreeCommentApiResponse {
 
     private Long id;
 
+    private String writer;
+
     private String comment;
 
     private LocalDateTime createdAt;
-
-    private String createdBy;
 
     // 익명 true, 비익명 false
     private Boolean isAnonymous;

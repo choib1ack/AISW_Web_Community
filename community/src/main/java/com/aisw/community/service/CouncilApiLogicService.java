@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +46,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
 
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
+                .writer(userRepository.getOne(councilApiRequest.getUserId()).getName())
                 .content(councilApiRequest.getContent())
                 .attachmentFile(councilApiRequest.getAttachmentFile())
                 .status(councilApiRequest.getStatus())
@@ -61,12 +63,15 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
     @Override
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
+                .map(council -> council.setViews(council.getViews() + 1))
+                .map(council -> baseRepository.save(council))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
@@ -108,6 +113,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
         CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())
+                .writer(council.getWriter())
                 .content(council.getContent())
                 .attachmentFile(council.getAttachmentFile())
                 .status(council.getStatus())

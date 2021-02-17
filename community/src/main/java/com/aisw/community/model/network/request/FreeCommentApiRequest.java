@@ -21,4 +21,6 @@ public class FreeCommentApiRequest {
     private Long likes;
 
     private Long freeId;
+
+    private Long userId;
 }

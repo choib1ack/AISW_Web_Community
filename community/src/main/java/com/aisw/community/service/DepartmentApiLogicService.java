@@ -5,6 +5,7 @@ import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.CouncilApiRequest;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +47,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
 
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
+                .writer(userRepository.getOne(departmentApiRequest.getUserId()).getName())
                 .content(departmentApiRequest.getContent())
                 .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
@@ -61,12 +64,15 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     @Override
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
+                .map(department -> department.setViews(department.getViews() + 1))
+                .map(department -> baseRepository.save(department))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<DepartmentApiResponse> update(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
@@ -108,6 +114,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
         DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())
+                .writer(department.getWriter())
                 .content(department.getContent())
                 .attachmentFile(department.getAttachmentFile())
                 .status(department.getStatus())

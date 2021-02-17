@@ -9,12 +9,14 @@ import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.request.NoticeApiRequest;
+import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +45,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
 
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
+                .writer(userRepository.getOne(freeApiRequest.getUserId()).getName())
                 .content(freeApiRequest.getContent())
                 .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
@@ -59,14 +62,18 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
     }
 
     @Override
+    @Transactional
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
+                .map(free -> free.setViews(free.getViews() + 1))
+                .map(free -> baseRepository.save(free))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
@@ -110,6 +117,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
         FreeApiResponse freeApiResponse = FreeApiResponse.builder()
                 .id(free.getId())
                 .title(free.getTitle())
+                .writer(free.getWriter())
                 .content(free.getContent())
                 .attachmentFile(free.getAttachmentFile())
                 .status(free.getStatus())
@@ -170,5 +178,15 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
                 .build();
 
         return Header.OK(freeApiResponseList, pagination);
+    }
+
+    @Transactional
+    public Header<FreeApiResponse> pressLikes(Long id) {
+        return baseRepository.findById(id)
+                .map(free -> free.setLikes(free.getLikes() + 1))
+                .map(free -> baseRepository.save(free))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 }

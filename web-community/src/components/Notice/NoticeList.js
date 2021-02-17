@@ -50,7 +50,6 @@ export default function NoticeList({match}) {
                     <MakeNoticeList
                         category={category}
                         match={match}/>
-                    {/*{console.log(category)}*/}
                     </tbody>
                 </Table>
 

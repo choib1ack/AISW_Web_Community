@@ -6,6 +6,7 @@ import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.BoardApiRequest;
+import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +47,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
 
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
+                .writer(userRepository.getOne(qnaApiRequest.getUserId()).getName())
                 .content(qnaApiRequest.getContent())
                 .attachmentFile(qnaApiRequest.getAttachmentFile())
                 .status(qnaApiRequest.getStatus())
@@ -64,12 +67,15 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
     @Override
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> baseRepository.save(qna))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
@@ -114,6 +120,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
         QnaApiResponse qnaApiResponse = QnaApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
+                .writer(qna.getWriter())
                 .content(qna.getContent())
                 .attachmentFile(qna.getAttachmentFile())
                 .status(qna.getStatus())
@@ -175,5 +182,15 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
                 .build();
 
         return Header.OK(qnaApiResponseList, pagination);
+    }
+
+    @Transactional
+    public Header<QnaApiResponse> pressLikes(Long id) {
+        return baseRepository.findById(id)
+                .map(qna -> qna.setLikes(qna.getLikes() + 1))
+                .map(qna -> baseRepository.save(qna))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 }

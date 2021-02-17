@@ -20,6 +20,8 @@ public class DepartmentApiResponse {
 
     private String content;
 
+    private String writer;
+
     private String attachmentFile;
 
     // 긴급0, 상단고정1, 일반2

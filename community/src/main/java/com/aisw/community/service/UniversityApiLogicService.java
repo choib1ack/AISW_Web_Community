@@ -4,6 +4,7 @@ import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +45,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
 
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
+                .writer(userRepository.getOne(universityApiRequest.getUserId()).getName())
                 .content(universityApiRequest.getContent())
                 .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
@@ -60,12 +63,15 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     @Override
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
+                .map(university -> university.setViews(university.getViews() + 1))
+                .map(university -> baseRepository.save(university))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
+    @Transactional
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
@@ -108,6 +114,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
         UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
+                .writer(university.getWriter())
                 .content(university.getContent())
                 .attachmentFile(university.getAttachmentFile())
                 .status(university.getStatus())

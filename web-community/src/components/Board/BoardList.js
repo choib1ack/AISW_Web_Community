@@ -4,17 +4,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import searchImage from "../../icon/search.svg";
 import Table from "react-bootstrap/Table";
-import photoImage from "../../icon/photo.svg";
-import fileImage from "../../icon/file.svg";
-import Button from "react-bootstrap/Button";
-import classNames from "classnames";
 import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
-import {Link} from "react-router-dom";
-import {useHistory} from "react-router-dom";
-import axios from "axios";
 import SelectButton from "../SelectButton";
-import MakeNoticeList from "../Notice/MakeNoticeList";
 import MakeBoardList from "./MakeBoardList";
 import {WriteButton} from "../WriteButton";
 
@@ -72,107 +64,3 @@ function BoardList({match}) {
 }
 
 export default BoardList;
-
-// 게시판 카테고리에 맞는 리스트를 만들어주는 함수
-// 0: 전체, 1: 자유게시판, 2: 과목별게시판
-// 근데 생각해보니 어짜피 카테고리별로 데이터가 넘어올거니까 굳이 구분안해줘도 될듯...?
-// 일단 테스트 데이터로 보류
-// function makeList(match, category) {
-//     // test data
-//     let data = [
-//         {
-//             category: 1,
-//             subject: '[멀티캠퍼스] 코딩테스트 대회 안내 파일1',
-//             attached: 0,
-//             writer: '양희림',
-//             date: '2021-01-16',
-//             count: 1
-//         },
-//         {
-//             category: 2,
-//             subject: 'AI·소프트웨어학부 플러스친구 안내1',
-//             attached: 1,
-//             writer: '양희림',
-//             date: '2021-01-16',
-//             count: 1
-//         },
-//         {
-//             category: 2,
-//             subject: '산학과제 배정 공고',
-//             attached: 0,
-//             writer: '양희림',
-//             date: '2021-01-16',
-//             count: 1
-//         },
-//         {
-//             category: 2,
-//             subject: 'ICT학점연계프로젝트인턴십 사업 안내',
-//             attached: 0,
-//             writer: '양희림',
-//             date: '2021-01-16',
-//             count: 1
-//         },
-//         {
-//             category: 1,
-//             subject: '21학번 새내기 단톡방 개설 안내',
-//             attached: 1,
-//             writer: '양희림',
-//             date: '2021-01-16',
-//             count: 1
-//         },
-//         {
-//             category: 2,
-//             subject: 'AI·소프트웨어학부 플러스친구 안내2',
-//             attached: 2,
-//             writer: '양희림',
-//             date: '2021-01-16',
-//             count: 1
-//         }
-//     ];
-//     const list = (i, no, max_no) => {
-//         return(
-//             <tr key={max_no - no}>
-//                 <td>{max_no - no}</td>
-//                 <td>
-//                     <Link to={`${match.url}/10`} style={{color: 'black'}}>
-//                         {data[i].subject}
-//                         <img src={photoImage} style={{marginLeft: '5px'}}/>
-//                         <img src={fileImage} style={{marginLeft: '5px'}}/>
-//                     </Link>
-//                 </td>
-//                 <td>{data[i].writer}</td>
-//                 <td>{data[i].date}</td>
-//                 <td>{data[i].count}</td>
-//             </tr>
-//         );
-//
-//     }
-//
-//     let lists = [];
-//     if (category === 0) {
-//         for (let i = 0; i < Object.keys(data).length; i++) {
-//             lists.push(
-//                 list(i, i, Object.keys(data).length)
-//             );
-//         }
-//     } else {
-//         let no = 0;
-//         let count = 0;
-//         for (let i = 0; i < Object.keys(data).length; i++) {
-//             if (data[i].category === category) {
-//                 count++;
-//             }
-//         }
-//         // i는 데이터 index, no는 몇번째인지, count는 한 페이지에서 표시되는 최대 no의 숫자
-//         for (let i = 0; i < Object.keys(data).length; i++) {
-//             if (data[i].category === category) {
-//                 lists.push(
-//                     list(i, no, count)
-//                 );
-//                 no++;
-//             }
-//         }
-//     }
-//     // console.log(lists);
-//     return lists;
-// }

@@ -77,7 +77,7 @@ public class NoticeApiLogicService extends BoardService<NoticeApiRequest, Notice
                             .category(NoticeCategory.UNIVERSITY)
                             .title(university.getTitle())
                             .status(university.getStatus())
-                            .createdBy(university.getCreatedBy())
+                            .writer(university.getWriter())
                             .createdAt(university.getCreatedAt())
                             .views(university.getViews())
                             .build();
@@ -92,7 +92,7 @@ public class NoticeApiLogicService extends BoardService<NoticeApiRequest, Notice
                             .category(NoticeCategory.DEPARTMENT)
                             .title(department.getTitle())
                             .status(department.getStatus())
-                            .createdBy(department.getCreatedBy())
+                            .writer(department.getWriter())
                             .createdAt(department.getCreatedAt())
                             .views(department.getViews())
                             .build();
@@ -107,7 +107,7 @@ public class NoticeApiLogicService extends BoardService<NoticeApiRequest, Notice
                             .category(NoticeCategory.COUNCIL)
                             .title(council.getTitle())
                             .status(council.getStatus())
-                            .createdBy(council.getCreatedBy())
+                            .writer(council.getWriter())
                             .createdAt(council.getCreatedAt())
                             .views(council.getViews())
                             .build();
@@ -142,7 +142,7 @@ public class NoticeApiLogicService extends BoardService<NoticeApiRequest, Notice
                     .category(NoticeCategory.UNIVERSITY)
                     .title(university.getTitle())
                     .status(university.getStatus())
-                    .createdBy(university.getCreatedBy())
+                    .writer(university.getWriter())
                     .createdAt(university.getCreatedAt())
                     .views(university.getViews())
                     .build();
@@ -155,7 +155,7 @@ public class NoticeApiLogicService extends BoardService<NoticeApiRequest, Notice
                     .category(NoticeCategory.DEPARTMENT)
                     .title(department.getTitle())
                     .status(department.getStatus())
-                    .createdBy(department.getCreatedBy())
+                    .writer(department.getWriter())
                     .createdAt(department.getCreatedAt())
                     .views(department.getViews())
                     .build();
@@ -168,7 +168,7 @@ public class NoticeApiLogicService extends BoardService<NoticeApiRequest, Notice
                     .category(NoticeCategory.COUNCIL)
                     .title(council.getTitle())
                     .status(council.getStatus())
-                    .createdBy(council.getCreatedBy())
+                    .writer(council.getWriter())
                     .createdAt(council.getCreatedAt())
                     .views(council.getViews())
                     .build();

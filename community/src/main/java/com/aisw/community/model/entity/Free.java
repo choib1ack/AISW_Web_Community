@@ -29,6 +29,8 @@ public class Free {
 
     private String title;
 
+    private String writer;
+
     private String content;
 
     private String attachmentFile;

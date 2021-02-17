@@ -23,7 +23,7 @@ public class BoardListApiResponse {
 
     private BulletinStatus status;
 
-    private String createdBy;
+    private String writer;
 
     private LocalDateTime createdAt;
 
