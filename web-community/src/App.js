@@ -1,6 +1,6 @@
 import './App.css';
 import Menu from "./components/Menu";
-import React from "react";
+import React, {useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from "./components/Footer";
 import Login from "./components/Login";
@@ -11,15 +11,19 @@ import Board from "./components/Board/Board";
 import DeptInfo from "./components/DeptInfo";
 import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
-import NewBoard from "./components/Board/NewBoard";
 import Join from "./components/Join";
+import CounterContainer from "./containers/CounterContainer";
+import Counter from "./components/Counter";
 
 function App() {
     return (
         <Router>
-            <div className="App" style={{height:"100%"}}>
+            <div className="App" style={{height: "100%"}}>
                 <Menu/>
-                <div style={{minHeight:"100%"}}>
+
+                <Counter/>
+
+                <div style={{minHeight: "100%"}}>
                     <main>
                         <Switch>
                             <Route exact path="/" component={Home}/>
