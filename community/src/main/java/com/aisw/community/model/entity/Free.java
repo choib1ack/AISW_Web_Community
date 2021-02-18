@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
