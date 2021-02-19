@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Grid from "@material-ui/core/Grid";
 import {BrowserRouter as Router, Switch, Route, Link, useRouteMatch} from "react-router-dom";
+import logo from "../image/logo3.png";
 
 export default function Menu() {
     return (
@@ -12,9 +13,10 @@ export default function Menu() {
                 <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>
                         <Link to="/">
-                            <button className="Menu-logo">
-                                가천대학교 AI&소프트웨어학부
-                            </button>
+                            <img src={logo} style={{width:"120px"}}/>
+                            {/*<button className="Menu-logo" style={{padding:"0"}}>*/}
+                            {/*    <img src={logo} style={{width:"100px"}}/>*/}
+                            {/*</button>*/}
                         </Link>
                     </Col>
                     <Col xs={6}>

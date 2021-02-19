@@ -12,14 +12,15 @@ import {Checkbox} from "semantic-ui-react";
 import Title from "../Title";
 import fileImage from "../../icon/file.svg";
 import axios from "axios";
+import likeImage from "../../icon/like.svg"
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const { board_category } = match.params;
-    const { id } = match.params;
+    const {board_category} = match.params;
+    const {id} = match.params;
     const url = match.url;
 
     const Category = (c) => {
@@ -30,11 +31,17 @@ export default function BoardDetail({match}) {
                 return "과목별게시판";
         }
     }
+    const handleLikeCilck = () =>{
+        //http://localhost:8080/board/free/likes/1
+        // axios.get(match);
+        // const response = await axios.get("http://localhost:8080/board/free/likes/2");
+        // console.log(response);
+    }
 
     // 첨부파일이 있을 때만 보여줌
     const AttachmentFile = (att) => {
-        if(att == null) return null;
-        return(
+        if (att == null) return null;
+        return (
             <div className="p-3">
                 <p style={{color: "#6CBACB", fontSize: '14px'}} className="mb-1">첨부파일</p>
                 <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
@@ -61,40 +68,43 @@ export default function BoardDetail({match}) {
         fetchNoticeData();
     }, []); // 여기 빈배열 안써주면 무한루프,,
 
-    if (loading) return <tr><td colSpan={5}>로딩중..</td></tr>;
-    if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
+    if (loading) return <tr>
+        <td colSpan={5}>로딩중..</td>
+    </tr>;
+    if (error) return <tr>
+        <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
+    </tr>;
     if (!boardDetailData) return null;
 
     return (
         <div className="BoardDetail">
-            <Container>
+            <Container >
                 <Title text='게시판' type='1'/>
                 <div className="text-left mt-5 mb-4"
                      style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
-                    <div style={{
-                        backgroundColor: "#EFF7F9",
-                        paddingTop: '20px',
-                        paddingLeft: '20px',
-                        paddingBottom: '10px'
-                    }}>
-                        <p style={{color: "#6CBACB", fontSize: '14px'}} className="mb-1">{Category(board_category)}</p>
-                        <p style={{fontSize: '18px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
-                        {boardDetailData.attachment_file == null? "" : <img src={fileImage} className="d-inline-block"/>}
-                        <div>
-                            <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
-                                {boardDetailData.is_anonymous? "익명" : boardDetailData.created_by}
-                            </p>
-                            <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
-                                {boardDetailData.created_at.substring(0, 10)} {boardDetailData.created_at.substring(11, 19)}
-                            </p>
+                        <div style={{backgroundColor: "#EFF7F9"}} className="p-4">
+                            <p style={{color: "#6CBACB", fontSize: '12px'}}
+                               className="mb-1">{Category(board_category)}</p>
+                            <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
+                            {boardDetailData.attachment_file == null ? "" :
+                                <img src={fileImage} className="d-inline-block"/>}
+                            <div>
+                                <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
+                                    {boardDetailData.is_anonymous ? "익명" : boardDetailData.created_by}
+                                </p>
+                                <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
+                                    {boardDetailData.created_at.substring(0, 10)} {boardDetailData.created_at.substring(11, 19)}
+                                </p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="p-3">
-                        <p>{boardDetailData.content}​</p>
-                    </div>
-                    {AttachmentFile(boardDetailData.attachment_file)}
-
+                        <div className="p-4" style={{minHeight:"100px"}}>
+                            {/*좋아요*/}
+                            <span style={{float:"right", fontSize:'13px', color:'#FF6262'}}>
+                                <img src={likeImage} onclick={handleLikeCilck} style={{cursor:"pointer"}}/> {boardDetailData.likes}</span>
+                            <p>{boardDetailData.content}​</p>
+                        </div>
+                        {AttachmentFile(boardDetailData.attachment_file)}
                     <hr/>
 
                     <div className="p-3">
@@ -118,7 +128,7 @@ export function CommentBox() {
             <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
 
             <Card.Body>
-                <Card.Title className="mb-0" style={{fontSize: '14px', fontWeight: 'bold'}}>익명1</Card.Title>
+                <Card.Title className="mb-1" style={{fontSize: '14px'}}>익명1</Card.Title>
                 <Card.Text className="mb-0">
                     <p className="d-inline-block mr-3 mb-3" style={{fontSize: '14px'}}>
                         네..
@@ -139,7 +149,7 @@ export function ReplyBox() {
                 <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
 
                 <Card.Body>
-                    <Card.Title className="mb-0" style={{fontSize: '14px', fontWeight: 'bold'}}>익명1</Card.Title>
+                    <Card.Title className="mb-1" style={{fontSize: '14px'}}>익명1</Card.Title>
                     <Card.Text className="mb-0">
                         <p className="d-inline-block mr-3 mb-3" style={{fontSize: '14px'}}>
                             네..

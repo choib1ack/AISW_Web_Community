@@ -17,6 +17,8 @@ function BoardList({match}) {
     const [searchText, setSearchText] = useState(null);
     const [page, setPage] = useState(1);
 
+    window.scrollTo(0, 0);
+
     const handleSearchTextChange = (event) =>{
         setSearchText(event.target.value);
         if(event.target.value==""){

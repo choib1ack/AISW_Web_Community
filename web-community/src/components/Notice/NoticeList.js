@@ -17,6 +17,7 @@ export default function NoticeList({match}) {
     const [searchType, setSearchType] = useState("select_title");
     const [searchText, setSearchText] = useState(null);
     const [page, setPage] = useState(1);
+    window.scrollTo(0, 0);
 
     const handleSearchTextChange = (event) =>{
         setSearchText(event.target.value);
