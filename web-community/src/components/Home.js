@@ -10,6 +10,9 @@ import jobLogo from "../image/Kakao.png";
 import jobLogo2 from "../image/naver.png";
 import ContestInfoCard from "./ComponentInfoCard";
 import contestImage1 from "../image/contest1.svg";
+import "./Home.css";
+import {Link} from "react-router-dom";
+
 export default function Home() {
     return(
         <div className="Home">
@@ -19,21 +22,21 @@ export default function Home() {
                 <img src={exampleBanner} style={{width:"100%"}}/>
             </div>
         <div style={{width:"70%", margin:"auto"}}>
-            <Row style={{margin:"20px 0px", textAlign:"center"}}>
+            <Row style={{margin:"30px 0px", textAlign:"center"}}>
                 <Col lg={4} md={4} sm={4}>
-                    <div style={{border:"1px solid #E3E3E3", padding:"20px"}}>
+                    <div className={"pingpong"}>
                         학과 커리큘럼 확인하기
                     </div>
 
                 </Col>
                 <Col lg={4} md={4} sm={4}>
-                    <div style={{border:"1px solid #E3E3E3", padding:"20px"}}>
+                    <div className={"pingpong"}>
                         학번별 학사요람 확인하기
                     </div>
 
                 </Col>
                 <Col lg={4} md={4} sm={4}>
-                    <div style={{border:"1px solid #E3E3E3", padding:"20px"}}>
+                    <div className={"pingpong"}>
                         졸업 요건 확인하기
                     </div>
 
@@ -43,7 +46,10 @@ export default function Home() {
                 <Col lg={6} md={6} sm={6}>
                     <div style={{border:"1px solid #E3E3E3", padding:"20px", backgroundColor:"#EFF7F9", textAlign:"left"}}>
                         <div style={{marginBottom:"20px"}}>
-                            공지사항 <span style={{float:"right", cursor:"pointer"}}>+더보기</span>
+                            공지사항
+                            <Link to="/notice">
+                                <span style={{float:"right", cursor:"pointer", color:"#636363"}}>+더보기</span>
+                            </Link>
                         </div>
                         <div>
                             <p>
@@ -70,7 +76,10 @@ export default function Home() {
                 <Col lg={6} md={6} sm={6}>
                     <div style={{border:"1px solid #E3E3E3", padding:"20px", backgroundColor:"#EFF7F9", textAlign:"left"}}>
                         <div style={{marginBottom:"20px"}}>
-                            게시판 <span style={{float:"right", cursor:"pointer"}}>+더보기</span>
+                            게시판
+                            <Link to="/board">
+                                <span style={{float:"right", cursor:"pointer", color:"#636363"}}>+더보기</span>
+                            </Link>
                         </div>
                         <div>
                             <p>
@@ -99,7 +108,10 @@ export default function Home() {
                 <Col lg={12} md={12} sm={12}>
                     <div style={{border:"1px solid #E3E3E3", padding:"20px", textAlign:"left"}}>
                         <div style={{marginBottom:"20px"}}>
-                            채용정보 <span style={{float:"right", cursor:"pointer"}}>+더보기</span>
+                            채용정보
+                            <Link to="/jobInfo">
+                                <span style={{float:"right", cursor:"pointer", color:"#636363"}}>+더보기</span>
+                            </Link>
                         </div>
                         <div>
                             <Row>
@@ -131,7 +143,10 @@ export default function Home() {
                 <Col lg={12} md={12} sm={12}>
                     <div style={{border:"1px solid #E3E3E3", padding:"20px", textAlign:"left"}}>
                         <div style={{marginBottom:"20px"}}>
-                            공모전/대외활동 <span style={{float:"right", cursor:"pointer"}}>+더보기</span>
+                            공모전/대외활동
+                            <Link to="/contestInfo">
+                                <span style={{float:"right", cursor:"pointer", color:"#636363"}}>+더보기</span>
+                            </Link>
                         </div>
                         <Row>
                             <Col lg={3} md={4} sm={6}>
@@ -156,7 +171,6 @@ export default function Home() {
                             </Col>
                         </Row>
                     </div>
-
                 </Col>
             </Row>
             <div style={{marginBottom:"100px"}}></div>

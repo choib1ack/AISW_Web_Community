@@ -15,6 +15,7 @@ import Title from "./Title";
 import JobCard from "./JobCard";
 
 export default function JobInfo() {
+    window.scrollTo(0, 0);
     return (
         <div className="Job">
             <Container>
