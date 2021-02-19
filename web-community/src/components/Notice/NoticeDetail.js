@@ -72,19 +72,19 @@ export default function NoticeDetail({match}) {
                         paddingLeft: '20px',
                         paddingBottom: '10px'
                     }}>
-                        <p style={{color: "#6CBACB", fontSize: '14px'}} className="mb-1">{Category(notice_category)}></p>
-                        <p style={{fontSize: '18px'}} className="d-inline-block mr-1">{noticeDetailData.title}</p>
+                        <p style={{color: "#6CBACB", fontSize: '12px'}} className="mb-1">{Category(notice_category)}></p>
+                        <p style={{fontSize: '16x'}} className="d-inline-block mr-1">{noticeDetailData.title}</p>
                         {noticeDetailData.attachment_file == null? "" : <img src={fileImage} className="d-inline-block"/>}
 
                         <div>
-                            <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>{noticeDetailData.created_by}</p>
-                            <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
+                            <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '11px'}}>{noticeDetailData.created_by}</p>
+                            <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '11px'}}>
                                 {noticeDetailData.created_at.substring(0, 10)} {noticeDetailData.created_at.substring(11, 19)}
                             </p>
                         </div>
                     </div>
 
-                    <div className="p-3">
+                    <div className="p-3" style={{minHeight:"100px"}}>
                         <p>{noticeDetailData.content}​</p>
                     </div>
                     {AttachmentFile(noticeDetailData.attachment_file)}
