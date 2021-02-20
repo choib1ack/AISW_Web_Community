@@ -14,10 +14,10 @@ import java.util.List;
 
 @Component
 @CrossOrigin("*")
-public abstract class PostController<Req, Res, Entity> implements CrudInterface<Req, Res> {
+public abstract class PostController<Req, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
 
     @Autowired(required = false)
-    protected PostService<Req, Res, Entity> postService;
+    protected PostService<Req, ListRes, Res, Entity> postService;
 
     @Override
     @PostMapping("")
@@ -44,12 +44,12 @@ public abstract class PostController<Req, Res, Entity> implements CrudInterface<
     }
 
     @GetMapping("")
-    public Header<List<Res>> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public Header<List<ListRes>> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return postService.search(pageable);
     }
 
     @GetMapping("/search/writer")
-    public Header<List<Res>> searchByWriter(
+    public Header<List<ListRes>> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -57,7 +57,7 @@ public abstract class PostController<Req, Res, Entity> implements CrudInterface<
     }
 
     @GetMapping("/search/title")
-    public Header<List<Res>> searchByTitle(
+    public Header<List<ListRes>> searchByTitle(
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -65,7 +65,7 @@ public abstract class PostController<Req, Res, Entity> implements CrudInterface<
     }
 
     @GetMapping("/search/title&content")
-    public Header<List<Res>> searchByTitleOrContent(
+    public Header<List<ListRes>> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 

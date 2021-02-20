@@ -5,6 +5,7 @@ import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.UniversityApiRequest;
+import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.repository.UniversityRepository;
 import com.aisw.community.repository.UserRepository;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UniversityApiLogicService extends PostService<UniversityApiRequest, UniversityApiResponse, University> {
+public class UniversityApiLogicService extends PostService<UniversityApiRequest, NoticeApiResponse, UniversityApiResponse, University> {
 
     @Autowired
     private UserRepository userRepository;
@@ -113,37 +114,45 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     }
 
     @Override
-    public Header<List<UniversityApiResponse>> search(Pageable pageable) {
+    public Header<List<NoticeApiResponse>> search(Pageable pageable) {
         Page<University> universities = baseRepository.findAll(pageable);
 
         return getListHeader(universities);
     }
 
     @Override
-    public Header<List<UniversityApiResponse>> searchByWriter(String writer, Pageable pageable) {
+    public Header<List<NoticeApiResponse>> searchByWriter(String writer, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByWriterContaining(writer, pageable);
 
         return getListHeader(universities);
     }
 
     @Override
-    public Header<List<UniversityApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<List<NoticeApiResponse>> searchByTitle(String title, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByTitleContaining(title, pageable);
 
         return getListHeader(universities);
     }
 
     @Override
-    public Header<List<UniversityApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<List<NoticeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<University> universities = universityRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
 
         return getListHeader(universities);
     }
 
-    private Header<List<UniversityApiResponse>> getListHeader(Page<University> universities) {
-        List<UniversityApiResponse> universityApiResponseList = universities.stream()
-                .map(this::response)
+    private Header<List<NoticeApiResponse>> getListHeader(Page<University> universities) {
+        List<NoticeApiResponse> noticeApiResponseList = universities.stream()
+                .map(university -> NoticeApiResponse.builder()
+                        .id(university.getId())
+                        .title(university.getTitle())
+                        .category(university.getCategory())
+                        .createdAt(university.getCreatedAt())
+                        .status(university.getStatus())
+                        .views(university.getViews())
+                        .writer(university.getWriter())
+                        .build())
                 .collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
@@ -153,6 +162,6 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .currentPage(universities.getNumber())
                 .build();
 
-        return Header.OK(universityApiResponseList, pagination);
+        return Header.OK(noticeApiResponseList, pagination);
     }
 }

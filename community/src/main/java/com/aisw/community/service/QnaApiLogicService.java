@@ -5,6 +5,7 @@ import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
+import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.repository.QnaRepository;
 import com.aisw.community.repository.UserRepository;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
     private UserRepository userRepository;
@@ -118,37 +119,45 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
     }
 
     @Override
-    public Header<List<QnaApiResponse>> search(Pageable pageable) {
+    public Header<List<BoardApiResponse>> search(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
 
         return getListHeader(qnas);
     }
 
     @Override
-    public Header<List<QnaApiResponse>> searchByWriter(String writer, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
 
         return getListHeader(qnas);
     }
 
     @Override
-    public Header<List<QnaApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
 
         return getListHeader(qnas);
     }
 
     @Override
-    public Header<List<QnaApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
 
         return getListHeader(qnas);
     }
 
-    private Header<List<QnaApiResponse>> getListHeader(Page<Qna> qnas) {
-        List<QnaApiResponse> qnaApiResponseList = qnas.stream()
-                .map(this::response)
+    private Header<List<BoardApiResponse>> getListHeader(Page<Qna> qnas) {
+        List<BoardApiResponse> noticeApiResponseList = qnas.stream()
+                .map(qna -> BoardApiResponse.builder()
+                        .id(qna.getId())
+                        .title(qna.getTitle())
+                        .category(qna.getCategory())
+                        .createdAt(qna.getCreatedAt())
+                        .status(qna.getStatus())
+                        .views(qna.getViews())
+                        .writer(qna.getWriter())
+                        .build())
                 .collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
@@ -158,7 +167,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, QnaApiRespons
                 .currentPage(qnas.getNumber())
                 .build();
 
-        return Header.OK(qnaApiResponseList, pagination);
+        return Header.OK(noticeApiResponseList, pagination);
     }
 
     @Transactional

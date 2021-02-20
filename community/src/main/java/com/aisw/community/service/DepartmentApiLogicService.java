@@ -6,6 +6,7 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
+import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentApiLogicService extends PostService<DepartmentApiRequest, DepartmentApiResponse, Department> {
+public class DepartmentApiLogicService extends PostService<DepartmentApiRequest, NoticeApiResponse, DepartmentApiResponse, Department> {
 
     @Autowired
     private UserRepository userRepository;
@@ -110,37 +111,45 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     }
 
     @Override
-    public Header<List<DepartmentApiResponse>> search(Pageable pageable) {
+    public Header<List<NoticeApiResponse>> search(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
 
         return getListHeader(departments);
     }
 
     @Override
-    public Header<List<DepartmentApiResponse>> searchByWriter(String writer, Pageable pageable) {
+    public Header<List<NoticeApiResponse>> searchByWriter(String writer, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByWriterContaining(writer, pageable);
 
         return getListHeader(departments);
     }
 
     @Override
-    public Header<List<DepartmentApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<List<NoticeApiResponse>> searchByTitle(String title, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByTitleContaining(title, pageable);
 
         return getListHeader(departments);
     }
 
     @Override
-    public Header<List<DepartmentApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<List<NoticeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Department> departments = departmentRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
 
         return getListHeader(departments);
     }
 
-    private Header<List<DepartmentApiResponse>> getListHeader(Page<Department> departments) {
-        List<DepartmentApiResponse> departmentApiResponseList = departments.stream()
-                .map(this::response)
+    private Header<List<NoticeApiResponse>> getListHeader(Page<Department> departments) {
+        List<NoticeApiResponse> noticeApiResponseList = departments.stream()
+                .map(department -> NoticeApiResponse.builder()
+                        .id(department.getId())
+                        .title(department.getTitle())
+                        .category(department.getCategory())
+                        .createdAt(department.getCreatedAt())
+                        .status(department.getStatus())
+                        .views(department.getViews())
+                        .writer(department.getWriter())
+                        .build())
                 .collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
@@ -150,6 +159,6 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .currentPage(departments.getNumber())
                 .build();
 
-        return Header.OK(departmentApiResponseList, pagination);
+        return Header.OK(noticeApiResponseList, pagination);
     }
 }

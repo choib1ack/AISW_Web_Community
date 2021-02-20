@@ -5,7 +5,9 @@ import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
+import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.FreeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResponse, Free> {
+public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiResponse, FreeApiResponse, Free> {
 
     @Autowired
     private UserRepository userRepository;
@@ -115,37 +117,45 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
     }
 
     @Override
-    public Header<List<FreeApiResponse>> search(Pageable pageable) {
+    public Header<List<BoardApiResponse>> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
 
         return getListHeader(frees);
     }
 
     @Override
-    public Header<List<FreeApiResponse>> searchByWriter(String writer, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByWriter(String writer, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
 
         return getListHeader(frees);
     }
 
     @Override
-    public Header<List<FreeApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByTitle(String title, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
 
         return getListHeader(frees);
     }
 
     @Override
-    public Header<List<FreeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
 
         return getListHeader(frees);
     }
 
-    private Header<List<FreeApiResponse>> getListHeader(Page<Free> frees) {
-        List<FreeApiResponse> freeApiResponseList = frees.stream()
-                .map(this::response)
+    private Header<List<BoardApiResponse>> getListHeader(Page<Free> frees) {
+        List<BoardApiResponse> noticeApiResponseList = frees.stream()
+                .map(free -> BoardApiResponse.builder()
+                        .id(free.getId())
+                        .title(free.getTitle())
+                        .category(free.getCategory())
+                        .createdAt(free.getCreatedAt())
+                        .status(free.getStatus())
+                        .views(free.getViews())
+                        .writer(free.getWriter())
+                        .build())
                 .collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
@@ -155,7 +165,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
                 .currentPage(frees.getNumber())
                 .build();
 
-        return Header.OK(freeApiResponseList, pagination);
+        return Header.OK(noticeApiResponseList, pagination);
     }
 
     @Transactional
