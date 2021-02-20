@@ -146,7 +146,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
     }
 
     private Header<List<BoardApiResponse>> getListHeader(Page<Free> frees) {
-        List<BoardApiResponse> noticeApiResponseList = frees.stream()
+        List<BoardApiResponse> boardApiResponseList = frees.stream()
                 .map(free -> BoardApiResponse.builder()
                         .id(free.getId())
                         .title(free.getTitle())
@@ -165,7 +165,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
                 .currentPage(frees.getNumber())
                 .build();
 
-        return Header.OK(noticeApiResponseList, pagination);
+        return Header.OK(boardApiResponseList, pagination);
     }
 
     @Transactional

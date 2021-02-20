@@ -148,7 +148,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
     }
 
     private Header<List<BoardApiResponse>> getListHeader(Page<Qna> qnas) {
-        List<BoardApiResponse> noticeApiResponseList = qnas.stream()
+        List<BoardApiResponse> boardApiResponseList = qnas.stream()
                 .map(qna -> BoardApiResponse.builder()
                         .id(qna.getId())
                         .title(qna.getTitle())
@@ -167,7 +167,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .currentPage(qnas.getNumber())
                 .build();
 
-        return Header.OK(noticeApiResponseList, pagination);
+        return Header.OK(boardApiResponseList, pagination);
     }
 
     @Transactional
