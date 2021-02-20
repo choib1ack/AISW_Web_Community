@@ -13,29 +13,13 @@ import java.util.List;
 
 @Component
 @CrossOrigin("*")
-public abstract class BoardController<Req, ListRes, Res, Entity> {
+public abstract class BulletinController<Res, Entity> {
 
     @Autowired(required = false)
-    protected BoardService<Req, ListRes, Res, Entity> boardService;
-
-    @PostMapping("")
-    public Header<Res> create(Header<Req> request) {
-        return boardService.create(request);
-    }
-
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return boardService.delete(id);
-    }
-
-    @GetMapping("/main")
-    public Header<List<ListRes>> searchList(@PageableDefault(sort = "createdAt",
-            direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardService.searchList(pageable);
-    }
+    protected BoardService<Res, Entity> boardService;
 
     @GetMapping("/search/writer")
-    public Header<List<ListRes>> searchByWriter(
+    public Header<List<Res>> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -43,7 +27,7 @@ public abstract class BoardController<Req, ListRes, Res, Entity> {
     }
 
     @GetMapping("/search/title")
-    public Header<List<ListRes>> searchByTitle(
+    public Header<List<Res>> searchByTitle(
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -51,7 +35,7 @@ public abstract class BoardController<Req, ListRes, Res, Entity> {
     }
 
     @GetMapping("/search/title&content")
-    public Header<List<ListRes>> searchByTitleOrContent(
+    public Header<List<Res>> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 

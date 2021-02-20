@@ -3,7 +3,9 @@ package com.aisw.community.repository;
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,26 +20,30 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
     @Autowired
     private CouncilRepository councilRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     public void create() {
         String title = "test";
+        String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
-        String createdBy = "tester";
-        LocalDateTime createdAt = LocalDateTime.now();
         Long level = 1L;
+        User userId = userRepository.getOne(1L);
 
         Council council = Council.builder()
                 .title(title)
+                .writer(writer)
                 .content(content)
                 .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
-                .createdBy(createdBy)
-                .createdAt(createdAt)
                 .level(level)
+                .category(NoticeCategory.COUNCIL)
+                .user(userId)
                 .build();
 
         Council newCouncil = councilRepository.save(council);
@@ -48,13 +54,10 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
     public void read() {
         Optional<Council> council = councilRepository.findById(1L);
 
-        council.ifPresent(readCouncil -> {
-            System.out.println(readCouncil);
-        });
+        council.ifPresent(readCouncil -> System.out.println(readCouncil));
     }
 
     @Test
-    @Transactional
     public void update() {
         Optional<Council> council = councilRepository.findById(1L);
 
@@ -66,7 +69,6 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
     }
 
     @Test
-    @Transactional
     public void delete() {
         Optional<Council> council = councilRepository.findById(1L);
 

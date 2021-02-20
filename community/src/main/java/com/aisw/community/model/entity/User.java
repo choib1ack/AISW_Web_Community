@@ -21,7 +21,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"universityList", "departmentList", "councilList",
+@ToString(exclude = {"noticeList", "universityList", "departmentList", "councilList",
         "freeList", "qnaList", "freeCommentList", "qnaCommentList"})
 public class User {
 
@@ -72,6 +72,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private DepartmentName departmentName;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<Notice> noticeList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<University> universityList;

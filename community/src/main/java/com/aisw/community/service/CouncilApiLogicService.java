@@ -1,17 +1,12 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Council;
-import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.NoticeCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CouncilApiRequest;
-import com.aisw.community.model.network.request.NoticeApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
-import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.repository.CouncilRepository;
-import com.aisw.community.repository.NoticeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,23 +21,14 @@ import java.util.stream.Collectors;
 public class CouncilApiLogicService extends PostService<CouncilApiRequest, CouncilApiResponse, Council> {
 
     @Autowired
-    private NoticeRepository noticeRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private CouncilRepository councilRepository;
 
-    @Autowired
-    private NoticeApiLogicService noticeApiLogicService;
-
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-
-        NoticeApiRequest noticeApiRequest = NoticeApiRequest.builder().category(NoticeCategory.COUNCIL).build();
-        NoticeApiResponse noticeApiResponse = noticeApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
@@ -52,8 +38,8 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
                 .status(councilApiRequest.getStatus())
                 .views(councilApiRequest.getViews())
                 .level(councilApiRequest.getLevel())
+                .category(NoticeCategory.COUNCIL)
                 .user(userRepository.getOne(councilApiRequest.getUserId()))
-                .notice(noticeRepository.getOne(noticeApiResponse.getId()))
                 .build();
 
         Council newCouncil = baseRepository.save(council);
@@ -64,7 +50,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
-                .map(council -> baseRepository.save(council))
+                .map(council -> baseRepository.save((Council)council))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -82,9 +68,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
                             .setContent(councilApiRequest.getContent())
                             .setAttachmentFile(councilApiRequest.getAttachmentFile())
                             .setStatus(councilApiRequest.getStatus())
-                            .setViews(councilApiRequest.getViews())
                             .setLevel(councilApiRequest.getLevel());
-
                     return council;
                 })
                 .map(council -> baseRepository.save(council))
@@ -97,12 +81,6 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
     public Header delete(Long id) {
         return baseRepository.findById(id)
                 .map(council -> {
-                    noticeRepository.findById(council.getNotice().getId())
-                            .map(notice -> {
-                                noticeRepository.delete(notice);
-                                return Header.OK();
-                            })
-                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                     baseRepository.delete(council);
                     return Header.OK();
                 })
@@ -117,14 +95,14 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
                 .content(council.getContent())
                 .attachmentFile(council.getAttachmentFile())
                 .status(council.getStatus())
+                .views(council.getViews())
+                .level(council.getLevel())
+                .category(council.getCategory())
                 .createdAt(council.getCreatedAt())
                 .createdBy(council.getCreatedBy())
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
-                .views(council.getViews())
-                .level(council.getLevel())
                 .userId(council.getUser().getId())
-                .noticeId(council.getNotice().getId())
                 .build();
 
         return councilApiResponse;
@@ -139,7 +117,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
 
     @Override
     public Header<List<CouncilApiResponse>> searchByWriter(String writer, Pageable pageable) {
-        Page<Council> councils = councilRepository.findAllByCreatedByContaining(writer, pageable);
+        Page<Council> councils = councilRepository.findAllByWriterContaining(writer, pageable);
 
         return getListHeader(councils);
     }

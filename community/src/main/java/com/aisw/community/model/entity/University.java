@@ -2,6 +2,7 @@ package com.aisw.community.model.entity;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.Campus;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -17,51 +18,18 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Accessors(chain = true)
-@ToString(exclude = {"notice", "user"})
 @EntityListeners(AuditingEntityListener.class)
-public class University {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-
-    private String writer;
-
-    private String content;
-
-    private String attachmentFile;
-
-    @Enumerated(EnumType.STRING)
-    private BulletinStatus status;
-
-    private Long views;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    @LastModifiedBy
-    private String updatedBy;
-
-    // 학교 공지 0
-    private Long level;
+@DiscriminatorValue("university")
+public class University extends Notice {
 
     @Enumerated(EnumType.STRING)
     private Campus campus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user; // user id
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Notice notice; // notice id
+    @Builder
+    public University(Long id, String title, String writer, String content, String attachmentFile,
+                      BulletinStatus status, Long views, Long level, NoticeCategory category, User user, Campus campus) {
+        super(id, title, writer, content, attachmentFile, status, views, level, category, user);
+        this.campus = campus;
+    }
 }

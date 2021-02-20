@@ -13,16 +13,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
 
 @Component
-public abstract class BoardService<Req, ListRes, Res, Entity> {
+public abstract class BoardService< Res, Entity> {
 
     @Autowired(required = false)
     protected JpaRepository<Entity, Long> baseRepository;
 
-
-    public abstract Header<Res> create(Header<Req> request);
-    public abstract Header delete(Long id);
-    public abstract Header<List<ListRes>> searchList(Pageable pageable);
-    public abstract Header<List<ListRes>> searchByWriter(String writer, Pageable pageable);
-    public abstract Header<List<ListRes>> searchByTitle(String title, Pageable pageable);
-    public abstract Header<List<ListRes>> searchByTitleOrContent(String title, String content, Pageable pageable);
+    public abstract Header<List<Res>> searchList(Pageable pageable);
+    public abstract Header<List<Res>> searchByWriter(String writer, Pageable pageable);
+    public abstract Header<List<Res>> searchByTitle(String title, Pageable pageable);
+    public abstract Header<List<Res>> searchByTitleOrContent(String title, String content, Pageable pageable);
 }

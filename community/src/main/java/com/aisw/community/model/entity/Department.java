@@ -1,6 +1,7 @@
 package com.aisw.community.model.entity;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -13,51 +14,15 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Accessors(chain = true)
-@ToString(exclude = {"notice"})
 @EntityListeners(AuditingEntityListener.class)
-public class Department {
+@DiscriminatorValue("department")
+public class Department extends Notice {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-
-    private String writer;
-
-    private String content;
-
-    private String attachmentFile;
-
-    @Enumerated(EnumType.STRING)
-    private BulletinStatus status;
-
-    private Long views;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    @LastModifiedBy
-    private String updatedBy;
-    
-    // 학과 공지 1
-    private Long level;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user; // user id
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Notice notice; // notice id
+    @Builder
+    public Department(Long id, String title, String writer, String content, String attachmentFile,
+                      BulletinStatus status, Long views, Long level, NoticeCategory category, User user) {
+        super(id, title, writer, content, attachmentFile, status, views, level, category, user);
+    }
 }

@@ -1,41 +1,77 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.NoticeCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@ToString(exclude = {"user"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@ToString(exclude = {"universityList", "departmentList", "councilList"})
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn
 public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String title;
+
+    private String writer;
+
+    private String content;
+
+    private String attachmentFile;
+
+    @Enumerated(EnumType.STRING)
+    private BulletinStatus status;
+
+    private Long views;
+
+    // 학생회 공지1
+    private Long level;
+
     private NoticeCategory category;
 
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<University> universityList;
+    @CreatedBy
+    private String createdBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<Department> departmentList;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<Council> councilList;
+    @LastModifiedBy
+    private String updatedBy;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user; // user id
+
+    public Notice(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
+                  Long views, Long level, NoticeCategory category, User user) {
+        this.id = id;
+        this.title = title;
+        this.writer = writer;
+        this.content = content;
+        this.attachmentFile = attachmentFile;
+        this.status = status;
+        this.views = views;
+        this.level = level;
+        this.category = category;
+        this.user = user;
+    }
 }

@@ -2,8 +2,10 @@ package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.University;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.Campus;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,28 +20,32 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
     @Autowired
     private UniversityRepository universityRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     public void create() {
         String title = "test";
+        String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
-        String createdBy = "tester";
-        LocalDateTime createdAt = LocalDateTime.now();
         Long level = 1L;
-        Campus campus = Campus.COMMON;
+        User userId = userRepository.getOne(1L);
+
 
         University university = University.builder()
                 .title(title)
+                .writer(writer)
                 .content(content)
                 .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
-                .createdBy(createdBy)
-                .createdAt(createdAt)
                 .level(level)
-                .campus(campus)
+                .category(NoticeCategory.UNIVERSITY)
+                .user(userId)
+                .campus(Campus.COMMON)
                 .build();
 
         University newUniversity = universityRepository.save(university);
@@ -48,7 +54,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
 
     @Test
     public void read() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<University> university = universityRepository.findById(3L);
 
         university.ifPresent(readUniversity -> {
             System.out.println(readUniversity);
@@ -58,7 +64,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
     @Test
     @Transactional
     public void update() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<University> university = universityRepository.findById(3L);
 
         university.ifPresent(readUniversity -> {
             readUniversity.setLevel(2L);
@@ -70,7 +76,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
     @Test
     @Transactional
     public void delete() {
-        Optional<University> university = universityRepository.findById(1L);
+        Optional<University> university = universityRepository.findById(3L);
 
         Assertions.assertTrue(university.isPresent());
 
@@ -78,7 +84,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
             universityRepository.delete(readUniversity);
         });
 
-        Optional<University> deleteUniversity = universityRepository.findById(1L);
+        Optional<University> deleteUniversity = universityRepository.findById(3L);
 
         Assertions.assertFalse(deleteUniversity.isPresent());
     }

@@ -16,6 +16,8 @@ public class DepartmentApiRequest {
 
     private String title;
 
+    private String writer;
+
     private String content;
 
     private String attachmentFile;

@@ -17,6 +17,8 @@ public class UniversityApiRequest {
 
     private String title;
 
+    private String writer;
+
     private String content;
 
     private String attachmentFile;
@@ -29,7 +31,6 @@ public class UniversityApiRequest {
     // 학교 공지 0
     private Long level;
 
-    // 공통 0, 글로벌1,  메디컬2
     private Campus campus;
 
     private Long userId;
