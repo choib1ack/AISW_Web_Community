@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.response;
 
+import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,13 @@ public class QnaApiResponse {
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
+    // 학교 공지 0
+    private Long level;
+
+    private String subject;
+
+    private BoardCategory category;
+
     private LocalDateTime createdAt;
 
     private String createdBy;
@@ -41,12 +49,5 @@ public class QnaApiResponse {
 
     private String updatedBy;
 
-    // 학교 공지 0
-    private Long level;
-
-    private String subject;
-
     private Long userId;
-
-    private Long boardId;
 }

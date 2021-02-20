@@ -36,7 +36,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .content(departmentApiRequest.getContent())
                 .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
-                .views(departmentApiRequest.getViews())
+                .views(0L)
                 .level(departmentApiRequest.getLevel())
                 .category(NoticeCategory.DEPARTMENT)
                 .user(userRepository.getOne(departmentApiRequest.getUserId()))
@@ -47,6 +47,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     }
 
     @Override
+    @Transactional
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(department -> department.setViews(department.getViews() + 1))

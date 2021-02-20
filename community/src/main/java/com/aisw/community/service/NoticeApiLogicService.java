@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class NoticeApiLogicService extends BoardService<NoticeApiResponse, Notice> {
+public class NoticeApiLogicService extends BulletinService<NoticeApiResponse, Notice> {
 
     @Override
     public Header<List<NoticeApiResponse>> searchList(Pageable pageable) {

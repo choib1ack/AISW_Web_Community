@@ -1,15 +1,19 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
+import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.entity.University;
+import com.aisw.community.model.entity.User;
+import com.aisw.community.model.enumclass.BoardCategory;
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.NoticeCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
+
 
 public class FreeRepositoryTest extends CommunityApplicationTests {
 
@@ -17,26 +21,34 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
     @Autowired
     private FreeRepository freeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     public void create() {
         String title = "test";
+        String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
+        BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
-        String createdBy = "tester";
-        LocalDateTime createdAt = LocalDateTime.now();
-        Long level = 1L;
         Long likes = 0L;
+        Long level = 1L;
+        Boolean isAnonymous = true;
+        User userId = userRepository.getOne(1L);
 
         Free free = Free.builder()
                 .title(title)
+                .writer(writer)
                 .content(content)
                 .attachmentFile(attachmentFile)
+                .status(status)
                 .views(views)
-                .createdBy(createdBy)
-                .createdAt(createdAt)
-                .level(level)
                 .likes(likes)
+                .level(level)
+                .isAnonymous(isAnonymous)
+                .category(BoardCategory.FREE)
+                .user(userId)
                 .build();
 
         Free newFree = freeRepository.save(free);
@@ -47,9 +59,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
     public void read() {
         Optional<Free> free = freeRepository.findById(1L);
 
-        free.ifPresent(readFree -> {
-            System.out.println(readFree);
-        });
+        free.ifPresent(readFree -> System.out.println(readFree));
     }
 
     @Test

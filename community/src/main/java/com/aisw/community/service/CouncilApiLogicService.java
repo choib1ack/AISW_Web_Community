@@ -36,7 +36,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
                 .content(councilApiRequest.getContent())
                 .attachmentFile(councilApiRequest.getAttachmentFile())
                 .status(councilApiRequest.getStatus())
-                .views(councilApiRequest.getViews())
+                .views(0L)
                 .level(councilApiRequest.getLevel())
                 .category(NoticeCategory.COUNCIL)
                 .user(userRepository.getOne(councilApiRequest.getUserId()))
@@ -47,6 +47,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Counc
     }
 
     @Override
+    @Transactional
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))

@@ -1,7 +1,7 @@
 package com.aisw.community.controller;
 
 import com.aisw.community.model.network.Header;
-import com.aisw.community.service.BoardService;
+import com.aisw.community.service.BulletinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,14 +16,20 @@ import java.util.List;
 public abstract class BulletinController<Res, Entity> {
 
     @Autowired(required = false)
-    protected BoardService<Res, Entity> boardService;
+    protected BulletinService<Res, Entity> bulletinService;
+
+    @GetMapping("/main")
+    public Header<List<Res>> searchList(@PageableDefault(sort = "createdAt",
+            direction = Sort.Direction.DESC) Pageable pageable) {
+        return bulletinService.searchList(pageable);
+    }
 
     @GetMapping("/search/writer")
     public Header<List<Res>> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return boardService.searchByWriter(writer, pageable);
+        return bulletinService.searchByWriter(writer, pageable);
     }
 
     @GetMapping("/search/title")
@@ -31,7 +37,7 @@ public abstract class BulletinController<Res, Entity> {
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return boardService.searchByTitle(title, pageable);
+        return bulletinService.searchByTitle(title, pageable);
     }
 
     @GetMapping("/search/title&content")
@@ -39,6 +45,6 @@ public abstract class BulletinController<Res, Entity> {
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return boardService.searchByTitleOrContent(title, content, pageable);
+        return bulletinService.searchByTitleOrContent(title, content, pageable);
     }
 }

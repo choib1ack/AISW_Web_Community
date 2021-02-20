@@ -36,7 +36,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .content(universityApiRequest.getContent())
                 .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
-                .views(universityApiRequest.getViews())
+                .views(0L)
                 .level(universityApiRequest.getLevel())
                 .campus(universityApiRequest.getCampus())
                 .category(NoticeCategory.UNIVERSITY)
@@ -48,6 +48,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     }
 
     @Override
+    @Transactional
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(university -> university.setViews(university.getViews() + 1))
