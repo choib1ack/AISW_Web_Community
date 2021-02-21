@@ -1,6 +1,7 @@
 package com.aisw.community.model.network.response;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,6 +30,11 @@ public class CouncilApiResponse {
 
     private Long views;
 
+    // 학교 공지 0
+    private Long level;
+
+    private SecondCategory category;
+
     private LocalDateTime createdAt;
 
     private String createdBy;
@@ -37,10 +43,5 @@ public class CouncilApiResponse {
 
     private String updatedBy;
 
-    // 학교 공지 0
-    private Long level;
-
     private Long userId;
-
-    private Long noticeId;
 }

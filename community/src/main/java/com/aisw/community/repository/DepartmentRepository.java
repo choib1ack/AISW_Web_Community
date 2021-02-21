@@ -12,10 +12,7 @@ import java.util.List;
 
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
-    Page<Department> findAllByCreatedByContaining(String writer, Pageable pageable);
+    Page<Department> findAllByWriterContaining(String writer, Pageable pageable);
     Page<Department> findAllByTitleContaining(String title, Pageable pageable);
     Page<Department> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
-    List<Department> findAllByCreatedByContaining(String writer);
-    List<Department> findAllByTitleContaining(String title);
-    List<Department> findAllByTitleContainingOrContentContaining(String title, String content);
 }

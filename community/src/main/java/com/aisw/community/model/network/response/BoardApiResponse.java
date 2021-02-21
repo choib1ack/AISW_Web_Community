@@ -1,6 +1,7 @@
 package com.aisw.community.model.network.response;
 
-import com.aisw.community.model.enumclass.BoardCategory;
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,15 @@ public class BoardApiResponse {
 
     private Long id;
 
-    private BoardCategory category;
+    private SecondCategory category;
 
-    private LocalDateTime cratedAt;
+    private String title;
+
+    private BulletinStatus status;
+
+    private String writer;
+
+    private LocalDateTime createdAt;
+
+    private Long views;
 }

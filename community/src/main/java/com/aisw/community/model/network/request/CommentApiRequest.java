@@ -1,7 +1,5 @@
 package com.aisw.community.model.network.request;
 
-import com.aisw.community.model.enumclass.BoardCategory;
-import com.aisw.community.model.enumclass.NoticeCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +9,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BoardApiRequest {
+public class CommentApiRequest {
 
     private Long id;
 
-    private BoardCategory category;
+    private String content;
+
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
+
+    private Long boardId;
+
+    private Long userId;
 }

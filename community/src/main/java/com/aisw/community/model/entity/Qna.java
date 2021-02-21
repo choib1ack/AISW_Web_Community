@@ -1,73 +1,33 @@
 package com.aisw.community.model.entity;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
-@ToString(exclude = {"user", "board", "qnaCommentList"})
 @EntityListeners(AuditingEntityListener.class)
-public class Qna {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-
-    private String writer;
-
-    private String content;
-
-    private String attachmentFile;
-
-    @Enumerated(EnumType.STRING)
-    private BulletinStatus status;
-
-    private Long views;
-
-    private Long likes;
+@DiscriminatorValue("qna")
+public class Qna extends Board {
 
     private String subject;
 
-    // 익명 true, 비익명 false
-    private Boolean isAnonymous;
-    
-    // 질문게시판 1
-    private Long level;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    @LastModifiedBy
-    private String updatedBy;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user; // user id
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Board board; // board id
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "qna")
-    private List<QnaComment> qnaCommentList;
+    @Builder
+    public Qna(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
+               Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user,
+               Long likes, Boolean isAnonymous, String subject) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory,
+                user, likes, isAnonymous);
+        this.subject = subject;
+    }
 }

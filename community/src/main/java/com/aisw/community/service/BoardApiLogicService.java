@@ -1,95 +1,62 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Board;
-import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.BoardApiRequest;
-import com.aisw.community.model.network.response.*;
+import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BoardApiLogicService extends BoardService<BoardApiRequest, BoardListApiResponse, BoardApiResponse, Board> {
+public class BoardApiLogicService extends BulletinService<BoardApiResponse, Board> {
 
     @Autowired
     private BoardRepository boardRepository;
 
-    @Override
-    public Header<BoardApiResponse> create(Header<BoardApiRequest> request) {
-        BoardApiRequest boardApiRequest = request.getData();
-        Board board = Board.builder().category(boardApiRequest.getCategory()).build();
-        Board newBoard = boardRepository.save(board);
-
-        return Header.OK(response(newBoard));
-    }
-
-    @Override
-    public Header delete(Long id) {
-        return boardRepository.findById(id)
-                .map(board -> {
-                    boardRepository.delete(board);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
-
-    private BoardApiResponse response(Board board) {
-        BoardApiResponse boardApiResponse = BoardApiResponse.builder()
-                .id(board.getId())
-                .cratedAt(board.getCreatedAt())
-                .build();
-
-        return boardApiResponse;
-    }
-
-    @Override
-    public Header<List<BoardListApiResponse>> searchList(Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchList(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
 
-        List<BoardListApiResponse> boardListApiResponseList = new ArrayList<>();
+        return getListHeader(boards);
+    }
 
-        boards.stream().map(board -> {
-            if(board.getCategory() == BoardCategory.FREE) {
-                board.getFreeList().stream().forEach(free -> {
-                    BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
-                            .id(free.getId())
-                            .category(BoardCategory.FREE)
-                            .title(free.getTitle())
-                            .status(free.getStatus())
-                            .writer(free.getWriter())
-                            .createdAt(free.getCreatedAt())
-                            .views(free.getViews())
-                            .build();
+    @Override
+    public Header<List<BoardApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByWriterContaining(writer, pageable);
 
-                    boardListApiResponseList.add(boardListApiResponse);
-                });
-            }
-            else if(board.getCategory() == BoardCategory.QNA) {
-                board.getQnaList().stream().forEach(qna -> {
-                    BoardListApiResponse boardListApiResponse = BoardListApiResponse.builder()
-                            .id(qna.getId())
-                            .category(BoardCategory.QNA)
-                            .title(qna.getTitle())
-                            .status(qna.getStatus())
-                            .writer(qna.getWriter())
-                            .createdAt(qna.getCreatedAt())
-                            .views(qna.getViews())
-                            .build();
+        return getListHeader(boards);
+    }
 
-                    boardListApiResponseList.add(boardListApiResponse);
-                });
-            }
+    @Override
+    public Header<List<BoardApiResponse>> searchByTitle(String title, Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByTitleContaining(title, pageable);
 
-            return boardListApiResponseList;
-        })
+        return getListHeader(boards);
+    }
+
+    @Override
+    public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+        Page<Board> boards = boardRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(boards);
+    }
+
+    private Header<List<BoardApiResponse>> getListHeader(Page<Board> boards) {
+        List<BoardApiResponse> boardApiResponseList = boards.stream()
+                .map(board -> BoardApiResponse.builder()
+                        .id(board.getId())
+                        .title(board.getTitle())
+                        .category(board.getCategory())
+                        .createdAt(board.getCreatedAt())
+                        .status(board.getStatus())
+                        .views(board.getViews())
+                        .writer(board.getWriter())
+                        .build())
                 .collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
@@ -99,21 +66,6 @@ public class BoardApiLogicService extends BoardService<BoardApiRequest, BoardLis
                 .currentPage(boards.getNumber())
                 .build();
 
-        return Header.OK(boardListApiResponseList, pagination);
-    }
-
-    @Override
-    public Header<List<BoardListApiResponse>> searchByWriter(String writer, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public Header<List<BoardListApiResponse>> searchByTitle(String title, Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public Header<List<BoardListApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
-        return null;
+        return Header.OK(boardApiResponseList, pagination);
     }
 }

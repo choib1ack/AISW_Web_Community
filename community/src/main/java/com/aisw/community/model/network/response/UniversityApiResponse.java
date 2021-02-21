@@ -2,6 +2,7 @@ package com.aisw.community.model.network.response;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.Campus;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,13 @@ public class UniversityApiResponse {
 
     private Long views;
 
+    // 학교 공지 0
+    private Long level;
+
+    private Campus campus;
+
+    private SecondCategory category;
+
     private LocalDateTime createdAt;
 
     private String createdBy;
@@ -38,13 +46,5 @@ public class UniversityApiResponse {
 
     private String updatedBy;
 
-    // 학교 공지 0
-    private Long level;
-
-    // 공통 0, 글로벌1,  메디컬2
-    private Campus campus;
-
     private Long userId;
-
-    private Long noticeId;
 }

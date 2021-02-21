@@ -2,14 +2,15 @@ package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.Department;
-import com.aisw.community.model.entity.University;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class DepartmentRepositoryTest extends CommunityApplicationTests {
@@ -18,26 +19,31 @@ public class DepartmentRepositoryTest extends CommunityApplicationTests {
     @Autowired
     private DepartmentRepository departmentRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Test
     public void create() {
         String title = "test";
+        String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
-        String createdBy = "tester";
-        LocalDateTime createdAt = LocalDateTime.now();
         Long level = 1L;
+        User userId = userRepository.getOne(1L);
 
         Department department = Department.builder()
                 .title(title)
+                .writer(writer)
                 .content(content)
                 .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
-                .createdBy(createdBy)
-                .createdAt(createdAt)
                 .level(level)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.DEPARTMENT)
+                .user(userId)
                 .build();
 
         Department newDepartment = departmentRepository.save(department);

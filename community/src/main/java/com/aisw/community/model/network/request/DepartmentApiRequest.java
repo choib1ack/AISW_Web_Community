@@ -23,8 +23,6 @@ public class DepartmentApiRequest {
     // 긴급0, 상단고정1, 일반2
     private BulletinStatus status;
 
-    private Long views;
-
     // 학교 공지 0
     private Long level;
 
