@@ -17,8 +17,17 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
         return result;
     }
 
-    const handleLikeClick = () => {
-        alert("댓글에 좋아요를 남겼습니다");
+    const handleLikeClick = async (comment_id) => {
+        await axios.get("/board/comment/likes/" +comment_id)
+            .then((res) => {
+                alert("댓글에 좋아요를 눌렀습니다");
+                setIsLatest(false);
+                console.log(res);
+
+            }).catch(error => {
+                alert("에러!");
+                console.log(error);
+            })
     }
 
     const handleDeleteClick = async (comment_id) => {
@@ -72,7 +81,7 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
 
                     <Card.Body>
                         <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                            <img src={likeImage} style={{cursor: "pointer"}} onClick={handleLikeClick}/> {data.likes}
+                            <img src={likeImage} style={{cursor: "pointer"}} onClick={()=>handleLikeClick(data.id)}/> {data.likes}
                         </span>
 
                         <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
