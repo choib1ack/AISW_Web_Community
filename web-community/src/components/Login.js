@@ -27,6 +27,8 @@ export default function Login() {
             dispatch(login())
 
             history.push('/')   // 홈으로 가기
+        } else {
+            alert("이메일과 비밀번호를 확인해주세요.")
         }
     }
 
