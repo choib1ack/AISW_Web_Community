@@ -46,7 +46,7 @@ export default function Join() {
         })
     }
 
-    const onSubmit = data => {
+    const onSubmit = (data) => {
         const testUser = {
             name: 'Test04',
             email: 'Test04@gmail.com',

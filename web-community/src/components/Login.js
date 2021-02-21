@@ -1,10 +1,36 @@
 import Form from "react-bootstrap/Form";
-import React from "react";
+import React, {useRef} from "react";
 import './Login.css';
 import Container from "react-bootstrap/Container";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
+import {useForm} from "react-hook-form";
+import {useDispatch, useSelector} from "react-redux";
+import {loginSuccess} from "../features/userSlice";
 
 export default function Login() {
+    const {register, handleSubmit, watch, errors, setValue} = useForm();
+    const email = useRef();
+    const password = useRef();
+    email.current = watch("email");
+    password.current = watch("password");
+    const history = useHistory();
+
+    // redux toolkit
+    const user = useSelector(state => state.user)
+    const dispatch = useDispatch()
+
+    const onSubmit = (data) => {
+        console.log("store: " + user.userData.email + " " + user.userData.password)
+
+        // 리덕스 스토어에 회원정보가 등록되어 있는 경우
+        if (user.userData.email === data.email && user.userData.password === data.password) {
+            dispatch(loginSuccess())
+
+            console.log("디스패치 실행됨"+user.isOnline);
+            history.push('/')
+        }
+    }
+
     return (
         <Container className="Login">
             <h3 className="font-weight-bold mb-5">
@@ -14,16 +40,18 @@ export default function Login() {
                 가천대학교 AI&소프트웨어학부에 오신 걸 환영합니다.
             </h6>
 
-            <Form className="mt-2 mb-4">
+            <Form onSubmit={handleSubmit(onSubmit)} className="mt-2 mb-4">
                 <Form.Group controlId="formBasicEmail">
-                    <Form.Control className="Login-form-control" type="email" placeholder="아이디"/>
+                    <Form.Control className="Login-form-control" type="email" placeholder="이메일"
+                                  name="email" ref={register}/>
                 </Form.Group>
 
                 <Form.Group controlId="formBasicPassword">
-                    <Form.Control className="Login-form-control" type="password" placeholder="패스워드"/>
+                    <Form.Control className="Login-form-control" type="password" placeholder="비밀번호"
+                                  name="password" ref={register}/>
                 </Form.Group>
 
-                <button className="Menu-button blue-button Login-form-control">
+                <button type="submit" className="Menu-button blue-button Login-form-control">
                     로그인
                 </button>
             </Form>

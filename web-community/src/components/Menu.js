@@ -3,17 +3,24 @@ import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Grid from "@material-ui/core/Grid";
-import {BrowserRouter as Router, Switch, Route, Link, useRouteMatch} from "react-router-dom";
+import {Link} from "react-router-dom";
 import logo from "../image/logo3.png";
+import {useDispatch, useSelector} from "react-redux";
 
 export default function Menu() {
+    // redux toolkit
+    const user = useSelector(state => state.user)
+    const dispatch = useDispatch()
+
+    console.log(user.userData.email);
+
     return (
         <div className="Menu">
             <Grid>
                 <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>
                         <Link to="/">
-                            <img src={logo} style={{width:"120px"}}/>
+                            <img src={logo} style={{width: "120px"}}/>
                             {/*<button className="Menu-logo" style={{padding:"0"}}>*/}
                             {/*    <img src={logo} style={{width:"100px"}}/>*/}
                             {/*</button>*/}
@@ -47,18 +54,30 @@ export default function Menu() {
                             </button>
                         </Link>
                     </Col>
-                    <Col xs={3}>
-                        <Link to="/login">
-                            <button className="Menu-button">
-                                로그인
-                            </button>
-                        </Link>
-                        <Link to="/join">
-                            <button className="Menu-button blue-button">
-                                회원가입
-                            </button>
-                        </Link>
-                    </Col>
+                    {
+                        user.isOnline ? (
+                            <>
+                                <Col xs={3}>
+                                    <button className="Menu-button">
+                                        {user.userData.email}
+                                    </button>
+                                </Col>
+                            </>
+                        ) : (
+                            <Col xs={3}>
+                                <Link to="/login">
+                                    <button className="Menu-button">
+                                        로그인
+                                    </button>
+                                </Link>
+                                <Link to="/join">
+                                    <button className="Menu-button blue-button">
+                                        회원가입
+                                    </button>
+                                </Link>
+                            </Col>
+                        )
+                    }
                 </Row>
             </Grid>
 
