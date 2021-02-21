@@ -1,7 +1,7 @@
 package com.aisw.community.model.network.response;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class NoticeApiResponse {
 
     private Long id;
 
-    private NoticeCategory category;
+    private SecondCategory category;
 
     private String title;
 

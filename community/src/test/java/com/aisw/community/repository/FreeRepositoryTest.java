@@ -1,12 +1,11 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.User;
-import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.enumclass.BulletinStatus;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,8 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
                 .likes(likes)
                 .level(level)
                 .isAnonymous(isAnonymous)
-                .category(BoardCategory.FREE)
+                .firstCategory(FirstCategory.BOARD)
+                .secondCategory(SecondCategory.FREE)
                 .user(userId)
                 .build();
 

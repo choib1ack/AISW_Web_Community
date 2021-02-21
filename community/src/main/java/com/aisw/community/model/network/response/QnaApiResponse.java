@@ -1,7 +1,7 @@
 package com.aisw.community.model.network.response;
 
-import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,7 +39,7 @@ public class QnaApiResponse {
 
     private String subject;
 
-    private BoardCategory category;
+    private SecondCategory category;
 
     private LocalDateTime createdAt;
 

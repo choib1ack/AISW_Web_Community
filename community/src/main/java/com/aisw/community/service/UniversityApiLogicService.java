@@ -1,7 +1,8 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.University;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.UniversityApiRequest;
@@ -40,7 +41,8 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .views(0L)
                 .level(universityApiRequest.getLevel())
                 .campus(universityApiRequest.getCampus())
-                .category(NoticeCategory.UNIVERSITY)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.UNIVERSITY)
                 .user(userRepository.getOne(universityApiRequest.getUserId()))
                 .build();
 

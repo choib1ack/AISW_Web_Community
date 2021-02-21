@@ -1,7 +1,8 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Department;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
@@ -39,7 +40,8 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .status(departmentApiRequest.getStatus())
                 .views(0L)
                 .level(departmentApiRequest.getLevel())
-                .category(NoticeCategory.DEPARTMENT)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.DEPARTMENT)
                 .user(userRepository.getOne(departmentApiRequest.getUserId()))
                 .build();
 

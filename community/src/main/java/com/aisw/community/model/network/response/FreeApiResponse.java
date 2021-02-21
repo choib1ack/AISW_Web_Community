@@ -1,7 +1,7 @@
 package com.aisw.community.model.network.response;
 
-import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,7 +37,7 @@ public class FreeApiResponse {
     // 학교 공지 0
     private Long level;
 
-    private BoardCategory category;
+    private SecondCategory category;
 
     private LocalDateTime createdAt;
 

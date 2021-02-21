@@ -1,11 +1,11 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.entity.User;
-import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,8 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
                 .level(level)
                 .isAnonymous(isAnonymous)
                 .subject(subject)
-                .category(BoardCategory.QNA)
+                .firstCategory(FirstCategory.BOARD)
+                .secondCategory(SecondCategory.QNA)
                 .user(userId)
                 .build();
 

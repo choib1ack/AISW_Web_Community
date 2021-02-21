@@ -15,7 +15,6 @@ public abstract class BulletinService<Res, Entity> {
     @Autowired(required = false)
     protected JpaRepository<Entity, Long> baseRepository;
 
-    public abstract Header<List<Res>> searchList(Pageable pageable);
     public abstract Header<List<Res>> searchByWriter(String writer, Pageable pageable);
     public abstract Header<List<Res>> searchByTitle(String title, Pageable pageable);
     public abstract Header<List<Res>> searchByTitleOrContent(String title, String content, Pageable pageable);

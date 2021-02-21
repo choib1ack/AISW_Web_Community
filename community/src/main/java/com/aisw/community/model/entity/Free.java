@@ -1,7 +1,8 @@
 package com.aisw.community.model.entity;
 
-import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,9 @@ public class Free extends Board {
 
     @Builder
     public Free(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                Long views, Long likes, Long level, Boolean isAnonymous, BoardCategory category, User user) {
-        super(id, title, writer, content, attachmentFile, status, views, likes, level, isAnonymous, category, user);
+                Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user,
+                Long likes, Boolean isAnonymous) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, user,
+                likes, isAnonymous);
     }
 }

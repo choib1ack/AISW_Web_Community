@@ -1,7 +1,8 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Qna;
-import com.aisw.community.model.enumclass.BoardCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
@@ -42,7 +43,8 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .subject(qnaApiRequest.getSubject())
                 .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .level(qnaApiRequest.getLevel())
-                .category(BoardCategory.QNA)
+                .firstCategory(FirstCategory.BOARD)
+                .secondCategory(SecondCategory.QNA)
                 .user(userRepository.getOne(qnaApiRequest.getUserId()))
                 .build();
 
@@ -72,8 +74,8 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                             .setContent(qnaApiRequest.getContent())
                             .setAttachmentFile(qnaApiRequest.getAttachmentFile())
                             .setStatus(qnaApiRequest.getStatus())
-                            .setLevel(qnaApiRequest.getLevel())
-                            .setIsAnonymous(qnaApiRequest.getIsAnonymous());
+                            .setLevel(qnaApiRequest.getLevel());
+                    qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
                     qna.setSubject(qnaApiRequest.getSubject());
 
                     return qna;

@@ -18,12 +18,6 @@ public abstract class BulletinController<Res, Entity> {
     @Autowired(required = false)
     protected BulletinService<Res, Entity> bulletinService;
 
-    @GetMapping("/main")
-    public Header<List<Res>> searchList(@PageableDefault(sort = "createdAt",
-            direction = Sort.Direction.DESC) Pageable pageable) {
-        return bulletinService.searchList(pageable);
-    }
-
     @GetMapping("/search/writer")
     public Header<List<Res>> searchByWriter(
             @RequestParam String writer,

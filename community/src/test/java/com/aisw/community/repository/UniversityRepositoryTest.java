@@ -5,13 +5,13 @@ import com.aisw.community.model.entity.University;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.Campus;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class UniversityRepositoryTest extends CommunityApplicationTests {
@@ -43,7 +43,8 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
                 .status(status)
                 .views(views)
                 .level(level)
-                .category(NoticeCategory.UNIVERSITY)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.UNIVERSITY)
                 .user(userId)
                 .campus(Campus.COMMON)
                 .build();

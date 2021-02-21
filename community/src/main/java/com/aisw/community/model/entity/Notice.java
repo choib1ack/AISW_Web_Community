@@ -1,77 +1,28 @@
 package com.aisw.community.model.entity;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@ToString(exclude = {"user"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn
-public class Notice {
+@DiscriminatorValue("notice")
+public class Notice extends Bulletin {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-
-    private String writer;
-
-    private String content;
-
-    private String attachmentFile;
-
-    @Enumerated(EnumType.STRING)
-    private BulletinStatus status;
-
-    private Long views;
-
-    // 학생회 공지1
-    private Long level;
-
-    private NoticeCategory category;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    @LastModifiedBy
-    private String updatedBy;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user; // user id
+    private SecondCategory category;
 
     public Notice(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                  Long views, Long level, NoticeCategory category, User user) {
-        this.id = id;
-        this.title = title;
-        this.writer = writer;
-        this.content = content;
-        this.attachmentFile = attachmentFile;
-        this.status = status;
-        this.views = views;
-        this.level = level;
-        this.category = category;
-        this.user = user;
+                  Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, user);
+        this.category = secondCategory;
     }
 }

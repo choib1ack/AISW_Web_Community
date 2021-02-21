@@ -1,13 +1,13 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.enumclass.BoardCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
-import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.repository.FreeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,8 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
                 .likes(0L)
                 .isAnonymous(freeApiRequest.getIsAnonymous())
                 .level(freeApiRequest.getLevel())
-                .category(BoardCategory.FREE)
+                .firstCategory(FirstCategory.BOARD)
+                .secondCategory(SecondCategory.FREE)
                 .user(userRepository.getOne(freeApiRequest.getUserId()))
                 .build();
 
@@ -73,8 +74,8 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
                             .setContent(freeApiRequest.getContent())
                             .setAttachmentFile(freeApiRequest.getAttachmentFile())
                             .setStatus(freeApiRequest.getStatus())
-                            .setLevel(freeApiRequest.getLevel())
-                            .setIsAnonymous(freeApiRequest.getIsAnonymous());
+                            .setLevel(freeApiRequest.getLevel());
+                    free.setIsAnonymous(freeApiRequest.getIsAnonymous());
                     return free;
                 })
                 .map(free -> baseRepository.save(free))

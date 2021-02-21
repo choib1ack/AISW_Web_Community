@@ -1,7 +1,8 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Council;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CouncilApiRequest;
@@ -39,7 +40,8 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
                 .status(councilApiRequest.getStatus())
                 .views(0L)
                 .level(councilApiRequest.getLevel())
-                .category(NoticeCategory.COUNCIL)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.COUNCIL)
                 .user(userRepository.getOne(councilApiRequest.getUserId()))
                 .build();
 

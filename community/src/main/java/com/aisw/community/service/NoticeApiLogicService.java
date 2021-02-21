@@ -17,9 +17,8 @@ import java.util.stream.Collectors;
 public class NoticeApiLogicService extends BulletinService<NoticeApiResponse, Notice> {
 
     @Autowired
-    private NoticeRepository<Notice> noticeRepository;
+    private NoticeRepository noticeRepository;
 
-    @Override
     public Header<List<NoticeApiResponse>> searchList(Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAll(pageable);
 

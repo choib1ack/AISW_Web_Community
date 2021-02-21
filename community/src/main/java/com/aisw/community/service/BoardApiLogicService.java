@@ -17,9 +17,8 @@ import java.util.stream.Collectors;
 public class BoardApiLogicService extends BulletinService<BoardApiResponse, Board> {
 
     @Autowired
-    private BoardRepository<Board> boardRepository;
+    private BoardRepository boardRepository;
 
-    @Override
     public Header<List<BoardApiResponse>> searchList(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
 
