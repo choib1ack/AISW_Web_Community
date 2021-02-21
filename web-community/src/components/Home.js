@@ -11,9 +11,14 @@ import jobLogo2 from "../image/naver.png";
 import ContestInfoCard from "./ComponentInfoCard";
 import contestImage1 from "../image/contest1.svg";
 import "./Home.css";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 
 export default function Home() {
+    let history = useHistory();
+    const ToLink = (url) =>{
+        history.push(url);
+    }
+
     return(
         <div className="Home">
             {/*<h1>Home</h1>*/}
@@ -24,22 +29,25 @@ export default function Home() {
         <div style={{width:"70%", margin:"auto"}}>
             <Row style={{margin:"30px 0px", textAlign:"center"}}>
                 <Col lg={4} md={4} sm={4}>
-                    <div className={"pingpong"}>
-                        학과 커리큘럼 확인하기
-                    </div>
-
+                    <Link to="/deptInfo">
+                        <div className={"pingpong"} style={{color:"#636363"}}>
+                            학과 커리큘럼 확인하기
+                        </div>
+                    </Link>
                 </Col>
                 <Col lg={4} md={4} sm={4}>
-                    <div className={"pingpong"}>
-                        학번별 학사요람 확인하기
-                    </div>
-
+                    <Link to="/">
+                        <div className={"pingpong"} style={{color:"#636363"}}>
+                            학번별 학사요람 확인하기
+                        </div>
+                    </Link>
                 </Col>
                 <Col lg={4} md={4} sm={4}>
-                    <div className={"pingpong"}>
-                        졸업 요건 확인하기
-                    </div>
-
+                    <Link to="/">
+                        <div className={"pingpong"} style={{color:"#636363"}}>
+                            졸업 요건 확인하기
+                        </div>
+                    </Link>
                 </Col>
             </Row>
             <Row style={{margin:"20px 0px"}}>
@@ -52,22 +60,22 @@ export default function Home() {
                             </Link>
                         </div>
                         <div>
-                            <p>
+                            <p onClick={()=>ToLink('')} className={"clickable"}>
                                 2021-1학기 수강신청 안내 <span style={{float:"right"}}>2021-01-06</span>
                             </p>
-                            <p>
+                            <p onClick={()=>ToLink('')} className={"clickable"}>
                                 2021-1학기 수강신청 안내 <span style={{float:"right"}}>2021-01-06</span>
                             </p>
-                            <p>
+                            <p onClick={()=>ToLink('')} className={"clickable"}>
                                 2021-1학기 수강신청 안내 <span style={{float:"right"}}>2021-01-06</span>
                             </p>
-                            <p>
+                            <p onClick={()=>ToLink('')} className={"clickable"}>
                                 2021-1학기 수강신청 안내 <span style={{float:"right"}}>2021-01-06</span>
                             </p>
-                            <p>
+                            <p onClick={()=>ToLink('')} className={"clickable"}>
                                 2021-1학기 수강신청 안내 <span style={{float:"right"}}>2021-01-06</span>
                             </p>
-                            <p>
+                            <p onClick={()=>ToLink('')} className={"clickable"}>
                                 2021-1학기 수강신청 안내 <span style={{float:"right"}}>2021-01-06</span>
                             </p>
                         </div>

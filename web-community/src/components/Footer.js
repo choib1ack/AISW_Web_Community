@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import './Footer.css';
-import logo from "../image/logo2.png";
+import logo from "../image/logo4.png";
 export default function Footer() {
     return (
         <Grid className="Footer">

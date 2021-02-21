@@ -10,3 +10,11 @@
     transform: translateY(-5px);
     transition: all ease 0.3s;
 }
+.clickable{
+    cursor: pointer;
+    transition: all ease 0.1s;
+}
+.clickable:hover{
+    color: #6CBACB;
+    transition: all ease 0.1s;
+}
