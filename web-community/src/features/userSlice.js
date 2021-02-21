@@ -20,12 +20,15 @@ export const userSlice = createSlice({
             state.userData = action.payload;
             state.isLoading = false;
         },
-        loginSuccess: (state, action) => {
+        login: (state, action) => {
             state.isOnline = true;
+        },
+        logout: (state, action) => {
+            state.isOnline = false;
         }
     }
 })
 
-export const {startLoading, hasError, joinSuccess, loginSuccess} = userSlice.actions
+export const {startLoading, hasError, joinSuccess, login, logout} = userSlice.actions
 
 export default userSlice.reducer

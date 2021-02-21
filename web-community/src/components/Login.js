@@ -5,7 +5,7 @@ import Container from "react-bootstrap/Container";
 import {Link, useHistory} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
-import {loginSuccess} from "../features/userSlice";
+import {login} from "../features/userSlice";
 
 export default function Login() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
@@ -24,10 +24,9 @@ export default function Login() {
 
         // 리덕스 스토어에 회원정보가 등록되어 있는 경우
         if (user.userData.email === data.email && user.userData.password === data.password) {
-            dispatch(loginSuccess())
+            dispatch(login())
 
-            console.log("디스패치 실행됨"+user.isOnline);
-            history.push('/')
+            history.push('/')   // 홈으로 가기
         }
     }
 

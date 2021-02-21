@@ -6,6 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import {Link} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
+import {logout} from "../features/userSlice";
 
 export default function Menu() {
     // redux toolkit
@@ -59,7 +60,11 @@ export default function Menu() {
                             <>
                                 <Col xs={3}>
                                     <button className="Menu-button">
-                                        {user.userData.email}
+                                        {user.userData.name}
+                                    </button>
+                                    <button className="Menu-button blue-button"
+                                            onClick={() => dispatch(logout())}>
+                                        로그아웃
                                     </button>
                                 </Col>
                             </>
