@@ -60,15 +60,15 @@ function BoardList({match}) {
                 <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
                     <Col lg={6} md={8} sm={12}>
                         <SelectButton
-                            id='0' title='전체' active={category}
+                            id={0} title='전체' active={category}
                             onClick={()=>handleCategoryChange(0)}
                         />
                         <SelectButton
-                            id='1' title='자유게시판' active={category}
+                            id={1} title='자유게시판' active={category}
                             onClick={()=>handleCategoryChange(1)}
                         />
                         <SelectButton
-                            id='2' title='과목별게시판' active={category}
+                            id={2} title='과목별게시판' active={category}
                             onClick={()=>handleCategoryChange(2)}
                         />
                     </Col>
