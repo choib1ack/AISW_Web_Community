@@ -64,6 +64,7 @@ public class CommentApiLogicService {
                 .likes(comment.getLikes())
                 .isAnonymous(comment.getIsAnonymous())
                 .boardId(comment.getBoard().getId())
+                .userId(comment.getUser().getId())
                 .build();
 
         return freeCommentApiResponse;

@@ -27,4 +27,6 @@ public class CommentApiResponse {
     private Long likes;
 
     private Long boardId;
+
+    private Long userId;
 }
