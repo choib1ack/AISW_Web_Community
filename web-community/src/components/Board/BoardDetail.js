@@ -16,7 +16,9 @@ export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [isLatest, setIsLatest] = useState(false);
+    const [isContentLatest, setIsContentLatest] = useState(false);
+    const [isCommentLatest, setIsCommentLatest] = useState(false);
+
 
     const {board_category} = match.params;
     const {id} = match.params;
@@ -30,11 +32,19 @@ export default function BoardDetail({match}) {
                 return "과목별게시판";
         }
     }
-    const handleLikeCilck = () => {
-        //http://localhost:8080/board/free/likes/1
-        // axios.get(match);
-        // const response = await axios.get("http://localhost:8080/board/free/likes/2");
-        // console.log(response);
+    const handleLikeCilck = async () => {
+        let this_url = '/board/'+board_category+'/likes/'+id;
+        console.log(this_url);
+        await axios.get(this_url)
+            .then((res) => {
+                alert("게시글에 좋아요를 눌렀습니다");
+                setIsContentLatest(false);
+                console.log(res);
+
+            }).catch(error => {
+                alert("에러!");
+                console.log(error);
+            })
     }
 
     // 첨부파일이 있을 때만 보여줌
@@ -58,6 +68,7 @@ export default function BoardDetail({match}) {
                 const response = await axios.get(url);
                 // console.log(response.data);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
+                setIsContentLatest(true);
             } catch (e) {
                 setError(e);
             }
@@ -65,7 +76,7 @@ export default function BoardDetail({match}) {
         };
 
         fetchNoticeData();
-    }, []); // 여기 빈배열 안써주면 무한루프,,
+    }, [isContentLatest]); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <tr>
         <td colSpan={5}>로딩중..</td>
@@ -100,7 +111,7 @@ export default function BoardDetail({match}) {
                     <div className="p-4" style={{minHeight: "100px"}}>
                         {/*좋아요*/}
                         <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                                <img src={likeImage} onclick={handleLikeCilck}
+                                <img src={likeImage} onClick={handleLikeCilck}
                                      style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>
                         <p>{boardDetailData.content}​</p>
                     </div>
@@ -111,14 +122,14 @@ export default function BoardDetail({match}) {
                         <Title text='댓글' type='2'/>
                         <MakeCommentList
                             id={id}
-                            isLatest={isLatest}
-                            setIsLatest={setIsLatest}
+                            isLatest={isCommentLatest}
+                            setIsLatest={setIsCommentLatest}
                         />
                         <ReplyBox/>
                         <ReplyBox/>
                         <WriteComment
                             board_id={id}
-                            setIsLatest={setIsLatest}
+                            setIsLatest={setIsCommentLatest}
                         />
                     </div>
                 </div>
