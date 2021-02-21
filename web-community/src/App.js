@@ -12,7 +12,6 @@ import DeptInfo from "./components/DeptInfo";
 import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
 import Join from "./components/Join";
-import CounterContainer from "./containers/CounterContainer";
 import Counter from "./components/Counter";
 
 function App() {

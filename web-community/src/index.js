@@ -5,19 +5,15 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css';
 
-import {createStore} from 'redux';
-import reducers from './reducers';
+import store from './store'
 import {Provider} from "react-redux";
-
-// 스토어 생성
-const store = createStore(reducers);
 
 ReactDOM.render(
     <React.StrictMode>
         <Provider store={store}>
             <App/>
-        </Provider>
-    </React.StrictMode>,
+        </Provider>,
+      </React.StrictMode>,
     document.getElementById('root')
 );
 
