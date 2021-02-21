@@ -109,8 +109,11 @@ export default function BoardDetail({match}) {
 
                     <div className="p-3">
                         <Title text='댓글' type='2'/>
-                        <CommentBox/>
-                        <CommentBox/>
+                        <MakeCommentList
+                            id={id}
+                            isLatest={isLatest}
+                            setIsLatest={setIsLatest}
+                        />
                         <ReplyBox/>
                         <ReplyBox/>
                         <WriteComment
@@ -122,24 +125,6 @@ export default function BoardDetail({match}) {
                 <ListButton/>
             </Container>
         </div>
-    )
-}
-
-export function CommentBox() {
-    return (
-        <Card style={{borderRadius: '10px'}} className="text-left flex-row m-2">
-            <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
-
-            <Card.Body>
-                <Card.Title className="mb-1" style={{fontSize: '14px'}}>익명1</Card.Title>
-                <Card.Text className="mb-0">
-                    <p className="d-inline-block mr-3 mb-3" style={{fontSize: '14px'}}>
-                        네..
-                    </p>
-                </Card.Text>
-                <Card.Subtitle style={{fontSize: '13px'}} className="text-muted">2021-01-09 11:10:05</Card.Subtitle>
-            </Card.Body>
-        </Card>
     )
 }
 
@@ -166,25 +151,3 @@ export function ReplyBox() {
     )
 }
 
-export function CommentInput() {
-    return (
-        <div className="mt-5 mb-3">
-            <Checkbox label='익명' defaultChecked/>
-
-            <InputGroup className="border-1" style={{borderRadius: '10px', border: 'solid 1px #E3E3E3'}}>
-                <FormControl
-                    style={{border: 'none', height: '100px', margin: '10px', verticalAlign: 'text-top', resize: 'none'}}
-                    placeholder="댓글을 남겨보세요."
-                    aria-describedby="basic-addon2"
-                    as="textarea"
-                />
-                <InputGroup.Append>
-                    <Button size="sm" variant="outline-secondary" className="border-0 m-3">
-                        <img src={sendImage} style={{width: '20px'}} className="align-self-start"/>
-                    </Button>
-                </InputGroup.Append>
-            </InputGroup>
-        </div>
-
-    )
-}
