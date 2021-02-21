@@ -6,9 +6,9 @@ import searchImage from "../../icon/search_black.png";
 import Table from "react-bootstrap/Table";
 import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
-import SelectButton from "../SelectButton";
+import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
-import {WriteButton} from "../WriteButton";
+import {WriteButton} from "../Button/WriteButton";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);

@@ -12,15 +12,12 @@ import DeptInfo from "./components/DeptInfo";
 import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
 import Join from "./components/Join";
-import Counter from "./components/Counter";
 
 function App() {
     return (
         <Router>
             <div className="App" style={{height: "100%"}}>
                 <Menu/>
-
-                <Counter/>
 
                 <div style={{minHeight: "100%"}}>
                     <main>

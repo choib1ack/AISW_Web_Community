@@ -3,9 +3,9 @@ import React from "react";
 
 function SelectButton(props) {
     let active;
-    if(props.active == props.id){
+    if (props.active === props.id) {
         active = true;
-    }else{
+    } else {
         active = false;
     }
 
@@ -21,4 +21,6 @@ function SelectButton(props) {
     return (
         <Button style={btnStyle} onClick={props.onClick}>{props.title}</Button>
     );
-}export default SelectButton;
+}
+
+export default SelectButton;

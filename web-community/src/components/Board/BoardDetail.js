@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import userImage from "../../icon/user.svg";
-import {ListButton} from "../ListButton";
+import {ListButton} from "../Button/ListButton";
 import arrowImage from "../../icon/arrow.svg";
 import sendImage from "../../icon/send.svg";
 import InputGroup from "react-bootstrap/InputGroup";

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import Container from "react-bootstrap/Container";
 import fileImage from "../../icon/file.svg";
 import Title from "../Title";
-import {ListButton} from "../ListButton";
+import {ListButton} from "../Button/ListButton";
 import axios from "axios";
 
 export default function NoticeDetail({match}) {
