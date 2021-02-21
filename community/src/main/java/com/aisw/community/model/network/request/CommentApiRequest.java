@@ -4,27 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QnaCommentApiRequest {
+public class CommentApiRequest {
 
     private Long id;
 
-    private String comment;
+    private String content;
 
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
     private Long likes;
 
-    private Long qnaId;
+    private Long boardId;
 
     private Long userId;
 }

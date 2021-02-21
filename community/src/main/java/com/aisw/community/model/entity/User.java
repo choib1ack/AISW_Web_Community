@@ -21,7 +21,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"noticeList", "boardList", "freeCommentList", "qnaCommentList"})
+@ToString(exclude = {"noticeList", "boardList", "commentList"})
 public class User {
 
     @Id
@@ -79,8 +79,5 @@ public class User {
     private List<Board> boardList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<FreeComment> freeCommentList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<QnaComment> qnaCommentList;
+    private List<Comment> commentList;
 }

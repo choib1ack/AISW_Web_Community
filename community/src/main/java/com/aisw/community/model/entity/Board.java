@@ -13,10 +13,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@ToString(exclude = {"commentList"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
@@ -28,6 +30,9 @@ public class Board extends Bulletin {
     private Boolean isAnonymous;
 
     private SecondCategory category;
+
+    @OneToMany
+    private List<Comment> commentList;
 
     public Board(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
                  Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user,

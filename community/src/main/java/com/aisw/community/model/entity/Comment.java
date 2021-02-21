@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"free", "user"})
+@ToString(exclude = {"board", "user"})
 @EntityListeners(AuditingEntityListener.class)
-public class FreeComment {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class FreeComment {
 
     private String writer;
 
-    private String comment;
+    private String content;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -40,7 +40,7 @@ public class FreeComment {
     private Long likes;
 
     @ManyToOne
-    private Free free;
+    private Board board;
 
     @ManyToOne
     private User user;
