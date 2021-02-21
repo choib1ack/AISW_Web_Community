@@ -113,7 +113,10 @@ export default function BoardDetail({match}) {
                         <CommentBox/>
                         <ReplyBox/>
                         <ReplyBox/>
-                        <CommentInput/>
+                        <WriteComment
+                            board_id={id}
+                            setIsLatest={setIsLatest}
+                        />
                     </div>
                 </div>
                 <ListButton/>
