@@ -1,17 +1,15 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.enumclass.BoardCategory;
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.BoardApiRequest;
 import com.aisw.community.model.network.request.FreeApiRequest;
-import com.aisw.community.model.network.request.NoticeApiRequest;
-import com.aisw.community.model.network.request.UniversityApiRequest;
-import com.aisw.community.model.network.response.*;
-import com.aisw.community.repository.*;
+import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.repository.FreeRepository;
+import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResponse, Free> {
-
-    @Autowired
-    private BoardRepository boardRepository;
+public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiResponse, FreeApiResponse, Free> {
 
     @Autowired
     private UserRepository userRepository;
@@ -33,15 +28,9 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
     @Autowired
     private FreeRepository freeRepository;
 
-    @Autowired
-    private BoardApiLogicService boardApiLogicService;
-
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-
-        BoardApiRequest noticeApiRequest = BoardApiRequest.builder().category(BoardCategory.FREE).build();
-        BoardApiResponse boardApiResponse = boardApiLogicService.create(Header.OK(noticeApiRequest)).getData();
 
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
@@ -49,12 +38,13 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
                 .content(freeApiRequest.getContent())
                 .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
-                .views(freeApiRequest.getViews())
-                .likes(freeApiRequest.getLikes())
+                .views(0L)
+                .likes(0L)
                 .isAnonymous(freeApiRequest.getIsAnonymous())
                 .level(freeApiRequest.getLevel())
+                .firstCategory(FirstCategory.BOARD)
+                .secondCategory(SecondCategory.FREE)
                 .user(userRepository.getOne(freeApiRequest.getUserId()))
-                .board(boardRepository.getOne(boardApiResponse.getId()))
                 .build();
 
         Free newFree = baseRepository.save(free);
@@ -66,7 +56,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save(free))
+                .map(free -> baseRepository.save((Free)free))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -84,11 +74,8 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
                             .setContent(freeApiRequest.getContent())
                             .setAttachmentFile(freeApiRequest.getAttachmentFile())
                             .setStatus(freeApiRequest.getStatus())
-                            .setViews(freeApiRequest.getViews())
-                            .setLevel(freeApiRequest.getLevel())
-                            .setLikes(freeApiRequest.getLikes())
-                            .setIsAnonymous(freeApiRequest.getIsAnonymous());
-
+                            .setLevel(freeApiRequest.getLevel());
+                    free.setIsAnonymous(freeApiRequest.getIsAnonymous());
                     return free;
                 })
                 .map(free -> baseRepository.save(free))
@@ -101,12 +88,6 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
     public Header delete(Long id) {
         return baseRepository.findById(id)
                 .map(free -> {
-                    boardRepository.findById(free.getBoard().getId())
-                            .map(board -> {
-                                boardRepository.delete(board);
-                                return Header.OK();
-                            })
-                            .orElseGet(() -> Header.ERROR("데이터 없음"));
                     baseRepository.delete(free);
                     return Header.OK();
                 })
@@ -129,45 +110,53 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
                 .level(free.getLevel())
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
+                .category(free.getCategory())
                 .userId(free.getUser().getId())
-                .boardId(free.getBoard().getId())
                 .build();
 
         return freeApiResponse;
     }
 
     @Override
-    public Header<List<FreeApiResponse>> search(Pageable pageable) {
+    public Header<List<BoardApiResponse>> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
 
         return getListHeader(frees);
     }
 
     @Override
-    public Header<List<FreeApiResponse>> searchByWriter(String writer, Pageable pageable) {
-        Page<Free> frees = freeRepository.findAllByCreatedByContaining(writer, pageable);
+    public Header<List<BoardApiResponse>> searchByWriter(String writer, Pageable pageable) {
+        Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
 
         return getListHeader(frees);
     }
 
     @Override
-    public Header<List<FreeApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByTitle(String title, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
 
         return getListHeader(frees);
     }
 
     @Override
-    public Header<List<FreeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
 
         return getListHeader(frees);
     }
 
-    private Header<List<FreeApiResponse>> getListHeader(Page<Free> frees) {
-        List<FreeApiResponse> freeApiResponseList = frees.stream()
-                .map(this::response)
+    private Header<List<BoardApiResponse>> getListHeader(Page<Free> frees) {
+        List<BoardApiResponse> boardApiResponseList = frees.stream()
+                .map(free -> BoardApiResponse.builder()
+                        .id(free.getId())
+                        .title(free.getTitle())
+                        .category(free.getCategory())
+                        .createdAt(free.getCreatedAt())
+                        .status(free.getStatus())
+                        .views(free.getViews())
+                        .writer(free.getWriter())
+                        .build())
                 .collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
@@ -177,14 +166,14 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, FreeApiResp
                 .currentPage(frees.getNumber())
                 .build();
 
-        return Header.OK(freeApiResponseList, pagination);
+        return Header.OK(boardApiResponseList, pagination);
     }
 
     @Transactional
     public Header<FreeApiResponse> pressLikes(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setLikes(free.getLikes() + 1))
-                .map(free -> baseRepository.save(free))
+                .map(free -> baseRepository.save((Free)free))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

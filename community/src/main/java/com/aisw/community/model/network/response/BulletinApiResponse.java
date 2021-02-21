@@ -1,7 +1,8 @@
 package com.aisw.community.model.network.response;
 
-import com.aisw.community.model.enumclass.BoardCategory;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +14,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BoardListApiResponse {
+public class BulletinApiResponse {
 
     private Long id;
 
-    private BoardCategory category;
+    private FirstCategory firstCategory;
+
+    private SecondCategory secondCategory;
 
     private String title;
 

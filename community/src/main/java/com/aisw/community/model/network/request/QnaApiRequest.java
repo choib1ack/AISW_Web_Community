@@ -22,10 +22,6 @@ public class QnaApiRequest {
 
     private BulletinStatus status;
 
-    private Long views;
-
-    private Long likes;
-
     // 학교 공지 0
     private Long level;
 

@@ -12,10 +12,7 @@ import java.util.List;
 
 @Repository
 public interface CouncilRepository extends JpaRepository<Council, Long> {
-    Page<Council> findAllByCreatedByContaining(String writer, Pageable pageable);
+    Page<Council> findAllByWriterContaining(String writer, Pageable pageable);
     Page<Council> findAllByTitleContaining(String title, Pageable pageable);
     Page<Council> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
-    List<Council> findAllByCreatedByContaining(String writer);
-    List<Council> findAllByTitleContaining(String title);
-    List<Council> findAllByTitleContainingOrContentContaining(String title, String content);
 }

@@ -1,71 +1,30 @@
 package com.aisw.community.model.entity;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
-import lombok.*;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
-@ToString(exclude = {"user", "board", "freeCommentList"})
 @EntityListeners(AuditingEntityListener.class)
-public class Free {
+@DiscriminatorValue("free")
+public class Free extends Board {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-
-    private String writer;
-
-    private String content;
-
-    private String attachmentFile;
-
-    @Enumerated(EnumType.STRING)
-    private BulletinStatus status;
-
-    private Long views;
-
-    private Long likes;
-    
-    // 자유게시판 0
-    private Long level;
-
-    // 익명 true, 비익명 false
-    private Boolean isAnonymous;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
-    @LastModifiedBy
-    private String updatedBy;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user; // user id
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Board board; // board id
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "free")
-    private List<FreeComment> freeCommentList;
+    @Builder
+    public Free(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
+                Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user,
+                Long likes, Boolean isAnonymous) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, user,
+                likes, isAnonymous);
+    }
 }

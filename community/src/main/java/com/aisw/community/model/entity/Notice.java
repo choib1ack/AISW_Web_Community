@@ -1,40 +1,28 @@
 package com.aisw.community.model.entity;
 
-import com.aisw.community.model.enumclass.NoticeCategory;
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@ToString(exclude = {"universityList", "departmentList", "councilList"})
-public class Notice {
+@DiscriminatorValue("notice")
+public class Notice extends Bulletin {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private SecondCategory category;
 
-    private NoticeCategory category;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<University> universityList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<Department> departmentList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notice")
-    private List<Council> councilList;
+    public Notice(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
+                  Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, user);
+        this.category = secondCategory;
+    }
 }

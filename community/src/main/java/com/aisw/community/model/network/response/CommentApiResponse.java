@@ -1,11 +1,9 @@
-package com.aisw.community.model.network.request;
+package com.aisw.community.model.network.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -13,18 +11,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QnaCommentApiRequest {
+public class CommentApiResponse {
 
     private Long id;
 
-    private String comment;
+    private String writer;
+
+    private String content;
+
+    private LocalDateTime createdAt;
 
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
     private Long likes;
 
-    private Long qnaId;
+    private Long boardId;
 
     private Long userId;
 }
