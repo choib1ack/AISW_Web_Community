@@ -10,12 +10,13 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"qna"})
+@ToString(exclude = {"qna", "user"})
 @EntityListeners(AuditingEntityListener.class)
 public class QnaComment {
 
@@ -23,7 +24,9 @@ public class QnaComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
+    private String writer;
+
+    private String comment;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -38,4 +41,7 @@ public class QnaComment {
 
     @ManyToOne
     private Qna qna;
+
+    @ManyToOne
+    private User user;
 }

@@ -1,8 +1,7 @@
 package com.aisw.community.model.network.response;
 
-import com.aisw.community.model.entity.Council;
-import com.aisw.community.model.entity.Department;
-import com.aisw.community.model.entity.University;
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,5 +17,15 @@ public class NoticeApiResponse {
 
     private Long id;
 
-    private LocalDateTime cratedAt;
+    private SecondCategory category;
+
+    private String title;
+
+    private BulletinStatus status;
+
+    private String writer;
+
+    private LocalDateTime createdAt;
+
+    private Long views;
 }

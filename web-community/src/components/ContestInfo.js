@@ -8,6 +8,7 @@ import Pagination from "./PaginationCustom";
 import Title from "./Title";
 
 function ContestInfo() {
+    window.scrollTo(0, 0);
     return (
         <div className='ContestInfo'>
             <Container>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import classNames from 'classnames';
@@ -40,8 +40,8 @@ function NewBoard() {
                     <Row>
                         <Col>
                             <Form.Group controlId="content">
-                                <Form.Control as="textarea" rows={20} placehoder="#내용을 입력해주세요."/>
-                                <Form.Control as="textarea" rows={3} placehoder="#태그입력"/>
+                                <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."/>
+                                <Form.Control className="p-3" as="textarea" rows={3} placeholder="#태그입력"/>
                             </Form.Group>
                         </Col>
                     </Row>

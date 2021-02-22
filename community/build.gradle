@@ -25,10 +25,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'mysql:mysql-connector-java'
+    implementation 'junit:junit:4.12'
+    implementation 'junit:junit:4.12'
     compile 'org.jsoup:jsoup:1.7.3'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }
 
 //def webappDir = "$projectDir/src/main/web-community"

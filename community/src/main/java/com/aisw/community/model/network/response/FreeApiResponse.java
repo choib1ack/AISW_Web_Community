@@ -1,6 +1,7 @@
 package com.aisw.community.model.network.response;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,8 @@ public class FreeApiResponse {
 
     private String title;
 
+    private String writer;
+
     private String content;
 
     private String attachmentFile;
@@ -31,6 +34,11 @@ public class FreeApiResponse {
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
+    // 학교 공지 0
+    private Long level;
+
+    private SecondCategory category;
+
     private LocalDateTime createdAt;
 
     private String createdBy;
@@ -39,10 +47,5 @@ public class FreeApiResponse {
 
     private String updatedBy;
 
-    // 학교 공지 0
-    private Long level;
-
     private Long userId;
-
-    private Long boardId;
 }

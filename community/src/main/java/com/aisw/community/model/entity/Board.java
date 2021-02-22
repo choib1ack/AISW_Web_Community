@@ -1,8 +1,14 @@
 package com.aisw.community.model.entity;
 
+import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -10,25 +16,30 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter
+@Setter
+@ToString(exclude = {"commentList"})
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@ToString(exclude = {"freeList", "qnaList"})
-public class Board {
+@DiscriminatorValue("board")
+public class Board extends Bulletin {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long likes;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    private Boolean isAnonymous;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
-    private List<Free> freeList;
+    private SecondCategory category;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
-    private List<Qna> qnaList;
+    @OneToMany
+    private List<Comment> commentList;
+
+    public Board(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
+                 Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user,
+                 Long likes, Boolean isAnonymous) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, user);
+        this.likes = likes;
+        this.isAnonymous = isAnonymous;
+        this.category = secondCategory;
+    }
 }

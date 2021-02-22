@@ -8,17 +8,28 @@ import Row from "react-bootstrap/Row";
 import classNames from "classnames";
 import {useForm} from "react-hook-form";
 import axios from 'axios';
+import {useDispatch, useSelector} from "react-redux";
+import {joinSuccess} from "../features/userSlice";
+import FinishModal from "./Button/FinishModal";
 
-export default function Join({match}) {
-    const [agree, setAgree] = useState(false);
+export default function Join() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
     const password = useRef();
-    password.current = watch("password");
     const phone_number = useRef();
+    password.current = watch("password");
     phone_number.current = watch("phone_number");
     const [pwValidate, setPWValidate] = useState(0);
+    const [agree, setAgree] = useState(false);
 
-    async function test(data) {
+    // redux toolkit
+    const user = useSelector(state => state.user.userData)
+    const dispatch = useDispatch()
+
+    // 회원가입 완료 모달
+    const [show, setShow] = useState(false);
+    const showModal = () => setShow(true);
+
+    async function sendServer(data) {
         await axios.post("http://localhost:8080/user",
             {
                 headers: {
@@ -35,8 +46,8 @@ export default function Join({match}) {
         })
     }
 
-    const onSubmit = data => {
-        const object1 = {
+    const onSubmit = (data) => {
+        const testUser = {
             name: 'Test04',
             email: 'Test04@gmail.com',
             password: 'pppoop22',
@@ -50,10 +61,16 @@ export default function Join({match}) {
             college: 'IT_CONVERGENCE',
             department: 'SOFTWARE'
         }
-        data = object1;
+        data = testUser;
+
         if (agree) {
-            console.log(data);
-            test(data);
+            sendServer(data);   // 백엔드 체크
+
+            dispatch(joinSuccess(data))     // 리덕스 스토어에 저장
+            console.log("success:" + user.name)
+
+            showModal()   // 회원가입 완료 모달 띄우기
+
         } else {
             console.log("동의해주세요.");
         }
@@ -90,6 +107,8 @@ export default function Join({match}) {
 
     return (
         <Container className="p-5">
+            <FinishModal show={show}/>
+
             <h3 className="font-weight-bold mb-5">
                 회원가입
             </h3>

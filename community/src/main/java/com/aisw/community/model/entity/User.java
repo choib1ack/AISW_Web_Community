@@ -13,14 +13,15 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"noticeList", "boardList"})
+@ToString(exclude = {"noticeList", "boardList", "commentList"})
 public class User {
 
     @Id
@@ -72,17 +73,11 @@ public class User {
     private DepartmentName departmentName;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<University> universityList;
+    private List<Notice> noticeList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Department> departmentList;
+    private List<Board> boardList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Council> councilList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Free> freeList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<Qna> qnaList;
+    private List<Comment> commentList;
 }

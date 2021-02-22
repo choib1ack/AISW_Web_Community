@@ -1,7 +1,9 @@
 .App {
     text-align: center;
 }
-
+html, body{
+    height:100%;
+}
 .blue-button{
     padding: 7px 14px;
     background-color: #6CBACB !important;

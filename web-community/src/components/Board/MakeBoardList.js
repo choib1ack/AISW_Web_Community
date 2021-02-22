@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import fileImage from "../../icon/file.svg";
 
 export default function MakeBoardList(props) {
     const [boardData, setBoardData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    let is_search = props.is_search;
+    let search_type = props.search_type;
+    let search_text = props.search_text;
 
     const url = (category, page) => {
         let url = "/board"
@@ -22,7 +26,32 @@ export default function MakeBoardList(props) {
                 url += "/qna";
                 break;
         }
+        if(is_search){
+            switch (search_type) {
+                case "select_title":
+                    url += "/search/title?title="+search_text;
+                    break;
+                case "select_title_content":
+                    url += "/search/title&content?title="+search_text+"&content="+search_text;
+                    break;
+                case "select_writer":
+                    url += "/search/writer?writer="+search_text;
+                    break;
+            }
+        }
+        console.log(url);
         return url;
+    }
+
+    const categoryName = (category) => {
+        switch (category) {
+            case 0:
+                return 0;
+            case 1:
+                return "free";
+            case 2:
+                return "qna";
+        }
     }
 
     const status = (status) =>{
@@ -49,19 +78,20 @@ export default function MakeBoardList(props) {
         return style;
     }
 
+    // <tr> 전체에 링크 연결
+    let history = useHistory();
+    const ToLink = (url) =>{
+        history.push(url);
+    }
+
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
-                // 요청이 시작 할 때에는 error 와 users 를 초기화하고
                 setError(null);
                 setBoardData(null);
-                // loading 상태를 true 로 바꿉니다.
                 setLoading(true);
-                console.log("url : "+url(props.category));
                 const response = await axios.get(url(props.category));
-                // const response = await axios.get("/notice/university");
-                console.log(response.data);
-                setBoardData(response.data.data); // 데이터는 response.data 안에 들어있습니다.
+                setBoardData(response.data.data);
             } catch (e) {
                 setError(e);
             }
@@ -69,7 +99,7 @@ export default function MakeBoardList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category]);
+    }, [props.category, props.is_search]);
 
     if (loading) return <tr><td colSpan={5}>로딩중..</td></tr>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
@@ -78,14 +108,13 @@ export default function MakeBoardList(props) {
     return (
         <>
             {boardData.map(data => (
-                <tr key={data.id}>
+                <tr key={data.id}
+                    onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
                     <td>
-                        <Link to={`${props.match.url}/${data.id}`} style={{color: 'black'}}>
-                            {data.title}
-                            {/*<img src={photoImage} style={attachment(data.attachment_file)}/>*/}
-                            <img src={fileImage} style={attachment(data.attachment_file)}/>
-                        </Link>
+                        {data.title}
+                        <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
                     <td>{data.created_by}</td>
                     <td>{data.created_at.substring(0,10)}</td>
