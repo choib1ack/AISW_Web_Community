@@ -14,6 +14,8 @@ export default function NoticeDetail({match}) {
     const { id } = match.params;
     const url = match.url;
 
+    window.scrollTo(0, 0);
+
     const Category = (c) => {
         switch (c) {
             case "university":
