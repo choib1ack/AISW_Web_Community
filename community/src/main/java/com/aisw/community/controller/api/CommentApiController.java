@@ -34,7 +34,7 @@ public class CommentApiController {
 
     @GetMapping("{id}")
     public Header<List<CommentApiResponse>> searchByPost(@PathVariable Long id, @PageableDefault(sort = "createdAt",
-            direction = Sort.Direction.DESC) Pageable pageable) {
+            direction = Sort.Direction.ASC) Pageable pageable) {
         return commentApiLogicService.searchByPost(id, pageable);
     }
 
