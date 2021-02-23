@@ -59,10 +59,6 @@ export default function Menu() {
                                     <button className="Menu-button" onClick={() => setModalShow(true)}>
                                         {user.userData.name}
                                     </button>
-                                    {/*<button className="Menu-button blue-button"*/}
-                                    {/*        onClick={() => dispatch(logout())}>*/}
-                                    {/*    로그아웃*/}
-                                    {/*</button>*/}
                                 </Col>
 
                                 <MyPage show={modalShow} onHide={() => setModalShow(false)}/>

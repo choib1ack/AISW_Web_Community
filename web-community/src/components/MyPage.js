@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Container from "react-bootstrap/Container";
@@ -8,14 +8,40 @@ import PersonImage from "../image/person.svg"
 import {useDispatch, useSelector} from "react-redux";
 import './MyPage.css';
 import {logout} from "../features/userSlice";
+import FinishModal from "./Button/FinishModal";
 
 export default function MyPage(props) {
     // redux toolkit
     const user = useSelector(state => state.user)
     const dispatch = useDispatch()
 
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => {
+        setShow(false);
+        // 리덕스 로그아웃
+        
+    }
+
     return (
         <div>
+            <>
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>로그아웃</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>정말로 로그아웃 하시겠습니까 ?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            아니오
+                        </Button>
+                        <Button variant="primary" onClick={handleClose}>
+                            네
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+
             <Modal {...props} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage">
                 <Modal.Header closeButton style={{border: 'none'}}>
                     <Modal.Title
@@ -44,7 +70,7 @@ export default function MyPage(props) {
                             </Col>
                             <Col xs={3} md={3}
                                  style={{textAlign: 'center', fontSize: '12px', color: '#8C8C8C'}}>
-                                <p style={{cursor: 'pointer'}} onClick={()=> dispatch(logout())}>로그아웃</p>
+                                <p style={{cursor: 'pointer'}} onClick={handleShow}>로그아웃</p>
                             </Col>
                         </Row>
                         <p style={{color: '#6CBACB', margin: '5px'}}>알림</p>
