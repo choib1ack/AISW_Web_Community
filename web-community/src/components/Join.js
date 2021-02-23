@@ -9,7 +9,7 @@ import classNames from "classnames";
 import {useForm} from "react-hook-form";
 import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
-import {joinSuccess} from "../features/userSlice";
+import {join} from "../features/userSlice";
 import FinishModal from "./Button/FinishModal";
 
 export default function Join() {
@@ -65,7 +65,7 @@ export default function Join() {
         if (agree) {
             sendServer(data);   // 백엔드 체크
 
-            dispatch(joinSuccess(data))     // 리덕스 스토어에 저장
+            dispatch(join(data))     // 리덕스 스토어에 저장
             console.log("success:" + user.name)
 
             setModalShow(true)   // 회원가입 완료 모달 띄우기
