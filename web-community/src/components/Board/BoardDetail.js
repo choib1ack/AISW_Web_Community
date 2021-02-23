@@ -19,6 +19,7 @@ export default function BoardDetail({match}) {
     const [isContentLatest, setIsContentLatest] = useState(false);
     const [isCommentLatest, setIsCommentLatest] = useState(false);
 
+    window.scrollTo(0, 0);
 
     const {board_category} = match.params;
     const {id} = match.params;
@@ -104,6 +105,7 @@ export default function BoardDetail({match}) {
                             </p>
                             <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
                                 {boardDetailData.created_at.substring(0, 10)} {boardDetailData.created_at.substring(11, 19)}
+                                <span className="ml-3">조회 {boardDetailData.views}</span>
                             </p>
                         </div>
                     </div>
