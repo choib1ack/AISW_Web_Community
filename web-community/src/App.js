@@ -15,7 +15,7 @@ import Join from "./components/Join";
 
 function App() {
     return (
-        <Router>
+        <Router forceRefresh={true}>
             <div className="App" style={{height: "100%"}}>
                 <Menu/>
 

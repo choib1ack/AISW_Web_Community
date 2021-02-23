@@ -26,8 +26,7 @@ export default function Join() {
     const dispatch = useDispatch()
 
     // 회원가입 완료 모달
-    const [show, setShow] = useState(false);
-    const showModal = () => setShow(true);
+    const [modalShow, setModalShow] = useState(false);
 
     async function sendServer(data) {
         await axios.post("http://localhost:8080/user",
@@ -69,7 +68,7 @@ export default function Join() {
             dispatch(joinSuccess(data))     // 리덕스 스토어에 저장
             console.log("success:" + user.name)
 
-            showModal()   // 회원가입 완료 모달 띄우기
+            setModalShow(true)   // 회원가입 완료 모달 띄우기
 
         } else {
             console.log("동의해주세요.");
@@ -107,8 +106,6 @@ export default function Join() {
 
     return (
         <Container className="p-5">
-            <FinishModal show={show}/>
-
             <h3 className="font-weight-bold mb-5">
                 회원가입
             </h3>
@@ -275,6 +272,9 @@ export default function Join() {
                             <Button className={classNames("select-btn", "on")} style={{width: '80px'}}
                                     type="submit">확인</Button>
                         </div>
+
+                        <FinishModal show={modalShow} type="join"/>
+
                     </Form>
                 </Col>
                 <Col/>
