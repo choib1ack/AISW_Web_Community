@@ -14,6 +14,7 @@ import "./Home.css";
 import {Link, useHistory} from "react-router-dom";
 import axios from "axios";
 import fileImage from "../icon/file.svg";
+import Loading from "./Loading";
 
 export default function Home() {
     let history = useHistory();
@@ -179,7 +180,7 @@ function MakeHomeNoticeList(){
         history.push(url);
     }
 
-    if (loading) return <tr><td colSpan={5}>로딩중..</td></tr>;
+    if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
     if (!noticeData) return null;
     if (Object.keys(noticeData).length==0) return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;

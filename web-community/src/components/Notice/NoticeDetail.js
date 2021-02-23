@@ -4,6 +4,7 @@ import fileImage from "../../icon/file.svg";
 import Title from "../Title";
 import {ListButton} from "../Button/ListButton";
 import axios from "axios";
+import Loading from "../Loading";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -57,7 +58,7 @@ export default function NoticeDetail({match}) {
         fetchNoticeData();
     }, []); // 여기 빈배열 안써주면 무한루프,,
 
-    if (loading) return <tr><td colSpan={5}>로딩중..</td></tr>;
+    if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
     if (!noticeDetailData) return null;
 
@@ -82,6 +83,7 @@ export default function NoticeDetail({match}) {
                             <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '11px'}}>{noticeDetailData.created_by}</p>
                             <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '11px'}}>
                                 {noticeDetailData.created_at.substring(0, 10)} {noticeDetailData.created_at.substring(11, 19)}
+                                <span className="ml-3">조회 {noticeDetailData.views}</span>
                             </p>
                         </div>
                     </div>

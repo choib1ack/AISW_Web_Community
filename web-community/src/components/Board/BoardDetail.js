@@ -11,6 +11,7 @@ import likeImage from "../../icon/like.svg"
 import WriteComment from "./WriteComment";
 import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
+import Loading from '../Loading';
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -66,6 +67,7 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setBoardDetailData(null);
                 setLoading(true);
+
                 const response = await axios.get(url);
                 // console.log(response.data);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
@@ -74,14 +76,13 @@ export default function BoardDetail({match}) {
                 setError(e);
             }
             setLoading(false);
+            // setTimeout(function(){setLoading(false)}, 50000);
         };
 
         fetchNoticeData();
     }, [isContentLatest]); // 여기 빈배열 안써주면 무한루프,,
 
-    if (loading) return <tr>
-        <td colSpan={5}>로딩중..</td>
-    </tr>;
+    if (loading) return <Loading/>;
     if (error) return <tr>
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;

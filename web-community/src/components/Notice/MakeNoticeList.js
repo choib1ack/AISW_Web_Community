@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import fileImage from "../../icon/file.svg";
+import Loading from "../Loading";
 
 export default function MakeNoticeList(props) {
     const [noticeData, setNoticeData] = useState(null);
@@ -104,7 +105,7 @@ export default function MakeNoticeList(props) {
         fetchNoticeData();
     }, [props.category, props.is_search]);
 
-    if (loading) return <tr><td colSpan={5}>로딩중..</td></tr>;
+    if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
     if (!noticeData) return null;
     if (Object.keys(noticeData).length==0) return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
