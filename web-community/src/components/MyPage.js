@@ -5,26 +5,18 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PersonImage from "../image/person.svg"
+import {useDispatch, useSelector} from "react-redux";
+import './MyPage.css';
+import {logout} from "../features/userSlice";
 
-export default function MyPage() {
-    const [modalShow, setModalShow] = useState(false);
-    return (
-        <div>
-            <Button variant="primary" onClick={() => setModalShow(true)}>
-                그냥 한번 만들어본<br/>마이페이지 버튼
-            </Button>
-
-            <MydModalWithGrid show={modalShow} onHide={() => setModalShow(false)}/>
-        </div>
-
-    );
-}
-
-function MydModalWithGrid(props) {
+export default function MyPage(props) {
+    // redux toolkit
+    const user = useSelector(state => state.user)
+    const dispatch = useDispatch()
 
     return (
         <div>
-            <Modal {...props} aria-labelledby="contained-modal-title-vcenter">
+            <Modal {...props} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage">
                 <Modal.Header closeButton style={{border: 'none'}}>
                     <Modal.Title
                         id="contained-modal-title-vcenter"
@@ -43,13 +35,16 @@ function MydModalWithGrid(props) {
                             <Col xs={8} md={8}>
 
                                 <div style={{marginLeft: "10px"}}>
-                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>양희림</p>
-                                    <p style={{fontSize: '12px', color: '#8C8C8C'}}>IT융합대학 소프트웨어학과 17</p>
+                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{user.userData.name}</p>
+                                    <p style={{
+                                        fontSize: '12px',
+                                        color: '#8C8C8C'
+                                    }}>{user.userData.college === "IT_CONVERGENCE" ? "IT융합대학" : "??대학"} {user.userData.department === "SOFTWARE" ? "소프트웨어학과" : "??과"} {user.userData.student_id}</p>
                                 </div>
                             </Col>
                             <Col xs={3} md={3}
                                  style={{textAlign: 'center', fontSize: '12px', color: '#8C8C8C'}}>
-                                <p style={{cursor: 'pointer'}}>로그아웃</p>
+                                <p style={{cursor: 'pointer'}} onClick={()=> dispatch(logout())}>로그아웃</p>
                             </Col>
                         </Row>
                         <p style={{color: '#6CBACB', margin: '5px'}}>알림</p>
@@ -58,7 +53,8 @@ function MydModalWithGrid(props) {
                             backgroundColor: '#EFF7F9',
                             border: '1px solid #E3E3E3',
                             overflow: 'auto',
-                            borderRadius: '10px'
+                            borderRadius: '10px',
+                            marginBottom: '10px'
                         }}>
                             {makeAlertList()}
                         </div>
@@ -74,7 +70,7 @@ function makeAlertList(props) {
         borderRadius: '10px',
         backgroundColor: '#FFFFFF',
         border: '1px solid #E3E3E3',
-        margin: '10px 30px 0px 30px',
+        margin: '10px 30px 10px 30px',
         padding: '15px',
         height: '70px'
     }

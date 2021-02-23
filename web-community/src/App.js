@@ -12,6 +12,7 @@ import DeptInfo from "./components/DeptInfo";
 import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
 import Join from "./components/Join";
+import MyPage from "./components/MyPage";
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
             <div className="App" style={{height: "100%"}}>
                 <Menu/>
 
+                <MyPage/>
                 <div style={{minHeight: "100%"}}>
                     <main>
                         <Switch>

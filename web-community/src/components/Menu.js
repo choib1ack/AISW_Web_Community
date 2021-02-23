@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -6,12 +6,15 @@ import Grid from "@material-ui/core/Grid";
 import {Link} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
-import {logout} from "../features/userSlice";
+import MyPage from "./MyPage";
 
 export default function Menu() {
     // redux toolkit
     const user = useSelector(state => state.user)
     const dispatch = useDispatch()
+
+    const [modalShow, setModalShow] = useState(false);
+
     return (
         <div className="Menu">
             <Grid>
@@ -19,9 +22,6 @@ export default function Menu() {
                     <Col xs={3}>
                         <Link to="/">
                             <img src={logo} style={{width: "120px"}}/>
-                            {/*<button className="Menu-logo" style={{padding:"0"}}>*/}
-                            {/*    <img src={logo} style={{width:"100px"}}/>*/}
-                            {/*</button>*/}
                         </Link>
                     </Col>
                     <Col xs={6}>
@@ -56,14 +56,17 @@ export default function Menu() {
                         user.isOnline ? (
                             <>
                                 <Col xs={3}>
-                                    <button className="Menu-button">
+                                    <button className="Menu-button" onClick={() => setModalShow(true)}>
                                         {user.userData.name}
                                     </button>
-                                    <button className="Menu-button blue-button"
-                                            onClick={() => dispatch(logout())}>
-                                        로그아웃
-                                    </button>
+                                    {/*<button className="Menu-button blue-button"*/}
+                                    {/*        onClick={() => dispatch(logout())}>*/}
+                                    {/*    로그아웃*/}
+                                    {/*</button>*/}
                                 </Col>
+
+                                <MyPage show={modalShow} onHide={() => setModalShow(false)}/>
+
                             </>
                         ) : (
                             <Col xs={3}>
