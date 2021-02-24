@@ -93,6 +93,7 @@ export default function MakeBoardList(props) {
                 setLoading(true);
                 const response = await axios.get(url(props.category));
                 setBoardData(response.data.data);
+                props.setNowSearchText("");
             } catch (e) {
                 setError(e);
             }
@@ -100,7 +101,7 @@ export default function MakeBoardList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.is_search]);
+    }, [props.category, props.search_text]);
 
     if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
