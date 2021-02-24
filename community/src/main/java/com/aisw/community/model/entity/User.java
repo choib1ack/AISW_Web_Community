@@ -74,6 +74,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole roles;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Notice> noticeList;
 

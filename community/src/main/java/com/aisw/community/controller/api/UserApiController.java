@@ -38,6 +38,11 @@ public class UserApiController implements AuthService {
             return authLogicService.signUpUser(request);
     }
 
+    @GetMapping("{id}")
+    public Header<UserApiResponse> read(@PathVariable Long id){
+        return authLogicService.read(id);
+    }
+
     @Override
     @GetMapping("/login")
     public Header<UserApiResponse> loginUser(@RequestBody Header<LoginParam> loginParam) {
