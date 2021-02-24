@@ -6,16 +6,7 @@ import {Link} from "react-router-dom";
 export default function FinishModal(props) {
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
-    const handleClose = () => {
-        setShow(false);
-
-    }
-
-    useEffect(() => {
-        if (props.show === true) {
-            handleShow();
-        }
-    }, [props])
+    const handleClose = () => setShow(false);
 
     return (
         <>
