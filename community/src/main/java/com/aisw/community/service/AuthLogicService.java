@@ -28,7 +28,8 @@ public class AuthLogicService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    private PasswordEncoder encoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 //    @Override
     public Header<UserApiResponse> signUpUser(Header<UserApiRequest> request){
@@ -39,7 +40,7 @@ public class AuthLogicService implements UserDetailsService {
         User user = User.builder()
                 .name(userApiRequest.getName())
                 .email(userApiRequest.getEmail())
-                .password(userApiRequest.getPassword())
+                .password(passwordEncoder.encode(userApiRequest.getPassword()))
                 .phoneNumber(userApiRequest.getPhoneNumber())
                 .grade(userApiRequest.getGrade())
                 .studentId(userApiRequest.getStudentId())
@@ -76,7 +77,7 @@ public class AuthLogicService implements UserDetailsService {
     public Header<UserApiResponse> loginUser(Header<LoginParam> request) {
         String email = request.getData().getEmail();
         String password = request.getData().getPassword();
-        password = encoder.encode(password);
+        password = passwordEncoder.encode(password);
         Optional<User> optional = userRepository.findByEmail(email);
 
         if(optional.isPresent()){
@@ -109,7 +110,7 @@ public class AuthLogicService implements UserDetailsService {
     }
     public UserApiResponse loginCheck(User user, String password){
         String pw = user.getPassword();
-        pw = encoder.encode(pw);
+        pw = passwordEncoder.encode(pw);
         if(pw.equals(password))
             return response(user);
         else
