@@ -8,6 +8,12 @@ export default function FinishModal(props) {
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
 
+    useEffect(() => {
+        if (props.show === true) {
+            handleShow();
+        }
+    }, [props])
+
     return (
         <>
             <Modal show={show} onHide={handleClose} animation={false}>

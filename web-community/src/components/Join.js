@@ -28,14 +28,18 @@ export default function Join() {
     // 회원가입 완료 모달
     const [modalShow, setModalShow] = useState(false);
 
+    useEffect(() => {
+        console.log(modalShow)
+    }, [modalShow])
+
     async function sendServer(data) {
-        await axios.post("http://localhost:8080/user",
+        await axios.post("/user/signup",
             {
                 headers: {
                     "Content-Type": `application/json`
                 },
-                data
-            }
+                data,
+            },
         ).then((res) => {
             console.log(res)
         }).catch(error => {
@@ -46,29 +50,30 @@ export default function Join() {
     }
 
     const onSubmit = (data) => {
-        const testUser = {
-            name: 'Test04',
-            email: 'Test04@gmail.com',
-            password: 'pppoop22',
-            phone_number: '010-2222-2222',
-            grade: 'SENIOR',
-            student_id: 202222230,
+        setModalShow(true)   // 회원가입 완료 모달 띄우기
+
+        const userData = {
+            college_name: data.college,
+            department_name: data.department,
+            email: data.email,
+            gender: data.gender,
+            grade: data.grade,
+            job: data.job,
             level: 'NOT_SUBSCRIBED',
-            job: 'STUDENT',
-            gender: 'MALE',
-            university: 'GLOBAL',
-            college: 'IT_CONVERGENCE',
-            department: 'SOFTWARE'
+            name: data.name,
+            password: data.password,
+            phone_number: data.phone_number,
+            roles: 'NOT_PERMITTED',
+            student_id: Number(data.student_id),
+            university: 'COMMON'
         }
-        data = testUser;
+        console.log(userData);
 
         if (agree) {
-            sendServer(data);   // 백엔드 체크
+            sendServer(userData);   // 백엔드 체크
 
-            dispatch(join(data))     // 리덕스 스토어에 저장
-            console.log("success:" + user.name)
-
-            setModalShow(true)   // 회원가입 완료 모달 띄우기
+            dispatch(join(userData))     // 리덕스 스토어에 저장
+            // console.log("success:" + user.name)
 
         } else {
             console.log("동의해주세요.");
@@ -106,6 +111,8 @@ export default function Join() {
 
     return (
         <Container className="p-5">
+            <FinishModal show={modalShow} type="join"/>
+
             <h3 className="font-weight-bold mb-5">
                 회원가입
             </h3>
@@ -174,8 +181,9 @@ export default function Join() {
                                             required
                                             type="radio"
                                             label="남"
-                                            name="formHorizontalRadios"
-                                            ref={register({name: 'gender', value: 1})}
+                                            name="gender"
+                                            value="MALE"
+                                            ref={register}
                                         />
                                     </Col>
                                     <Col>
@@ -183,8 +191,9 @@ export default function Join() {
                                             required
                                             type="radio"
                                             label="여"
-                                            name="formHorizontalRadios"
-                                            ref={register({name: 'gender', value: 2})}
+                                            name="gender"
+                                            value="FEMALE"
+                                            ref={register}
                                         />
                                     </Col>
                                 </Form.Row>
@@ -207,10 +216,10 @@ export default function Join() {
                             <Form.Group as={Col}>
                                 <Form.Label>직업</Form.Label>
                                 <Form.Control as="select" name="job" ref={register}>
-                                    <option value="재학생">재학생</option>
-                                    <option value="졸업생">졸업생</option>
-                                    <option value="학생회">학생회</option>
-                                    <option value="직원">직원</option>
+                                    <option value="STUDENT">재학생</option>
+                                    <option value="ADMINISTRATOR">관리자</option>
+                                    <option value="COUNCIL">학생회</option>
+                                    <option value="FACULTY">교직원</option>
                                 </Form.Control>
                             </Form.Group>
 
@@ -228,13 +237,12 @@ export default function Join() {
 
                             <Form.Group as={Col}>
                                 <Form.Label>학년</Form.Label>
-                                <Form.Control as="select" default="해당없음"
+                                <Form.Control as="select" default="FRESHMAN"
                                               name="grade" ref={register}>
-                                    <option value="">해당없음</option>
-                                    <option value={1}>1학년</option>
-                                    <option value={2}>2학년</option>
-                                    <option value={3}>3학년</option>
-                                    <option value={4}>4학년</option>
+                                    <option value="FRESHMAN">1학년</option>
+                                    <option value="SOPHOMORE">2학년</option>
+                                    <option value="JUNIOR">3학년</option>
+                                    <option value="SENIOR">4학년</option>
                                 </Form.Control>
                             </Form.Group>
                         </Form.Row>
@@ -272,9 +280,6 @@ export default function Join() {
                             <Button className={classNames("select-btn", "on")} style={{width: '80px'}}
                                     type="submit">확인</Button>
                         </div>
-
-                        <FinishModal show={modalShow} type="join"/>
-
                     </Form>
                 </Col>
                 <Col/>
