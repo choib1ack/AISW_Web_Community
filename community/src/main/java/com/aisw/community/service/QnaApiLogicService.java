@@ -113,7 +113,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
-
+                .category(qna.getCategory())
                 .userId(qna.getUser().getId())
                 .build();
 
