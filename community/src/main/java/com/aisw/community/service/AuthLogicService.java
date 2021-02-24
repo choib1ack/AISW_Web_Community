@@ -3,6 +3,7 @@ package com.aisw.community.service;
 import com.aisw.community.ifs.AuthService;
 import com.aisw.community.model.LoginParam;
 import com.aisw.community.model.entity.User;
+import com.aisw.community.model.enumclass.UserRole;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.UserApiRequest;
 import com.aisw.community.model.network.response.UserApiResponse;
@@ -27,7 +28,8 @@ public class AuthLogicService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    private PasswordEncoder encoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 //    @Override
     public Header<UserApiResponse> signUpUser(Header<UserApiRequest> request){
@@ -38,7 +40,7 @@ public class AuthLogicService implements UserDetailsService {
         User user = User.builder()
                 .name(userApiRequest.getName())
                 .email(userApiRequest.getEmail())
-                .password(userApiRequest.getPassword())
+                .password(passwordEncoder.encode(userApiRequest.getPassword()))
                 .phoneNumber(userApiRequest.getPhoneNumber())
                 .grade(userApiRequest.getGrade())
                 .studentId(userApiRequest.getStudentId())
@@ -48,7 +50,7 @@ public class AuthLogicService implements UserDetailsService {
                 .university(userApiRequest.getUniversity())
                 .collegeName(userApiRequest.getCollegeName())
                 .departmentName(userApiRequest.getDepartmentName())
-//                .role(userApiRequest.getRole())
+                .roles(UserRole.STUDENT)
                 .build();
 
         System.out.println(user.getPassword());
@@ -58,11 +60,24 @@ public class AuthLogicService implements UserDetailsService {
         return Header.OK(response(newUser));
     }
 
-//    @Override
+    public Header<UserApiResponse> read(Long id) {
+        // id -> repository getOne, getById
+        Optional<User> optional = userRepository.findById(id);
+
+        // user -> userApiResponse return
+        return optional
+                .map(user -> response(user))
+                .map(Header::OK)
+                .orElseGet(
+                        () -> Header.ERROR("No Data")
+                );
+    }
+
+    //    @Override
     public Header<UserApiResponse> loginUser(Header<LoginParam> request) {
         String email = request.getData().getEmail();
         String password = request.getData().getPassword();
-        password = encoder.encode(password);
+        password = passwordEncoder.encode(password);
         Optional<User> optional = userRepository.findByEmail(email);
 
         if(optional.isPresent()){
@@ -95,7 +110,7 @@ public class AuthLogicService implements UserDetailsService {
     }
     public UserApiResponse loginCheck(User user, String password){
         String pw = user.getPassword();
-        pw = encoder.encode(pw);
+        pw = passwordEncoder.encode(pw);
         if(pw.equals(password))
             return response(user);
         else
@@ -122,7 +137,7 @@ public class AuthLogicService implements UserDetailsService {
                 .university(user.getUniversity())
                 .collegeName(user.getCollegeName())
                 .departmentName(user.getDepartmentName())
-//                .role(user.getRole())
+                .roles(user.getRoles())
                 .build();
 
         // Header + data
