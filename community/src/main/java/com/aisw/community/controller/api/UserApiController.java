@@ -7,12 +7,16 @@ import com.aisw.community.model.network.request.UserApiRequest;
 import com.aisw.community.model.network.response.UserApiResponse;
 import com.aisw.community.service.AuthLogicService;
 import com.aisw.community.service.UserApiLogicService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+@Api(value = "UserController", tags = "User Controller")
 @Slf4j
 @RestController
 @RequestMapping("/user")
@@ -25,8 +29,9 @@ public class UserApiController implements AuthService {
     UserApiLogicService userApiLogicService;
 
     @Override
+    @ApiOperation("User Info Register")
     @PostMapping("/signup")
-    public Header<UserApiResponse> signUpUser(@RequestBody Header<UserApiRequest> request) {
+    public Header<UserApiResponse> signUpUser(@ApiParam(value = "User Sign up", required = true) @RequestBody Header<UserApiRequest> request) {
         String email = request.getData().getEmail();
         Integer studentId = request.getData().getStudentId();
 
@@ -38,8 +43,9 @@ public class UserApiController implements AuthService {
             return authLogicService.signUpUser(request);
     }
 
+    @ApiOperation("User Info Search")
     @GetMapping("{id}")
-    public Header<UserApiResponse> read(@PathVariable Long id){
+    public Header<UserApiResponse> read(@ApiParam(value = "User Info", required = true) @PathVariable(value = "id") final Long id){
         return authLogicService.read(id);
     }
 
