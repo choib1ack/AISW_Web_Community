@@ -25,14 +25,11 @@ function BoardList({match}) {
         setNowSearchText(event.target.value);
         if (event.target.value == "") {
             setIsSearch(false);
-            // console.log("텍스트 없음");
         }
-        // console.log("텍스트 변경됨 : " + event.target.value);
     }
 
     const handleSearchTypeChange = (event) => {
         setSearchType(event.target.value)
-        // console.log("서치 타입 변경됨 : " + event.target.value);
     }
 
     const handleCategoryChange = (category_num) => {
@@ -40,6 +37,8 @@ function BoardList({match}) {
         // 검색 초기화
         setSearchType("select_title");
         setNowSearchText("");
+        setSearchText("");
+        setIsSearch(false);
     }
 
     const searchContents = () => {
@@ -47,7 +46,6 @@ function BoardList({match}) {
         setSearchText(nowSearchText);
         setIsSearch(true);
         console.log("서치 활성화");
-        // setSearchText("");
     }
 
     const searchEnterPress = (e) => {

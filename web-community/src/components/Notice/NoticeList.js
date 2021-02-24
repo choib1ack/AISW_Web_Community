@@ -9,38 +9,40 @@ import React, {useState} from "react";
 import MakeNoticeList from "./MakeNoticeList"
 import SelectButton from "../Button/SelectButton";
 import {WriteButton} from "../Button/WriteButton";
+import MakeBoardList from "../Board/MakeBoardList";
 
 export default function NoticeList({match}) {
 
     const [category, setCategory] = useState(0);
     const [isSearch, setIsSearch] = useState(false);
     const [searchType, setSearchType] = useState("select_title");
-    const [searchText, setSearchText] = useState("");
+    const [nowSearchText, setNowSearchText] = useState(null);
+    const [searchText, setSearchText] = useState(null);
     const [page, setPage] = useState(1);
     window.scrollTo(0, 0);
 
     const handleSearchTextChange = (event) => {
-        setSearchText(event.target.value);
+        setNowSearchText(event.target.value);
         if (event.target.value === "") {
             setIsSearch(false);
-            console.log("텍스트 없음");
         }
-        console.log("텍스트 변경됨 : " + event.target.value);
     }
     const handleSearchTypeChange = (event) => {
         setSearchType(event.target.value)
-        console.log("서치 타입 변경됨 : " + event.target.value);
     }
 
     const handleCategoryChange = (category_num) => {
         setCategory(category_num);
         // 검색 초기화
         setSearchType("select_title");
+        setNowSearchText("");
         setSearchText("");
+        setIsSearch(false);
     }
 
     const searchContents = () => {
         // 검색 시 실행
+        setSearchText(nowSearchText);
         setIsSearch(true);
         console.log("서치 활성화");
     }
@@ -70,7 +72,7 @@ export default function NoticeList({match}) {
                     </Col>
                     <Col lg={6} md={4} sm={12}>
                         <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
-                        <input type="text" value={searchText} onChange={handleSearchTextChange}
+                        <input type="text" value={nowSearchText} onChange={handleSearchTextChange}
                                onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
                         <select className={"search-type"} value={searchType} onChange={handleSearchTypeChange}>
                             <option value="select_title">제목</option>
@@ -96,6 +98,8 @@ export default function NoticeList({match}) {
                         search_type={searchType}
                         search_text={searchText}
                         is_search={isSearch}
+                        setIsSearch={setIsSearch}
+                        setNowSearchText={setNowSearchText}
                     />
                     </tbody>
                 </Table>
