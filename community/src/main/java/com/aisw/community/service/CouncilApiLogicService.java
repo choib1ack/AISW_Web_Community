@@ -61,7 +61,6 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
     }
 
     @Override
-    @Transactional
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
