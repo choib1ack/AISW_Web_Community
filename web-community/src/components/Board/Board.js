@@ -8,8 +8,8 @@ function Board({match}) {
     return (
         <>
             <Route exact path={match.path} component={BoardList}/>
-            <Route path={`${match.path}/:id`} component={BoardDetail}/>
-            <Route path='/newBoard' component={NewBoard}/>
+            <Route path={`${match.path}/:board_category/:id`} component={BoardDetail}/>
+            <Route path={`${match.path}/newBoard`} component={NewBoard}/>
         </>
     );
 }

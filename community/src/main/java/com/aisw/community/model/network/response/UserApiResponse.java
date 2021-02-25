@@ -49,5 +49,5 @@ public class UserApiResponse {
 
     private DepartmentName departmentName;
 
-    private UserRole role;
+    private UserRole roles;
 }
