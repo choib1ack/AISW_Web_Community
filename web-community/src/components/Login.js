@@ -25,7 +25,6 @@ export default function Login() {
         // 리덕스 스토어에 회원정보가 등록되어 있는 경우
         if (user.userData.email === data.email && user.userData.password === data.password) {
             dispatch(login())
-
             history.push('/')   // 홈으로 가기
         } else {
             alert("이메일과 비밀번호를 확인해주세요.")

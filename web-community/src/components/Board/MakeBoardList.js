@@ -27,16 +27,16 @@ export default function MakeBoardList(props) {
                 url += "/qna";
                 break;
         }
-        if(is_search){
+        if (is_search) {
             switch (search_type) {
                 case "select_title":
-                    url += "/search/title?title="+search_text;
+                    url += "/search/title?title=" + search_text;
                     break;
                 case "select_title_content":
-                    url += "/search/title&content?title="+search_text+"&content="+search_text;
+                    url += "/search/title&content?title=" + search_text + "&content=" + search_text;
                     break;
                 case "select_writer":
-                    url += "/search/writer?writer="+search_text;
+                    url += "/search/writer?writer=" + search_text;
                     break;
             }
         }
@@ -55,7 +55,7 @@ export default function MakeBoardList(props) {
         }
     }
 
-    const status = (status) =>{
+    const status = (status) => {
         switch (status) {
             case "URGENT":
                 return '긴급';
@@ -66,22 +66,22 @@ export default function MakeBoardList(props) {
         }
     }
 
-    const attachment = (file) =>{
+    const attachment = (file) => {
         let attached = false;
-        if(file != null){
+        if (file != null) {
             attached = true;
         }
 
         let style = {
             marginLeft: '5px',
-            display: attached? "" : "none"
+            display: attached ? "" : "none"
         }
         return style;
     }
 
     // <tr> 전체에 링크 연결
     let history = useHistory();
-    const ToLink = (url) =>{
+    const ToLink = (url) => {
         history.push(url);
     }
 
@@ -106,12 +106,14 @@ export default function MakeBoardList(props) {
     if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
     if (!boardData) return null;
-    if (Object.keys(boardData).length==0) return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
+    if (Object.keys(boardData).length == 0) return <tr>
+        <td colSpan={5}>데이터가 없습니다.</td>
+    </tr>;
     return (
         <>
             {boardData.map(data => (
                 <tr key={data.id}
-                    onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
                     <td>
@@ -119,7 +121,7 @@ export default function MakeBoardList(props) {
                         <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
                     <td>{data.created_by}</td>
-                    <td>{data.created_at.substring(0,10)}</td>
+                    <td>{data.created_at.substring(0, 10)}</td>
                     <td>{data.views}</td>
                 </tr>
             ))}
