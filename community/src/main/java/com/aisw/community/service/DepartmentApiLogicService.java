@@ -61,7 +61,6 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     }
 
     @Override
-    @Transactional
     public Header<DepartmentApiResponse> update(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 

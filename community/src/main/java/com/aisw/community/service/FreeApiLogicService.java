@@ -63,7 +63,6 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
     }
 
     @Override
-    @Transactional
     public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 

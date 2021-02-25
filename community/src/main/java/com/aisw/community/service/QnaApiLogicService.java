@@ -53,6 +53,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
     }
 
     @Override
+    @Transactional
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
@@ -63,7 +64,6 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
     }
 
     @Override
-    @Transactional
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
@@ -113,7 +113,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
-
+                .category(qna.getCategory())
                 .userId(qna.getUser().getId())
                 .build();
 
