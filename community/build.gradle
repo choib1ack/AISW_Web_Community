@@ -26,6 +26,7 @@ dependencies {
     implementation 'mysql:mysql-connector-java'
     implementation 'junit:junit:4.12'
     implementation 'junit:junit:4.12'
+    compile 'org.springframework.boot:spring-boot-starter-data-redis'
     compile 'org.jsoup:jsoup:1.7.3'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
