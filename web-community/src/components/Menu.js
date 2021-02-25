@@ -1,27 +1,27 @@
-import React from 'react';
+import React, {useState} from 'react';
 import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Grid from "@material-ui/core/Grid";
-import {BrowserRouter as Router, Switch, Route, Link, useRouteMatch} from "react-router-dom";
-import Home from "./Home";
-import Login from "./Login";
-import Notice from "./Notice/Notice";
-import JobInfo from "./JobInfo";
-import Board from "./Board/Board";
-import ContestInfo from "./ContestInfo";
-import DeptInfo from "./DeptInfo";
+import {Link} from "react-router-dom";
+import logo from "../image/logo3.png";
+import {useDispatch, useSelector} from "react-redux";
+import MyPage from "./MyPage";
 
 export default function Menu() {
+    // redux toolkit
+    const user = useSelector(state => state.user)
+    const dispatch = useDispatch()
+
+    const [modalShow, setModalShow] = useState(false);
+
     return (
-        <div>
+        <div className="Menu">
             <Grid>
                 <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>
                         <Link to="/">
-                            <button className="Menu-logo">
-                                가천대학교 AI&소프트웨어학부
-                            </button>
+                            <img src={logo} style={{width: "120px"}}/>
                         </Link>
                     </Col>
                     <Col xs={6}>
@@ -52,30 +52,35 @@ export default function Menu() {
                             </button>
                         </Link>
                     </Col>
-                    <Col xs={3}>
-                        <Link to="/login">
-                            <button className="Menu-button">
-                                로그인
-                            </button>
-                        </Link>
-                        <Link to="/join">
-                            <button className="Menu-button blue-button">
-                                회원가입
-                            </button>
-                        </Link>
-                    </Col>
+                    {
+                        user.isOnline ? (
+                            <>
+                                <Col xs={3}>
+                                    <button className="Menu-button" onClick={() => setModalShow(true)}>
+                                        {user.userData.name}
+                                    </button>
+                                </Col>
+
+                                <MyPage show={modalShow} onHide={() => setModalShow(false)}/>
+
+                            </>
+                        ) : (
+                            <Col xs={3}>
+                                <Link to="/login">
+                                    <button className="Menu-button">
+                                        로그인
+                                    </button>
+                                </Link>
+                                <Link to="/join">
+                                    <button className="Menu-button blue-button">
+                                        회원가입
+                                    </button>
+                                </Link>
+                            </Col>
+                        )
+                    }
                 </Row>
             </Grid>
-
-            {/*<Switch>*/}
-            {/*    <Route exact path="/" component={Home}/>*/}
-            {/*    <Route path="/login" component={Login}/>*/}
-            {/*    <Route path="/notice" component={Notice}/>*/}
-            {/*    <Route path="/board" component={Board}/>*/}
-            {/*    <Route path="/deptInfo" component={DeptInfo}/>*/}
-            {/*    <Route path="/job" component={JobInfo}/>*/}
-            {/*    <Route path="/contestInfo" component={ContestInfo}/>*/}
-            {/*</Switch>*/}
 
         </div>
     );

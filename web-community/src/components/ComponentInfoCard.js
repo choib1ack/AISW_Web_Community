@@ -19,16 +19,3 @@ function ContestInfoCard(props) {
     )
 }
 export default ContestInfoCard;
-
-// 서버에서 가져온 datetime 데이터를 형식에 맞게 바꿔주는 함수
-function convertDateFormat(){
-
-}
-
-// image 웨안뒈 ㅠ
-// ContestInfoCard.defaultProps = {
-//     title: 'no title data',
-//     image: {defaultImage},
-//     host: 'no host data',
-//     date : '2021-01-01 (월) ~ 2021-01-23 (목)'
-// }
