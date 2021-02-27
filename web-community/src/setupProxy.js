@@ -9,6 +9,10 @@ module.exports = function(app) {
         createProxyMiddleware('/user/signup',{
             target: 'http://localhost:8080',
             changeOrigin: true,
+        }),
+        createProxyMiddleware('/user/login',{
+            target: 'http://localhost:8080',
+            changeOrigin: true,
         })
     )
 };

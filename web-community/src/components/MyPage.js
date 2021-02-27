@@ -28,6 +28,10 @@ export default function MyPage(props) {
         history.push('/')   // 홈으로 가기
     }
 
+    useEffect(() => {
+        console.log(user.userData)
+    }, [])
+
     return (
         <div>
             <>
@@ -70,7 +74,7 @@ export default function MyPage(props) {
                                     <p style={{
                                         fontSize: '12px',
                                         color: '#8C8C8C'
-                                    }}>{user.userData.college === "IT_CONVERGENCE" ? "IT융합대학" : "??대학"} {user.userData.department === "SOFTWARE" ? "소프트웨어학과" : "??과"} {user.userData.student_id}</p>
+                                    }}>{user.userData.college_name === "IT_CONVERGENCE" ? "IT융합대학" : "??대학"} {user.userData.department_name === "SOFTWARE" ? "소프트웨어학과" : "??과"} {user.userData.student_id}</p>
                                 </div>
                             </Col>
                             <Col xs={3} md={3}
