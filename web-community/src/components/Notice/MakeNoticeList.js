@@ -96,6 +96,8 @@ export default function MakeNoticeList(props) {
                 setLoading(true);
                 const response = await axios.get(url(props.category));
                 setNoticeData(response.data.data); // 데이터는 response.data 안에 있음
+                props.setCurrentPage(response.data.pagination.current_page);
+                props.setTotalPage(response.data.pagination.total_pages);
                 props.setNowSearchText("");
             } catch (e) {
                 setError(e);

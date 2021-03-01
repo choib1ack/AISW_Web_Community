@@ -18,7 +18,10 @@ export default function NoticeList({match}) {
     const [searchType, setSearchType] = useState("select_title");
     const [nowSearchText, setNowSearchText] = useState(null);
     const [searchText, setSearchText] = useState(null);
-    const [page, setPage] = useState(1);
+    // const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+
     window.scrollTo(0, 0);
 
     const handleSearchTextChange = (event) => {
@@ -100,13 +103,17 @@ export default function NoticeList({match}) {
                         is_search={isSearch}
                         setIsSearch={setIsSearch}
                         setNowSearchText={setNowSearchText}
+                        setTotalPage={setTotalPage}
+                        setCurrentPage={setCurrentPage}
                     />
                     </tbody>
                 </Table>
 
                 <WriteButton match={match} type={'newNotice'}/>
 
-                <Pagination active={1}/>
+                <Pagination
+                    total_pages={totalPage}
+                    current_page={currentPage}/>
             </Container>
         </div>
     );
