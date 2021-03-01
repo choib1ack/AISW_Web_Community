@@ -9,7 +9,6 @@ import React, {useState} from "react";
 import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
 import {WriteButton} from "../Button/WriteButton";
-import Select from "react-select";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);
@@ -17,7 +16,9 @@ function BoardList({match}) {
     const [searchType, setSearchType] = useState("select_title");
     const [nowSearchText, setNowSearchText] = useState(null);
     const [searchText, setSearchText] = useState(null);
-    const [page, setPage] = useState(1);
+    // const [page, setPage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
 
     window.scrollTo(0, 0);
 
@@ -45,13 +46,11 @@ function BoardList({match}) {
         // 검색 시 실행
         setSearchText(nowSearchText);
         setIsSearch(true);
-        console.log("서치 활성화");
     }
 
     const searchEnterPress = (e) => {
         // 검색 시 엔터를 눌렀을 때
         if (e.key == 'Enter') {
-            console.log("엔터누름");
             searchContents();
         }
     }
@@ -59,7 +58,6 @@ function BoardList({match}) {
     return (
 
         <div className="Board">
-            {console.log("isSearch=" + isSearch)}
             <Container>
                 <Title text='게시판' type='1'/>
                 <Row>
@@ -112,13 +110,18 @@ function BoardList({match}) {
                         is_search={isSearch}
                         setIsSearch={setIsSearch}
                         setNowSearchText={setNowSearchText}
+                        setTotalPage={setTotalPage}
+                        setCurrentPage={setCurrentPage}
                     />
                     </tbody>
                 </Table>
 
                 <WriteButton match={match} type={'newBoard'}/>
 
-                <Pagination active={1}/>
+                <Pagination
+                    total_pages={totalPage}
+                    current_page={currentPage}
+                />
             </Container>
         </div>
     );
