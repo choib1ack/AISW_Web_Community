@@ -62,7 +62,6 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     }
 
     @Override
-    @Transactional
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 

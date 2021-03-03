@@ -3,6 +3,7 @@ import axios from "axios";
 import Card from "react-bootstrap/Card";
 import userImage from "../../icon/user.svg";
 import likeImage from "../../icon/like.svg";
+import Loading from "../Loading";
 
 export default function MakeCommentList({id, isLatest, setIsLatest}) {
     const [boardCommentData, setBoardCommentData] = useState(null);
@@ -62,9 +63,7 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
         fetchNoticeData();
     }, [isLatest]);
 
-    if (loading) return <tr>
-        <td colSpan={5}>로딩중..</td>
-    </tr>;
+    if (loading) return <Loading/>;
     if (error) return <tr>
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;
