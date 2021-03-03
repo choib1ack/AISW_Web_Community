@@ -10,10 +10,10 @@ import axios from "axios";
 
 export default function Login() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
-    const email = useRef();
-    const password = useRef();
-    email.current = watch("email");
-    password.current = watch("password");
+    // const email = useRef();
+    // const password = useRef();
+    // email.current = watch("email");
+    // password.current = watch("password");
     const history = useHistory();
 
     // redux toolkit
@@ -25,7 +25,7 @@ export default function Login() {
                 headers: {
                     "Content-Type": `application/json`
                 },
-                params: data,
+                data,
             },
         ).then((res) => {
             dispatch(login(res.data))   // 리덕스에 로그인한 유저 정보 저장
