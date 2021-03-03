@@ -2,6 +2,7 @@ package com.aisw.community.controller;
 
 
 import com.aisw.community.model.LoginParam;
+import com.aisw.community.model.network.Header;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,6 +18,7 @@ public class GetController {
     public String getLoginInfo(LoginParam loginParam){
         System.out.println(loginParam.getEmail());
         System.out.println(loginParam.getPassword());
+
 
         return "OK";
     }

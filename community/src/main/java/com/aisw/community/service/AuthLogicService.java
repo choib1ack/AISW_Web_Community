@@ -73,16 +73,14 @@ public class AuthLogicService implements UserDetailsService {
                 );
     }
 
-    //    @Override
-    public Header<UserApiResponse> loginUser(Header<LoginParam> request) {
-        String email = request.getData().getEmail();
-        String password = request.getData().getPassword();
-        password = passwordEncoder.encode(password);
+    public Header<UserApiResponse> loginUser(LoginParam request) {
+        String email = request.getEmail();
+        String password = request.getPassword();
         Optional<User> optional = userRepository.findByEmail(email);
 
         if(optional.isPresent()){
-            String finalPassword = password;
-            return optional.map(user -> loginCheck(user, finalPassword))
+            String inputPW = password;
+            return optional.map(user -> loginCheck(user, inputPW))
                     .map(Header::OK)
                     .orElseGet(() -> Header.ERROR("Wrong Password"));
         }
@@ -108,10 +106,9 @@ public class AuthLogicService implements UserDetailsService {
             return true;
 
     }
+
     public UserApiResponse loginCheck(User user, String password){
-        String pw = user.getPassword();
-        pw = passwordEncoder.encode(pw);
-        if(pw.equals(password))
+        if(passwordEncoder.matches(password, user.getPassword()))
             return response(user);
         else
             return null;

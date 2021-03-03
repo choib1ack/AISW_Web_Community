@@ -43,15 +43,21 @@ public class UserApiController implements AuthService {
             return authLogicService.signUpUser(request);
     }
 
+    @Override
+    public Header<UserApiResponse> loginUser(Header<LoginParam> loginParam) {
+        return null;
+    }
+
     @ApiOperation("User Info Search")
     @GetMapping("{id}")
     public Header<UserApiResponse> read(@ApiParam(value = "User Info", required = true) @PathVariable(value = "id") final Long id){
         return authLogicService.read(id);
     }
 
-    @Override
-    @GetMapping("/login")
-    public Header<UserApiResponse> loginUser(@RequestBody Header<LoginParam> loginParam) {
+//    @Override
+    @ApiOperation("User Login")
+    @RequestMapping("/login")
+    public Header<UserApiResponse> loginUser(LoginParam loginParam) {
         return authLogicService.loginUser(loginParam);
     }
 
