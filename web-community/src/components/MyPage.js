@@ -8,19 +8,24 @@ import PersonImage from "../image/person.svg"
 import {useDispatch, useSelector} from "react-redux";
 import './MyPage.css';
 import {logout} from "../features/userSlice";
-import FinishModal from "./Button/FinishModal";
+import {useHistory} from "react-router-dom";
 
 export default function MyPage(props) {
+    const history = useHistory();
+
     // redux toolkit
     const user = useSelector(state => state.user)
     const dispatch = useDispatch()
 
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
-    const handleClose = () => {
+    const handleClose = () => setShow(false);
+
+    const handleLogout = () => {
         setShow(false);
-        // 리덕스 로그아웃
-        
+
+        dispatch(logout())
+        history.push('/')   // 홈으로 가기
     }
 
     return (
@@ -35,7 +40,7 @@ export default function MyPage(props) {
                         <Button variant="secondary" onClick={handleClose}>
                             아니오
                         </Button>
-                        <Button variant="primary" onClick={handleClose}>
+                        <Button variant="primary" onClick={handleLogout}>
                             네
                         </Button>
                     </Modal.Footer>
