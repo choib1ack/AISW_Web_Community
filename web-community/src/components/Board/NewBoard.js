@@ -8,12 +8,19 @@ import Button from "react-bootstrap/Button";
 import Title from "../Title";
 import {useForm} from "react-hook-form";
 import axios from "axios";
+import FinishModal from "../FinishModal";
+import {useDispatch, useSelector} from "react-redux";
 
 function NewBoard() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
+    const [modalShow, setModalShow] = useState(false);
 
-    async function sendServer(data) {
-        await axios.post("/board/free",
+    // redux toolkit
+    const user = useSelector(state => state.user.userData)
+    const dispatch = useDispatch()
+
+    async function sendBoard(data, path) {
+        await axios.post("/board/" + path,
             {
                 headers: {
                     "Content-Type": `application/json`
@@ -22,39 +29,50 @@ function NewBoard() {
             },
         ).then((res) => {
             console.log(res)
+            setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log("에러 발생");
             console.log(errorObject);
 
-            alert("글 게시에 실패하였습니다.") // 회원가입 실패 메시지
+            alert("글 게시에 실패하였습니다.") // 실패 메시지
         })
     }
 
     const onSubmit = (data) => {
-        // if (data.board_type === 'free') {
-        //
-        // } else if (data.board_type === 'qna') {
-        //
-        // }
-
-        const test = {
-            attachment_file: "string",
-            content: data.content,
-            // id: 0,
-            is_anonymous: true,
-            level: 0,
-            status: "URGENT",
-            title: data.title,
-            user_id: 1
+        let test;
+        if (data.board_type === 'free') {
+            test = {
+                attachment_file: "string",
+                content: data.content,
+                is_anonymous: true,
+                level: 0,
+                status: "URGENT",
+                title: data.title,
+                user_id: 1
+            }
+        } else if (data.board_type === 'qna') {
+            test = {
+                attachment_file: "string",
+                content: data.content,
+                is_anonymous: true,
+                level: 0,
+                status: "URGENT",
+                subject: data.subject,
+                title: data.title,
+                user_id: 1
+            }
         }
 
-        sendServer(test)
+        sendBoard(test, data.board_type)
     }
 
     return (
         <div className="NewBoard">
             <Container>
+                <FinishModal show={modalShow} link={`/board`}
+                             title="게시판" body="글 게시가 완료되었습니다 !"/>
+
                 <Title text='새 게시글 작성' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>

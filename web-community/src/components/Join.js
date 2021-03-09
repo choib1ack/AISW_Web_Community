@@ -10,7 +10,7 @@ import {useForm} from "react-hook-form";
 import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {join} from "../features/userSlice";
-import FinishModal from "./Button/FinishModal";
+import FinishModal from "./FinishModal";
 
 export default function Join() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
@@ -37,15 +37,14 @@ export default function Join() {
                 data,
             },
         ).then((res) => {
-            console.log(res)
-            setModalShow(true)   // 회원가입 완료 모달 띄우기
+            setModalShow(true)   // 완료 모달 띄우기
             dispatch(join())
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log("에러 발생");
             console.log(errorObject);
 
-            alert("회원가입에 실패하였습니다.") // 회원가입 실패 메시지
+            alert("회원가입에 실패하였습니다.") // 실패 메시지
         })
     }
 
@@ -65,7 +64,6 @@ export default function Join() {
             student_id: Number(data.student_id),
             university: 'COMMON'
         }
-        console.log(userData);
 
         if (agree) {
             sendServer(userData);   // 백엔드 체크
@@ -105,7 +103,8 @@ export default function Join() {
 
     return (
         <Container className="p-5">
-            <FinishModal show={modalShow} type="join"/>
+            <FinishModal show={modalShow} link={`/login`}
+                         title="회원가입" body="회원가입이 완료되었습니다 !"/>
 
             <h3 className="font-weight-bold mb-5">
                 회원가입
