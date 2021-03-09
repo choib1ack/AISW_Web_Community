@@ -10,6 +10,7 @@ import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import FinishModal from "../FinishModal";
+import TextEditor from "../TextEditor";
 
 export default function NewNotice() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
@@ -105,10 +106,12 @@ export default function NewNotice() {
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group controlId="content">
-                                <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."
-                                              name="content" ref={register}/>
-                            </Form.Group>
+                            <TextEditor/>
+
+                            {/*<Form.Group controlId="content">*/}
+                            {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
+                            {/*                  name="content" ref={register}/>*/}
+                            {/*</Form.Group>*/}
                         </Col>
                     </Row>
                     <Row>
