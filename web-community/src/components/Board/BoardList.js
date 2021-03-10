@@ -114,7 +114,6 @@ function BoardList({match}) {
                         setNowSearchText={setNowSearchText}
                         setTotalPage={setTotalPage}
                         current_page={currentPage}
-                        setCurrentPage={setCurrentPage}
                     />
                     </tbody>
                 </Table>
