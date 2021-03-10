@@ -18,7 +18,7 @@ function BoardList({match}) {
     const [searchText, setSearchText] = useState(null);
     // const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
 
     window.scrollTo(0, 0);
 
@@ -40,6 +40,8 @@ function BoardList({match}) {
         setNowSearchText("");
         setSearchText("");
         setIsSearch(false);
+        // 페이징 초기화
+        setCurrentPage(0);
     }
 
     const searchContents = () => {
@@ -111,16 +113,19 @@ function BoardList({match}) {
                         setIsSearch={setIsSearch}
                         setNowSearchText={setNowSearchText}
                         setTotalPage={setTotalPage}
+                        current_page={currentPage}
                         setCurrentPage={setCurrentPage}
                     />
                     </tbody>
                 </Table>
 
                 <WriteButton match={match} type={'newBoard'}/>
+                {console.log(currentPage)}
 
                 <Pagination
                     total_pages={totalPage}
                     current_page={currentPage}
+                    setCurrentPage={setCurrentPage}
                 />
             </Container>
         </div>
