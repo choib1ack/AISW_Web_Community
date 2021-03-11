@@ -11,7 +11,7 @@ function ContestInfoCard(props) {
                 <Card.Subtitle style={{fontSize: '12px', color:'#B8B8B8'}}>{props.host}</Card.Subtitle>
 
                 <Card.Text style={{marginTop: '0.5rem', marginBottom:'0'}}>
-                    <span style={{fontSize: '14px', fontWeight:'bold', color:'#6CBACB'}}> D-1<br/></span>
+                    <span style={{fontSize: '14px', fontWeight:'bold', color:'#0472FD'}}> D-1<br/></span>
                     <span style={{fontSize: '13px'}}>{props.date}</span>
                 </Card.Text>
             </Card.Body>

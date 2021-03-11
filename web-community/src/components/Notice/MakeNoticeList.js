@@ -42,6 +42,7 @@ export default function MakeNoticeList(props) {
                     break;
             }
         }
+        url+="?page="+(props.current_page);
         return url;
     }
 
@@ -96,7 +97,7 @@ export default function MakeNoticeList(props) {
                 setLoading(true);
                 const response = await axios.get(url(props.category));
                 setNoticeData(response.data.data); // 데이터는 response.data 안에 있음
-                props.setCurrentPage(response.data.pagination.current_page);
+                // props.setCurrentPage(response.data.pagination.current_page);
                 props.setTotalPage(response.data.pagination.total_pages);
                 props.setNowSearchText("");
             } catch (e) {
@@ -106,7 +107,7 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.search_text]);
+    }, [props.category, props.search_text, props.current_page]);
 
     if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
