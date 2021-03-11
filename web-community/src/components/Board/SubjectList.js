@@ -38,12 +38,12 @@ function SubjectButton(props){
     let btnStyle = {
         float: 'left',
         margin: '0.5rem',
-        border: active ? '1px solid #6CBACB' : '1px solid #d5d5d5',
+        border: active ? '1px solid #0472FD' : '1px solid #d5d5d5',
         outline: 'none',
         boxShadow: 'none',
         radius:'0',
-        backgroundColor: active ? '#EFF7F9' :'#ffffff',
-        color: active ? '#6CBACB' : '#d5d5d5'
+        backgroundColor: active ? '#e7f1ff' :'#ffffff',
+        color: active ? '#0472FD' : '#d5d5d5'
     }
     return (
         <Button style={btnStyle} onClick={()=>changeState()}>{props.sub_name}</Button>
