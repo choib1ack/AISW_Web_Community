@@ -9,6 +9,7 @@ import React, {useState} from "react";
 import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
 import {WriteButton} from "../Button/WriteButton";
+import SubjectList from "./SubjectList";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);
@@ -75,7 +76,7 @@ function BoardList({match}) {
                     </Col>
                 </Row>
 
-                <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
+                <Row style={{marginTop: '2rem'}}>
                     <Col lg={12} md={12} sm={12}>
                         <SelectButton
                             id={0} title='전체' active={category}
@@ -93,6 +94,11 @@ function BoardList({match}) {
                     </Col>
                 </Row>
 
+                <Row style={{marginBottom: '1rem'}}>
+                    <Col lg={12} md={12} sm={12}>
+                        {category==2?<SubjectList active={true}/>:null}
+                    </Col>
+                </Row>
                 <Table>
                     <thead>
                     <tr>
@@ -119,7 +125,6 @@ function BoardList({match}) {
                 </Table>
 
                 <WriteButton match={match} type={'newBoard'}/>
-                {console.log(currentPage)}
 
                 <Pagination
                     total_pages={totalPage}
