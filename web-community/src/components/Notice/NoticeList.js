@@ -20,7 +20,7 @@ export default function NoticeList({match}) {
     const [searchText, setSearchText] = useState(null);
     // const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
 
     window.scrollTo(0, 0);
 
@@ -41,6 +41,9 @@ export default function NoticeList({match}) {
         setNowSearchText("");
         setSearchText("");
         setIsSearch(false);
+
+        // 페이징 초기화
+        setCurrentPage(0);
     }
 
     const searchContents = () => {
@@ -104,7 +107,7 @@ export default function NoticeList({match}) {
                         setIsSearch={setIsSearch}
                         setNowSearchText={setNowSearchText}
                         setTotalPage={setTotalPage}
-                        setCurrentPage={setCurrentPage}
+                        current_page={currentPage}
                     />
                     </tbody>
                 </Table>
@@ -113,6 +116,7 @@ export default function NoticeList({match}) {
 
                 <Pagination
                     total_pages={totalPage}
+                    setCurrentPage={setCurrentPage}
                     current_page={currentPage}/>
             </Container>
         </div>

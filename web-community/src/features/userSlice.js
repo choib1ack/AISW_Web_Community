@@ -17,10 +17,10 @@ export const userSlice = createSlice({
             state.isLoading = false;
         },
         join: (state, action) => {
-            state.userData = action.payload;
             state.isLoading = false;
         },
         login: (state, action) => {
+            state.userData = action.payload;
             state.isOnline = true;
         },
         logout: (state, action) => {
