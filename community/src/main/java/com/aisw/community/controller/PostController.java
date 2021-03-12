@@ -48,6 +48,13 @@ public abstract class PostController<Req, ListRes, Res, Entity> implements CrudI
         return postService.search(pageable);
     }
 
+    @GetMapping("/status")
+    public Header<List<ListRes>> searchByStatus(@PageableDefault(sort = "createdAt",
+            direction = Sort.Direction.DESC) Pageable pageable) {
+
+        return postService.searchByStatus(pageable);
+    }
+
     @GetMapping("/search/writer")
     public Header<List<ListRes>> searchByWriter(
             @RequestParam String writer,

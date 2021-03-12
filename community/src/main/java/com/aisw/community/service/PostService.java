@@ -19,4 +19,5 @@ public abstract class PostService<Req, ListRes, Res, Entity> implements CrudInte
     public abstract Header<List<ListRes>> searchByWriter(String writer, Pageable pageable);
     public abstract Header<List<ListRes>> searchByTitle(String title, Pageable pageable);
     public abstract Header<List<ListRes>> searchByTitleOrContent(String title, String content, Pageable pageable);
+    public abstract Header<List<ListRes>> searchByStatus(Pageable pageable);
 }

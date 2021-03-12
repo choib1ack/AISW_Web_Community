@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Bulletin;
 import com.aisw.community.model.entity.Notice;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.response.NoticeApiResponse;
@@ -42,6 +44,14 @@ public class NoticeApiLogicService extends BulletinService<NoticeApiResponse, No
     @Override
     public Header<List<NoticeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(notices);
+    }
+
+    @Override
+    public Header<List<NoticeApiResponse>> searchByStatus(Pageable pageable) {
+        Page<Notice> notices = noticeRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
 
         return getListHeader(notices);
     }

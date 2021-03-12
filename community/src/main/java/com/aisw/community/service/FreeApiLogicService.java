@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
@@ -141,6 +143,14 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
     public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(frees);
+    }
+
+    @Override
+    public Header<List<BoardApiResponse>> searchByStatus(Pageable pageable) {
+        Page<Free> frees = freeRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
 
         return getListHeader(frees);
     }

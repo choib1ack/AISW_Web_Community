@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
@@ -136,6 +138,14 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     public Header<List<NoticeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Department> departments = departmentRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(departments);
+    }
+
+    @Override
+    public Header<List<NoticeApiResponse>> searchByStatus(Pageable pageable) {
+        Page<Department> departments = departmentRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
 
         return getListHeader(departments);
     }

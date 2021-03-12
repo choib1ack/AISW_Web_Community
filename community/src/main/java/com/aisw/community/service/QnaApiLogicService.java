@@ -1,16 +1,21 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Council;
+import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Qna;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.repository.QnaRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -145,6 +150,21 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
     public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(qnas);
+    }
+
+    @Override
+    public Header<List<BoardApiResponse>> searchByStatus(Pageable pageable) {
+        Page<Qna> qnas = qnaRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
+
+        return getListHeader(qnas);
+    }
+
+    @Cacheable(value = "searchBySubject", key = "#subject")
+    public Header<List<BoardApiResponse>> searchBySubject(String subject, Pageable pageable) {
+        Page<Qna> qnas = qnaRepository.findAllBySubject(subject, pageable);
 
         return getListHeader(qnas);
     }
