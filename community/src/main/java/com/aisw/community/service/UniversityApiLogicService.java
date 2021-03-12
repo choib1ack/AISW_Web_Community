@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.entity.University;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
@@ -139,6 +141,14 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     public Header<List<NoticeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<University> universities = universityRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(universities);
+    }
+
+    @Override
+    public Header<List<NoticeApiResponse>> searchByStatus(Pageable pageable) {
+        Page<University> universities = universityRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
 
         return getListHeader(universities);
     }

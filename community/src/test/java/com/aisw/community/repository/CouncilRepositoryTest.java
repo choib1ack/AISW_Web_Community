@@ -29,7 +29,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        BulletinStatus status = BulletinStatus.GENERAL;
+        BulletinStatus status = BulletinStatus.URGENT;
         Long views = 0L;
         Long level = 1L;
         User userId = userRepository.getOne(1L);
@@ -86,10 +86,10 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
 
     @Test
     @Cacheable(value = "getCouncilStatus", key = "#id")
-    public List<Council> getUrgentPostByCouncil() {
-        List<Council> councilList = councilRepository
-                .findAllByStatusContainingAndStatusContaining(BulletinStatus.URGENT, BulletinStatus.TOP);
-        councilList.stream().forEach(council -> System.out.println(council));
-        return councilList;
+    public void getUrgentPostByCouncil() {
+        List<Council> urgentCouncilList = councilRepository.findAllByStatus(BulletinStatus.URGENT);
+        List<Council> noticeCouncilList = councilRepository.findAllByStatus(BulletinStatus.NOTICE);
+        urgentCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
+        noticeCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
     }
 }

@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Council;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
@@ -136,6 +138,14 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
     public Header<List<NoticeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Council> councils = councilRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+
+        return getListHeader(councils);
+    }
+
+    @Override
+    public Header<List<NoticeApiResponse>> searchByStatus(Pageable pageable) {
+        Page<Council> councils = councilRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
 
         return getListHeader(councils);
     }

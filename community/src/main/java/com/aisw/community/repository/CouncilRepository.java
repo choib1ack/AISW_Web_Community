@@ -17,5 +17,5 @@ public interface CouncilRepository extends JpaRepository<Council, Long> {
     Page<Council> findAllByWriterContaining(String writer, Pageable pageable);
     Page<Council> findAllByTitleContaining(String title, Pageable pageable);
     Page<Council> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
-    List<Council> findAllByStatusContainingAndStatusContaining(BulletinStatus status1, BulletinStatus status2);
+    Page<Council> findAllByStatusOrStatus(BulletinStatus status1, BulletinStatus status2, Pageable pageable);
 }

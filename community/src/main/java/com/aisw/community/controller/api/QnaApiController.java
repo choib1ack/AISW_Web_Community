@@ -9,10 +9,12 @@ import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.service.QnaApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -21,6 +23,13 @@ public class QnaApiController extends PostController<QnaApiRequest, BoardApiResp
 
     @Autowired
     private QnaApiLogicService qnaApiLogicService;
+
+    @GetMapping("/subject")
+    public Header<List<BoardApiResponse>> searchBySubject(@RequestParam String subject,
+                                                          @PageableDefault(sort = "createdAt",
+                                                          direction = Sort.Direction.DESC) Pageable pageable) {
+        return qnaApiLogicService.searchBySubject(subject, pageable);
+    }
 
     @GetMapping("/likes/{id}")
     public Header<QnaApiResponse> pressLikes(@PathVariable Long id) {
