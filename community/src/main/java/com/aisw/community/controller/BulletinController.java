@@ -18,15 +18,8 @@ public abstract class BulletinController<Res, Entity> {
     @Autowired(required = false)
     protected BulletinService<Res, Entity> bulletinService;
 
-    @GetMapping("/status")
-    public Header<List<Res>> searchByStatus(@PageableDefault(sort = "createdAt",
-            direction = Sort.Direction.DESC) Pageable pageable) {
-
-        return bulletinService.searchByStatus(pageable);
-    }
-
     @GetMapping("/search/writer")
-    public Header<List<Res>> searchByWriter(
+    public Header<Res> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -34,7 +27,7 @@ public abstract class BulletinController<Res, Entity> {
     }
 
     @GetMapping("/search/title")
-    public Header<List<Res>> searchByTitle(
+    public Header<Res> searchByTitle(
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -42,7 +35,7 @@ public abstract class BulletinController<Res, Entity> {
     }
 
     @GetMapping("/search/title&content")
-    public Header<List<Res>> searchByTitleOrContent(
+    public Header<Res> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
