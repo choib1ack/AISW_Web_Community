@@ -6,6 +6,7 @@ import Loading from "../Loading";
 
 export default function MakeBoardList(props) {
     const [boardData, setBoardData] = useState(null);
+    const [boardFixData, setBoardFixData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -40,7 +41,7 @@ export default function MakeBoardList(props) {
                     break;
             }
         }
-        url+="?page="+(props.current_page);
+        url += "?page=" + (props.current_page);
         console.log(url);
         return url;
     }
@@ -93,7 +94,8 @@ export default function MakeBoardList(props) {
                 setBoardData(null);
                 setLoading(true);
                 const response = await axios.get(url(props.category));
-                setBoardData(response.data.data);
+                setBoardData(response.data.data.board_api_response_list);
+                setBoardFixData(response.data.data.board_api_top_response_list);
                 // props.setCurrentPage(response.data.pagination.current_page);
                 props.setTotalPage(response.data.pagination.total_pages);
                 props.setNowSearchText("");
@@ -107,13 +109,29 @@ export default function MakeBoardList(props) {
     }, [props.category, props.search_text, props.current_page]);
 
     if (loading) return <Loading/>;
-    if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
+    if (error) return <tr>
+        <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
+    </tr>;
     if (!boardData) return null;
     if (Object.keys(boardData).length == 0) return <tr>
         <td colSpan={5}>데이터가 없습니다.</td>
     </tr>;
     return (
         <>
+            {boardFixData.map(data => (
+                <tr key={data.id}
+                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                    <td>{status(data.status)}</td>
+                    <td>
+                        {data.title}
+                        <img src={fileImage} style={attachment(data.attachment_file)}/>
+                    </td>
+                    <td>{data.created_by}</td>
+                    <td>{data.created_at.substring(0, 10)}</td>
+                    <td>{data.views}</td>
+                </tr>
+            ))}
             {boardData.map(data => (
                 <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?

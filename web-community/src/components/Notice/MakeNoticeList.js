@@ -6,6 +6,7 @@ import Loading from "../Loading";
 
 export default function MakeNoticeList(props) {
     const [noticeData, setNoticeData] = useState(null);
+    const [noticeFixData, setNoticeFixData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -63,7 +64,7 @@ export default function MakeNoticeList(props) {
         switch (status) {
             case "URGENT":
                 return '긴급';
-            case "TOP":
+            case "NOTICE":
                 return "상단";
             case "GENERAL":
                 return "일반";
@@ -96,7 +97,9 @@ export default function MakeNoticeList(props) {
                 setNoticeData(null);
                 setLoading(true);
                 const response = await axios.get(url(props.category));
-                setNoticeData(response.data.data); // 데이터는 response.data 안에 있음
+                setNoticeFixData(response.data.data.notice_api_top_response_list)
+                setNoticeData(response.data.data.notice_api_response_list); // 데이터는 response.data 안에 있음
+                console.log(response.data);
                 // props.setCurrentPage(response.data.pagination.current_page);
                 props.setTotalPage(response.data.pagination.total_pages);
                 props.setNowSearchText("");
@@ -115,6 +118,21 @@ export default function MakeNoticeList(props) {
     if (Object.keys(noticeData).length==0) return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
     return (
         <>
+            {noticeFixData.map(data => (
+                <tr key={data.notice_id}
+                    onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                    <td>{status(data.status)}</td>
+                    <td>
+                        {data.title}
+                        <img src={fileImage} style={attachment(data.attachment_file)}/>
+                    </td>
+                    <td>{data.created_by}</td>
+                    <td>{data.created_at.substring(0,10)}</td>
+                    <td>{data.views}</td>
+                </tr>
+
+            ))}
             {noticeData.map(data => (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ? 
