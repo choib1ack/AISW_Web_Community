@@ -18,7 +18,6 @@ export default function NoticeList({match}) {
     const [searchType, setSearchType] = useState("select_title");
     const [nowSearchText, setNowSearchText] = useState(null);
     const [searchText, setSearchText] = useState(null);
-    // const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(0);
 

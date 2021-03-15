@@ -9,6 +9,7 @@ export default function MakeNoticeList(props) {
     const [noticeFixData, setNoticeFixData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [pageInfo, setPageInfo] = useState(null);
 
     let is_search = props.is_search;
     let search_type = props.search_type;
@@ -65,10 +66,17 @@ export default function MakeNoticeList(props) {
             case "URGENT":
                 return '긴급';
             case "NOTICE":
-                return "상단";
-            case "GENERAL":
-                return "일반";
+                return "공지";
+            // case "GENERAL":
+            //     return "일반";
         }
+    }
+
+    const indexing = (index) =>{
+
+        let current_max = pageInfo.total_elements-(pageInfo.current_page*10);
+        console.log("index="+index+", current_max="+current_max);
+        return current_max-index.toString();
     }
 
     const attachment = (file) =>{
@@ -97,10 +105,11 @@ export default function MakeNoticeList(props) {
                 setNoticeData(null);
                 setLoading(true);
                 const response = await axios.get(url(props.category));
-                setNoticeFixData(response.data.data.notice_api_top_response_list)
+                if(props.current_page==0){ // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                    setNoticeFixData(response.data.data.notice_api_top_response_list)
+                }
                 setNoticeData(response.data.data.notice_api_response_list); // 데이터는 response.data 안에 있음
-                console.log(response.data);
-                // props.setCurrentPage(response.data.pagination.current_page);
+                setPageInfo(response.data.pagination);
                 props.setTotalPage(response.data.pagination.total_pages);
                 props.setNowSearchText("");
             } catch (e) {
@@ -133,11 +142,11 @@ export default function MakeNoticeList(props) {
                 </tr>
 
             ))}
-            {noticeData.map(data => (
+            {noticeData.map((data, index) => (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ? 
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
-                    <td>{status(data.status)}</td>
+                    <td>{indexing(index)}</td>
                     <td>
                             {data.title}
                             <img src={fileImage} style={attachment(data.attachment_file)}/>
