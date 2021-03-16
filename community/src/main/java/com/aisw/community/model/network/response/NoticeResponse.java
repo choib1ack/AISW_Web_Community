@@ -16,6 +16,7 @@ import java.util.List;
 @Builder
 public class NoticeResponse {
 
-    private List<NoticeApiResponse> noticeApiTopResponseList;
+    private List<NoticeApiResponse> noticeApiNoticeResponseList;
+    private List<NoticeApiResponse> noticeApiUrgentResponseList;
     private List<NoticeApiResponse> noticeApiResponseList;
 }

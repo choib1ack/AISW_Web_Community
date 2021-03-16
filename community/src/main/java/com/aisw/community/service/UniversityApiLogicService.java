@@ -1,6 +1,5 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -16,11 +15,10 @@ import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,28 +161,38 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
             (Page<University> universities, Page<University> universitiesByStatus) {
         NoticeResponse noticeResponse = NoticeResponse.builder()
                 .noticeApiResponseList(universities.stream()
-                        .map(university -> NoticeApiResponse.builder()
-                                .id(university.getId())
-                                .title(university.getTitle())
-                                .category(university.getCategory())
-                                .createdAt(university.getCreatedAt())
-                                .status(university.getStatus())
-                                .views(university.getViews())
-                                .writer(university.getWriter())
-                                .build())
-                        .collect(Collectors.toList()))
-                .noticeApiTopResponseList(universitiesByStatus.stream()
-                        .map(university -> NoticeApiResponse.builder()
-                                .id(university.getId())
-                                .title(university.getTitle())
-                                .category(university.getCategory())
-                                .createdAt(university.getCreatedAt())
-                                .status(university.getStatus())
-                                .views(university.getViews())
-                                .writer(university.getWriter())
+                        .map(notice -> NoticeApiResponse.builder()
+                                .id(notice.getId())
+                                .title(notice.getTitle())
+                                .category(notice.getCategory())
+                                .createdAt(notice.getCreatedAt())
+                                .status(notice.getStatus())
+                                .views(notice.getViews())
+                                .writer(notice.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
+        List<NoticeApiResponse> noticeApiNoticeResponseList = new ArrayList<>();
+        List<NoticeApiResponse> noticeApiUrgentResponseList = new ArrayList<>();
+        universitiesByStatus.stream().forEach(notice -> {
+            NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
+                    .id(notice.getId())
+                    .title(notice.getTitle())
+                    .category(notice.getCategory())
+                    .createdAt(notice.getCreatedAt())
+                    .status(notice.getStatus())
+                    .views(notice.getViews())
+                    .writer(notice.getWriter())
+                    .build();
+            if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                noticeApiNoticeResponseList.add(noticeApiResponse);
+            }
+            else if(noticeApiResponse.getStatus() == BulletinStatus.URGENT) {
+                noticeApiUrgentResponseList.add(noticeApiResponse);
+            }
+        });
+        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(universities.getTotalElements())

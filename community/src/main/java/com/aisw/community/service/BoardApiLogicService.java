@@ -1,7 +1,6 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Board;
-import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
@@ -11,8 +10,10 @@ import com.aisw.community.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,18 +75,28 @@ public class BoardApiLogicService extends BulletinService<BoardResponse, Board> 
                                 .writer(board.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
-                .boardApiTopResponseList(boardsByStatus.stream()
-                        .map(board -> BoardApiResponse.builder()
-                                .id(board.getId())
-                                .title(board.getTitle())
-                                .category(board.getCategory())
-                                .createdAt(board.getCreatedAt())
-                                .status(board.getStatus())
-                                .views(board.getViews())
-                                .writer(board.getWriter())
-                                .build())
-                        .collect(Collectors.toList()))
                 .build();
+        List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
+        List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
+        boardsByStatus.stream().forEach(board -> {
+            BoardApiResponse boardApiResponse = BoardApiResponse.builder()
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .category(board.getCategory())
+                    .createdAt(board.getCreatedAt())
+                    .status(board.getStatus())
+                    .views(board.getViews())
+                    .writer(board.getWriter())
+                    .build();
+            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                boardApiNoticeResponseList.add(boardApiResponse);
+            }
+            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+                boardApiUrgentResponseList.add(boardApiResponse);
+            }
+        });
+        boardResponse.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
+        boardResponse.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(boards.getTotalElements())

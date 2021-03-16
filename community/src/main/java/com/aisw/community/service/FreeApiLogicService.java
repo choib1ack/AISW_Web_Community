@@ -1,8 +1,6 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -20,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -164,28 +163,38 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
             (Page<Free> frees, Page<Free> freesByStatus) {
         BoardResponse boardResponse = BoardResponse.builder()
                 .boardApiResponseList(frees.stream()
-                        .map(free -> BoardApiResponse.builder()
-                                .id(free.getId())
-                                .title(free.getTitle())
-                                .category(free.getCategory())
-                                .createdAt(free.getCreatedAt())
-                                .status(free.getStatus())
-                                .views(free.getViews())
-                                .writer(free.getWriter())
-                                .build())
-                        .collect(Collectors.toList()))
-                .boardApiTopResponseList(freesByStatus.stream()
-                        .map(free -> BoardApiResponse.builder()
-                                .id(free.getId())
-                                .title(free.getTitle())
-                                .category(free.getCategory())
-                                .createdAt(free.getCreatedAt())
-                                .status(free.getStatus())
-                                .views(free.getViews())
-                                .writer(free.getWriter())
+                        .map(board -> BoardApiResponse.builder()
+                                .id(board.getId())
+                                .title(board.getTitle())
+                                .category(board.getCategory())
+                                .createdAt(board.getCreatedAt())
+                                .status(board.getStatus())
+                                .views(board.getViews())
+                                .writer(board.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
+        List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
+        List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
+        freesByStatus.stream().forEach(board -> {
+            BoardApiResponse boardApiResponse = BoardApiResponse.builder()
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .category(board.getCategory())
+                    .createdAt(board.getCreatedAt())
+                    .status(board.getStatus())
+                    .views(board.getViews())
+                    .writer(board.getWriter())
+                    .build();
+            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                boardApiNoticeResponseList.add(boardApiResponse);
+            }
+            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+                boardApiUrgentResponseList.add(boardApiResponse);
+            }
+        });
+        boardResponse.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
+        boardResponse.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(frees.getTotalElements())
