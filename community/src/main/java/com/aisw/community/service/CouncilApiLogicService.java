@@ -1,8 +1,6 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Council;
-import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -20,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -159,28 +158,38 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
             (Page<Council> councils, Page<Council> councilsByStatus) {
         NoticeResponse noticeResponse = NoticeResponse.builder()
                 .noticeApiResponseList(councils.stream()
-                        .map(council -> NoticeApiResponse.builder()
-                                .id(council.getId())
-                                .title(council.getTitle())
-                                .category(council.getCategory())
-                                .createdAt(council.getCreatedAt())
-                                .status(council.getStatus())
-                                .views(council.getViews())
-                                .writer(council.getWriter())
-                                .build())
-                        .collect(Collectors.toList()))
-                .noticeApiTopResponseList(councilsByStatus.stream()
-                        .map(council -> NoticeApiResponse.builder()
-                                .id(council.getId())
-                                .title(council.getTitle())
-                                .category(council.getCategory())
-                                .createdAt(council.getCreatedAt())
-                                .status(council.getStatus())
-                                .views(council.getViews())
-                                .writer(council.getWriter())
+                        .map(notice -> NoticeApiResponse.builder()
+                                .id(notice.getId())
+                                .title(notice.getTitle())
+                                .category(notice.getCategory())
+                                .createdAt(notice.getCreatedAt())
+                                .status(notice.getStatus())
+                                .views(notice.getViews())
+                                .writer(notice.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
+        List<NoticeApiResponse> noticeApiNoticeResponseList = new ArrayList<>();
+        List<NoticeApiResponse> noticeApiUrgentResponseList = new ArrayList<>();
+        councilsByStatus.stream().forEach(notice -> {
+            NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
+                    .id(notice.getId())
+                    .title(notice.getTitle())
+                    .category(notice.getCategory())
+                    .createdAt(notice.getCreatedAt())
+                    .status(notice.getStatus())
+                    .views(notice.getViews())
+                    .writer(notice.getWriter())
+                    .build();
+            if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                noticeApiNoticeResponseList.add(noticeApiResponse);
+            }
+            else if(noticeApiResponse.getStatus() == BulletinStatus.URGENT) {
+                noticeApiUrgentResponseList.add(noticeApiResponse);
+            }
+        });
+        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(councils.getTotalElements())

@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class BoardResponse {
 
-    private List<BoardApiResponse> boardApiTopResponseList;
+    private List<BoardApiResponse> boardApiNoticeResponseList;
+    private List<BoardApiResponse> boardApiUrgentResponseList;
     private List<BoardApiResponse> boardApiResponseList;
 }

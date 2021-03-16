@@ -1,8 +1,6 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.Department;
-import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -20,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -159,28 +158,38 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
             (Page<Department> departments, Page<Department> departmentsByStatus) {
         NoticeResponse noticeResponse = NoticeResponse.builder()
                 .noticeApiResponseList(departments.stream()
-                        .map(department -> NoticeApiResponse.builder()
-                                .id(department.getId())
-                                .title(department.getTitle())
-                                .category(department.getCategory())
-                                .createdAt(department.getCreatedAt())
-                                .status(department.getStatus())
-                                .views(department.getViews())
-                                .writer(department.getWriter())
-                                .build())
-                        .collect(Collectors.toList()))
-                .noticeApiTopResponseList(departmentsByStatus.stream()
-                        .map(department -> NoticeApiResponse.builder()
-                                .id(department.getId())
-                                .title(department.getTitle())
-                                .category(department.getCategory())
-                                .createdAt(department.getCreatedAt())
-                                .status(department.getStatus())
-                                .views(department.getViews())
-                                .writer(department.getWriter())
+                        .map(notice -> NoticeApiResponse.builder()
+                                .id(notice.getId())
+                                .title(notice.getTitle())
+                                .category(notice.getCategory())
+                                .createdAt(notice.getCreatedAt())
+                                .status(notice.getStatus())
+                                .views(notice.getViews())
+                                .writer(notice.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
+        List<NoticeApiResponse> noticeApiNoticeResponseList = new ArrayList<>();
+        List<NoticeApiResponse> noticeApiUrgentResponseList = new ArrayList<>();
+        departmentsByStatus.stream().forEach(notice -> {
+            NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
+                    .id(notice.getId())
+                    .title(notice.getTitle())
+                    .category(notice.getCategory())
+                    .createdAt(notice.getCreatedAt())
+                    .status(notice.getStatus())
+                    .views(notice.getViews())
+                    .writer(notice.getWriter())
+                    .build();
+            if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                noticeApiNoticeResponseList.add(noticeApiResponse);
+            }
+            else if(noticeApiResponse.getStatus() == BulletinStatus.URGENT) {
+                noticeApiUrgentResponseList.add(noticeApiResponse);
+            }
+        });
+        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(departments.getTotalElements())

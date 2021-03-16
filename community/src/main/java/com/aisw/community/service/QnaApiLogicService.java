@@ -11,12 +11,12 @@ import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.QnaRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -172,28 +172,38 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
         (Page<Qna> qnas, Page<Qna> qnasByStatus) {
         BoardResponse boardResponse = BoardResponse.builder()
                 .boardApiResponseList(qnas.stream()
-                        .map(qna -> BoardApiResponse.builder()
-                                .id(qna.getId())
-                                .title(qna.getTitle())
-                                .category(qna.getCategory())
-                                .createdAt(qna.getCreatedAt())
-                                .status(qna.getStatus())
-                                .views(qna.getViews())
-                                .writer(qna.getWriter())
-                                .build())
-                        .collect(Collectors.toList()))
-                .boardApiTopResponseList(qnasByStatus.stream()
-                        .map(qna -> BoardApiResponse.builder()
-                                .id(qna.getId())
-                                .title(qna.getTitle())
-                                .category(qna.getCategory())
-                                .createdAt(qna.getCreatedAt())
-                                .status(qna.getStatus())
-                                .views(qna.getViews())
-                                .writer(qna.getWriter())
+                        .map(board -> BoardApiResponse.builder()
+                                .id(board.getId())
+                                .title(board.getTitle())
+                                .category(board.getCategory())
+                                .createdAt(board.getCreatedAt())
+                                .status(board.getStatus())
+                                .views(board.getViews())
+                                .writer(board.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
+        List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
+        List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
+        qnasByStatus.stream().forEach(board -> {
+            BoardApiResponse boardApiResponse = BoardApiResponse.builder()
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .category(board.getCategory())
+                    .createdAt(board.getCreatedAt())
+                    .status(board.getStatus())
+                    .views(board.getViews())
+                    .writer(board.getWriter())
+                    .build();
+            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                boardApiNoticeResponseList.add(boardApiResponse);
+            }
+            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+                boardApiUrgentResponseList.add(boardApiResponse);
+            }
+        });
+        boardResponse.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
+        boardResponse.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(qnas.getTotalElements())

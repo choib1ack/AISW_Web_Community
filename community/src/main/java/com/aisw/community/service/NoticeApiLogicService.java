@@ -1,8 +1,6 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.Bulletin;
 import com.aisw.community.model.entity.Notice;
-import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
@@ -16,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,18 +76,28 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notic
                                 .writer(notice.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
-                .noticeApiTopResponseList(noticesByStatus.stream()
-                        .map(notice -> NoticeApiResponse.builder()
-                                .id(notice.getId())
-                                .title(notice.getTitle())
-                                .category(notice.getCategory())
-                                .createdAt(notice.getCreatedAt())
-                                .status(notice.getStatus())
-                                .views(notice.getViews())
-                                .writer(notice.getWriter())
-                                .build())
-                        .collect(Collectors.toList()))
                 .build();
+        List<NoticeApiResponse> noticeApiNoticeResponseList = new ArrayList<>();
+        List<NoticeApiResponse> noticeApiUrgentResponseList = new ArrayList<>();
+        noticesByStatus.stream().forEach(notice -> {
+            NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
+                    .id(notice.getId())
+                    .title(notice.getTitle())
+                    .category(notice.getCategory())
+                    .createdAt(notice.getCreatedAt())
+                    .status(notice.getStatus())
+                    .views(notice.getViews())
+                    .writer(notice.getWriter())
+                    .build();
+            if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                noticeApiNoticeResponseList.add(noticeApiResponse);
+            }
+            else if(noticeApiResponse.getStatus() == BulletinStatus.URGENT) {
+                noticeApiUrgentResponseList.add(noticeApiResponse);
+            }
+        });
+        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(notices.getTotalElements())
