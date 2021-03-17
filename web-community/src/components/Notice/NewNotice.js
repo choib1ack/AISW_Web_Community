@@ -6,14 +6,14 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
 import React, {useState} from "react";
-import {useForm} from "react-hook-form";
+import {useForm, Controller} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import FinishModal from "../FinishModal";
 import TextEditor from "../TextEditor";
 
 export default function NewNotice() {
-    const {register, handleSubmit, watch, errors, setValue} = useForm();
+    const {register, handleSubmit, control} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
 
     // redux toolkit
@@ -106,12 +106,16 @@ export default function NewNotice() {
                     </Row>
                     <Row>
                         <Col>
-                            {/*<TextEditor/>*/}
+                            <Controller
+                                as={<TextEditor/>}
+                                name="content"
+                                control={control}
+                            />
 
-                            <Form.Group controlId="content">
-                                <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."
-                                              name="content" ref={register}/>
-                            </Form.Group>
+                            {/*<Form.Group controlId="content">*/}
+                            {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
+                            {/*                  name="content" ref={register}/>*/}
+                            {/*</Form.Group>*/}
                         </Col>
                     </Row>
                     <Row>
