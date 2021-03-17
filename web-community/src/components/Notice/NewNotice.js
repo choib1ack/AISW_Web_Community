@@ -50,7 +50,7 @@ export default function NewNotice() {
                 level: 0,
                 status: "URGENT",
                 title: data.title,
-                user_id: 1,
+                user_id: user.id,
                 writer: "string"
             }
         } else if (data.board_type === "department") {
@@ -60,7 +60,7 @@ export default function NewNotice() {
                 level: 0,
                 status: "URGENT",
                 title: data.title,
-                user_id: 1
+                user_id: user.id
             }
         } else if (data.board_type === "council") {
             test = {
@@ -69,7 +69,7 @@ export default function NewNotice() {
                 level: 0,
                 status: "URGENT",
                 title: data.title,
-                user_id: 1
+                user_id: user.id
             }
         }
 
@@ -106,12 +106,12 @@ export default function NewNotice() {
                     </Row>
                     <Row>
                         <Col>
-                            <TextEditor/>
+                            {/*<TextEditor/>*/}
 
-                            {/*<Form.Group controlId="content">*/}
-                            {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
-                            {/*                  name="content" ref={register}/>*/}
-                            {/*</Form.Group>*/}
+                            <Form.Group controlId="content">
+                                <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."
+                                              name="content" ref={register}/>
+                            </Form.Group>
                         </Col>
                     </Row>
                     <Row>

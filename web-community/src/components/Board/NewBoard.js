@@ -49,7 +49,7 @@ function NewBoard() {
                 level: 0,
                 status: "URGENT",
                 title: data.title,
-                user_id: 1
+                user_id: user.id
             }
         } else if (data.board_type === 'qna') {
             test = {
@@ -60,7 +60,7 @@ function NewBoard() {
                 status: "URGENT",
                 subject: data.subject,
                 title: data.title,
-                user_id: 1
+                user_id: user.id
             }
         }
 
