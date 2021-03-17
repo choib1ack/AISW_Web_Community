@@ -154,19 +154,20 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
         return getListHeader(qnas, qnasByStatus);
     }
 
+//    @Cacheable(value = "searchBySubject", key = "#subject")
+    public Header<BoardResponse> searchBySubject(List<String> subject, Pageable pageable) {
+        Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
+        Page<Qna> qnasByStatus = searchByStatus(pageable);
+
+        return getListHeader(qnas, qnasByStatus);
+    }
+
     public Page<Qna> searchByStatus(Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByStatusOrStatus(
                 BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
 
         return qnas;
     }
-
-//    @Cacheable(value = "searchBySubject", key = "#subject")
-//    public Header<List<BoardApiResponse>> searchBySubject(String subject, Pageable pageable) {
-//        Page<Qna> qnas = qnaRepository.findAllBySubject(subject, pageable);
-//
-//        return getListHeader(qnas);
-//    }
 
     private Header<BoardResponse> getListHeader
         (Page<Qna> qnas, Page<Qna> qnasByStatus) {
