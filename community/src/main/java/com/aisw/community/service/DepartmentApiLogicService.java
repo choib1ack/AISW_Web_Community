@@ -1,6 +1,7 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
@@ -8,6 +9,7 @@ import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
+import com.aisw.community.model.network.response.NoticeResponse;
 import com.aisw.community.repository.DepartmentRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +18,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentApiLogicService extends PostService<DepartmentApiRequest, NoticeApiResponse, DepartmentApiResponse, Department> {
+public class DepartmentApiLogicService extends PostService<DepartmentApiRequest, NoticeResponse, DepartmentApiResponse, Department> {
 
     @Autowired
     private UserRepository userRepository;
@@ -112,46 +115,81 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     }
 
     @Override
-    public Header<List<NoticeApiResponse>> search(Pageable pageable) {
+    public Header<NoticeResponse> search(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
+        Page<Department> departmentsByStatus = searchByStatus(pageable);
 
-        return getListHeader(departments);
+        return getListHeader(departments, departmentsByStatus);
     }
 
     @Override
-    public Header<List<NoticeApiResponse>> searchByWriter(String writer, Pageable pageable) {
+    public Header<NoticeResponse> searchByWriter(String writer, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByWriterContaining(writer, pageable);
+        Page<Department> departmentsByStatus = searchByStatus(pageable);
 
-        return getListHeader(departments);
+        return getListHeader(departments, departmentsByStatus);
     }
 
     @Override
-    public Header<List<NoticeApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<NoticeResponse> searchByTitle(String title, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByTitleContaining(title, pageable);
+        Page<Department> departmentsByStatus = searchByStatus(pageable);
 
-        return getListHeader(departments);
+        return getListHeader(departments, departmentsByStatus);
     }
 
     @Override
-    public Header<List<NoticeApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<NoticeResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Department> departments = departmentRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+        Page<Department> departmentsByStatus = searchByStatus(pageable);
 
-        return getListHeader(departments);
+        return getListHeader(departments, departmentsByStatus);
     }
 
-    private Header<List<NoticeApiResponse>> getListHeader(Page<Department> departments) {
-        List<NoticeApiResponse> noticeApiResponseList = departments.stream()
-                .map(department -> NoticeApiResponse.builder()
-                        .id(department.getId())
-                        .title(department.getTitle())
-                        .category(department.getCategory())
-                        .createdAt(department.getCreatedAt())
-                        .status(department.getStatus())
-                        .views(department.getViews())
-                        .writer(department.getWriter())
-                        .build())
-                .collect(Collectors.toList());
+    public Page<Department> searchByStatus(Pageable pageable) {
+        Page<Department> departments = departmentRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
+
+        return departments;
+    }
+
+    private Header<NoticeResponse> getListHeader
+            (Page<Department> departments, Page<Department> departmentsByStatus) {
+        NoticeResponse noticeResponse = NoticeResponse.builder()
+                .noticeApiResponseList(departments.stream()
+                        .map(notice -> NoticeApiResponse.builder()
+                                .id(notice.getId())
+                                .title(notice.getTitle())
+                                .category(notice.getCategory())
+                                .createdAt(notice.getCreatedAt())
+                                .status(notice.getStatus())
+                                .views(notice.getViews())
+                                .writer(notice.getWriter())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+        List<NoticeApiResponse> noticeApiNoticeResponseList = new ArrayList<>();
+        List<NoticeApiResponse> noticeApiUrgentResponseList = new ArrayList<>();
+        departmentsByStatus.stream().forEach(notice -> {
+            NoticeApiResponse noticeApiResponse = NoticeApiResponse.builder()
+                    .id(notice.getId())
+                    .title(notice.getTitle())
+                    .category(notice.getCategory())
+                    .createdAt(notice.getCreatedAt())
+                    .status(notice.getStatus())
+                    .views(notice.getViews())
+                    .writer(notice.getWriter())
+                    .build();
+            if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                noticeApiNoticeResponseList.add(noticeApiResponse);
+            }
+            else if(noticeApiResponse.getStatus() == BulletinStatus.URGENT) {
+                noticeApiUrgentResponseList.add(noticeApiResponse);
+            }
+        });
+        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(departments.getTotalElements())
@@ -160,6 +198,6 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .currentPage(departments.getNumber())
                 .build();
 
-        return Header.OK(noticeApiResponseList, pagination);
+        return Header.OK(noticeResponse, pagination);
     }
 }

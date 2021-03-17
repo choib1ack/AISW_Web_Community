@@ -44,12 +44,12 @@ public abstract class PostController<Req, ListRes, Res, Entity> implements CrudI
     }
 
     @GetMapping("")
-    public Header<List<ListRes>> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public Header<ListRes> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return postService.search(pageable);
     }
 
     @GetMapping("/search/writer")
-    public Header<List<ListRes>> searchByWriter(
+    public Header<ListRes> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -57,7 +57,7 @@ public abstract class PostController<Req, ListRes, Res, Entity> implements CrudI
     }
 
     @GetMapping("/search/title")
-    public Header<List<ListRes>> searchByTitle(
+    public Header<ListRes> searchByTitle(
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
@@ -65,7 +65,7 @@ public abstract class PostController<Req, ListRes, Res, Entity> implements CrudI
     }
 
     @GetMapping("/search/title&content")
-    public Header<List<ListRes>> searchByTitleOrContent(
+    public Header<ListRes> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 

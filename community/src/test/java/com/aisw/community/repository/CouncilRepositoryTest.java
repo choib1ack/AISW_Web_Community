@@ -9,7 +9,9 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 
+import java.util.List;
 import java.util.Optional;
 
 public class CouncilRepositoryTest extends CommunityApplicationTests {
@@ -27,7 +29,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        BulletinStatus status = BulletinStatus.GENERAL;
+        BulletinStatus status = BulletinStatus.URGENT;
         Long views = 0L;
         Long level = 1L;
         User userId = userRepository.getOne(1L);
@@ -80,5 +82,14 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         Optional<Council> deleteCouncil = councilRepository.findById(1L);
 
         Assertions.assertFalse(deleteCouncil.isPresent());
+    }
+
+    @Test
+    @Cacheable(value = "getCouncilStatus", key = "#id")
+    public void getUrgentPostByCouncil() {
+        List<Council> urgentCouncilList = councilRepository.findAllByStatus(BulletinStatus.URGENT);
+        List<Council> noticeCouncilList = councilRepository.findAllByStatus(BulletinStatus.NOTICE);
+        urgentCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
+        noticeCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
     }
 }

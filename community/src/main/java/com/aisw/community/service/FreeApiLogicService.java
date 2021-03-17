@@ -1,12 +1,14 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Free;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.BoardResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
 import com.aisw.community.repository.FreeRepository;
 import com.aisw.community.repository.UserRepository;
@@ -16,11 +18,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiResponse, FreeApiResponse, Free> {
+public class FreeApiLogicService extends PostService<FreeApiRequest, BoardResponse, FreeApiResponse, Free> {
 
     @Autowired
     private UserRepository userRepository;
@@ -117,46 +120,81 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
     }
 
     @Override
-    public Header<List<BoardApiResponse>> search(Pageable pageable) {
+    public Header<BoardResponse> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
+        Page<Free> freesByStatus = searchByStatus(pageable);
 
-        return getListHeader(frees);
+        return getListHeader(frees, freesByStatus);
     }
 
     @Override
-    public Header<List<BoardApiResponse>> searchByWriter(String writer, Pageable pageable) {
+    public Header<BoardResponse> searchByWriter(String writer, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
+        Page<Free> freesByStatus = searchByStatus(pageable);
 
-        return getListHeader(frees);
+        return getListHeader(frees, freesByStatus);
     }
 
     @Override
-    public Header<List<BoardApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<BoardResponse> searchByTitle(String title, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
+        Page<Free> freesByStatus = searchByStatus(pageable);
 
-        return getListHeader(frees);
+        return getListHeader(frees, freesByStatus);
     }
 
     @Override
-    public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<BoardResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+        Page<Free> freesByStatus = searchByStatus(pageable);
 
-        return getListHeader(frees);
+        return getListHeader(frees, freesByStatus);
     }
 
-    private Header<List<BoardApiResponse>> getListHeader(Page<Free> frees) {
-        List<BoardApiResponse> boardApiResponseList = frees.stream()
-                .map(free -> BoardApiResponse.builder()
-                        .id(free.getId())
-                        .title(free.getTitle())
-                        .category(free.getCategory())
-                        .createdAt(free.getCreatedAt())
-                        .status(free.getStatus())
-                        .views(free.getViews())
-                        .writer(free.getWriter())
-                        .build())
-                .collect(Collectors.toList());
+    public Page<Free> searchByStatus(Pageable pageable) {
+        Page<Free> frees = freeRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
+
+        return frees;
+    }
+
+    private Header<BoardResponse> getListHeader
+            (Page<Free> frees, Page<Free> freesByStatus) {
+        BoardResponse boardResponse = BoardResponse.builder()
+                .boardApiResponseList(frees.stream()
+                        .map(board -> BoardApiResponse.builder()
+                                .id(board.getId())
+                                .title(board.getTitle())
+                                .category(board.getCategory())
+                                .createdAt(board.getCreatedAt())
+                                .status(board.getStatus())
+                                .views(board.getViews())
+                                .writer(board.getWriter())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+        List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
+        List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
+        freesByStatus.stream().forEach(board -> {
+            BoardApiResponse boardApiResponse = BoardApiResponse.builder()
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .category(board.getCategory())
+                    .createdAt(board.getCreatedAt())
+                    .status(board.getStatus())
+                    .views(board.getViews())
+                    .writer(board.getWriter())
+                    .build();
+            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                boardApiNoticeResponseList.add(boardApiResponse);
+            }
+            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+                boardApiUrgentResponseList.add(boardApiResponse);
+            }
+        });
+        boardResponse.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
+        boardResponse.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(frees.getTotalElements())
@@ -165,7 +203,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardApiRes
                 .currentPage(frees.getNumber())
                 .build();
 
-        return Header.OK(boardApiResponseList, pagination);
+        return Header.OK(boardResponse, pagination);
     }
 
     @Transactional

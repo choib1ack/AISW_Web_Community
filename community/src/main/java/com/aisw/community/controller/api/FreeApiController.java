@@ -5,6 +5,7 @@ import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.BoardResponse;
 import com.aisw.community.model.network.response.FreeApiResponse;
 import com.aisw.community.service.FreeApiLogicService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/board/free")
-public class FreeApiController extends PostController<FreeApiRequest, BoardApiResponse, FreeApiResponse, Free> {
+public class FreeApiController extends PostController<FreeApiRequest, BoardResponse, FreeApiResponse, Free> {
 
     @Autowired
     private FreeApiLogicService freeApiLogicService;

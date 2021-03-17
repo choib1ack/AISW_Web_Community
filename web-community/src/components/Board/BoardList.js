@@ -9,6 +9,7 @@ import React, {useState} from "react";
 import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
 import {WriteButton} from "../Button/WriteButton";
+import SubjectList from "./SubjectList";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);
@@ -18,7 +19,7 @@ function BoardList({match}) {
     const [searchText, setSearchText] = useState(null);
     // const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(0);
 
     window.scrollTo(0, 0);
 
@@ -40,6 +41,8 @@ function BoardList({match}) {
         setNowSearchText("");
         setSearchText("");
         setIsSearch(false);
+        // 페이징 초기화
+        setCurrentPage(0);
     }
 
     const searchContents = () => {
@@ -73,7 +76,7 @@ function BoardList({match}) {
                     </Col>
                 </Row>
 
-                <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
+                <Row style={{marginTop: '2rem'}}>
                     <Col lg={12} md={12} sm={12}>
                         <SelectButton
                             id={0} title='전체' active={category}
@@ -91,6 +94,11 @@ function BoardList({match}) {
                     </Col>
                 </Row>
 
+                <Row style={{marginBottom: '1rem'}}>
+                    <Col lg={12} md={12} sm={12}>
+                        {category==2?<SubjectList active={true}/>:null}
+                    </Col>
+                </Row>
                 <Table>
                     <thead>
                     <tr>
@@ -111,7 +119,7 @@ function BoardList({match}) {
                         setIsSearch={setIsSearch}
                         setNowSearchText={setNowSearchText}
                         setTotalPage={setTotalPage}
-                        setCurrentPage={setCurrentPage}
+                        current_page={currentPage}
                     />
                     </tbody>
                 </Table>
@@ -121,6 +129,7 @@ function BoardList({match}) {
                 <Pagination
                     total_pages={totalPage}
                     current_page={currentPage}
+                    setCurrentPage={setCurrentPage}
                 />
             </Container>
         </div>
