@@ -139,7 +139,7 @@ export default function MakeBoardList(props) {
                         {data.title}
                         <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
-                    <td>{data.created_by}</td>
+                    <td>{data.writer}</td>
                     <td>{data.created_at.substring(0, 10)}</td>
                     <td>{data.views}</td>
                 </tr>
@@ -153,12 +153,13 @@ export default function MakeBoardList(props) {
                         {data.title}
                         <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
-                    <td>{data.created_by}</td>
+                    <td>{data.writer}</td>
                     <td>{data.created_at.substring(0, 10)}</td>
                     <td>{data.views}</td>
                 </tr>
             ))}
-            {boardData.map((data, index) => (
+            {boardData.map((data, index) =>
+                (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
@@ -167,7 +168,7 @@ export default function MakeBoardList(props) {
                         {data.title}
                         <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
-                    <td>{data.created_by}</td>
+                    <td>{data.writer}</td>
                     <td>{data.created_at.substring(0,10)}</td>
                     <td>{data.views}</td>
                 </tr>

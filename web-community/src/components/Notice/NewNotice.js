@@ -48,7 +48,7 @@ export default function NewNotice() {
                 campus: "COMMON",
                 content: data.content,
                 level: 0,
-                status: "URGENT",
+                status: "GENERAL",
                 title: data.title,
                 user_id: user.id,
                 writer: "string"
@@ -58,7 +58,7 @@ export default function NewNotice() {
                 attachment_file: "string",
                 content: data.content,
                 level: 0,
-                status: "URGENT",
+                status: "GENERAL",
                 title: data.title,
                 user_id: user.id
             }
@@ -67,7 +67,7 @@ export default function NewNotice() {
                 attachment_file: "string",
                 content: data.content,
                 level: 0,
-                status: "URGENT",
+                status: "GENERAL",
                 title: data.title,
                 user_id: user.id
             }

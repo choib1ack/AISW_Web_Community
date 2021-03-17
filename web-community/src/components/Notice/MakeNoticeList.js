@@ -138,7 +138,7 @@ export default function MakeNoticeList(props) {
                         {data.title}
                         <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
-                    <td>{data.created_by}</td>
+                    <td>{data.writer}</td>
                     <td>{data.created_at.substring(0,10)}</td>
                     <td>{data.views}</td>
                 </tr>
@@ -153,7 +153,7 @@ export default function MakeNoticeList(props) {
                         {data.title}
                         <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
-                    <td>{data.created_by}</td>
+                    <td>{data.writer}</td>
                     <td>{data.created_at.substring(0,10)}</td>
                     <td>{data.views}</td>
                 </tr>
@@ -169,7 +169,7 @@ export default function MakeNoticeList(props) {
                             {data.title}
                             <img src={fileImage} style={attachment(data.attachment_file)}/>
                     </td>
-                    <td>{data.created_by}</td>
+                    <td>{data.writer}</td>
                     <td>{data.created_at.substring(0,10)}</td>
                     <td>{data.views}</td>
                 </tr>
