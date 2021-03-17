@@ -7,6 +7,7 @@ import Loading from "../Loading";
 export default function MakeNoticeList(props) {
     const [noticeData, setNoticeData] = useState(null);
     const [noticeFixData, setNoticeFixData] = useState(null);
+    const [urgentFixData, setUrgentFixData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [pageInfo, setPageInfo] = useState(null);
@@ -106,7 +107,8 @@ export default function MakeNoticeList(props) {
                 setLoading(true);
                 const response = await axios.get(url(props.category));
                 if(props.current_page==0){ // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
-                    setNoticeFixData(response.data.data.notice_api_top_response_list)
+                    setNoticeFixData(response.data.data.notice_api_notice_response_list)
+                    setUrgentFixData(response.data.data.notice_api_urgent_response_list)
                 }
                 setNoticeData(response.data.data.notice_api_response_list); // 데이터는 response.data 안에 있음
                 setPageInfo(response.data.pagination);
@@ -127,6 +129,21 @@ export default function MakeNoticeList(props) {
     if (Object.keys(noticeData).length==0) return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
     return (
         <>
+            {urgentFixData.map(data => (
+                <tr key={data.notice_id}
+                    onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                    <td>{status(data.status)}</td>
+                    <td>
+                        {data.title}
+                        <img src={fileImage} style={attachment(data.attachment_file)}/>
+                    </td>
+                    <td>{data.created_by}</td>
+                    <td>{data.created_at.substring(0,10)}</td>
+                    <td>{data.views}</td>
+                </tr>
+
+            ))}
             {noticeFixData.map(data => (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
@@ -142,6 +159,7 @@ export default function MakeNoticeList(props) {
                 </tr>
 
             ))}
+
             {noticeData.map((data, index) => (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ? 

@@ -7,6 +7,7 @@ import Loading from "../Loading";
 export default function MakeBoardList(props) {
     const [boardData, setBoardData] = useState(null);
     const [boardFixData, setBoardFixData] = useState(null);
+    const [urgentFixData, setUrgentFixData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [pageInfo, setPageInfo] = useState(null);
@@ -104,7 +105,8 @@ export default function MakeBoardList(props) {
                 const response = await axios.get(url(props.category));
                 setBoardData(response.data.data.board_api_response_list);
                 if(props.current_page==0){ // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
-                    setBoardFixData(response.data.data.board_api_top_response_list);
+                    setBoardFixData(response.data.data.board_api_notice_response_list);
+                    setUrgentFixData(response.data.data.board_api_urgent_response_list);
                 }
                 setPageInfo(response.data.pagination);
                 props.setTotalPage(response.data.pagination.total_pages);
@@ -128,6 +130,20 @@ export default function MakeBoardList(props) {
     </tr>;
     return (
         <>
+            {urgentFixData.map(data => (
+                <tr key={data.id}
+                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                    <td>{status(data.status)}</td>
+                    <td>
+                        {data.title}
+                        <img src={fileImage} style={attachment(data.attachment_file)}/>
+                    </td>
+                    <td>{data.created_by}</td>
+                    <td>{data.created_at.substring(0, 10)}</td>
+                    <td>{data.views}</td>
+                </tr>
+            ))}
             {boardFixData.map(data => (
                 <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
