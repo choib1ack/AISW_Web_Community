@@ -9,7 +9,7 @@ import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CouncilApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.model.network.response.NoticeResponse;
+import com.aisw.community.model.network.response.NoticeResponseDTO;
 import com.aisw.community.repository.CouncilRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CouncilApiLogicService extends PostService<CouncilApiRequest, NoticeResponse, CouncilApiResponse, Council> {
+public class CouncilApiLogicService extends PostService<CouncilApiRequest, NoticeResponseDTO, CouncilApiResponse, Council> {
 
     @Autowired
     private UserRepository userRepository;
@@ -115,7 +115,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
     }
 
     @Override
-    public Header<NoticeResponse> search(Pageable pageable) {
+    public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
 
@@ -123,7 +123,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
     }
 
     @Override
-    public Header<NoticeResponse> searchByWriter(String writer, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByWriterContaining(writer, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
 
@@ -131,7 +131,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitle(String title, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByTitleContaining(title, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
 
@@ -139,7 +139,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Council> councils = councilRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -154,9 +154,9 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
         return councils;
     }
 
-    private Header<NoticeResponse> getListHeader
+    private Header<NoticeResponseDTO> getListHeader
             (Page<Council> councils, Page<Council> councilsByStatus) {
-        NoticeResponse noticeResponse = NoticeResponse.builder()
+        NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(councils.stream()
                         .map(notice -> NoticeApiResponse.builder()
                                 .id(notice.getId())
@@ -188,8 +188,8 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
                 noticeApiUrgentResponseList.add(noticeApiResponse);
             }
         });
-        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
-        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
+        noticeResponseDTO.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponseDTO.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(councils.getTotalElements())
@@ -198,6 +198,6 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
                 .currentPage(councils.getNumber())
                 .build();
 
-        return Header.OK(noticeResponse, pagination);
+        return Header.OK(noticeResponseDTO, pagination);
     }
 }

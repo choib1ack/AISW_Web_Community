@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BulletinResponse {
+public class BulletinResponseDTO {
 
     private List<BulletinApiResponse> bulletinApiNoticeResponseList;
     private List<BulletinApiResponse> bulletinApiUrgentResponseList;

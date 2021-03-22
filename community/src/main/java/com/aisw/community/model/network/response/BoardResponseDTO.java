@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BoardResponse {
+public class BoardResponseDTO {
 
     private List<BoardApiResponse> boardApiNoticeResponseList;
     private List<BoardApiResponse> boardApiUrgentResponseList;

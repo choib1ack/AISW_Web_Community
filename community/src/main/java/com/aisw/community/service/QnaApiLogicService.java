@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponseDTO, QnaApiResponse, Qna> {
 
     @Autowired
     private UserRepository userRepository;
@@ -122,7 +122,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
     }
 
     @Override
-    public Header<BoardResponse> search(Pageable pageable) {
+    public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
 
@@ -130,7 +130,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
     }
 
     @Override
-    public Header<BoardResponse> searchByWriter(String writer, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
 
@@ -138,7 +138,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
     }
 
     @Override
-    public Header<BoardResponse> searchByTitle(String title, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
 
@@ -146,7 +146,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
     }
 
     @Override
-    public Header<BoardResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -155,7 +155,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
     }
 
 //    @Cacheable(value = "searchBySubject", key = "#subject")
-    public Header<BoardResponse> searchBySubject(List<String> subject, Pageable pageable) {
+    public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
 
@@ -169,9 +169,9 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
         return qnas;
     }
 
-    private Header<BoardResponse> getListHeader
+    private Header<BoardResponseDTO> getListHeader
         (Page<Qna> qnas, Page<Qna> qnasByStatus) {
-        BoardResponse boardResponse = BoardResponse.builder()
+        BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(qnas.stream()
                         .map(board -> BoardApiResponse.builder()
                                 .id(board.getId())
@@ -203,8 +203,8 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
                 boardApiUrgentResponseList.add(boardApiResponse);
             }
         });
-        boardResponse.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
-        boardResponse.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
+        boardResponseDTO.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
+        boardResponseDTO.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(qnas.getTotalElements())
@@ -213,7 +213,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
                 .currentPage(qnas.getNumber())
                 .build();
 
-        return Header.OK(boardResponse, pagination);
+        return Header.OK(boardResponseDTO, pagination);
     }
 
     @Transactional

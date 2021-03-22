@@ -4,7 +4,7 @@ import com.aisw.community.controller.PostController;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.QnaApiRequest;
-import com.aisw.community.model.network.response.BoardResponse;
+import com.aisw.community.model.network.response.BoardResponseDTO;
 import com.aisw.community.model.network.response.QnaApiResponse;
 import com.aisw.community.service.QnaApiLogicService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +19,13 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/board/qna")
-public class QnaApiController extends PostController<QnaApiRequest, BoardResponse, QnaApiResponse, Qna> {
+public class QnaApiController extends PostController<QnaApiRequest, BoardResponseDTO, QnaApiResponse, Qna> {
 
     @Autowired
     private QnaApiLogicService qnaApiLogicService;
 
     @GetMapping("/subject")
-    public Header<BoardResponse> searchBySubject(
+    public Header<BoardResponseDTO> searchBySubject(
             @RequestParam List<String> subject,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return qnaApiLogicService.searchBySubject(subject, pageable);

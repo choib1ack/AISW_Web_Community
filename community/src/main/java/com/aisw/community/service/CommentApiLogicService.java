@@ -40,6 +40,8 @@ public class CommentApiLogicService {
                 .isAnonymous(commentApiRequest.getIsAnonymous())
                 .board(boardRepository.getOne(commentApiRequest.getBoardId()))
                 .user(userRepository.getOne(commentApiRequest.getUserId()))
+                .superComment(commentApiRequest.getSuperCommentId() != null ?
+                        commentRepository.getOne(commentApiRequest.getSuperCommentId()) : null)
                 .build();
 
         Comment newComment = commentRepository.save(comment);

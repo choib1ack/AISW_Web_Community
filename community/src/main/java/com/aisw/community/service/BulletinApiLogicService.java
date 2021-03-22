@@ -4,10 +4,8 @@ import com.aisw.community.model.entity.Bulletin;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.BoardResponse;
 import com.aisw.community.model.network.response.BulletinApiResponse;
-import com.aisw.community.model.network.response.BulletinResponse;
+import com.aisw.community.model.network.response.BulletinResponseDTO;
 import com.aisw.community.repository.BulletinRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,13 +17,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BulletinApiLogicService extends BulletinService<BulletinResponse, Bulletin> {
+public class BulletinApiLogicService extends BulletinService<BulletinResponseDTO, Bulletin> {
 
     @Autowired
     private BulletinRepository bulletinRepository;
 
     @Override
-    public Header<BulletinResponse> searchByWriter(String writer, Pageable pageable) {
+    public Header<BulletinResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Bulletin> bulletins = bulletinRepository.findAllByWriterContaining(writer, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
 
@@ -33,7 +31,7 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponse, B
     }
 
     @Override
-    public Header<BulletinResponse> searchByTitle(String title, Pageable pageable) {
+    public Header<BulletinResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Bulletin> bulletins = bulletinRepository.findAllByTitleContaining(title, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
 
@@ -41,7 +39,7 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponse, B
     }
 
     @Override
-    public Header<BulletinResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<BulletinResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Bulletin> bulletins = bulletinRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
 
@@ -55,9 +53,9 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponse, B
         return bulletins;
     }
 
-    private Header<BulletinResponse> getListHeader
+    private Header<BulletinResponseDTO> getListHeader
             (Page<Bulletin> bulletins, Page<Bulletin> bulletinsByStatus) {
-        BulletinResponse bulletinResponse = BulletinResponse.builder()
+        BulletinResponseDTO bulletinResponseDTO = BulletinResponseDTO.builder()
                 .bulletinApiResponseList(bulletins.stream()
                         .map(bulletin -> BulletinApiResponse.builder()
                                 .id(bulletin.getId())
@@ -91,8 +89,8 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponse, B
                 bulletinApiUrgentResponseList.add(bulletinApiResponse);
             }
         });
-        bulletinResponse.setBulletinApiNoticeResponseList(bulletinApiNoticeResponseList);
-        bulletinResponse.setBulletinApiUrgentResponseList(bulletinApiUrgentResponseList);
+        bulletinResponseDTO.setBulletinApiNoticeResponseList(bulletinApiNoticeResponseList);
+        bulletinResponseDTO.setBulletinApiUrgentResponseList(bulletinApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(bulletins.getTotalElements())
@@ -101,6 +99,6 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponse, B
                 .currentPage(bulletins.getNumber())
                 .build();
 
-        return Header.OK(bulletinResponse, pagination);
+        return Header.OK(bulletinResponseDTO, pagination);
     }
 }

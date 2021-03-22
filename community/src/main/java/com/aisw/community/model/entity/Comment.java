@@ -2,12 +2,15 @@ package com.aisw.community.model.entity;
 
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Columns;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,7 +19,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board", "user"})
+@ToString(exclude = {"board", "user", "superComment", "subComment"})
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
@@ -39,9 +42,16 @@ public class Comment {
 
     private Long likes;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Board board;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "super_comment_id")
+    private Comment superComment;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "superComment", cascade = CascadeType.ALL)
+    private List<Comment> subComment;
 }
