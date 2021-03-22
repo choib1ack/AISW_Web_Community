@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Council;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -34,10 +36,10 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-
+        User user = userRepository.findById(councilApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
-                .writer(userRepository.getOne(councilApiRequest.getUserId()).getName())
+                .writer(user.getName())
                 .content(councilApiRequest.getContent())
                 .attachmentFile(councilApiRequest.getAttachmentFile())
                 .status(councilApiRequest.getStatus())
@@ -45,7 +47,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
                 .level(councilApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
-                .user(userRepository.getOne(councilApiRequest.getUserId()))
+                .user(user)
                 .build();
 
         Council newCouncil = baseRepository.save(council);

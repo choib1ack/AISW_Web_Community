@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -34,10 +36,10 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
-
+        User user = userRepository.findById(departmentApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
-                .writer(userRepository.getOne(departmentApiRequest.getUserId()).getName())
+                .writer(user.getName())
                 .content(departmentApiRequest.getContent())
                 .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
@@ -45,7 +47,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .level(departmentApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.DEPARTMENT)
-                .user(userRepository.getOne(departmentApiRequest.getUserId()))
+                .user(user)
                 .build();
 
         Department newDepartment = baseRepository.save(department);

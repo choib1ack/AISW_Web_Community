@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.University;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -34,10 +36,10 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
-
+        User user = userRepository.findById(universityApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
-                .writer(userRepository.getOne(universityApiRequest.getUserId()).getName())
+                .writer(user.getName())
                 .content(universityApiRequest.getContent())
                 .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
@@ -46,7 +48,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .user(userRepository.getOne(universityApiRequest.getUserId()))
+                .user(user)
                 .build();
 
         University newUniversity = baseRepository.save(university);

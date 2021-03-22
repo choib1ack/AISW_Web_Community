@@ -1,6 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Free;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -34,10 +36,10 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-
+        User user = userRepository.findById(freeApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
-                .writer(userRepository.getOne(freeApiRequest.getUserId()).getName())
+                .writer(user.getName())
                 .content(freeApiRequest.getContent())
                 .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
@@ -47,7 +49,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
                 .level(freeApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .user(userRepository.getOne(freeApiRequest.getUserId()))
+                .user(user)
                 .build();
 
         Free newFree = baseRepository.save(free);

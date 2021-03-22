@@ -1,7 +1,11 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.CommentNotFoundException;
+import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Comment;
+import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CommentApiRequest;
@@ -32,16 +36,19 @@ public class CommentApiLogicService {
 
     public Header<CommentApiResponse> create(Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
-
+        User user = userRepository.findById(commentApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
+        Comment superComment = commentApiRequest.getSuperCommentId() != null ?
+                commentRepository.findById(commentApiRequest.getSuperCommentId())
+                        .orElseThrow(CommentNotFoundException::new) : null;
         Comment comment = Comment.builder()
-                .writer(userRepository.getOne(commentApiRequest.getUserId()).getName())
+                .writer(user.getName())
                 .content(commentApiRequest.getContent())
                 .likes(0L)
                 .isAnonymous(commentApiRequest.getIsAnonymous())
-                .board(boardRepository.getOne(commentApiRequest.getBoardId()))
-                .user(userRepository.getOne(commentApiRequest.getUserId()))
-                .superComment(commentApiRequest.getSuperCommentId() != null ?
-                        commentRepository.getOne(commentApiRequest.getSuperCommentId()) : null)
+                .board(board)
+                .user(user)
+                .superComment(superComment)
                 .build();
 
         Comment newComment = commentRepository.save(comment);

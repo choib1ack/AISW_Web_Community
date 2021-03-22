@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.*;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -32,10 +33,10 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-
+        User user = userRepository.findById(qnaApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
-                .writer(userRepository.getOne(qnaApiRequest.getUserId()).getName())
+                .writer(user.getName())
                 .content(qnaApiRequest.getContent())
                 .attachmentFile(qnaApiRequest.getAttachmentFile())
                 .status(qnaApiRequest.getStatus())
@@ -46,7 +47,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
                 .level(qnaApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .user(userRepository.getOne(qnaApiRequest.getUserId()))
+                .user(user)
                 .build();
 
         Qna newQna = baseRepository.save(qna);
