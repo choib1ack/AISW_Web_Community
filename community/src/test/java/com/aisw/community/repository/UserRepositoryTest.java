@@ -2,7 +2,6 @@ package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.Account;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

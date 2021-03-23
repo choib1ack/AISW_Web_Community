@@ -1,12 +1,9 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Account;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.AccountApiRequest;
-import com.aisw.community.model.network.request.UserApiRequest;
 import com.aisw.community.model.network.response.AccountApiResponse;
-import com.aisw.community.model.network.response.UserApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -2,7 +2,6 @@ package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.AdminUser;
-import com.aisw.community.model.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

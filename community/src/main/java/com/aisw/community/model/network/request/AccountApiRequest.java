@@ -1,6 +1,5 @@
 package com.aisw.community.model.network.request;
 
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
