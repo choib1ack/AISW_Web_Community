@@ -20,7 +20,7 @@ public class Council extends Notice {
 
     @Builder
     public Council(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                   Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user) {
-        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, user);
+                   Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, account);
     }
 }

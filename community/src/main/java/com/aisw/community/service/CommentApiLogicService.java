@@ -39,7 +39,7 @@ public class CommentApiLogicService {
                 .likes(0L)
                 .isAnonymous(commentApiRequest.getIsAnonymous())
                 .board(boardRepository.getOne(commentApiRequest.getBoardId()))
-                .user(userRepository.getOne(commentApiRequest.getUserId()))
+                .account(userRepository.getOne(commentApiRequest.getUserId()))
                 .build();
 
         Comment newComment = commentRepository.save(comment);
@@ -64,7 +64,7 @@ public class CommentApiLogicService {
                 .likes(comment.getLikes())
                 .isAnonymous(comment.getIsAnonymous())
                 .boardId(comment.getBoard().getId())
-                .userId(comment.getUser().getId())
+                .userId(comment.getAccount().getId())
                 .build();
 
         return freeCommentApiResponse;

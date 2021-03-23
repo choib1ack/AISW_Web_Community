@@ -2,10 +2,13 @@ package com.aisw.community.service;
 
 import com.aisw.community.ifs.AuthService;
 import com.aisw.community.model.LoginParam;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.UserRole;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.AccountApiRequest;
 import com.aisw.community.model.network.request.UserApiRequest;
+import com.aisw.community.model.network.response.AccountApiResponse;
 import com.aisw.community.model.network.response.UserApiResponse;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,38 +34,38 @@ public class AuthLogicService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-//    @Override
-    public Header<UserApiResponse> signUpUser(Header<UserApiRequest> request){
+    //    @Override
+    public Header<AccountApiResponse> signUpUser(Header<AccountApiRequest> request){
         // 1. request data
-        UserApiRequest userApiRequest = request.getData();
+        AccountApiRequest accountApiRequest = request.getData();
 
         // 2. user create
-        User user = User.builder()
-                .name(userApiRequest.getName())
-                .email(userApiRequest.getEmail())
-                .password(passwordEncoder.encode(userApiRequest.getPassword()))
-                .phoneNumber(userApiRequest.getPhoneNumber())
-                .grade(userApiRequest.getGrade())
-                .studentId(userApiRequest.getStudentId())
-                .level(userApiRequest.getLevel())
-                .job(userApiRequest.getJob())
-                .gender(userApiRequest.getGender())
-                .university(userApiRequest.getUniversity())
-                .collegeName(userApiRequest.getCollegeName())
-                .departmentName(userApiRequest.getDepartmentName())
+        Account account = Account.builder()
+                .name(accountApiRequest.getName())
+                .email(accountApiRequest.getEmail())
+                .password(passwordEncoder.encode(accountApiRequest.getPassword()))
+                .phoneNumber(accountApiRequest.getPhoneNumber())
+                .grade(accountApiRequest.getGrade())
+                .studentId(accountApiRequest.getStudentId())
+                .level(accountApiRequest.getLevel())
+                .job(accountApiRequest.getJob())
+                .gender(accountApiRequest.getGender())
+                .university(accountApiRequest.getUniversity())
+                .collegeName(accountApiRequest.getCollegeName())
+                .departmentName(accountApiRequest.getDepartmentName())
                 .roles(UserRole.STUDENT)
                 .build();
 
-        System.out.println(user.getPassword());
+        System.out.println(account.getPassword());
 
-        User newUser = userRepository.save(user);
+        Account newAccount = userRepository.save(account);
 
-        return Header.OK(response(newUser));
+        return Header.OK(response(newAccount));
     }
 
-    public Header<UserApiResponse> read(Long id) {
+    public Header<AccountApiResponse> read(Long id) {
         // id -> repository getOne, getById
-        Optional<User> optional = userRepository.findById(id);
+        Optional<Account> optional = userRepository.findById(id);
 
         // user -> userApiResponse return
         return optional
@@ -73,10 +76,10 @@ public class AuthLogicService implements UserDetailsService {
                 );
     }
 
-    public Header<UserApiResponse> loginUser(LoginParam request) {
+    public Header<AccountApiResponse> loginUser(LoginParam request) {
         String email = request.getEmail();
         String password = request.getPassword();
-        Optional<User> optional = userRepository.findByEmail(email);
+        Optional<Account> optional = userRepository.findByEmail(email);
 
         if(optional.isPresent()){
             String inputPW = password;
@@ -89,7 +92,7 @@ public class AuthLogicService implements UserDetailsService {
     }
 
     public boolean emailDoubleCheck(String email){
-        Optional<User> optional = userRepository.findByEmail(email);
+        Optional<Account> optional = userRepository.findByEmail(email);
 
         if(optional.isPresent())
             return false;
@@ -98,7 +101,7 @@ public class AuthLogicService implements UserDetailsService {
     }
 
     public boolean sidDoubleCheck(Integer studentId){
-        Optional<User> optional = userRepository.findByStudentId(studentId);
+        Optional<Account> optional = userRepository.findByStudentId(studentId);
 
         if(optional.isPresent())
             return false;
@@ -107,44 +110,43 @@ public class AuthLogicService implements UserDetailsService {
 
     }
 
-    public UserApiResponse loginCheck(User user, String password){
-        if(passwordEncoder.matches(password, user.getPassword()))
-            return response(user);
+    public AccountApiResponse loginCheck(Account account, String password){
+        if(passwordEncoder.matches(password, account.getPassword()))
+            return response(account);
         else
             return null;
     }
 
-    private UserApiResponse response(User user){
+    private AccountApiResponse response(Account account){
         // user -> userApiResponse return
-        UserApiResponse userApiResponse = UserApiResponse.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .phoneNumber(user.getPhoneNumber())
-                .grade(user.getGrade())
-                .studentId(user.getStudentId())
-                .createdAt(user.getCreatedAt())
-                .createdBy(user.getCreatedBy())
-                .updatedAt(user.getUpdatedAt())
-                .updatedBy(user.getUpdatedBy())
-                .level(user.getLevel())
-                .job(user.getJob())
-                .gender(user.getGender())
-                .university(user.getUniversity())
-                .collegeName(user.getCollegeName())
-                .departmentName(user.getDepartmentName())
-                .roles(user.getRoles())
+        AccountApiResponse accountApiResponse = AccountApiResponse.builder()
+                .id(account.getId())
+                .name(account.getName())
+                .email(account.getEmail())
+                .password(account.getPassword())
+                .phoneNumber(account.getPhoneNumber())
+                .grade(account.getGrade())
+                .studentId(account.getStudentId())
+                .createdAt(account.getCreatedAt())
+                .createdBy(account.getCreatedBy())
+                .updatedAt(account.getUpdatedAt())
+                .updatedBy(account.getUpdatedBy())
+                .level(account.getLevel())
+                .job(account.getJob())
+                .gender(account.getGender())
+                .university(account.getUniversity())
+                .collegeName(account.getCollegeName())
+                .departmentName(account.getDepartmentName())
+                .roles(account.getRoles())
                 .build();
 
         // Header + data
-        return userApiResponse;
+        return accountApiResponse;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> optional = userRepository.findByEmail(email);
-
+        Optional<Account> optional = userRepository.findByEmail(email);
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 

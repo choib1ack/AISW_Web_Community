@@ -47,7 +47,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
                 .level(freeApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .user(userRepository.getOne(freeApiRequest.getUserId()))
+                .account(userRepository.getOne(freeApiRequest.getUserId()))
                 .build();
 
         Free newFree = baseRepository.save(free);
@@ -113,7 +113,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .userId(free.getUser().getId())
+                .userId(free.getAccount().getId())
                 .build();
 
         return freeApiResponse;

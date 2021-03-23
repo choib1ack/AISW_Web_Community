@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board", "user"})
+@ToString(exclude = {"board", "account"})
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
@@ -43,5 +43,5 @@ public class Comment {
     private Board board;
 
     @ManyToOne
-    private User user;
+    private Account account;
 }

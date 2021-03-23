@@ -45,7 +45,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .level(departmentApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.DEPARTMENT)
-                .user(userRepository.getOne(departmentApiRequest.getUserId()))
+                .account(userRepository.getOne(departmentApiRequest.getUserId()))
                 .build();
 
         Department newDepartment = baseRepository.save(department);
@@ -108,7 +108,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .createdBy(department.getCreatedBy())
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
-                .userId(department.getUser().getId())
+                .userId(department.getAccount().getId())
                 .build();
 
         return departmentApiResponse;

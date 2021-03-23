@@ -62,10 +62,10 @@ public class Bulletin {
     private String updatedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user; // user id
+    private Account account; // user id
 
     public Bulletin(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                    Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user) {
+                    Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
         this.id = id;
         this.title = title;
         this.writer = writer;
@@ -76,6 +76,6 @@ public class Bulletin {
         this.level = level;
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
-        this.user = user;
+        this.account= account;
     }
 }

@@ -1,6 +1,7 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Council;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -9,9 +10,7 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 
-import java.util.List;
 import java.util.Optional;
 
 public class CouncilRepositoryTest extends CommunityApplicationTests {
@@ -29,10 +28,10 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        BulletinStatus status = BulletinStatus.URGENT;
+        BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
         Long level = 1L;
-        User userId = userRepository.getOne(1L);
+        Account userId = userRepository.getOne(1L);
 
         Council council = Council.builder()
                 .title(title)
@@ -44,7 +43,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
                 .level(level)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
-                .user(userId)
+                .account(userId)
                 .build();
 
         Council newCouncil = councilRepository.save(council);
@@ -83,13 +82,16 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
 
         Assertions.assertFalse(deleteCouncil.isPresent());
     }
+<<<<<<< Updated upstream
+=======
 
     @Test
     @Cacheable(value = "getCouncilStatus", key = "#id")
     public void getUrgentPostByCouncil() {
-        List<Council> urgentCouncilList = councilRepository.findAllByStatus(BulletinStatus.URGENT);
-        List<Council> noticeCouncilList = councilRepository.findAllByStatus(BulletinStatus.NOTICE);
-        urgentCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
-        noticeCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
+//        List<Council> urgentCouncilList = councilRepository.findAllByStatus(BulletinStatus.URGENT);
+//        List<Council> noticeCouncilList = councilRepository.findAllByStatus(BulletinStatus.NOTICE);
+//        urgentCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
+//        noticeCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
     }
+>>>>>>> Stashed changes
 }

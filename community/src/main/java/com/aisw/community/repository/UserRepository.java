@@ -1,14 +1,14 @@
 package com.aisw.community.repository;
 
-import com.aisw.community.model.entity.User;
+import com.aisw.community.model.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+public interface UserRepository extends JpaRepository<Account, Long> {
+    Optional<Account> findByEmail(String email);
 
-    Optional<User> findByStudentId(Integer studentId);
+    Optional<Account> findByStudentId(Integer studentId);
 }
