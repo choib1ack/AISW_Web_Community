@@ -4,7 +4,6 @@ import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Comment;
-import com.aisw.community.model.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,6 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Account;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

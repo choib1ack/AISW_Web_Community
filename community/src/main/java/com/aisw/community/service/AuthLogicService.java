@@ -1,15 +1,11 @@
 package com.aisw.community.service;
 
-import com.aisw.community.ifs.AuthService;
 import com.aisw.community.model.LoginParam;
 import com.aisw.community.model.entity.Account;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.UserRole;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.AccountApiRequest;
-import com.aisw.community.model.network.request.UserApiRequest;
 import com.aisw.community.model.network.response.AccountApiResponse;
-import com.aisw.community.model.network.response.UserApiResponse;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

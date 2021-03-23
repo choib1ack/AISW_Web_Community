@@ -3,7 +3,6 @@ package com.aisw.community.repository;
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
