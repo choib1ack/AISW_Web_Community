@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentApiLogicService extends PostService<DepartmentApiRequest, NoticeResponseDTO, DepartmentApiResponse, Department> {
+public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRequest, NoticeResponseDTO, DepartmentApiResponse, Department> {
 
     @Autowired
     private UserRepository userRepository;

@@ -19,7 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +49,7 @@ public class CommentApiLogicService {
                 .content(commentApiRequest.getContent())
                 .likes(0L)
                 .isAnonymous(commentApiRequest.getIsAnonymous())
+                .isDeleted(false)
                 .board(board)
                 .user(user)
                 .superComment(superComment)
@@ -79,21 +83,18 @@ public class CommentApiLogicService {
         return freeCommentApiResponse;
     }
 
-    public Header<List<CommentApiResponse>> searchByPost(Long id, Pageable pageable) {
-        Page<Comment> freeComments = commentRepository.findAllByBoardId(id, pageable);
+    public Header<List<CommentApiResponse>> searchByPost(Long id) {
+        List<Comment> comments = commentRepository.findCommentByBoardId(id);
 
-        List<CommentApiResponse> freeCommentApiResponseList = freeComments.stream()
-                .map(this::response)
-                .collect(Collectors.toList());
-
-        Pagination pagination = Pagination.builder()
-                .totalElements(freeComments.getTotalElements())
-                .totalPages(freeComments.getTotalPages())
-                .currentElements(freeComments.getNumberOfElements())
-                .currentPage(freeComments.getNumber())
-                .build();
-
-        return Header.OK(freeCommentApiResponseList, pagination);
+        List<CommentApiResponse> commentApiResponseList = new ArrayList<>();
+        Map<Long, CommentApiResponse> map = new HashMap<>();
+        comments.stream().forEach(comment -> {
+            CommentApiResponse commentApiResponse = CommentApiResponse.convertCommentToDto(comment);
+            map.put(commentApiResponse.getId(), commentApiResponse);
+            if(comment.getSuperComment() != null) map.get(comment.getSuperComment().getId()).getSubComment().add(commentApiResponse);
+            else commentApiResponseList.add(commentApiResponse);
+        });
+        return Header.OK(commentApiResponseList);
     }
 
     @Transactional

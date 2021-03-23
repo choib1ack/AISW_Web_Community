@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CouncilApiLogicService extends PostService<CouncilApiRequest, NoticeResponseDTO, CouncilApiResponse, Council> {
+public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest, NoticeResponseDTO, CouncilApiResponse, Council> {
 
     @Autowired
     private UserRepository userRepository;

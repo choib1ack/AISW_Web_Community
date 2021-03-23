@@ -40,6 +40,8 @@ public class Comment {
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
+    private Boolean isDeleted;
+
     private Long likes;
 
     @ManyToOne(fetch = FetchType.LAZY)

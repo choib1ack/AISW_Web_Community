@@ -9,9 +9,7 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
-import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.BoardResponseDTO;
-import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.*;
 import com.aisw.community.repository.FreeRepository;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +23,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends PostService<FreeApiRequest, BoardResponseDTO, FreeApiResponse, Free> {
+public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardResponseDTO, FreeWithCommentApiResponse, FreeApiResponse, Free> {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private FreeRepository freeRepository;
+
+    @Autowired
+    private CommentApiLogicService commentApiLogicService;
 
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
@@ -122,6 +123,41 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
     }
 
     @Override
+    @Transactional
+    public Header<FreeWithCommentApiResponse> readWithComment(Long id) {
+        return baseRepository.findById(id)
+                .map(free -> free.setViews(free.getViews() + 1))
+                .map(free -> baseRepository.save((Free)free))
+                .map(this::responseWithComment)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private FreeWithCommentApiResponse responseWithComment(Free free) {
+        FreeWithCommentApiResponse freeWithCommentApiResponse = FreeWithCommentApiResponse.builder()
+                .id(free.getId())
+                .title(free.getTitle())
+                .writer(free.getWriter())
+                .content(free.getContent())
+                .attachmentFile(free.getAttachmentFile())
+                .status(free.getStatus())
+                .createdAt(free.getCreatedAt())
+                .createdBy(free.getCreatedBy())
+                .updatedAt(free.getUpdatedAt())
+                .updatedBy(free.getUpdatedBy())
+                .views(free.getViews())
+                .level(free.getLevel())
+                .likes(free.getLikes())
+                .isAnonymous(free.getIsAnonymous())
+                .category(free.getCategory())
+                .userId(free.getUser().getId())
+                .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()).getData())
+                .build();
+
+        return freeWithCommentApiResponse;
+    }
+
+    @Override
     public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -208,6 +244,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
         return Header.OK(boardResponseDTO, pagination);
     }
 
+    @Override
     @Transactional
     public Header<FreeApiResponse> pressLikes(Long id) {
         return baseRepository.findById(id)

@@ -22,13 +22,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponseDTO, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardResponseDTO, QnaWithCommentApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private QnaRepository qnaRepository;
+
+    @Autowired
+    private CommentApiLogicService commentApiLogicService;
 
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
@@ -123,6 +126,42 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
     }
 
     @Override
+    @Transactional
+    public Header<QnaWithCommentApiResponse> readWithComment(Long id) {
+        return baseRepository.findById(id)
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> baseRepository.save((Qna) qna))
+                .map(this::responseWithComment)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private QnaWithCommentApiResponse responseWithComment(Qna qna) {
+        QnaWithCommentApiResponse qnaWithCommentApiResponse = QnaWithCommentApiResponse.builder()
+                .id(qna.getId())
+                .title(qna.getTitle())
+                .writer(qna.getWriter())
+                .content(qna.getContent())
+                .attachmentFile(qna.getAttachmentFile())
+                .status(qna.getStatus())
+                .createdAt(qna.getCreatedAt())
+                .createdBy(qna.getCreatedBy())
+                .updatedAt(qna.getUpdatedAt())
+                .updatedBy(qna.getUpdatedBy())
+                .views(qna.getViews())
+                .level(qna.getLevel())
+                .likes(qna.getLikes())
+                .isAnonymous(qna.getIsAnonymous())
+                .subject(qna.getSubject())
+                .category(qna.getCategory())
+                .userId(qna.getUser().getId())
+                .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()).getData())
+                .build();
+
+        return qnaWithCommentApiResponse;
+    }
+
+    @Override
     public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -170,8 +209,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
         return qnas;
     }
 
-    private Header<BoardResponseDTO> getListHeader
-        (Page<Qna> qnas, Page<Qna> qnasByStatus) {
+    private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, Page<Qna> qnasByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(qnas.stream()
                         .map(board -> BoardApiResponse.builder()
@@ -217,6 +255,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardResponse
         return Header.OK(boardResponseDTO, pagination);
     }
 
+    @Override
     @Transactional
     public Header<QnaApiResponse> pressLikes(Long id) {
         return baseRepository.findById(id)
