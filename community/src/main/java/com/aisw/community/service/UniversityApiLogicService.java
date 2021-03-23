@@ -43,7 +43,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .user(userRepository.getOne(universityApiRequest.getUserId()))
+                .account(userRepository.getOne(universityApiRequest.getUserId()))
                 .build();
 
         University newUniversity = baseRepository.save(university);
@@ -109,7 +109,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .userId(university.getUser().getId())
+                .userId(university.getAccount().getId())
                 .build();
 
         return universityApiResponse;

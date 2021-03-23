@@ -45,7 +45,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .level(qnaApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .user(userRepository.getOne(qnaApiRequest.getUserId()))
+                .account(userRepository.getOne(qnaApiRequest.getUserId()))
                 .build();
 
         Qna newQna = baseRepository.save(qna);
@@ -113,8 +113,13 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
+<<<<<<< Updated upstream
 
                 .userId(qna.getUser().getId())
+=======
+                .category(qna.getCategory())
+                .userId(qna.getAccount().getId())
+>>>>>>> Stashed changes
                 .build();
 
         return qnaApiResponse;

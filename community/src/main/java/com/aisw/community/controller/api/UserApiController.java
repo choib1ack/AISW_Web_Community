@@ -3,7 +3,9 @@ package com.aisw.community.controller.api;
 import com.aisw.community.ifs.AuthService;
 import com.aisw.community.model.LoginParam;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.AccountApiRequest;
 import com.aisw.community.model.network.request.UserApiRequest;
+import com.aisw.community.model.network.response.AccountApiResponse;
 import com.aisw.community.model.network.response.UserApiResponse;
 import com.aisw.community.service.AuthLogicService;
 import com.aisw.community.service.UserApiLogicService;
@@ -28,10 +30,10 @@ public class UserApiController implements AuthService {
     @Autowired
     UserApiLogicService userApiLogicService;
 
-    @Override
+//    @Override
     @ApiOperation("User Info Register")
     @PostMapping("/signup")
-    public Header<UserApiResponse> signUpUser(@ApiParam(value = "User Sign up", required = true) @RequestBody Header<UserApiRequest> request) {
+    public Header<AccountApiResponse> signUpUser(@ApiParam(value = "User Sign up", required = true) @RequestBody Header<AccountApiRequest> request) {
         String email = request.getData().getEmail();
         Integer studentId = request.getData().getStudentId();
 
@@ -43,26 +45,21 @@ public class UserApiController implements AuthService {
             return authLogicService.signUpUser(request);
     }
 
-    @Override
-    public Header<UserApiResponse> loginUser(Header<LoginParam> loginParam) {
-        return null;
-    }
-
     @ApiOperation("User Info Search")
     @GetMapping("{id}")
-    public Header<UserApiResponse> read(@ApiParam(value = "User Info", required = true) @PathVariable(value = "id") final Long id){
+    public Header<AccountApiResponse> read(@ApiParam(value = "User Info", required = true) @PathVariable(value = "id") final Long id){
         return authLogicService.read(id);
     }
 
 //    @Override
     @ApiOperation("User Login")
     @RequestMapping("/login")
-    public Header<UserApiResponse> loginUser(LoginParam loginParam) {
+    public Header<AccountApiResponse> loginUser(LoginParam loginParam) {
         return authLogicService.loginUser(loginParam);
     }
 
     @PostMapping("")
-    public Header<UserApiResponse> create(@RequestBody Header<UserApiRequest> request){
+    public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request){
         return userApiLogicService.create(request);
     }
 
@@ -70,4 +67,6 @@ public class UserApiController implements AuthService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return authLogicService.loadUserByUsername(email);
     }
+
+
 }

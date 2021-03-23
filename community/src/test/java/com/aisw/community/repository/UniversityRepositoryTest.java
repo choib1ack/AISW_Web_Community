@@ -1,6 +1,7 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -32,7 +33,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
         Long level = 1L;
-        User userId = userRepository.getOne(1L);
+        Account userId = userRepository.getOne(1L);
 
 
         University university = University.builder()
@@ -45,7 +46,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
                 .level(level)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .user(userId)
+                .account(userId)
                 .campus(Campus.COMMON)
                 .build();
 

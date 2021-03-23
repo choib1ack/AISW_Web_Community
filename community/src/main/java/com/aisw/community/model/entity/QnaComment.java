@@ -43,5 +43,5 @@ public class QnaComment {
     private Qna qna;
 
     @ManyToOne
-    private User user;
+    private Account account;
 }

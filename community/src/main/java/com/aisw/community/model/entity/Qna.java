@@ -24,10 +24,10 @@ public class Qna extends Board {
 
     @Builder
     public Qna(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-               Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, User user,
+               Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
                Long likes, Boolean isAnonymous, String subject) {
         super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory,
-                user, likes, isAnonymous);
+                account, likes, isAnonymous);
         this.subject = subject;
     }
 }

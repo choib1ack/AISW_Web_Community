@@ -42,7 +42,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
                 .level(councilApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
-                .user(userRepository.getOne(councilApiRequest.getUserId()))
+                .account(userRepository.getOne(councilApiRequest.getUserId()))
                 .build();
 
         Council newCouncil = baseRepository.save(council);
@@ -106,7 +106,7 @@ public class CouncilApiLogicService extends PostService<CouncilApiRequest, Notic
                 .createdBy(council.getCreatedBy())
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
-                .userId(council.getUser().getId())
+                .userId(council.getAccount().getId())
                 .build();
 
         return councilApiResponse;
