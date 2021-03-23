@@ -115,8 +115,13 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .subject(qna.getSubject())
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
                 .userId(qna.getUser().getId())
+=======
+                .category(qna.getCategory())
+                .userId(qna.getAccount().getId())
+>>>>>>> Stashed changes
 =======
                 .category(qna.getCategory())
                 .userId(qna.getAccount().getId())
