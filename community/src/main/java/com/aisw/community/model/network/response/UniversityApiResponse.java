@@ -46,5 +46,5 @@ public class UniversityApiResponse {
 
     private String updatedBy;
 
-    private Long userId;
+    private Long accountId;
 }

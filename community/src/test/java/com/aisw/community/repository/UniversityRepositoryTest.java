@@ -21,7 +21,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
     private UniversityRepository universityRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Test
     public void create() {
@@ -32,7 +32,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
         Long level = 1L;
-        Account userId = userRepository.getOne(1L);
+        Account userId = accountRepository.getOne(1L);
 
 
         University university = University.builder()

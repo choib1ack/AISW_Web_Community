@@ -26,5 +26,5 @@ public class DepartmentApiRequest {
     // 학교 공지 0
     private Long level;
 
-    private Long userId;
+    private Long accountId;
 }

@@ -6,7 +6,7 @@ import com.aisw.community.model.enumclass.UserRole;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.AccountApiRequest;
 import com.aisw.community.model.network.response.AccountApiResponse;
-import com.aisw.community.repository.UserRepository;
+import com.aisw.community.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class AuthLogicService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -53,14 +53,14 @@ public class AuthLogicService implements UserDetailsService {
 
         System.out.println(account.getPassword());
 
-        Account newAccount = userRepository.save(account);
+        Account newAccount = accountRepository.save(account);
 
         return Header.OK(response(newAccount));
     }
 
     public Header<AccountApiResponse> read(Long id) {
         // id -> repository getOne, getById
-        Optional<Account> optional = userRepository.findById(id);
+        Optional<Account> optional = accountRepository.findById(id);
 
         // user -> userApiResponse return
         return optional
@@ -74,7 +74,7 @@ public class AuthLogicService implements UserDetailsService {
     public Header<AccountApiResponse> loginUser(LoginParam request) {
         String email = request.getEmail();
         String password = request.getPassword();
-        Optional<Account> optional = userRepository.findByEmail(email);
+        Optional<Account> optional = accountRepository.findByEmail(email);
 
         if(optional.isPresent()){
             String inputPW = password;
@@ -87,7 +87,7 @@ public class AuthLogicService implements UserDetailsService {
     }
 
     public boolean emailDoubleCheck(String email){
-        Optional<Account> optional = userRepository.findByEmail(email);
+        Optional<Account> optional = accountRepository.findByEmail(email);
 
         if(optional.isPresent())
             return false;
@@ -96,7 +96,7 @@ public class AuthLogicService implements UserDetailsService {
     }
 
     public boolean sidDoubleCheck(Integer studentId){
-        Optional<Account> optional = userRepository.findByStudentId(studentId);
+        Optional<Account> optional = accountRepository.findByStudentId(studentId);
 
         if(optional.isPresent())
             return false;
@@ -141,7 +141,7 @@ public class AuthLogicService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Account> optional = userRepository.findByEmail(email);
+        Optional<Account> optional = accountRepository.findByEmail(email);
 
         List<GrantedAuthority> authorities = new ArrayList<>();
 

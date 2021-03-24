@@ -20,7 +20,7 @@ public class CommentApiRequest {
 
     private Long boardId;
 
-    private Long userId;
+    private Long accountId;
 
     private Long superCommentId;
 }

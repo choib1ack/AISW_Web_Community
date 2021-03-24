@@ -48,7 +48,7 @@ public class QnaWithCommentApiResponse {
 
     private String updatedBy;
 
-    private Long userId;
+    private Long accountId;
 
     private List<CommentApiResponse> commentApiResponseList;
 }

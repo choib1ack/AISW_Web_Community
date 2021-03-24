@@ -43,5 +43,5 @@ public class DepartmentApiResponse {
 
     private String updatedBy;
 
-    private Long userId;
+    private Long accountId;
 }

@@ -19,7 +19,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
     private CouncilRepository councilRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Test
     public void create() {
@@ -30,7 +30,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
         Long level = 1L;
-        Account userId = userRepository.getOne(1L);
+        Account userId = accountRepository.getOne(1L);
 
         Council council = Council.builder()
                 .title(title)

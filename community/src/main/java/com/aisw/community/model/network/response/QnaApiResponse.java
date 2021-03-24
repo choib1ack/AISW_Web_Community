@@ -49,5 +49,5 @@ public class QnaApiResponse {
 
     private String updatedBy;
 
-    private Long userId;
+    private Long accountId;
 }

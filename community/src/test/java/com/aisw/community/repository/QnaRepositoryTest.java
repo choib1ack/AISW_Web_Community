@@ -20,7 +20,7 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
     private QnaRepository qnaRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Test
     public void create() {
@@ -34,7 +34,7 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
         Long level = 1L;
         Boolean isAnonymous = true;
         String subject = "dd";
-        Account userId = userRepository.getOne(1L);
+        Account userId = accountRepository.getOne(1L);
 
         Qna qna = Qna.builder()
                 .title(title)

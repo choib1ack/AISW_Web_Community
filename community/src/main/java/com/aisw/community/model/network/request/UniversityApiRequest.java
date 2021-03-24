@@ -31,5 +31,5 @@ public class UniversityApiRequest {
 
     private Campus campus;
 
-    private Long userId;
+    private Long accountId;
 }
