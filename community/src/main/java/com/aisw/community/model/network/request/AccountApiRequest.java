@@ -16,6 +16,8 @@ public class AccountApiRequest {
 
     private Long id;
 
+    private String username;
+
     private String name;
 
     private String email;
@@ -48,5 +50,5 @@ public class AccountApiRequest {
 
     private DepartmentName departmentName;
 
-    private UserRole roles;
+    private UserRole role;
 }

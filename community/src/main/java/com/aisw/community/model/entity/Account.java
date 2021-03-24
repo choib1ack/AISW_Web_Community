@@ -28,6 +28,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String username;
+
     private String name;
 
     private String email;
@@ -73,7 +75,7 @@ public class Account {
     private DepartmentName departmentName;
 
     @Enumerated(EnumType.STRING)
-    private UserRole roles;
+    private UserRole role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
     private List<Notice> noticeList;
