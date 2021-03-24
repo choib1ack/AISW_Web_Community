@@ -4,6 +4,9 @@ import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.AccountApiRequest;
 import com.aisw.community.model.network.response.AccountApiResponse;
+import com.aisw.community.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserApiLogicService extends BaseService<AccountApiRequest, AccountApiResponse, Account> {
+    @Autowired
+    private AccountRepository accountRepository;
 
     // 1. request data
     // 2. user create
@@ -32,12 +37,11 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
                 .phoneNumber(accountApiRequest.getPhoneNumber())
                 .grade(accountApiRequest.getGrade())
                 .studentId(accountApiRequest.getStudentId())
-                .level(accountApiRequest.getLevel())
-                .job(accountApiRequest.getJob())
                 .gender(accountApiRequest.getGender())
                 .university(accountApiRequest.getUniversity())
                 .collegeName(accountApiRequest.getCollegeName())
                 .departmentName(accountApiRequest.getDepartmentName())
+                .role(accountApiRequest.getRole())
                 .build();
 
         Account newAccount = baseRepository.save(account);
@@ -66,29 +70,27 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         // 1. data
         AccountApiRequest accountApiRequest = request.getData();
 
-        // 2. id -> user data find
-        Optional<Account> optional = baseRepository.findById(accountApiRequest.getId());
+        System.out.println(accountApiRequest);
 
-        return optional.map(user ->{
+        // 2. id -> user data find
+        Optional<Account> optional = accountRepository.findByEmail(accountApiRequest.getEmail());
+
+        return optional.map(user ->
             // 3. data -> update
             // id
-            user
+            response(user
                     .setName(accountApiRequest.getName())
                     .setEmail(accountApiRequest.getEmail())
                     .setPassword(accountApiRequest.getPassword())
                     .setPhoneNumber(accountApiRequest.getPhoneNumber())
                     .setGrade(accountApiRequest.getGrade())
                     .setStudentId(accountApiRequest.getStudentId())
-                    .setLevel(accountApiRequest.getLevel())
-                    .setJob(accountApiRequest.getJob())
                     .setGender(accountApiRequest.getGender())
                     .setUniversity(accountApiRequest.getUniversity())
                     .setCollegeName(accountApiRequest.getCollegeName())
-                    .setDepartmentName(accountApiRequest.getDepartmentName());
-            return user;
-        }).map(user -> baseRepository.save(user))
-                .map(user -> response(user))
-                .map(Header::OK)
+                    .setDepartmentName(accountApiRequest.getDepartmentName())
+                    .setRole(accountApiRequest.getRole()))
+        ).map(Header::OK)
                 .orElseGet(() -> Header.ERROR("No Data"));
     }
 
@@ -118,12 +120,11 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
                 .createdBy(account.getCreatedBy())
                 .updatedAt(account.getUpdatedAt())
                 .updatedBy(account.getUpdatedBy())
-                .level(account.getLevel())
-                .job(account.getJob())
                 .gender(account.getGender())
                 .university(account.getUniversity())
                 .collegeName(account.getCollegeName())
                 .departmentName(account.getDepartmentName())
+                .role(account.getRole())
                 .build();
 
         // Header + data

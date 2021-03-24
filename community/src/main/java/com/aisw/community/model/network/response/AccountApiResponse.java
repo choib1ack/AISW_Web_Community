@@ -17,8 +17,6 @@ public class AccountApiResponse {
 
     private Long id;
 
-    private String username;
-
     private String name;
 
     private String email;
@@ -38,10 +36,6 @@ public class AccountApiResponse {
     private LocalDateTime updatedAt;
 
     private String updatedBy;
-
-    private Level level;
-
-    private Job job;
 
     private Gender gender;
 

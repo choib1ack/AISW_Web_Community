@@ -52,8 +52,6 @@ public class CustomUserDetailsService implements UserDetailsService{
                     .createdBy(optional.get().getCreatedBy())
                     .updatedAt(optional.get().getUpdatedAt())
                     .updatedBy(optional.get().getUpdatedBy())
-                    .level(optional.get().getLevel())
-                    .job(optional.get().getJob())
                     .gender(optional.get().getGender())
                     .university(optional.get().getUniversity())
                     .collegeName(optional.get().getCollegeName())

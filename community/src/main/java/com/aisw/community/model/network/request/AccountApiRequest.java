@@ -16,8 +16,6 @@ public class AccountApiRequest {
 
     private Long id;
 
-    private String username;
-
     private String name;
 
     private String email;
@@ -37,10 +35,6 @@ public class AccountApiRequest {
     private LocalDateTime updatedAt;
 
     private String updatedBy;
-
-    private Level level;
-
-    private Job job;
 
     private Gender gender;
 

@@ -13,4 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/notice/university")
 public class UniversityApiController extends NoticePostController<UniversityApiRequest, NoticeResponseDTO, UniversityApiResponse, University> {
+
+
 }

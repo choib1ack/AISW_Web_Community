@@ -61,10 +61,15 @@ public class UserApiController implements AuthService {
         return userApiLogicService.create(request);
     }
 
+    @PutMapping("/update")
+    public Header<AccountApiResponse> update(@RequestBody Header<AccountApiRequest> request){
+        System.out.println(request.getData().getEmail());
+
+        return userApiLogicService.update(request);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return authLogicService.loadUserByUsername(email);
     }
-
-
 }
