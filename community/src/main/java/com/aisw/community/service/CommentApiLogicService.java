@@ -39,8 +39,7 @@ public class CommentApiLogicService {
         Account account = accountRepository.findById(commentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
         Comment superComment = commentApiRequest.getSuperCommentId() != null ?
-                commentRepository.findById(commentApiRequest.getSuperCommentId())
-                        .orElseThrow(CommentNotFoundException::new) : null;
+                getRootComment(commentApiRequest.getSuperCommentId()) : null;
         Comment comment = Comment.builder()
                 .writer(account.getName())
                 .content(commentApiRequest.getContent())
@@ -79,6 +78,20 @@ public class CommentApiLogicService {
         return comment;
     }
 
+    private Comment getRootComment(Long id) {
+        Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
+        return findRootComment(comment);
+    }
+
+    private Comment findRootComment(Comment comment) {
+        Comment superComment = comment.getSuperComment();
+        if(superComment == null) {
+            return comment;
+        } else {
+            return findRootComment(superComment);
+        }
+    }
+
     private CommentApiResponse response(Comment comment) {
         CommentApiResponse freeCommentApiResponse = CommentApiResponse.builder()
                 .id(comment.getId())
@@ -101,9 +114,12 @@ public class CommentApiLogicService {
         Map<Long, CommentApiResponse> map = new HashMap<>();
         comments.stream().forEach(comment -> {
             CommentApiResponse commentApiResponse = CommentApiResponse.convertCommentToDto(comment);
-            map.put(commentApiResponse.getId(), commentApiResponse);
-            if(comment.getSuperComment() != null) map.get(comment.getSuperComment().getId()).getSubComment().add(commentApiResponse);
-            else commentApiResponseList.add(commentApiResponse);
+            if(comment.getSuperComment() == null) {
+                map.put(commentApiResponse.getId(), commentApiResponse);
+                commentApiResponseList.add(commentApiResponse);
+            } else {
+                map.get(comment.getSuperComment().getId()).getSubComment().add(commentApiResponse);
+            }
         });
         return Header.OK(commentApiResponseList);
     }
