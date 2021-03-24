@@ -73,7 +73,7 @@ public class Account {
     private DepartmentName departmentName;
 
     @Enumerated(EnumType.STRING)
-    private UserRole roles;
+    private UserRole role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
     private List<Notice> noticeList;
