@@ -36,7 +36,6 @@ public class AuthLogicService implements UserDetailsService {
 
         // 2. user create
         Account account = Account.builder()
-                .username(accountApiRequest.getUsername())
                 .name(accountApiRequest.getName())
                 .email(accountApiRequest.getEmail())
                 .password(passwordEncoder.encode(accountApiRequest.getPassword()))
@@ -117,7 +116,6 @@ public class AuthLogicService implements UserDetailsService {
         // user -> userApiResponse return
         AccountApiResponse accountApiResponse = AccountApiResponse.builder()
                 .id(account.getId())
-                .username(account.getUsername())
                 .name(account.getName())
                 .email(account.getEmail())
                 .password(account.getPassword())
@@ -148,7 +146,6 @@ public class AuthLogicService implements UserDetailsService {
         if(optional.isPresent()){
             Account account = Account.builder()
                     .id(optional.get().getId())
-                    .username(optional.get().getUsername())
                     .name(optional.get().getName())
                     .email(optional.get().getEmail())
                     .password(optional.get().getPassword())

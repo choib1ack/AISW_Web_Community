@@ -22,10 +22,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getName();
+        String email = authentication.getName();
         String password = (String)authentication.getCredentials();
 
-        AccountContext accountContext = (AccountContext)userDetailsService.loadUserByUsername(username);
+        AccountContext accountContext = (AccountContext)userDetailsService.loadUserByUsername(email);
 
         if(!passwordEncoder.matches(password, accountContext.getAccount().getPassword())){
             throw new BadCredentialsException("Wrong Password");
