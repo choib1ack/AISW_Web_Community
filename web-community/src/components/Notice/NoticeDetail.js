@@ -5,11 +5,13 @@ import Title from "../Title";
 import {ListButton} from "../Button/ListButton";
 import axios from "axios";
 import Loading from "../Loading";
+import parse from 'html-react-parser';
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [htmlToReact, setHtmlToReact] = useState(null);
 
     const { notice_category } = match.params;
     const { id } = match.params;
@@ -49,6 +51,9 @@ export default function NoticeDetail({match}) {
                 const response = await axios.get(url);
                 console.log(response.data);
                 setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
+
+                const reactContent = parse(response.data.data.content);
+                setHtmlToReact(reactContent);
             } catch (e) {
                 setError(e);
             }
@@ -89,7 +94,7 @@ export default function NoticeDetail({match}) {
                     </div>
 
                     <div className="p-3" style={{minHeight:"100px"}}>
-                        <p>{noticeDetailData.content}​</p>
+                        {htmlToReact}
                     </div>
                     {AttachmentFile(noticeDetailData.attachment_file)}
                 </div>
