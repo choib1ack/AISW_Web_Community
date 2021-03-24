@@ -2,7 +2,7 @@ package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.enumclass.UserRole;
-import com.aisw.community.repository.UserRepository;
+import com.aisw.community.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +19,7 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService{
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -37,7 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 //
 //        return accountContext;
 
-        Optional<Account> optional = userRepository.findByEmail(email);
+        Optional<Account> optional = accountRepository.findByEmail(email);
 
         if(optional.isPresent()){
             Account account = Account.builder()

@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, Long> {
 //    Account findByEmail(String email);
 
-    Account findByUsername(String username);
-
     Optional<Account> findByEmail(String email);
 
     Optional<Account> findByStudentId(Integer studentId);
