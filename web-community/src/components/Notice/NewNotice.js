@@ -50,7 +50,7 @@ export default function NewNotice() {
                 level: 0,
                 status: "GENERAL",
                 title: data.title,
-                user_id: user.id,
+                account_id: user.id,
                 writer: "string"
             }
         } else if (data.board_type === "department") {
@@ -60,7 +60,7 @@ export default function NewNotice() {
                 level: 0,
                 status: "GENERAL",
                 title: data.title,
-                user_id: user.id
+                account_id: user.id
             }
         } else if (data.board_type === "council") {
             test = {
@@ -69,7 +69,7 @@ export default function NewNotice() {
                 level: 0,
                 status: "GENERAL",
                 title: data.title,
-                user_id: user.id
+                account_id: user.id
             }
         }
 

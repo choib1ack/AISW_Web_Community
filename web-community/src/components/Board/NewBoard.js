@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import classNames from 'classnames';
@@ -14,8 +14,10 @@ import TextEditor from "../TextEditor";
 import {subject_list} from "./SubjectList";
 
 function NewBoard() {
-    const {register, handleSubmit, control} = useForm({mode: "onChange"});
+    const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
+    const board_type = useRef();
+    board_type.current = watch("board_type");
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
@@ -51,7 +53,7 @@ function NewBoard() {
                 level: 0,
                 status: "GENERAL",
                 title: data.title,
-                user_id: user.id
+                account_id: user.id
             }
         } else if (data.board_type === 'qna') {
             test = {
@@ -62,13 +64,9 @@ function NewBoard() {
                 status: "GENERAL",
                 subject: data.subject,
                 title: data.title,
-                user_id: user.id
+                account_id: user.id
             }
         }
-
-        console.log(data.subject)
-        console.log(user.id)
-
         sendBoard(test, data.board_type)
     }
 
@@ -91,12 +89,14 @@ function NewBoard() {
                             </Form.Group>
                         </Col>
                         <Col>
+                            {board_type.current == "qna" &&
                             <Form.Control as="select" defaultValue="과목 선택" id='lecture'
                                           name="subject" ref={register}>
                                 {subject_list.map((subject, index) => {
                                     return <option value={subject} key={index}>{subject}</option>
                                 })}
                             </Form.Control>
+                            }
                         </Col>
                     </Row>
                     <Row>
