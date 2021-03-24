@@ -36,6 +36,7 @@ public class AuthLogicService implements UserDetailsService {
 
         // 2. user create
         Account account = Account.builder()
+                .username(accountApiRequest.getUsername())
                 .name(accountApiRequest.getName())
                 .email(accountApiRequest.getEmail())
                 .password(passwordEncoder.encode(accountApiRequest.getPassword()))
@@ -48,7 +49,7 @@ public class AuthLogicService implements UserDetailsService {
                 .university(accountApiRequest.getUniversity())
                 .collegeName(accountApiRequest.getCollegeName())
                 .departmentName(accountApiRequest.getDepartmentName())
-                .roles(UserRole.STUDENT)
+                .role(UserRole.STUDENT)
                 .build();
 
         System.out.println(account.getPassword());
@@ -116,6 +117,7 @@ public class AuthLogicService implements UserDetailsService {
         // user -> userApiResponse return
         AccountApiResponse accountApiResponse = AccountApiResponse.builder()
                 .id(account.getId())
+                .username(account.getUsername())
                 .name(account.getName())
                 .email(account.getEmail())
                 .password(account.getPassword())
@@ -132,7 +134,7 @@ public class AuthLogicService implements UserDetailsService {
                 .university(account.getUniversity())
                 .collegeName(account.getCollegeName())
                 .departmentName(account.getDepartmentName())
-                .roles(account.getRoles())
+                .role(account.getRole())
                 .build();
 
         // Header + data

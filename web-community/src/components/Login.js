@@ -6,30 +6,47 @@ import {Link, useHistory} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import {login} from "../features/userSlice";
+import axios from "axios";
 
 export default function Login() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
-    const email = useRef();
-    const password = useRef();
-    email.current = watch("email");
-    password.current = watch("password");
+    // const email = useRef();
+    // const password = useRef();
+    // email.current = watch("email");
+    // password.current = watch("password");
     const history = useHistory();
 
     // redux toolkit
     const user = useSelector(state => state.user)
     const dispatch = useDispatch()
 
-    const onSubmit = (data) => {
-        console.log("store: " + user.userData.email + " " + user.userData.password)
-
-        // 리덕스 스토어에 회원정보가 등록되어 있는 경우
-        if (user.userData.email === data.email && user.userData.password === data.password) {
-            dispatch(login())
+    async function getLoginUser(data) {
+        await axios.get("/user/login", {
+                headers: {
+                    "Content-Type": `application/json`
+                },
+                data,
+            },
+        ).then((res) => {
+            dispatch(login(res.data))   // 리덕스에 로그인한 유저 정보 저장
+            console.log("리덕스 데이터" + user.userData)
 
             history.push('/')   // 홈으로 가기
-        } else {
-            alert("이메일과 비밀번호를 확인해주세요.")
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러 발생");
+            console.log(errorObject);
+
+            alert("로그인에 실패하였습니다.") // 로그인 실패 메시지
+        })
+    }
+
+    const onSubmit = (data) => {
+        const test = {
+            email: "string",
+            password: "string"
         }
+        getLoginUser(test);
     }
 
     return (

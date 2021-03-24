@@ -3,24 +3,37 @@ package com.aisw.community.service;
 import com.aisw.community.model.entity.Account;
 import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-public class CustomUserDetailsService implements UserDetailsService {
+@Service("userDetailsService")
+public class CustomUserDetailsService implements UserDetailsService{
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<Account> account = userRepository.findByEmail(email);
+        Account account = userRepository.findByUsername(username);
 
+        if(account == null){
+            throw new UsernameNotFoundException("UsernameNotFoundException");
+        }
 
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(account.getRole().toString()));
 
-        return null;
+        AccountContext accountContext = new AccountContext(account, roles);
+
+        return accountContext;
     }
 }
