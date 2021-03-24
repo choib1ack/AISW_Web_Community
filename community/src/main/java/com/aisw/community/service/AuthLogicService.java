@@ -132,7 +132,7 @@ public class AuthLogicService implements UserDetailsService {
                 .university(account.getUniversity())
                 .collegeName(account.getCollegeName())
                 .departmentName(account.getDepartmentName())
-                .roles(account.getRole())
+                .role(account.getRole())
                 .build();
 
         // Header + data
@@ -143,12 +143,38 @@ public class AuthLogicService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<Account> optional = accountRepository.findByEmail(email);
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        if(optional.isPresent()){
+            Account account = Account.builder()
+                    .id(optional.get().getId())
+                    .name(optional.get().getName())
+                    .email(optional.get().getEmail())
+                    .password(optional.get().getPassword())
+                    .phoneNumber(optional.get().getPhoneNumber())
+                    .grade(optional.get().getGrade())
+                    .studentId(optional.get().getStudentId())
+                    .createdAt(optional.get().getCreatedAt())
+                    .createdBy(optional.get().getCreatedBy())
+                    .updatedAt(optional.get().getUpdatedAt())
+                    .updatedBy(optional.get().getUpdatedBy())
+                    .level(optional.get().getLevel())
+                    .job(optional.get().getJob())
+                    .gender(optional.get().getGender())
+                    .university(optional.get().getUniversity())
+                    .collegeName(optional.get().getCollegeName())
+                    .departmentName(optional.get().getDepartmentName())
+                    .role(optional.get().getRole())
+                    .build();
 
-        authorities.add(new SimpleGrantedAuthority("STUDENT"));
+            List<GrantedAuthority> roles = new ArrayList<>();
 
-//        return new User(user);
+            roles.add(new SimpleGrantedAuthority(UserRole.NOT_PERMITTED.toString()));
 
-        return null;
+            AccountContext accountContext = new AccountContext(account, roles);
+
+            return accountContext;
+        }
+        else{
+            throw new UsernameNotFoundException("Email Not Exists.");
+        }
     }
 }

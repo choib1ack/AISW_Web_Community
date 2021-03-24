@@ -81,16 +81,12 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
 
         Assertions.assertFalse(deleteCouncil.isPresent());
     }
-<<<<<<< Updated upstream
-=======
-
     @Test
-    @Cacheable(value = "getCouncilStatus", key = "#id")
+//    @Cacheable(value = "getCouncilStatus", key = "#id")
     public void getUrgentPostByCouncil() {
 //        List<Council> urgentCouncilList = councilRepository.findAllByStatus(BulletinStatus.URGENT);
 //        List<Council> noticeCouncilList = councilRepository.findAllByStatus(BulletinStatus.NOTICE);
 //        urgentCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
 //        noticeCouncilList.stream().forEach(council -> System.out.println(council.getStatus()));
     }
->>>>>>> Stashed changes
 }

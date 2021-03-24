@@ -72,7 +72,8 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         return optional.map(user ->{
             // 3. data -> update
             // id
-            user.setName(accountApiRequest.getName())
+            user
+                    .setName(accountApiRequest.getName())
                     .setEmail(accountApiRequest.getEmail())
                     .setPassword(accountApiRequest.getPassword())
                     .setPhoneNumber(accountApiRequest.getPhoneNumber())
