@@ -30,9 +30,6 @@ public class CouncilApiResponse {
 
     private Long views;
 
-    // 학교 공지 0
-    private Long level;
-
     private SecondCategory category;
 
     private LocalDateTime createdAt;

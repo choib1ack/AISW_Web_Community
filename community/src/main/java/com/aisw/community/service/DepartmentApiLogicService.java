@@ -44,7 +44,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
                 .views(0L)
-                .level(departmentApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.DEPARTMENT)
                 .account(account)
@@ -75,8 +74,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                             .setTitle(departmentApiRequest.getTitle())
                             .setContent(departmentApiRequest.getContent())
                             .setAttachmentFile(departmentApiRequest.getAttachmentFile())
-                            .setStatus(departmentApiRequest.getStatus())
-                            .setLevel(departmentApiRequest.getLevel());
+                            .setStatus(departmentApiRequest.getStatus());
                     return department;
                 })
                 .map(department -> baseRepository.save(department))
@@ -104,7 +102,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .attachmentFile(department.getAttachmentFile())
                 .status(department.getStatus())
                 .views(department.getViews())
-                .level(department.getLevel())
                 .category(department.getCategory())
                 .createdAt(department.getCreatedAt())
                 .createdBy(department.getCreatedBy())

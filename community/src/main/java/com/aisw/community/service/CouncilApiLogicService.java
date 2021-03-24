@@ -44,7 +44,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .attachmentFile(councilApiRequest.getAttachmentFile())
                 .status(councilApiRequest.getStatus())
                 .views(0L)
-                .level(councilApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
                 .account(account)
@@ -75,8 +74,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                             .setTitle(councilApiRequest.getTitle())
                             .setContent(councilApiRequest.getContent())
                             .setAttachmentFile(councilApiRequest.getAttachmentFile())
-                            .setStatus(councilApiRequest.getStatus())
-                            .setLevel(councilApiRequest.getLevel());
+                            .setStatus(councilApiRequest.getStatus());
                     return council;
                 })
                 .map(council -> baseRepository.save(council))
@@ -104,7 +102,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .attachmentFile(council.getAttachmentFile())
                 .status(council.getStatus())
                 .views(council.getViews())
-                .level(council.getLevel())
                 .category(council.getCategory())
                 .createdAt(council.getCreatedAt())
                 .createdBy(council.getCreatedBy())

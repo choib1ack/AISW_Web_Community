@@ -34,9 +34,6 @@ public class QnaApiResponse {
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
-    // 학교 공지 0
-    private Long level;
-
     private String subject;
 
     private SecondCategory category;

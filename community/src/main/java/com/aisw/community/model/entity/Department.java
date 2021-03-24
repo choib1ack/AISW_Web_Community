@@ -18,8 +18,8 @@ public class Department extends Notice {
 
     @Builder
     public Department(Long id, String title, String writer, String content, String attachmentFile,
-                      BulletinStatus status, Long views, Long level, FirstCategory firstCategory,
+                      BulletinStatus status, Long views, FirstCategory firstCategory,
                       SecondCategory secondCategory, Account account) {
-        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, account);
+        super(id, title, writer, content, attachmentFile, status, views, firstCategory, secondCategory, account);
     }
 }

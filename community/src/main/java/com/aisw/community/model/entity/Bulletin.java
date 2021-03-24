@@ -42,9 +42,6 @@ public class Bulletin {
 
     private Long views;
 
-    // 학생회 공지1
-    private Long level;
-
     private FirstCategory firstCategory;
 
     private SecondCategory secondCategory;
@@ -65,7 +62,7 @@ public class Bulletin {
     private Account account; // user id
 
     public Bulletin(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                    Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
+                    Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
         this.id = id;
         this.title = title;
         this.writer = writer;
@@ -73,7 +70,6 @@ public class Bulletin {
         this.attachmentFile = attachmentFile;
         this.status = status;
         this.views = views;
-        this.level = level;
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
         this.account= account;

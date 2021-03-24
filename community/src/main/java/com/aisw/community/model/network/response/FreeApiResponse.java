@@ -34,9 +34,6 @@ public class FreeApiResponse {
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
-    // 학교 공지 0
-    private Long level;
-
     private SecondCategory category;
 
     private LocalDateTime createdAt;

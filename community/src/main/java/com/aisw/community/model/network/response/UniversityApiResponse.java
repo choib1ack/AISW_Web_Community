@@ -31,9 +31,6 @@ public class UniversityApiResponse {
 
     private Long views;
 
-    // 학교 공지 0
-    private Long level;
-
     private Campus campus;
 
     private SecondCategory category;

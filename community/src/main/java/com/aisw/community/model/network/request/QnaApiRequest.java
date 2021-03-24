@@ -22,9 +22,6 @@ public class QnaApiRequest {
 
     private BulletinStatus status;
 
-    // 학교 공지 0
-    private Long level;
-
     private String subject;
 
     // 익명 true, 비익명 false

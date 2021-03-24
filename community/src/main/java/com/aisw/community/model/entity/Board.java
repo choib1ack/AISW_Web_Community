@@ -30,9 +30,9 @@ public class Board extends Bulletin {
     private List<Comment> commentList;
 
     public Board(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                 Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
+                 Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
                  Long likes, Boolean isAnonymous) {
-        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, account);
+        super(id, title, writer, content, attachmentFile, status, views, firstCategory, secondCategory, account);
         this.likes = likes;
         this.isAnonymous = isAnonymous;
         this.category = secondCategory;

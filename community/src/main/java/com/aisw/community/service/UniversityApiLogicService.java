@@ -45,7 +45,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
                 .views(0L)
-                .level(universityApiRequest.getLevel())
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
@@ -77,8 +76,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                             .setTitle(universityApiRequest.getTitle())
                             .setContent(universityApiRequest.getContent())
                             .setAttachmentFile(universityApiRequest.getAttachmentFile())
-                            .setStatus(universityApiRequest.getStatus())
-                            .setLevel(universityApiRequest.getLevel());
+                            .setStatus(universityApiRequest.getStatus());
                     university.setCampus(universityApiRequest.getCampus());
                     return university;
                 })
@@ -107,7 +105,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .attachmentFile(university.getAttachmentFile())
                 .status(university.getStatus())
                 .views(university.getViews())
-                .level(university.getLevel())
                 .campus(university.getCampus())
                 .category(university.getCategory())
                 .createdAt(university.getCreatedAt())
