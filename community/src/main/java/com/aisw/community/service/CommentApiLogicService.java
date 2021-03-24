@@ -9,6 +9,7 @@ import com.aisw.community.model.entity.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CommentApiRequest;
+import com.aisw.community.model.network.request.CouncilApiRequest;
 import com.aisw.community.model.network.response.CommentApiResponse;
 import com.aisw.community.repository.BoardRepository;
 import com.aisw.community.repository.CommentRepository;
@@ -37,6 +38,7 @@ public class CommentApiLogicService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Transactional
     public Header<CommentApiResponse> create(Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
         User user = userRepository.findById(commentApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
@@ -59,13 +61,25 @@ public class CommentApiLogicService {
         return Header.OK(response(newComment));
     }
 
+    @Transactional
     public Header delete(Long id) {
-        return commentRepository.findById(id)
+        return commentRepository.findCommentByIdWithSuperComment(id)
                 .map(comment -> {
-                    commentRepository.delete(comment);
+                    if(comment.getSubComment().size() != 0) {
+                        comment.setIsDeleted(true);
+                    } else {
+                        commentRepository.delete(getDeletableAncestorComment(comment));
+                    }
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private Comment getDeletableAncestorComment(Comment comment) {
+        Comment superComment = comment.getSuperComment();
+        if(superComment != null && superComment.getSubComment().size() == 1 && superComment.getIsDeleted() == true)
+            return getDeletableAncestorComment(superComment);
+        return comment;
     }
 
     private CommentApiResponse response(Comment comment) {

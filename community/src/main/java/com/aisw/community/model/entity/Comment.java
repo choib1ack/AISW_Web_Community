@@ -54,6 +54,6 @@ public class Comment {
     @JoinColumn(name = "super_comment_id")
     private Comment superComment;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "superComment", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "superComment", orphanRemoval = true)
     private List<Comment> subComment;
 }
