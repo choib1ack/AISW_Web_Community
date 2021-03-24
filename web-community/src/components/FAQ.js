@@ -16,7 +16,7 @@ function CustomToggle({children, eventKey}) {
     let point_style1 = {
         display:'inline',
         fontWeight:'bold',
-        color:'#6CBACB',
+        color:'#0472FD',
         fontSize:'18px',
         marginRight:'1rem'
     }
@@ -24,7 +24,7 @@ function CustomToggle({children, eventKey}) {
         display:'inline',
         float:'right',
         fontWeight:'bold',
-        color:'#6CBACB',
+        color:'#0472FD',
         fontSize:'18px'
     }
 

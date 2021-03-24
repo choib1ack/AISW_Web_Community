@@ -15,7 +15,7 @@ function Title(props) {
             textAlign: 'left',
             marginTop: '3rem',
             fontWeight: 'bold',
-            color: '#6CBACB'
+            color: '#0472FD'
         }
     }
     return (

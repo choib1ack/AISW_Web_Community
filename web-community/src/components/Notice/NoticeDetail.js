@@ -33,7 +33,7 @@ export default function NoticeDetail({match}) {
         if(att == null) return null;
         return(
             <div className="p-3">
-                <p style={{color: "#6CBACB", fontSize: '14px'}} className="mb-1">첨부파일</p>
+                <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
                 <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
                 <p style={{fontSize: '14px'}} className="d-inline-block">{att}</p>
             </div>
@@ -68,14 +68,14 @@ export default function NoticeDetail({match}) {
             <Container>
                 <Title text='공지사항' type='1'/>
                 <div className="text-left mt-5 mb-4"
-                     style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
+                     style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
                     <div style={{
-                        backgroundColor: "#EFF7F9",
+                        backgroundColor: "#e7f1ff",
                         paddingTop: '20px',
                         paddingLeft: '20px',
                         paddingBottom: '10px'
                     }}>
-                        <p style={{color: "#6CBACB", fontSize: '12px'}} className="mb-1">{Category(notice_category)}></p>
+                        <p style={{color: "#0472FD", fontSize: '12px'}} className="mb-1">{Category(notice_category)}></p>
                         <p style={{fontSize: '16x'}} className="d-inline-block mr-1">{noticeDetailData.title}</p>
                         {noticeDetailData.attachment_file == null? "" : <img src={fileImage} className="d-inline-block"/>}
 
