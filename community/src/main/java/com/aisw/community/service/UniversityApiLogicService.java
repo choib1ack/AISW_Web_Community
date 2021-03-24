@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 @Service
 public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, NoticeResponseDTO, UniversityApiResponse, University> {
 
+//    
     @Autowired
     private AccountRepository accountRepository;
 
