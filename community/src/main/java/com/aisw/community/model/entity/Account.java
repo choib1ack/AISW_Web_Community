@@ -53,13 +53,6 @@ public class Account {
     @LastModifiedBy
     private String updatedBy;
 
-    // 가입하지 않으면 0, 재학생 1, 학생회 2, 직원(조교, 교수) 3, 관리자 4
-    @Enumerated(EnumType.STRING)
-    private Level level;
-
-    @Enumerated(EnumType.STRING)
-    private Job job;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

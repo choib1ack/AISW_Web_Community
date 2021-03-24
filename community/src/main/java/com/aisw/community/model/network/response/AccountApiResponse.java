@@ -37,10 +37,6 @@ public class AccountApiResponse {
 
     private String updatedBy;
 
-    private Level level;
-
-    private Job job;
-
     private Gender gender;
 
     private Campus university;

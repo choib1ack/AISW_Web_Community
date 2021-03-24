@@ -11,6 +11,7 @@ import axios from "axios";
 import FinishModal from "../FinishModal";
 import {useDispatch, useSelector} from "react-redux";
 import TextEditor from "../TextEditor";
+import {subject_list} from "./SubjectList";
 
 function NewBoard() {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
@@ -65,6 +66,9 @@ function NewBoard() {
             }
         }
 
+        console.log(data.subject)
+        console.log(user.id)
+
         sendBoard(test, data.board_type)
     }
 
@@ -78,7 +82,7 @@ function NewBoard() {
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>
                         <Col>
-                            <Form.Group controlId="category">
+                            <Form.Group>
                                 <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
@@ -89,9 +93,9 @@ function NewBoard() {
                         <Col>
                             <Form.Control as="select" defaultValue="과목 선택" id='lecture'
                                           name="subject" ref={register}>
-                                <option value="computer_programming">컴퓨터 프로그래밍</option>
-                                <option value="android_programming">안드로이드 프로그래밍</option>
-                                <option value="network">네트워크</option>
+                                {subject_list.map((subject, index) => {
+                                    return <option value={subject} key={index}>{subject}</option>
+                                })}
                             </Form.Control>
                         </Col>
                     </Row>

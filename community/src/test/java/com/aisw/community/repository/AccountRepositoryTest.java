@@ -6,11 +6,15 @@ import com.aisw.community.model.enumclass.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
 
 public class AccountRepositoryTest extends CommunityApplicationTests{
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
 
     @Autowired
     private AccountRepository accountRepository;
@@ -23,8 +27,6 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
         String phoneNumber = "010-6666-6666";
         Grade grade = Grade.FRESHMAN;
         Integer studentId = 202066666;
-        Level level = Level.STUDENT;
-        Job job = Job.STUDENT;
         Gender gender = Gender.MALE;
         Campus university = Campus.GLOBAL;
         CollegeName collegeName = CollegeName.IT_CONVERGENCE;
@@ -37,8 +39,6 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
                 .phoneNumber(phoneNumber)
                 .grade(grade)
                 .studentId(studentId)
-                .level(level)
-                .job(job)
                 .gender(gender)
                 .university(university)
                 .collegeName(collegeName)
@@ -80,10 +80,11 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
     @Test
     @Transactional
     public void update(){
-        Optional<Account> user = accountRepository.findById(5L);
+
+        Optional<Account> user = accountRepository.findByEmail("test02@gmail.com");
 
         user.ifPresent(selectUser ->{
-            selectUser.setPassword("pppp1111");
+            selectUser.setPassword(passwordEncoder.encode("pppp1111"));
 
             Account newUser = accountRepository.save(selectUser);
             System.out.println("user : " + newUser);

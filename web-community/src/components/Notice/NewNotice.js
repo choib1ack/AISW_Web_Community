@@ -86,7 +86,7 @@ export default function NewNotice() {
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>
                         <Col>
-                            <Form.Group controlId="category">
+                            <Form.Group>
                                 <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
                                               name="board_type" ref={register}>
                                     <option value="university">학교 홈페이지</option>
