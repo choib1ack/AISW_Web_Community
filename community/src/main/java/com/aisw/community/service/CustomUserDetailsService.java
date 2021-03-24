@@ -42,7 +42,6 @@ public class CustomUserDetailsService implements UserDetailsService{
         if(optional.isPresent()){
             Account account = Account.builder()
                     .id(optional.get().getId())
-                    .username(optional.get().getUsername())
                     .name(optional.get().getName())
                     .email(optional.get().getEmail())
                     .password(optional.get().getPassword())
