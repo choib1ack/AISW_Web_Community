@@ -50,8 +50,8 @@ function CategoryButton(props) {
         border: '0',
         outline: 'none',
         boxShadow: 'none',
-        backgroundColor: '#EFF7F9',
-        color: '#6CBACB'
+        backgroundColor: '#e7f1ff',
+        color: '#0472FD'
     }
     return (
         <Button style={btnStyle}>{props.title}</Button>

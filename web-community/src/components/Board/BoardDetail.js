@@ -11,12 +11,13 @@ import likeImage from "../../icon/like.svg"
 import WriteComment from "./WriteComment";
 import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
+import Loading from '../Loading';
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [isContentLatest, setIsContentLatest] = useState(false);
+    const [likes, setLikes] = useState(0);
     const [isCommentLatest, setIsCommentLatest] = useState(false);
 
     window.scrollTo(0, 0);
@@ -39,8 +40,7 @@ export default function BoardDetail({match}) {
         await axios.get(this_url)
             .then((res) => {
                 alert("게시글에 좋아요를 눌렀습니다");
-                setIsContentLatest(false);
-                console.log(res);
+                setLikes(res.data.data.likes);
 
             }).catch(error => {
                 alert("에러!");
@@ -66,10 +66,10 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setBoardDetailData(null);
                 setLoading(true);
+
                 const response = await axios.get(url);
-                // console.log(response.data);
+                setLikes(response.data.data.likes);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
-                setIsContentLatest(true);
             } catch (e) {
                 setError(e);
             }
@@ -77,16 +77,13 @@ export default function BoardDetail({match}) {
         };
 
         fetchNoticeData();
-    }, [isContentLatest]); // 여기 빈배열 안써주면 무한루프,,
+    }, []); // 여기 빈배열 안써주면 무한루프,,
 
-    if (loading) return <tr>
-        <td colSpan={5}>로딩중..</td>
-    </tr>;
+    if (loading) return <Loading/>;
     if (error) return <tr>
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;
     if (!boardDetailData) return null;
-
     return (
         <div className="BoardDetail">
             <Container>
@@ -114,7 +111,7 @@ export default function BoardDetail({match}) {
                         {/*좋아요*/}
                         <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCilck}
-                                     style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>
+                                     style={{cursor: "pointer"}}/> {likes}</span>
                         <p>{boardDetailData.content}​</p>
                     </div>
                     {AttachmentFile(boardDetailData.attachment_file)}

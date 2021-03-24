@@ -33,9 +33,8 @@ public class CommentApiController {
     }
 
     @GetMapping("{id}")
-    public Header<List<CommentApiResponse>> searchByPost(@PathVariable Long id, @PageableDefault(sort = "createdAt",
-            direction = Sort.Direction.ASC) Pageable pageable) {
-        return commentApiLogicService.searchByPost(id, pageable);
+    public Header<List<CommentApiResponse>> searchByPost(@PathVariable Long id) {
+        return commentApiLogicService.searchByPost(id);
     }
 
     @GetMapping("/likes/{id}")

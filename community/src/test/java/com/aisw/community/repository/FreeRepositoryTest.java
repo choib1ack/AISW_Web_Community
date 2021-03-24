@@ -21,7 +21,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
     private FreeRepository freeRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Test
     public void create() {
@@ -29,12 +29,12 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
         String writer = "writer";
         String content = "test Content";
         String attachmentFile = "test attachment";
-        BulletinStatus status = BulletinStatus.GENERAL;
+        BulletinStatus status = BulletinStatus.NOTICE;
         Long views = 0L;
         Long likes = 0L;
         Long level = 1L;
         Boolean isAnonymous = true;
-        Account userId = userRepository.getOne(1L);
+        Account userId = accountRepository.getOne(1L);
 
         Free free = Free.builder()
                 .title(title)

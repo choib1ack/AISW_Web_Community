@@ -1,5 +1,8 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -7,34 +10,40 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.BoardResponseDTO;
 import com.aisw.community.model.network.response.QnaApiResponse;
+import com.aisw.community.model.network.response.QnaWithCommentApiResponse;
 import com.aisw.community.repository.QnaRepository;
-import com.aisw.community.repository.UserRepository;
+import com.aisw.community.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiResponse, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardResponseDTO, QnaWithCommentApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private QnaRepository qnaRepository;
 
+    @Autowired
+    private CommentApiLogicService commentApiLogicService;
+
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-
+        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
-                .writer(userRepository.getOne(qnaApiRequest.getUserId()).getName())
+                .writer(account.getName())
                 .content(qnaApiRequest.getContent())
                 .attachmentFile(qnaApiRequest.getAttachmentFile())
                 .status(qnaApiRequest.getStatus())
@@ -45,7 +54,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .level(qnaApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .account(userRepository.getOne(qnaApiRequest.getUserId()))
+                .account(account)
                 .build();
 
         Qna newQna = baseRepository.save(qna);
@@ -113,7 +122,7 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
-                .userId(qna.getAccount().getId())
+                .accountId(qna.getAccount().getId())
                 .category(qna.getCategory())
                 .build();
 
@@ -121,46 +130,124 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
     }
 
     @Override
-    public Header<List<BoardApiResponse>> search(Pageable pageable) {
+    @Transactional
+    public Header<QnaWithCommentApiResponse> readWithComment(Long id) {
+        return baseRepository.findById(id)
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> baseRepository.save((Qna) qna))
+                .map(this::responseWithComment)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private QnaWithCommentApiResponse responseWithComment(Qna qna) {
+        QnaWithCommentApiResponse qnaWithCommentApiResponse = QnaWithCommentApiResponse.builder()
+                .id(qna.getId())
+                .title(qna.getTitle())
+                .writer(qna.getWriter())
+                .content(qna.getContent())
+                .attachmentFile(qna.getAttachmentFile())
+                .status(qna.getStatus())
+                .createdAt(qna.getCreatedAt())
+                .createdBy(qna.getCreatedBy())
+                .updatedAt(qna.getUpdatedAt())
+                .updatedBy(qna.getUpdatedBy())
+                .views(qna.getViews())
+                .level(qna.getLevel())
+                .likes(qna.getLikes())
+                .isAnonymous(qna.getIsAnonymous())
+                .subject(qna.getSubject())
+                .category(qna.getCategory())
+                .accountId(qna.getAccount().getId())
+                .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()).getData())
+                .build();
+
+        return qnaWithCommentApiResponse;
+    }
+
+    @Override
+    public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
+        Page<Qna> qnasByStatus = searchByStatus(pageable);
 
-        return getListHeader(qnas);
+        return getListHeader(qnas, qnasByStatus);
     }
 
     @Override
-    public Header<List<BoardApiResponse>> searchByWriter(String writer, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
+        Page<Qna> qnasByStatus = searchByStatus(pageable);
 
-        return getListHeader(qnas);
+        return getListHeader(qnas, qnasByStatus);
     }
 
     @Override
-    public Header<List<BoardApiResponse>> searchByTitle(String title, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
+        Page<Qna> qnasByStatus = searchByStatus(pageable);
 
-        return getListHeader(qnas);
+        return getListHeader(qnas, qnasByStatus);
     }
 
     @Override
-    public Header<List<BoardApiResponse>> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
+        Page<Qna> qnasByStatus = searchByStatus(pageable);
 
-        return getListHeader(qnas);
+        return getListHeader(qnas, qnasByStatus);
     }
 
-    private Header<List<BoardApiResponse>> getListHeader(Page<Qna> qnas) {
-        List<BoardApiResponse> boardApiResponseList = qnas.stream()
-                .map(qna -> BoardApiResponse.builder()
-                        .id(qna.getId())
-                        .title(qna.getTitle())
-                        .category(qna.getCategory())
-                        .createdAt(qna.getCreatedAt())
-                        .status(qna.getStatus())
-                        .views(qna.getViews())
-                        .writer(qna.getWriter())
-                        .build())
-                .collect(Collectors.toList());
+//    @Cacheable(value = "searchBySubject", key = "#subject")
+    public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) {
+        Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
+        Page<Qna> qnasByStatus = searchByStatus(pageable);
+
+        return getListHeader(qnas, qnasByStatus);
+    }
+
+    public Page<Qna> searchByStatus(Pageable pageable) {
+        Page<Qna> qnas = qnaRepository.findAllByStatusOrStatus(
+                BulletinStatus.URGENT, BulletinStatus.NOTICE, pageable);
+
+        return qnas;
+    }
+
+    private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, Page<Qna> qnasByStatus) {
+        BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
+                .boardApiResponseList(qnas.stream()
+                        .map(board -> BoardApiResponse.builder()
+                                .id(board.getId())
+                                .title(board.getTitle())
+                                .category(board.getCategory())
+                                .createdAt(board.getCreatedAt())
+                                .status(board.getStatus())
+                                .views(board.getViews())
+                                .writer(board.getWriter())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
+        List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
+        List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
+        qnasByStatus.stream().forEach(board -> {
+            BoardApiResponse boardApiResponse = BoardApiResponse.builder()
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .category(board.getCategory())
+                    .createdAt(board.getCreatedAt())
+                    .status(board.getStatus())
+                    .views(board.getViews())
+                    .writer(board.getWriter())
+                    .build();
+            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+                boardApiNoticeResponseList.add(boardApiResponse);
+            }
+            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+                boardApiUrgentResponseList.add(boardApiResponse);
+            }
+        });
+        boardResponseDTO.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
+        boardResponseDTO.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(qnas.getTotalElements())
@@ -169,9 +256,10 @@ public class QnaApiLogicService extends PostService<QnaApiRequest, BoardApiRespo
                 .currentPage(qnas.getNumber())
                 .build();
 
-        return Header.OK(boardApiResponseList, pagination);
+        return Header.OK(boardResponseDTO, pagination);
     }
 
+    @Override
     @Transactional
     public Header<QnaApiResponse> pressLikes(Long id) {
         return baseRepository.findById(id)

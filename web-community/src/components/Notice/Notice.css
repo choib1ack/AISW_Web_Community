@@ -2,7 +2,7 @@ table{
     font-size: 14px;
 }
 thead tr{
-    background-color: #EFF7F9;
+    background-color: #e7f1ff;
 }
 thead tr th{
     border: 0px !important;
@@ -34,7 +34,7 @@ tbody tr:hover{
     padding: 5px 10px;
     max-width: 150px;
     height: 30px;
-    border: 1px solid #6CBACB !important;
+    border: 1px solid #0472FD !important;
     outline: none !important;
 }
 .search-type{
@@ -42,7 +42,7 @@ tbody tr:hover{
     padding: 5px 10px;
     max-width: 130px;
     height: 30px;
-    border: 1px solid #6CBACB !important;
+    border: 1px solid #0472FD !important;
     outline: none !important;
 }
 .search-icon{

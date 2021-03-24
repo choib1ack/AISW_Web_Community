@@ -2,7 +2,7 @@ package com.aisw.community.controller;
 
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.service.PostService;
+import com.aisw.community.service.NoticePostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -10,65 +10,63 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Component
 @CrossOrigin("*")
-public abstract class PostController<Req, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
+public abstract class NoticePostController<Req, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
 
     @Autowired(required = false)
-    protected PostService<Req, ListRes, Res, Entity> postService;
+    protected NoticePostService<Req, ListRes, Res, Entity> noticePostService;
 
     @Override
     @PostMapping("")
     public Header<Res> create(@RequestBody Header<Req> request) {
-        return postService.create(request);
+        return noticePostService.create(request);
     }
 
     @Override
     @GetMapping("{id}")
     public Header<Res> read(@PathVariable Long id) {
-        return postService.read(id);
+        return noticePostService.read(id);
     }
 
     @Override
     @PutMapping("")
     public Header<Res> update(@RequestBody Header<Req> request) {
-        return postService.update(request);
+        return noticePostService.update(request);
     }
 
     @Override
     @DeleteMapping("{id}")
     public Header delete(@PathVariable Long id) {
-        return postService.delete(id);
+        return noticePostService.delete(id);
     }
 
     @GetMapping("")
-    public Header<List<ListRes>> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return postService.search(pageable);
+    public Header<ListRes> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return noticePostService.search(pageable);
     }
 
     @GetMapping("/search/writer")
-    public Header<List<ListRes>> searchByWriter(
+    public Header<ListRes> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return postService.searchByWriter(writer, pageable);
+        return noticePostService.searchByWriter(writer, pageable);
     }
 
     @GetMapping("/search/title")
-    public Header<List<ListRes>> searchByTitle(
+    public Header<ListRes> searchByTitle(
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return postService.searchByTitle(title, pageable);
+        return noticePostService.searchByTitle(title, pageable);
     }
 
     @GetMapping("/search/title&content")
-    public Header<List<ListRes>> searchByTitleOrContent(
+    public Header<ListRes> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return postService.searchByTitleOrContent(title, content, pageable);
+        return noticePostService.searchByTitleOrContent(title, content, pageable);
     }
 }

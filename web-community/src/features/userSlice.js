@@ -5,8 +5,8 @@ export const userSlice = createSlice({
     initialState: {
         userData: [],
         isLoading: false,
-        error: false,
-        isOnline: false
+        isOnline: false,
+        error: false
     },
     reducers: {
         startLoading: (state) => {
@@ -16,11 +16,11 @@ export const userSlice = createSlice({
             state.error = action.payload;
             state.isLoading = false;
         },
-        joinSuccess: (state, action) => {
-            state.userData = action.payload;
+        join: (state, action) => {
             state.isLoading = false;
         },
         login: (state, action) => {
+            state.userData = action.payload;
             state.isOnline = true;
         },
         logout: (state, action) => {
@@ -29,6 +29,6 @@ export const userSlice = createSlice({
     }
 })
 
-export const {startLoading, hasError, joinSuccess, login, logout} = userSlice.actions
+export const {startLoading, hasError, join, login, logout} = userSlice.actions
 
 export default userSlice.reducer

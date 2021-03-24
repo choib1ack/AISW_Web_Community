@@ -21,15 +21,14 @@ export default function Login() {
     const dispatch = useDispatch()
 
     async function getLoginUser(data) {
-        await axios.get("/user/login", {
+        await axios.get("/user/login?email=" + data.email + "&password=" + data.password, {
                 headers: {
                     "Content-Type": `application/json`
                 },
-                data,
+                // data,
             },
         ).then((res) => {
-            dispatch(login(res.data))   // 리덕스에 로그인한 유저 정보 저장
-            console.log("리덕스 데이터" + user.userData)
+            dispatch(login(res.data.data))   // 리덕스에 로그인한 유저 정보 저장
 
             history.push('/')   // 홈으로 가기
         }).catch(error => {
@@ -46,7 +45,7 @@ export default function Login() {
             email: "string",
             password: "string"
         }
-        getLoginUser(test);
+        getLoginUser(data);
     }
 
     return (

@@ -15,7 +15,7 @@ function SelectButton(props) {
         border: '0',
         outline: 'none',
         boxShadow: 'none',
-        backgroundColor: active ? '#6CBACB' : '#F4F4F4',
+        backgroundColor: active ? '#0472FD' : '#F4F4F4',
         color: active ? '#ffffff' : '#B8B8B8'
     }
     return (

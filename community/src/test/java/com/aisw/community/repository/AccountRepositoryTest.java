@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-public class UserRepositoryTest extends CommunityApplicationTests{
+public class AccountRepositoryTest extends CommunityApplicationTests{
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Test
     public void create(){
@@ -45,14 +45,14 @@ public class UserRepositoryTest extends CommunityApplicationTests{
                 .departmentName(departmentName)
                 .build();
 
-        Account newUser = userRepository.save(account);
+        Account newUser = accountRepository.save(account);
         Assertions.assertNotNull(newUser);
     }
 
     @Test
     @Transactional
     public void read(){
-        Optional<Account> user = userRepository.findById(1L);
+        Optional<Account> user = accountRepository.findById(1L);
 
 //        user.ifPresent(selectUser ->{
 ////            selectUser.getNoticeList().stream().forEach(notice -> {
@@ -80,12 +80,12 @@ public class UserRepositoryTest extends CommunityApplicationTests{
     @Test
     @Transactional
     public void update(){
-        Optional<Account> user = userRepository.findById(5L);
+        Optional<Account> user = accountRepository.findById(5L);
 
         user.ifPresent(selectUser ->{
             selectUser.setPassword("pppp1111");
 
-            Account newUser = userRepository.save(selectUser);
+            Account newUser = accountRepository.save(selectUser);
             System.out.println("user : " + newUser);
         });
 
@@ -93,15 +93,15 @@ public class UserRepositoryTest extends CommunityApplicationTests{
 
     @Test
     public void delete(){
-        Optional<Account> user = userRepository.findById(1L);
+        Optional<Account> user = accountRepository.findById(1L);
 
         Assertions.assertTrue(user.isPresent());
         user.ifPresent(selectUser ->{
-            userRepository.delete(selectUser);
+            accountRepository.delete(selectUser);
         });
 
 
-        Optional<Account> deleteUser = userRepository.findById(1L);
+        Optional<Account> deleteUser = accountRepository.findById(1L);
 
         if(deleteUser.isPresent()){
             System.out.println("Data Exists : " + deleteUser);
