@@ -26,6 +26,7 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
 
         // 2. user create
         Account account = Account.builder()
+                .username(accountApiRequest.getUsername())
                 .name(accountApiRequest.getName())
                 .email(accountApiRequest.getEmail())
                 .password(accountApiRequest.getPassword())
@@ -72,7 +73,9 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         return optional.map(user ->{
             // 3. data -> update
             // id
-            user.setName(accountApiRequest.getName())
+            user
+                    .setUsername(accountApiRequest.getUsername())
+                    .setName(accountApiRequest.getName())
                     .setEmail(accountApiRequest.getEmail())
                     .setPassword(accountApiRequest.getPassword())
                     .setPhoneNumber(accountApiRequest.getPhoneNumber())
@@ -107,6 +110,7 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
     private AccountApiResponse response(Account account){
         // user -> userApiResponse return
         AccountApiResponse accountApiResponse = AccountApiResponse.builder()
+                .username(account.getUsername())
                 .name(account.getName())
                 .email(account.getEmail())
                 .password(account.getPassword())
