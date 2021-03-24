@@ -15,6 +15,7 @@ export default function MakeBoardList(props) {
     let is_search = props.is_search;
     let search_type = props.search_type;
     let search_text = props.search_text;
+    let selected_subject_list = props.selected_subject_list;
 
     const url = (category, page) => {
         let url = "/board"
@@ -43,7 +44,14 @@ export default function MakeBoardList(props) {
                     break;
             }
         }
+        if(selected_subject_list.length!=0){
+            url += "/subject";
+        }
         url += "?page=" + (props.current_page);
+        if(selected_subject_list.length!=0){
+            console.log("서브젝트");
+            url += "&subject=" + selected_subject_list.join(",");
+        }
         console.log(url);
         return url;
     }
@@ -71,9 +79,7 @@ export default function MakeBoardList(props) {
     }
 
     const indexing = (index) =>{
-
         let current_max = pageInfo.total_elements-(pageInfo.current_page*10);
-        console.log("index="+index+", current_max="+current_max);
         return current_max-index.toString();
     }
 
@@ -95,7 +101,8 @@ export default function MakeBoardList(props) {
     const ToLink = (url) => {
         history.push(url);
     }
-
+    // console.log("하하하")
+    // console.log(selected_subject_list)
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
@@ -118,7 +125,7 @@ export default function MakeBoardList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.search_text, props.current_page]);
+    }, [props.category, props.search_text, props.current_page, props.selected_subject_list]);
 
     if (loading) return <Loading/>;
     if (error) return <tr>
