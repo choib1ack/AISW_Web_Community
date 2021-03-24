@@ -20,6 +20,8 @@ function BoardList({match}) {
     // const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(0);
+    const [selectedSubject, setSelectedSubject] = useState([]);
+
 
     window.scrollTo(0, 0);
 
@@ -43,6 +45,8 @@ function BoardList({match}) {
         setIsSearch(false);
         // 페이징 초기화
         setCurrentPage(0);
+        // 과목별게시판 카테고리 초기화
+        setSelectedSubject([]);
     }
 
     const searchContents = () => {
@@ -58,8 +62,14 @@ function BoardList({match}) {
         }
     }
 
-    return (
+    const handleSelectSubject = (subject_name) => {
+        setSelectedSubject([...selectedSubject, subject_name]);
+    }
+    const handleRemoveSubject = (subject_name) => {
+        setSelectedSubject(selectedSubject.filter(subject => subject != subject_name));
+    }
 
+    return (
         <div className="Board">
             <Container>
                 <Title text='게시판' type='1'/>
@@ -96,8 +106,12 @@ function BoardList({match}) {
 
                 <Row style={{marginBottom: '1rem'}}>
                     <Col lg={12} md={12} sm={12}>
-                        {category==2?<SubjectList active={true}/>:null}
+                        {category==2? <SubjectList
+                            handleSelectSubject={handleSelectSubject}
+                            handleRemoveSubject={handleRemoveSubject}
+                        />:null}
                     </Col>
+
                 </Row>
                 <Table>
                     <thead>
@@ -120,7 +134,9 @@ function BoardList({match}) {
                         setNowSearchText={setNowSearchText}
                         setTotalPage={setTotalPage}
                         current_page={currentPage}
+                        selected_subject_list={selectedSubject}
                     />
+
                     </tbody>
                 </Table>
 

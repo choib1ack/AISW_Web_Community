@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Button from "react-bootstrap/Button";
 
-export default function SubjectList() {
+export default function SubjectList(props) {
     const subject_list = [
         "컴퓨터 프로그래밍", "웹 프로그래밍", "소프트웨어수학", "소프트웨어생태계", "소프트웨어 구현패턴",
         "로봇공학", "자료구조", "객체지향 프로그래밍", "운영체제", "확률통계", "네트워크", "알고리즘",
@@ -10,13 +10,14 @@ export default function SubjectList() {
         "VR과 AR", "멀티미디어 및 실습", "HCI", "클라우드컴퓨팅", "컴퓨터비전"
     ]
 
-
     let subject_btn_list =[];
     for (let i = 0; i <subject_list.length; i++) {
         subject_btn_list.push(
             <SubjectButton
                 key={i}
                 sub_name={subject_list[i]}
+                addSelectedSubject={props.handleSelectSubject}
+                removeSelectedSubject={props.handleRemoveSubject}
             />,
         );
     }
@@ -33,6 +34,7 @@ function SubjectButton(props){
 
     const changeState = () => {
         setActive(!active);
+        active?props.removeSelectedSubject(props.sub_name):props.addSelectedSubject(props.sub_name);
     }
 
     let btnStyle = {
