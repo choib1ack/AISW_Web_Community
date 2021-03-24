@@ -47,5 +47,5 @@ public class FreeApiResponse {
 
     private String updatedBy;
 
-    private Long userId;
+    private Long accountId;
 }

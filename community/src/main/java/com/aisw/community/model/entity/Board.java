@@ -26,7 +26,7 @@ public class Board extends Bulletin {
 
     private SecondCategory category;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
     private List<Comment> commentList;
 
     public Board(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,

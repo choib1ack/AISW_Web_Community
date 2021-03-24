@@ -1,28 +1,31 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.CommentNotFoundException;
+import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Comment;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.CommentApiRequest;
 import com.aisw.community.model.network.response.CommentApiResponse;
 import com.aisw.community.repository.BoardRepository;
 import com.aisw.community.repository.CommentRepository;
-import com.aisw.community.repository.UserRepository;
+import com.aisw.community.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class CommentApiLogicService {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private BoardRepository<Board> boardRepository;
@@ -30,29 +33,50 @@ public class CommentApiLogicService {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Transactional
     public Header<CommentApiResponse> create(Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
-
+        Account account = accountRepository.findById(commentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
+        Comment superComment = commentApiRequest.getSuperCommentId() != null ?
+                commentRepository.findById(commentApiRequest.getSuperCommentId())
+                        .orElseThrow(CommentNotFoundException::new) : null;
         Comment comment = Comment.builder()
-                .writer(userRepository.getOne(commentApiRequest.getUserId()).getName())
+                .writer(account.getName())
                 .content(commentApiRequest.getContent())
                 .likes(0L)
                 .isAnonymous(commentApiRequest.getIsAnonymous())
+                .isDeleted(false)
+                .board(board)
+                .account(account)
+                .superComment(superComment)
                 .board(boardRepository.getOne(commentApiRequest.getBoardId()))
-                .account(userRepository.getOne(commentApiRequest.getUserId()))
+                .account(accountRepository.getOne(commentApiRequest.getAccountId()))
                 .build();
 
         Comment newComment = commentRepository.save(comment);
         return Header.OK(response(newComment));
     }
 
+    @Transactional
     public Header delete(Long id) {
-        return commentRepository.findById(id)
+        return commentRepository.findCommentByIdWithSuperComment(id)
                 .map(comment -> {
-                    commentRepository.delete(comment);
+                    if(comment.getSubComment().size() != 0) {
+                        comment.setIsDeleted(true);
+                    } else {
+                        commentRepository.delete(getDeletableAncestorComment(comment));
+                    }
                     return Header.OK();
                 })
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private Comment getDeletableAncestorComment(Comment comment) {
+        Comment superComment = comment.getSuperComment();
+        if(superComment != null && superComment.getSubComment().size() == 1 && superComment.getIsDeleted() == true)
+            return getDeletableAncestorComment(superComment);
+        return comment;
     }
 
     private CommentApiResponse response(Comment comment) {
@@ -64,27 +88,24 @@ public class CommentApiLogicService {
                 .likes(comment.getLikes())
                 .isAnonymous(comment.getIsAnonymous())
                 .boardId(comment.getBoard().getId())
-                .userId(comment.getAccount().getId())
+                .accountId(comment.getAccount().getId())
                 .build();
 
         return freeCommentApiResponse;
     }
 
-    public Header<List<CommentApiResponse>> searchByPost(Long id, Pageable pageable) {
-        Page<Comment> freeComments = commentRepository.findAllByBoardId(id, pageable);
+    public Header<List<CommentApiResponse>> searchByPost(Long id) {
+        List<Comment> comments = commentRepository.findCommentByBoardId(id);
 
-        List<CommentApiResponse> freeCommentApiResponseList = freeComments.stream()
-                .map(this::response)
-                .collect(Collectors.toList());
-
-        Pagination pagination = Pagination.builder()
-                .totalElements(freeComments.getTotalElements())
-                .totalPages(freeComments.getTotalPages())
-                .currentElements(freeComments.getNumberOfElements())
-                .currentPage(freeComments.getNumber())
-                .build();
-
-        return Header.OK(freeCommentApiResponseList, pagination);
+        List<CommentApiResponse> commentApiResponseList = new ArrayList<>();
+        Map<Long, CommentApiResponse> map = new HashMap<>();
+        comments.stream().forEach(comment -> {
+            CommentApiResponse commentApiResponse = CommentApiResponse.convertCommentToDto(comment);
+            map.put(commentApiResponse.getId(), commentApiResponse);
+            if(comment.getSuperComment() != null) map.get(comment.getSuperComment().getId()).getSubComment().add(commentApiResponse);
+            else commentApiResponseList.add(commentApiResponse);
+        });
+        return Header.OK(commentApiResponseList);
     }
 
     @Transactional

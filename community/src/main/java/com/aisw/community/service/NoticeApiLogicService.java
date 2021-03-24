@@ -4,10 +4,8 @@ import com.aisw.community.model.entity.Notice;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.BoardResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.model.network.response.NoticeResponse;
+import com.aisw.community.model.network.response.NoticeResponseDTO;
 import com.aisw.community.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,12 +17,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notice> {
+public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, Notice> {
 
     @Autowired
     private NoticeRepository noticeRepository;
 
-    public Header<NoticeResponse> searchList(Pageable pageable) {
+    public Header<NoticeResponseDTO> searchList(Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAll(pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
 
@@ -32,7 +30,7 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notic
     }
 
     @Override
-    public Header<NoticeResponse> searchByWriter(String writer, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByWriterContaining(writer, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
 
@@ -40,7 +38,7 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notic
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitle(String title, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContaining(title, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
 
@@ -48,7 +46,7 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notic
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
 
@@ -62,9 +60,9 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notic
         return notices;
     }
 
-    private Header<NoticeResponse> getListHeader
+    private Header<NoticeResponseDTO> getListHeader
             (Page<Notice> notices, Page<Notice> noticesByStatus) {
-        NoticeResponse noticeResponse = NoticeResponse.builder()
+        NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(notices.stream()
                         .map(notice -> NoticeApiResponse.builder()
                                 .id(notice.getId())
@@ -96,8 +94,8 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notic
                 noticeApiUrgentResponseList.add(noticeApiResponse);
             }
         });
-        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
-        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
+        noticeResponseDTO.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponseDTO.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(notices.getTotalElements())
@@ -106,7 +104,7 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponse, Notic
                 .currentPage(notices.getNumber())
                 .build();
 
-        return Header.OK(noticeResponse, pagination);
+        return Header.OK(noticeResponseDTO, pagination);
     }
 
 }

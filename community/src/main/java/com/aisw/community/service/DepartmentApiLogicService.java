@@ -1,5 +1,7 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Department;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -9,9 +11,9 @@ import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.model.network.response.NoticeResponse;
+import com.aisw.community.model.network.response.NoticeResponseDTO;
+import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.DepartmentRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +25,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentApiLogicService extends PostService<DepartmentApiRequest, NoticeResponse, DepartmentApiResponse, Department> {
+public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRequest, NoticeResponseDTO, DepartmentApiResponse, Department> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private DepartmentRepository departmentRepository;
@@ -34,10 +36,10 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
-
+        Account account = accountRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
-                .writer(userRepository.getOne(departmentApiRequest.getUserId()).getName())
+                .writer(account.getName())
                 .content(departmentApiRequest.getContent())
                 .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
@@ -45,7 +47,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .level(departmentApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.DEPARTMENT)
-                .account(userRepository.getOne(departmentApiRequest.getUserId()))
+                .account(account)
                 .build();
 
         Department newDepartment = baseRepository.save(department);
@@ -108,14 +110,14 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .createdBy(department.getCreatedBy())
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
-                .userId(department.getAccount().getId())
+                .accountId(department.getAccount().getId())
                 .build();
 
         return departmentApiResponse;
     }
 
     @Override
-    public Header<NoticeResponse> search(Pageable pageable) {
+    public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
 
@@ -123,7 +125,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     }
 
     @Override
-    public Header<NoticeResponse> searchByWriter(String writer, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByWriterContaining(writer, pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
 
@@ -131,7 +133,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitle(String title, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByTitleContaining(title, pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
 
@@ -139,7 +141,7 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Department> departments = departmentRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
@@ -154,9 +156,9 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
         return departments;
     }
 
-    private Header<NoticeResponse> getListHeader
+    private Header<NoticeResponseDTO> getListHeader
             (Page<Department> departments, Page<Department> departmentsByStatus) {
-        NoticeResponse noticeResponse = NoticeResponse.builder()
+        NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(departments.stream()
                         .map(notice -> NoticeApiResponse.builder()
                                 .id(notice.getId())
@@ -188,8 +190,8 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 noticeApiUrgentResponseList.add(noticeApiResponse);
             }
         });
-        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
-        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
+        noticeResponseDTO.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponseDTO.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(departments.getTotalElements())
@@ -198,6 +200,6 @@ public class DepartmentApiLogicService extends PostService<DepartmentApiRequest,
                 .currentPage(departments.getNumber())
                 .build();
 
-        return Header.OK(noticeResponse, pagination);
+        return Header.OK(noticeResponseDTO, pagination);
     }
 }

@@ -1,5 +1,7 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -8,10 +10,10 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
-import com.aisw.community.model.network.response.NoticeResponse;
+import com.aisw.community.model.network.response.NoticeResponseDTO;
 import com.aisw.community.model.network.response.UniversityApiResponse;
+import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.UniversityRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,10 +25,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UniversityApiLogicService extends PostService<UniversityApiRequest, NoticeResponse, UniversityApiResponse, University> {
+public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, NoticeResponseDTO, UniversityApiResponse, University> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private UniversityRepository universityRepository;
@@ -34,10 +36,10 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
-
+        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
-                .writer(userRepository.getOne(universityApiRequest.getUserId()).getName())
+                .writer(account.getName())
                 .content(universityApiRequest.getContent())
                 .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
@@ -46,7 +48,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .account(userRepository.getOne(universityApiRequest.getUserId()))
+                .account(account)
                 .build();
 
         University newUniversity = baseRepository.save(university);
@@ -111,14 +113,14 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .userId(university.getAccount().getId())
+                .accountId(university.getAccount().getId())
                 .build();
 
         return universityApiResponse;
     }
 
     @Override
-    public Header<NoticeResponse> search(Pageable pageable) {
+    public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<University> universities = baseRepository.findAll(pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
 
@@ -126,7 +128,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     }
 
     @Override
-    public Header<NoticeResponse> searchByWriter(String writer, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByWriterContaining(writer, pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
 
@@ -134,7 +136,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitle(String title, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByTitleContaining(title, pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
 
@@ -142,7 +144,7 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
     }
 
     @Override
-    public Header<NoticeResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<University> universities = universityRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
@@ -157,9 +159,9 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
         return universities;
     }
 
-    private Header<NoticeResponse> getListHeader
+    private Header<NoticeResponseDTO> getListHeader
             (Page<University> universities, Page<University> universitiesByStatus) {
-        NoticeResponse noticeResponse = NoticeResponse.builder()
+        NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(universities.stream()
                         .map(notice -> NoticeApiResponse.builder()
                                 .id(notice.getId())
@@ -191,8 +193,8 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 noticeApiUrgentResponseList.add(noticeApiResponse);
             }
         });
-        noticeResponse.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
-        noticeResponse.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
+        noticeResponseDTO.setNoticeApiNoticeResponseList(noticeApiNoticeResponseList);
+        noticeResponseDTO.setNoticeApiUrgentResponseList(noticeApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(universities.getTotalElements())
@@ -201,6 +203,6 @@ public class UniversityApiLogicService extends PostService<UniversityApiRequest,
                 .currentPage(universities.getNumber())
                 .build();
 
-        return Header.OK(noticeResponse, pagination);
+        return Header.OK(noticeResponseDTO, pagination);
     }
 }

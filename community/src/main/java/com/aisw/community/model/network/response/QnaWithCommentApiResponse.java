@@ -2,18 +2,17 @@ package com.aisw.community.model.network.response;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.SecondCategory;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DepartmentApiResponse {
+public class QnaWithCommentApiResponse {
 
     private Long id;
 
@@ -25,13 +24,19 @@ public class DepartmentApiResponse {
 
     private String attachmentFile;
 
-    // 긴급0, 상단고정1, 일반2
     private BulletinStatus status;
 
     private Long views;
 
+    private Long likes;
+
+    // 익명 true, 비익명 false
+    private Boolean isAnonymous;
+
     // 학교 공지 0
     private Long level;
+
+    private String subject;
 
     private SecondCategory category;
 
@@ -44,4 +49,6 @@ public class DepartmentApiResponse {
     private String updatedBy;
 
     private Long accountId;
+
+    private List<CommentApiResponse> commentApiResponseList;
 }

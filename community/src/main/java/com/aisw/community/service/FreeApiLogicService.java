@@ -1,5 +1,7 @@
 package com.aisw.community.service;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -8,10 +10,11 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
 import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.BoardResponse;
+import com.aisw.community.model.network.response.BoardResponseDTO;
 import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.FreeWithCommentApiResponse;
+import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.FreeRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,21 +26,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends PostService<FreeApiRequest, BoardResponse, FreeApiResponse, Free> {
+public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardResponseDTO, FreeWithCommentApiResponse, FreeApiResponse, Free> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private FreeRepository freeRepository;
 
+    @Autowired
+    private CommentApiLogicService commentApiLogicService;
+
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-
+        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
-                .writer(userRepository.getOne(freeApiRequest.getUserId()).getName())
+                .writer(account.getName())
                 .content(freeApiRequest.getContent())
                 .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
@@ -47,7 +53,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
                 .level(freeApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .account(userRepository.getOne(freeApiRequest.getUserId()))
+                .account(account)
                 .build();
 
         Free newFree = baseRepository.save(free);
@@ -113,14 +119,49 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .userId(free.getAccount().getId())
+                .accountId(free.getAccount().getId())
                 .build();
 
         return freeApiResponse;
     }
 
     @Override
-    public Header<BoardResponse> search(Pageable pageable) {
+    @Transactional
+    public Header<FreeWithCommentApiResponse> readWithComment(Long id) {
+        return baseRepository.findById(id)
+                .map(free -> free.setViews(free.getViews() + 1))
+                .map(free -> baseRepository.save((Free)free))
+                .map(this::responseWithComment)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private FreeWithCommentApiResponse responseWithComment(Free free) {
+        FreeWithCommentApiResponse freeWithCommentApiResponse = FreeWithCommentApiResponse.builder()
+                .id(free.getId())
+                .title(free.getTitle())
+                .writer(free.getWriter())
+                .content(free.getContent())
+                .attachmentFile(free.getAttachmentFile())
+                .status(free.getStatus())
+                .createdAt(free.getCreatedAt())
+                .createdBy(free.getCreatedBy())
+                .updatedAt(free.getUpdatedAt())
+                .updatedBy(free.getUpdatedBy())
+                .views(free.getViews())
+                .level(free.getLevel())
+                .likes(free.getLikes())
+                .isAnonymous(free.getIsAnonymous())
+                .category(free.getCategory())
+                .accountId(free.getAccount().getId())
+                .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()).getData())
+                .build();
+
+        return freeWithCommentApiResponse;
+    }
+
+    @Override
+    public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
@@ -128,7 +169,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
     }
 
     @Override
-    public Header<BoardResponse> searchByWriter(String writer, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
@@ -136,7 +177,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
     }
 
     @Override
-    public Header<BoardResponse> searchByTitle(String title, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
@@ -144,7 +185,7 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
     }
 
     @Override
-    public Header<BoardResponse> searchByTitleOrContent(String title, String content, Pageable pageable) {
+    public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -159,9 +200,9 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
         return frees;
     }
 
-    private Header<BoardResponse> getListHeader
+    private Header<BoardResponseDTO> getListHeader
             (Page<Free> frees, Page<Free> freesByStatus) {
-        BoardResponse boardResponse = BoardResponse.builder()
+        BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(frees.stream()
                         .map(board -> BoardApiResponse.builder()
                                 .id(board.getId())
@@ -193,8 +234,8 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
                 boardApiUrgentResponseList.add(boardApiResponse);
             }
         });
-        boardResponse.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
-        boardResponse.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
+        boardResponseDTO.setBoardApiNoticeResponseList(boardApiNoticeResponseList);
+        boardResponseDTO.setBoardApiUrgentResponseList(boardApiUrgentResponseList);
 
         Pagination pagination = Pagination.builder()
                 .totalElements(frees.getTotalElements())
@@ -203,9 +244,10 @@ public class FreeApiLogicService extends PostService<FreeApiRequest, BoardRespon
                 .currentPage(frees.getNumber())
                 .build();
 
-        return Header.OK(boardResponse, pagination);
+        return Header.OK(boardResponseDTO, pagination);
     }
 
+    @Override
     @Transactional
     public Header<FreeApiResponse> pressLikes(Long id) {
         return baseRepository.findById(id)

@@ -19,14 +19,14 @@ class CommentRepositoryTest extends CommunityApplicationTests  {
     private BoardRepository<Board> boardRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Test
     public void create() {
         String writer = "writer";
         String content = "test Content";
         Boolean isAnonymous = true;
-        Account userId = userRepository.getOne(1L);
+        Account userId = accountRepository.getOne(1L);
         Board boardId = boardRepository.getOne(1L);
 
         Comment comment = Comment.builder()
