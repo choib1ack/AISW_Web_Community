@@ -22,7 +22,7 @@ import java.util.List;
 @Builder
 @Accessors(chain = true)
 @ToString(exclude = {"noticeList", "boardList", "commentList"})
-public class User {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,12 +75,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole roles;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
     private List<Notice> noticeList;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
     private List<Board> boardList;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
     private List<Comment> commentList;
 }

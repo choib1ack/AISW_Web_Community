@@ -1,8 +1,8 @@
 package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Department;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -12,8 +12,8 @@ import com.aisw.community.model.network.request.DepartmentApiRequest;
 import com.aisw.community.model.network.response.DepartmentApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.NoticeResponseDTO;
+import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.DepartmentRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRequest, NoticeResponseDTO, DepartmentApiResponse, Department> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private DepartmentRepository departmentRepository;
@@ -36,10 +36,10 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
-        User user = userRepository.findById(departmentApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
-                .writer(user.getName())
+                .writer(account.getName())
                 .content(departmentApiRequest.getContent())
                 .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
@@ -47,7 +47,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .level(departmentApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.DEPARTMENT)
-                .user(user)
+                .account(account)
                 .build();
 
         Department newDepartment = baseRepository.save(department);
@@ -110,7 +110,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .createdBy(department.getCreatedBy())
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
-                .userId(department.getUser().getId())
+                .accountId(department.getAccount().getId())
                 .build();
 
         return departmentApiResponse;

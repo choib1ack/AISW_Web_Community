@@ -1,7 +1,7 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.User;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.enumclass.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ public class UserRepositoryTest extends CommunityApplicationTests{
         CollegeName collegeName = CollegeName.IT_CONVERGENCE;
         DepartmentName departmentName = DepartmentName.SOFTWARE;
 
-        User user = User.builder()
+        Account account = Account.builder()
                 .name(name)
                 .email(email)
                 .password(password)
@@ -45,14 +45,14 @@ public class UserRepositoryTest extends CommunityApplicationTests{
                 .departmentName(departmentName)
                 .build();
 
-        User newUser = userRepository.save(user);
+        Account newUser = userRepository.save(account);
         Assertions.assertNotNull(newUser);
     }
 
     @Test
     @Transactional
     public void read(){
-        Optional<User> user = userRepository.findById(1L);
+        Optional<Account> user = userRepository.findById(1L);
 
 //        user.ifPresent(selectUser ->{
 ////            selectUser.getNoticeList().stream().forEach(notice -> {
@@ -80,12 +80,12 @@ public class UserRepositoryTest extends CommunityApplicationTests{
     @Test
     @Transactional
     public void update(){
-        Optional<User> user = userRepository.findById(5L);
+        Optional<Account> user = userRepository.findById(5L);
 
         user.ifPresent(selectUser ->{
             selectUser.setPassword("pppp1111");
 
-            User newUser = userRepository.save(selectUser);
+            Account newUser = userRepository.save(selectUser);
             System.out.println("user : " + newUser);
         });
 
@@ -93,7 +93,7 @@ public class UserRepositoryTest extends CommunityApplicationTests{
 
     @Test
     public void delete(){
-        Optional<User> user = userRepository.findById(1L);
+        Optional<Account> user = userRepository.findById(1L);
 
         Assertions.assertTrue(user.isPresent());
         user.ifPresent(selectUser ->{
@@ -101,7 +101,7 @@ public class UserRepositoryTest extends CommunityApplicationTests{
         });
 
 
-        Optional<User> deleteUser = userRepository.findById(1L);
+        Optional<Account> deleteUser = userRepository.findById(1L);
 
         if(deleteUser.isPresent()){
             System.out.println("Data Exists : " + deleteUser);

@@ -6,13 +6,14 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Title from "../Title";
-import {useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import axios from "axios";
 import FinishModal from "../FinishModal";
 import {useDispatch, useSelector} from "react-redux";
+import TextEditor from "../TextEditor";
 
 function NewBoard() {
-    const {register, handleSubmit, watch, errors, setValue} = useForm();
+    const {register, handleSubmit, control} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
 
     // redux toolkit
@@ -47,9 +48,9 @@ function NewBoard() {
                 content: data.content,
                 is_anonymous: true,
                 level: 0,
-                status: "URGENT",
+                status: "GENERAL",
                 title: data.title,
-                user_id: 1
+                user_id: user.id
             }
         } else if (data.board_type === 'qna') {
             test = {
@@ -57,10 +58,10 @@ function NewBoard() {
                 content: data.content,
                 is_anonymous: true,
                 level: 0,
-                status: "URGENT",
+                status: "GENERAL",
                 subject: data.subject,
                 title: data.title,
-                user_id: 1
+                user_id: user.id
             }
         }
 
@@ -105,9 +106,15 @@ function NewBoard() {
                     <Row>
                         <Col>
                             <Form.Group controlId="content">
-                                <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."
-                                              name="content" ref={register}/>
-                                <Form.Control className="p-3" as="textarea" rows={3} placeholder="#태그입력"/>
+                                <Controller
+                                    as={<TextEditor/>}
+                                    name="content"
+                                    control={control}
+                                />
+
+                                {/*<Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
+                                {/*              name="content" ref={register}/>*/}
+                                {/*<Form.Control className="p-3" as="textarea" rows={3} placeholder="#태그입력"/>*/}
                             </Form.Group>
                         </Col>
                     </Row>

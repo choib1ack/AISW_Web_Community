@@ -1,9 +1,9 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.User;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.UserApiRequest;
-import com.aisw.community.model.network.response.UserApiResponse;
+import com.aisw.community.model.network.request.AccountApiRequest;
+import com.aisw.community.model.network.response.AccountApiResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,43 +13,43 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResponse, User> {
+public class UserApiLogicService extends BaseService<AccountApiRequest, AccountApiResponse, Account> {
 
     // 1. request data
     // 2. user create
     // 3. created data -> UserApiResponse return
     @Override
-    public Header<UserApiResponse> create(Header<UserApiRequest> request) {
+    public Header<AccountApiResponse> create(Header<AccountApiRequest> request) {
 
         // 1. request data
-        UserApiRequest userApiRequest = request.getData();
+        AccountApiRequest accountApiRequest = request.getData();
 
         // 2. user create
-        User user = User.builder()
-                .name(userApiRequest.getName())
-                .email(userApiRequest.getEmail())
-                .password(userApiRequest.getPassword())
-                .phoneNumber(userApiRequest.getPhoneNumber())
-                .grade(userApiRequest.getGrade())
-                .studentId(userApiRequest.getStudentId())
-                .level(userApiRequest.getLevel())
-                .job(userApiRequest.getJob())
-                .gender(userApiRequest.getGender())
-                .university(userApiRequest.getUniversity())
-                .collegeName(userApiRequest.getCollegeName())
-                .departmentName(userApiRequest.getDepartmentName())
+        Account account = Account.builder()
+                .name(accountApiRequest.getName())
+                .email(accountApiRequest.getEmail())
+                .password(accountApiRequest.getPassword())
+                .phoneNumber(accountApiRequest.getPhoneNumber())
+                .grade(accountApiRequest.getGrade())
+                .studentId(accountApiRequest.getStudentId())
+                .level(accountApiRequest.getLevel())
+                .job(accountApiRequest.getJob())
+                .gender(accountApiRequest.getGender())
+                .university(accountApiRequest.getUniversity())
+                .collegeName(accountApiRequest.getCollegeName())
+                .departmentName(accountApiRequest.getDepartmentName())
                 .build();
 
-        User newUser = baseRepository.save(user);
+        Account newAccount = baseRepository.save(account);
 
         // 3. created user -> userApiResponse return : public Header<UserApiResponse> response(User user){}
-        return Header.OK(response(newUser));
+        return Header.OK(response(newAccount));
     }
 
     @Override
-    public Header<UserApiResponse> read(Long id) {
+    public Header<AccountApiResponse> read(Long id) {
         // id -> repository getOne, getById
-        Optional<User> optional = baseRepository.findById(id);
+        Optional<Account> optional = baseRepository.findById(id);
 
         // user -> userApiResponse return
         return optional
@@ -60,29 +60,30 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
                 );
     }
 
+
     @Override
-    public Header<UserApiResponse> update(Header<UserApiRequest> request) {
+    public Header<AccountApiResponse> update(Header<AccountApiRequest> request) {
         // 1. data
-        UserApiRequest userApiRequest = request.getData();
+        AccountApiRequest accountApiRequest = request.getData();
 
         // 2. id -> user data find
-        Optional<User> optional = baseRepository.findById(userApiRequest.getId());
+        Optional<Account> optional = baseRepository.findById(accountApiRequest.getId());
 
         return optional.map(user ->{
             // 3. data -> update
             // id
-            user.setName(userApiRequest.getName())
-                    .setEmail(userApiRequest.getEmail())
-                    .setPassword(userApiRequest.getPassword())
-                    .setPhoneNumber(userApiRequest.getPhoneNumber())
-                    .setGrade(userApiRequest.getGrade())
-                    .setStudentId(userApiRequest.getStudentId())
-                    .setLevel(userApiRequest.getLevel())
-                    .setJob(userApiRequest.getJob())
-                    .setGender(userApiRequest.getGender())
-                    .setUniversity(userApiRequest.getUniversity())
-                    .setCollegeName(userApiRequest.getCollegeName())
-                    .setDepartmentName(userApiRequest.getDepartmentName());
+            user.setName(accountApiRequest.getName())
+                    .setEmail(accountApiRequest.getEmail())
+                    .setPassword(accountApiRequest.getPassword())
+                    .setPhoneNumber(accountApiRequest.getPhoneNumber())
+                    .setGrade(accountApiRequest.getGrade())
+                    .setStudentId(accountApiRequest.getStudentId())
+                    .setLevel(accountApiRequest.getLevel())
+                    .setJob(accountApiRequest.getJob())
+                    .setGender(accountApiRequest.getGender())
+                    .setUniversity(accountApiRequest.getUniversity())
+                    .setCollegeName(accountApiRequest.getCollegeName())
+                    .setDepartmentName(accountApiRequest.getDepartmentName());
             return user;
         }).map(user -> baseRepository.save(user))
                 .map(user -> response(user))
@@ -93,7 +94,7 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
     @Override
     public Header delete(Long id) {
         // 1. id -> repository -> user
-        Optional<User> optional = baseRepository.findById(id);
+        Optional<Account> optional = baseRepository.findById(id);
 
         // 2. repository -> delete
         // 3. response return
@@ -103,39 +104,39 @@ public class UserApiLogicService extends BaseService<UserApiRequest, UserApiResp
         }).orElseGet(() -> Header.ERROR("No Data"));
     }
 
-    private UserApiResponse response(User user){
+    private AccountApiResponse response(Account account){
         // user -> userApiResponse return
-        UserApiResponse userApiResponse = UserApiResponse.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .phoneNumber(user.getPhoneNumber())
-                .grade(user.getGrade())
-                .studentId(user.getStudentId())
-                .createdAt(user.getCreatedAt())
-                .createdBy(user.getCreatedBy())
-                .updatedAt(user.getUpdatedAt())
-                .updatedBy(user.getUpdatedBy())
-                .level(user.getLevel())
-                .job(user.getJob())
-                .gender(user.getGender())
-                .university(user.getUniversity())
-                .collegeName(user.getCollegeName())
-                .departmentName(user.getDepartmentName())
+        AccountApiResponse accountApiResponse = AccountApiResponse.builder()
+                .name(account.getName())
+                .email(account.getEmail())
+                .password(account.getPassword())
+                .phoneNumber(account.getPhoneNumber())
+                .grade(account.getGrade())
+                .studentId(account.getStudentId())
+                .createdAt(account.getCreatedAt())
+                .createdBy(account.getCreatedBy())
+                .updatedAt(account.getUpdatedAt())
+                .updatedBy(account.getUpdatedBy())
+                .level(account.getLevel())
+                .job(account.getJob())
+                .gender(account.getGender())
+                .university(account.getUniversity())
+                .collegeName(account.getCollegeName())
+                .departmentName(account.getDepartmentName())
                 .build();
 
         // Header + data
-        return userApiResponse;
+        return accountApiResponse;
     }
 
     @Override
-    public Header<List<UserApiResponse>> search(Pageable pageable) {
-        Page<User> users = baseRepository.findAll(pageable);
+    public Header<List<AccountApiResponse>> search(Pageable pageable) {
+        Page<Account> users = baseRepository.findAll(pageable);
 
-        List<UserApiResponse> userApiResponseList = users.stream()
+        List<AccountApiResponse> accountApiResponseList = users.stream()
                 .map(this::response)
                 .collect(Collectors.toList());
 
-        return Header.OK(userApiResponseList);
+        return Header.OK(accountApiResponseList);
     }
 }

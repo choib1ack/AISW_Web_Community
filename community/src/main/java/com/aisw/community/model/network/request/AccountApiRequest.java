@@ -1,6 +1,5 @@
 package com.aisw.community.model.network.request;
 
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserApiRequest {
+public class AccountApiRequest {
 
     private Long id;
 

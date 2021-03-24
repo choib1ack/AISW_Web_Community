@@ -1,8 +1,8 @@
 package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Council;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -12,8 +12,8 @@ import com.aisw.community.model.network.request.CouncilApiRequest;
 import com.aisw.community.model.network.response.CouncilApiResponse;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.NoticeResponseDTO;
+import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.CouncilRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest, NoticeResponseDTO, CouncilApiResponse, Council> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private CouncilRepository councilRepository;
@@ -36,10 +36,10 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-        User user = userRepository.findById(councilApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(councilApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
-                .writer(user.getName())
+                .writer(account.getName())
                 .content(councilApiRequest.getContent())
                 .attachmentFile(councilApiRequest.getAttachmentFile())
                 .status(councilApiRequest.getStatus())
@@ -47,7 +47,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .level(councilApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
-                .user(user)
+                .account(account)
                 .build();
 
         Council newCouncil = baseRepository.save(council);
@@ -110,7 +110,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .createdBy(council.getCreatedBy())
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
-                .userId(council.getUser().getId())
+                .accountId(council.getAccount().getId())
                 .build();
 
         return councilApiResponse;

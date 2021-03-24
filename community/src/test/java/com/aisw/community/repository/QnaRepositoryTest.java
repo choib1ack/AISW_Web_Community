@@ -1,8 +1,8 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Qna;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -34,7 +34,7 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
         Long level = 1L;
         Boolean isAnonymous = true;
         String subject = "dd";
-        User userId = userRepository.getOne(1L);
+        Account userId = userRepository.getOne(1L);
 
         Qna qna = Qna.builder()
                 .title(title)
@@ -49,7 +49,7 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
                 .subject(subject)
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .user(userId)
+                .account(userId)
                 .build();
 
         Qna newQna = qnaRepository.save(qna);

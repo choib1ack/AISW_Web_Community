@@ -165,7 +165,8 @@ function MakeHomeNoticeList() {
                 setNoticeData(null);
                 setLoading(true);
                 const response = await axios.get("/notice/main");
-                setNoticeData(response.data.data); // 데이터는 response.data 안에 있음
+                // console.log(response);
+                setNoticeData(response.data.data.notice_api_response_list); // 데이터는 response.data 안에 있음
             } catch (e) {
                 setError(e);
             }
@@ -216,7 +217,7 @@ function MakeHomeBoardList() {
                 setBoardData(null);
                 setLoading(true);
                 const response = await axios.get("/board/main");
-                setBoardData(response.data.data);
+                setBoardData(response.data.data.board_api_response_list);
             } catch (e) {
                 setError(e);
             }

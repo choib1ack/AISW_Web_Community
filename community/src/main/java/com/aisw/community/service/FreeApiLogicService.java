@@ -1,17 +1,20 @@
 package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
-import com.aisw.community.model.network.response.*;
+import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.BoardResponseDTO;
+import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.FreeWithCommentApiResponse;
+import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.FreeRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +29,7 @@ import java.util.stream.Collectors;
 public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardResponseDTO, FreeWithCommentApiResponse, FreeApiResponse, Free> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private FreeRepository freeRepository;
@@ -37,10 +40,10 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        User user = userRepository.findById(freeApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
-                .writer(user.getName())
+                .writer(account.getName())
                 .content(freeApiRequest.getContent())
                 .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
@@ -50,7 +53,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .level(freeApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .user(user)
+                .account(account)
                 .build();
 
         Free newFree = baseRepository.save(free);
@@ -116,7 +119,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .userId(free.getUser().getId())
+                .accountId(free.getAccount().getId())
                 .build();
 
         return freeApiResponse;
@@ -150,7 +153,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .userId(free.getUser().getId())
+                .accountId(free.getAccount().getId())
                 .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()).getData())
                 .build();
 

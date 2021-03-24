@@ -1,8 +1,8 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Free;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -34,7 +34,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
         Long likes = 0L;
         Long level = 1L;
         Boolean isAnonymous = true;
-        User userId = userRepository.getOne(1L);
+        Account userId = userRepository.getOne(1L);
 
         Free free = Free.builder()
                 .title(title)
@@ -48,7 +48,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
                 .isAnonymous(isAnonymous)
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .user(userId)
+                .account(userId)
                 .build();
 
         Free newFree = freeRepository.save(free);

@@ -1,16 +1,20 @@
 package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.*;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
-import com.aisw.community.model.network.response.*;
+import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.BoardResponseDTO;
+import com.aisw.community.model.network.response.QnaApiResponse;
+import com.aisw.community.model.network.response.QnaWithCommentApiResponse;
 import com.aisw.community.repository.QnaRepository;
-import com.aisw.community.repository.UserRepository;
+import com.aisw.community.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +29,7 @@ import java.util.stream.Collectors;
 public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardResponseDTO, QnaWithCommentApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private QnaRepository qnaRepository;
@@ -36,10 +40,10 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-        User user = userRepository.findById(qnaApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
-                .writer(user.getName())
+                .writer(account.getName())
                 .content(qnaApiRequest.getContent())
                 .attachmentFile(qnaApiRequest.getAttachmentFile())
                 .status(qnaApiRequest.getStatus())
@@ -50,7 +54,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .level(qnaApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .user(user)
+                .account(account)
                 .build();
 
         Qna newQna = baseRepository.save(qna);
@@ -58,7 +62,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
-    @Transactional
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
@@ -69,6 +72,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
+    @Transactional
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
@@ -118,8 +122,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
+                .accountId(qna.getAccount().getId())
                 .category(qna.getCategory())
-                .userId(qna.getUser().getId())
                 .build();
 
         return qnaApiResponse;
@@ -154,7 +158,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
-                .userId(qna.getUser().getId())
+                .accountId(qna.getAccount().getId())
                 .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()).getData())
                 .build();
 

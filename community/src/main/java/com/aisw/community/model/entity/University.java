@@ -25,8 +25,8 @@ public class University extends Notice {
     @Builder
     public University(Long id, String title, String writer, String content, String attachmentFile,
                       BulletinStatus status, Long views, Long level, FirstCategory firstCategory,
-                      SecondCategory secondCategory, User user, Campus campus) {
-        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, user);
+                      SecondCategory secondCategory, Account account, Campus campus) {
+        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, account);
         this.campus = campus;
     }
 }

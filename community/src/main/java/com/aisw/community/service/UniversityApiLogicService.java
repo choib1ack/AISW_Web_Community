@@ -1,8 +1,8 @@
 package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.University;
-import com.aisw.community.model.entity.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -12,8 +12,8 @@ import com.aisw.community.model.network.request.UniversityApiRequest;
 import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.NoticeResponseDTO;
 import com.aisw.community.model.network.response.UniversityApiResponse;
+import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.UniversityRepository;
-import com.aisw.community.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, NoticeResponseDTO, UniversityApiResponse, University> {
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
     @Autowired
     private UniversityRepository universityRepository;
@@ -36,10 +36,10 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
-        User user = userRepository.findById(universityApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
-                .writer(user.getName())
+                .writer(account.getName())
                 .content(universityApiRequest.getContent())
                 .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
@@ -48,7 +48,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .user(user)
+                .account(account)
                 .build();
 
         University newUniversity = baseRepository.save(university);
@@ -113,7 +113,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .userId(university.getUser().getId())
+                .accountId(university.getAccount().getId())
                 .build();
 
         return universityApiResponse;

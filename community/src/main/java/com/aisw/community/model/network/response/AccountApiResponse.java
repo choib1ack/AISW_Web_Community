@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserApiResponse {
+public class AccountApiResponse {
 
     private Long id;
 
