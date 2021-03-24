@@ -39,7 +39,7 @@ export default function Home() {
                         </Link>
                     </Col>
                     <Col lg={4} md={4} sm={4}>
-                        <Link to="/">
+                        <Link to="/Booklet">
                             <div className={"pingpong"} style={{color: "#636363"}}>
                                 학번별 학사요람 확인하기
                             </div>

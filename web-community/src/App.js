@@ -11,6 +11,7 @@ import Board from "./components/Board/Board";
 import DeptInfo from "./components/DeptInfo";
 import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
+import Booklet from "./components/Booklet";
 import Join from "./components/Join";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
                             <Route path="/deptInfo" component={DeptInfo}/>
                             <Route path="/jobInfo" component={JobInfo}/>
                             <Route path="/contestInfo" component={ContestInfo}/>
+                            <Route path="/Booklet" component={Booklet}/>
                             <Route path="/join" component={Join}/>
                         </Switch>
                     </main>
