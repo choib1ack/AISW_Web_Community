@@ -39,7 +39,7 @@ export default function Home() {
                         </Link>
                     </Col>
                     <Col lg={4} md={4} sm={4}>
-                        <Link to="/">
+                        <Link to="/Booklet">
                             <div className={"pingpong"} style={{color: "#636363"}}>
                                 학번별 학사요람 확인하기
                             </div>
@@ -55,7 +55,7 @@ export default function Home() {
                 </Row>
                 <Row style={{margin: "20px 0px"}}>
                     <Col lg={6} md={6} sm={6} style={{height: '100%'}}>
-                        <div style={{border: "1px solid #E3E3E3", padding: "20px", textAlign: "left"}}>
+                        <div style={{border: "1px solid #E3E3E3", padding: "20px", textAlign: "left", height: "100%"}}>
                             <div style={{marginBottom: "20px"}}>
                                 공지사항
                                 <Link to="/notice">
@@ -66,7 +66,7 @@ export default function Home() {
                         </div>
                     </Col>
                     <Col lg={6} md={6} sm={6}>
-                        <div style={{border: "1px solid #E3E3E3", padding: "20px", textAlign: "left"}}>
+                        <div style={{border: "1px solid #E3E3E3", padding: "20px", textAlign: "left", height: "100%"}}>
                             <div style={{marginBottom: "20px"}}>
                                 게시판
                                 <Link to="/board">

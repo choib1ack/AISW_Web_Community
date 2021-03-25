@@ -53,7 +53,7 @@ export default function BoardDetail({match}) {
         if (att == null) return null;
         return (
             <div className="p-3">
-                <p style={{color: "#6CBACB", fontSize: '14px'}} className="mb-1">첨부파일</p>
+                <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
                 <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
                 <p style={{fontSize: '14px'}} className="d-inline-block">{att}</p>
             </div>
@@ -89,9 +89,9 @@ export default function BoardDetail({match}) {
             <Container>
                 <Title text='게시판' type='1'/>
                 <div className="text-left mt-5 mb-4"
-                     style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
-                    <div style={{backgroundColor: "#EFF7F9"}} className="p-4">
-                        <p style={{color: "#6CBACB", fontSize: '12px'}}
+                     style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
+                    <div style={{backgroundColor: "#e7f1ff"}} className="p-4">
+                        <p style={{color: "#0472FD", fontSize: '12px'}}
                            className="mb-1">{Category(board_category)}</p>
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
                         {boardDetailData.attachment_file == null ? "" :

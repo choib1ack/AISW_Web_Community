@@ -139,7 +139,6 @@ function BoardList({match}) {
 
                     </tbody>
                 </Table>
-
                 <WriteButton match={match} type={'newBoard'}/>
 
                 <Pagination

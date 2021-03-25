@@ -6,13 +6,13 @@ html, body{
 }
 .blue-button{
     padding: 7px 14px;
-    background-color: #6CBACB !important;
+    background-color: #0472FD !important;
     color: white !important;
     border-radius: 3px;
     transition: all ease 0.3s;
 }
 .blue-button:hover{
-    background-color: #0472FD !important;
+    background-color: #0567e3 !important;
     color:#FFFFFF !important;
     transition: all ease 0.3s;
 }

@@ -82,10 +82,10 @@ export default function MyPage(props) {
                                 <p style={{cursor: 'pointer'}} onClick={handleShow}>로그아웃</p>
                             </Col>
                         </Row>
-                        <p style={{color: '#6CBACB', margin: '5px'}}>알림</p>
+                        <p style={{color: '#0472FD', margin: '5px'}}>알림</p>
                         <div style={{
                             height: '200px',
-                            backgroundColor: '#EFF7F9',
+                            backgroundColor: '#e7f1ff',
                             border: '1px solid #E3E3E3',
                             overflow: 'auto',
                             borderRadius: '10px',
