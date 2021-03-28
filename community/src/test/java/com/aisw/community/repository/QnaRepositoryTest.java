@@ -31,7 +31,6 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
         Long likes = 0L;
-        Long level = 1L;
         Boolean isAnonymous = true;
         String subject = "dd";
         Account userId = accountRepository.getOne(1L);
@@ -44,7 +43,6 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
                 .status(status)
                 .views(views)
                 .likes(likes)
-                .level(level)
                 .isAnonymous(isAnonymous)
                 .subject(subject)
                 .firstCategory(FirstCategory.BOARD)
@@ -69,8 +67,6 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
         Optional<Qna> qna = qnaRepository.findById(3L);
 
         qna.ifPresent(readQna -> {
-            readQna.setLevel(2L);
-
             qnaRepository.save(readQna);
         });
     }

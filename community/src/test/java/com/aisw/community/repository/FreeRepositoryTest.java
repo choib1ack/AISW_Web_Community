@@ -32,7 +32,6 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
         BulletinStatus status = BulletinStatus.NOTICE;
         Long views = 0L;
         Long likes = 0L;
-        Long level = 1L;
         Boolean isAnonymous = true;
         Account userId = accountRepository.getOne(1L);
 
@@ -44,7 +43,6 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
                 .status(status)
                 .views(views)
                 .likes(likes)
-                .level(level)
                 .isAnonymous(isAnonymous)
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
@@ -68,8 +66,6 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
         Optional<Free> free = freeRepository.findById(1L);
 
         free.ifPresent(readFree -> {
-            readFree.setLevel(2L);
-
             freeRepository.save(readFree);
         });
     }

@@ -11,7 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -21,7 +23,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"noticeList", "boardList", "commentList"})
+@ToString(exclude = {"bulletinList", "commentList", "contentLikeList"})
 public class Account {
 
     @Id
@@ -69,11 +71,11 @@ public class Account {
     private UserRole role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
-    private List<Notice> noticeList;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
-    private List<Board> boardList;
+    private List<Bulletin> bulletinList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account")
     private List<Comment> commentList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
+    private Set<ContentLike> contentLikeList;
 }

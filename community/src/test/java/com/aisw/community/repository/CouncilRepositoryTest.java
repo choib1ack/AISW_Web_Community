@@ -29,7 +29,6 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         String attachmentFile = "test attachment";
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
-        Long level = 1L;
         Account userId = accountRepository.getOne(1L);
 
         Council council = Council.builder()
@@ -39,7 +38,6 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
                 .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
-                .level(level)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
                 .account(userId)
@@ -61,8 +59,6 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
         Optional<Council> council = councilRepository.findById(1L);
 
         council.ifPresent(readCouncil -> {
-            readCouncil.setLevel(2L);
-
             councilRepository.save(readCouncil);
         });
     }

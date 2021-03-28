@@ -8,7 +8,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -17,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board", "account", "superComment", "subComment"})
+@ToString(exclude = {"board", "account", "superComment", "subComment", "contentLikeList"})
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
@@ -55,4 +57,6 @@ public class Comment {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "superComment", orphanRemoval = true)
     private List<Comment> subComment;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    private Set<ContentLike> contentLikeList;
 }

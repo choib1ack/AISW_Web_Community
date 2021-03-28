@@ -33,7 +33,7 @@ public class CommentApiResponse {
 
     private Long accountId;
 
-    private List<CommentApiResponse> subComment = new ArrayList<>();
+    private List<CommentApiResponse> subComment;
 
     public CommentApiResponse(Long id, String writer, String content, LocalDateTime createdAt, Boolean isAnonymous, Long likes, Long boardId, Long accountId) {
         this.id = id;

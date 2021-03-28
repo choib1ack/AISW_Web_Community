@@ -30,7 +30,6 @@ public class DepartmentRepositoryTest extends CommunityApplicationTests {
         String attachmentFile = "test attachment";
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
-        Long level = 1L;
         Account userId = accountRepository.getOne(1L);
 
         Department department = Department.builder()
@@ -40,7 +39,6 @@ public class DepartmentRepositoryTest extends CommunityApplicationTests {
                 .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
-                .level(level)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.DEPARTMENT)
                 .account(userId)
@@ -65,8 +63,6 @@ public class DepartmentRepositoryTest extends CommunityApplicationTests {
         Optional<Department> department = departmentRepository.findById(1L);
 
         department.ifPresent(readDepartment -> {
-            readDepartment.setLevel(2L);
-
             departmentRepository.save(readDepartment);
         });
     }
