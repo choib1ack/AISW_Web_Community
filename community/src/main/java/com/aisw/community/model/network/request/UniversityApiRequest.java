@@ -2,12 +2,10 @@ package com.aisw.community.model.network.request;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.Campus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
