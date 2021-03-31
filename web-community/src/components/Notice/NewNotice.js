@@ -11,6 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import FinishModal from "../FinishModal";
 import TextEditor from "../TextEditor";
+import {checkContent, checkTitle} from "../Board/NewBoard";
 
 export default function NewNotice() {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
@@ -41,39 +42,40 @@ export default function NewNotice() {
     }
 
     const onSubmit = (data) => {
-        let test;
-        if (data.board_type === "university") {
-            test = {
-                attachment_file: "string",
-                campus: "COMMON",
-                content: data.content,
-                level: 0,
-                status: "GENERAL",
-                title: data.title,
-                account_id: user.id,
-                writer: "string"
+        if (checkTitle(data.title) && checkContent(data.content)) {
+            let test;
+            if (data.board_type === "university") {
+                test = {
+                    attachment_file: "string",
+                    campus: "COMMON",
+                    content: data.content,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id,
+                    writer: "string"
+                }
+            } else if (data.board_type === "department") {
+                test = {
+                    attachment_file: "string",
+                    content: data.content,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id
+                }
+            } else if (data.board_type === "council") {
+                test = {
+                    attachment_file: "string",
+                    content: data.content,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id
+                }
             }
-        } else if (data.board_type === "department") {
-            test = {
-                attachment_file: "string",
-                content: data.content,
-                level: 0,
-                status: "GENERAL",
-                title: data.title,
-                account_id: user.id
-            }
-        } else if (data.board_type === "council") {
-            test = {
-                attachment_file: "string",
-                content: data.content,
-                level: 0,
-                status: "GENERAL",
-                title: data.title,
-                account_id: user.id
-            }
+            sendNotice(test, data.board_type)
         }
-
-        sendNotice(test, data.board_type)
     }
 
     return (

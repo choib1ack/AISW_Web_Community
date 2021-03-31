@@ -44,30 +44,32 @@ function NewBoard() {
     }
 
     const onSubmit = (data) => {
-        let test;
-        if (data.board_type === 'free') {
-            test = {
-                attachment_file: "string",
-                content: data.content,
-                is_anonymous: true,
-                level: 0,
-                status: "GENERAL",
-                title: data.title,
-                account_id: user.id
+        if (checkTitle(data.title) && checkContent(data.content)) {
+            let test;
+            if (data.board_type === 'free') {
+                test = {
+                    attachment_file: "string",
+                    content: data.content,
+                    is_anonymous: true,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id
+                }
+            } else if (data.board_type === 'qna') {
+                test = {
+                    attachment_file: "string",
+                    content: data.content,
+                    is_anonymous: true,
+                    level: 0,
+                    status: "GENERAL",
+                    subject: data.subject,
+                    title: data.title,
+                    account_id: user.id
+                }
             }
-        } else if (data.board_type === 'qna') {
-            test = {
-                attachment_file: "string",
-                content: data.content,
-                is_anonymous: true,
-                level: 0,
-                status: "GENERAL",
-                subject: data.subject,
-                title: data.title,
-                account_id: user.id
-            }
+            sendBoard(test, data.board_type)
         }
-        sendBoard(test, data.board_type)
     }
 
     return (
@@ -136,6 +138,22 @@ function NewBoard() {
             </Container>
         </div>
     );
+}
+
+export function checkTitle(title) {
+    if (title === "") {
+        alert("제목을 입력하세요.");
+        return false;
+    }
+    return true;
+}
+
+export function checkContent(content) {
+    if (content === undefined) {
+        alert("내용을 입력하세요.");
+        return false;
+    }
+    return true;
 }
 
 function convertReadOnly(option) {

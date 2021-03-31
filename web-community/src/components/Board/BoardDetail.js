@@ -112,7 +112,7 @@ export default function BoardDetail({match}) {
                         <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCilck}
                                      style={{cursor: "pointer"}}/> {likes}</span>
-                        <p>{boardDetailData.content}​</p>
+                        <p>{boardDetailData.content}</p>
                     </div>
                     {AttachmentFile(boardDetailData.attachment_file)}
                     <hr/>
