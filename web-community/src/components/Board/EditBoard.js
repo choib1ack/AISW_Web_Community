@@ -1,19 +1,20 @@
-import React, {useEffect, useRef, useState} from "react";
+import {Controller, useForm} from "react-hook-form";
+import React, {useRef, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import axios from "axios";
 import Container from "react-bootstrap/Container";
+import FinishModal from "../FinishModal";
+import Title from "../Title";
 import Form from "react-bootstrap/Form";
-import classNames from 'classnames';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
-import Title from "../Title";
-import {Controller, useForm} from "react-hook-form";
-import axios from "axios";
-import FinishModal from "../FinishModal";
-import {useDispatch, useSelector} from "react-redux";
-import TextEditor from "../TextEditor";
 import {subject_list} from "./SubjectList";
+import TextEditor from "../TextEditor";
+import Button from "react-bootstrap/Button";
+import classNames from "classnames";
+import {checkContent, checkTitle} from "./NewBoard";
 
-function NewBoard() {
+function EditBoard(){
     const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const board_type = useRef();
@@ -23,7 +24,7 @@ function NewBoard() {
     const user = useSelector(state => state.user.userData)
     const dispatch = useDispatch()
 
-    async function postBoard(data, path) {
+    async function sendBoard(data, path) {
         await axios.post("/board/" + path,
             {
                 headers: {
@@ -68,7 +69,7 @@ function NewBoard() {
                     account_id: user.id
                 }
             }
-            postBoard(test, data.board_type)
+            sendBoard(test, data.board_type)
         }
     }
 
@@ -78,7 +79,7 @@ function NewBoard() {
                 <FinishModal show={modalShow} link={`/board`}
                              title="게시판" body="글 게시가 완료되었습니다 !"/>
 
-                <Title text='새 게시글 작성' type='1'/>
+                <Title text='게시글 수정' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>
                         <Col>
@@ -117,10 +118,6 @@ function NewBoard() {
                                     name="content"
                                     control={control}
                                 />
-
-                                {/*<Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
-                                {/*              name="content" ref={register}/>*/}
-                                {/*<Form.Control className="p-3" as="textarea" rows={3} placeholder="#태그입력"/>*/}
                             </Form.Group>
                         </Col>
                     </Row>
@@ -128,39 +125,16 @@ function NewBoard() {
                         <Col>
                             <Button variant="primary" type="submit" style={{float: 'right'}}
                                     className={classNames("select-btn", "on")}>
-                                등록하기
+                                수정하기
                             </Button>
                         </Col>
                     </Row>
                 </Form>
+
+
             </Container>
         </div>
     );
 }
 
-export function checkTitle(title) {
-    if (title === "") {
-        alert("제목을 입력하세요.");
-        return false;
-    }
-    return true;
-}
-
-export function checkContent(content) {
-    if (content === undefined) {
-        alert("내용을 입력하세요.");
-        return false;
-    }
-    return true;
-}
-
-function convertReadOnly(option) {
-    if (option) {
-        document.getElementById('lecture').readOnly = false;
-    } else {
-        document.getElementById('lecture').readOnly = true;
-    }
-}
-
-export default NewBoard;
-
+export default EditBoard;

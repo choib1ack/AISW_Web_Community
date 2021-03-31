@@ -8,7 +8,7 @@ import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
 import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
-import {WriteButton} from "../Button/WriteButton";
+import {BlueButton} from "../Button/BlueButton";
 import SubjectList from "./SubjectList";
 
 function BoardList({match}) {
@@ -140,7 +140,7 @@ function BoardList({match}) {
                     </tbody>
                 </Table>
 
-                <WriteButton match={match} type={'newBoard'}/>
+                <BlueButton match={match} type={'newBoard'} title="글쓰기"/>
 
                 <Pagination
                     total_pages={totalPage}
@@ -153,40 +153,3 @@ function BoardList({match}) {
 }
 
 export default BoardList;
-
-// function DropdownButton() {
-//     const [selectedOption, setSelectedOption] = useState(null);
-//
-//     const options = [
-//         {value: 'OS', label: '운영체제'},
-//         {value: 'Network', label: '네트워크'},
-//         {value: 'Java', label: '객체지향 프로그래밍'},
-//         {value: 'Android', label: '안드로이드 프로그래밍'},
-//         {value: 'SE', label: '소프트웨어 공학'},
-//     ];
-//
-//     return (
-//         <Select
-//             defaultValue={[]}
-//             isMulti
-//             name="subjects"
-//             options={options}
-//             className="basic-multi-select"
-//             classNamePrefix="select"
-//             style={{width:'300px'}}
-//             theme={theme => ({
-//                 ...theme,
-//                 borderRadius: 0,
-//                 width: '300px',
-//                 colors: {
-//                     ...theme.colors,
-//                     primary50: '#F5F5F5',
-//                     primary25: '#EFF7F9',
-//                     primary: '#6CBACB',
-//                 },
-//             })}
-//         />
-//
-//     );
-//
-// }

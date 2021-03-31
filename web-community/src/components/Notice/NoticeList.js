@@ -8,7 +8,7 @@ import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
 import MakeNoticeList from "./MakeNoticeList"
 import SelectButton from "../Button/SelectButton";
-import {WriteButton} from "../Button/WriteButton";
+import {BlueButton} from "../Button/BlueButton";
 import MakeBoardList from "../Board/MakeBoardList";
 
 export default function NoticeList({match}) {
@@ -111,7 +111,7 @@ export default function NoticeList({match}) {
                     </tbody>
                 </Table>
 
-                <WriteButton match={match} type={'newNotice'}/>
+                <BlueButton match={match} type={'newNotice'} title="글쓰기"/>
 
                 <Pagination
                     total_pages={totalPage}
