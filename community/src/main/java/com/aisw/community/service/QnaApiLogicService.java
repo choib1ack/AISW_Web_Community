@@ -2,6 +2,7 @@ package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Account;
+import com.aisw.community.model.entity.ContentLike;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -9,10 +10,8 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.QnaApiRequest;
-import com.aisw.community.model.network.response.BoardApiResponse;
-import com.aisw.community.model.network.response.BoardResponseDTO;
-import com.aisw.community.model.network.response.QnaApiResponse;
-import com.aisw.community.model.network.response.QnaWithCommentApiResponse;
+import com.aisw.community.model.network.response.*;
+import com.aisw.community.repository.ContentLikeRepository;
 import com.aisw.community.repository.QnaRepository;
 import com.aisw.community.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardResponseDTO, QnaWithCommentApiResponse, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -35,7 +34,13 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     private QnaRepository qnaRepository;
 
     @Autowired
+    private ContentLikeRepository contentLikeRepository;
+
+    @Autowired
     private CommentApiLogicService commentApiLogicService;
+
+    @Autowired
+    private ContentLikeApiLogicService contentLikeApiLogicService;
 
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
@@ -128,7 +133,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
 
     @Override
     @Transactional
-    public Header<QnaWithCommentApiResponse> readWithComment(Long id) {
+    public Header<QnaDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
                 .map(qna -> baseRepository.save((Qna) qna))
@@ -137,8 +142,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private QnaWithCommentApiResponse responseWithComment(Qna qna) {
-        QnaWithCommentApiResponse qnaWithCommentApiResponse = QnaWithCommentApiResponse.builder()
+    private QnaDetailApiResponse responseWithComment(Qna qna) {
+        QnaDetailApiResponse qnaDetailApiResponse = QnaDetailApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
                 .writer(qna.getWriter())
@@ -155,10 +160,59 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .accountId(qna.getAccount().getId())
-                .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()).getData())
+                .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()))
                 .build();
 
-        return qnaWithCommentApiResponse;
+        return qnaDetailApiResponse;
+    }
+
+    @Override
+    @Transactional
+    public Header<QnaDetailApiResponse> readWithCommentAndLike(Long postId, Long accountId) {
+        return baseRepository.findById(postId)
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> baseRepository.save((Qna)qna))
+                .map(qna -> detailResponseWithCommentAndLike(qna, accountId))
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    }
+
+    private QnaDetailApiResponse detailResponseWithCommentAndLike(Qna qna, Long accountId) {
+        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
+        List<CommentApiResponse> commentApiResponseList = commentApiLogicService.searchByPost(qna.getId());
+
+        QnaDetailApiResponse qnaDetailApiResponse = QnaDetailApiResponse.builder()
+                .id(qna.getId())
+                .title(qna.getTitle())
+                .writer(qna.getWriter())
+                .content(qna.getContent())
+                .attachmentFile(qna.getAttachmentFile())
+                .status(qna.getStatus())
+                .createdAt(qna.getCreatedAt())
+                .createdBy(qna.getCreatedBy())
+                .updatedAt(qna.getUpdatedAt())
+                .updatedBy(qna.getUpdatedBy())
+                .views(qna.getViews())
+                .likes(qna.getLikes())
+                .isAnonymous(qna.getIsAnonymous())
+                .subject(qna.getSubject())
+                .category(qna.getCategory())
+                .accountId(qna.getAccount().getId())
+                .build();
+        contentLikeList.stream().forEach(contentLike -> {
+            if (contentLike.getBoard() != null && contentLike.getBoard().getId() == qna.getId()) {
+                qnaDetailApiResponse.setCheckLike(true);
+            }
+            for (int i = 0; i < commentApiResponseList.size(); i++) {
+                if (contentLike.getComment() != null &&
+                        contentLike.getComment().getId() == commentApiResponseList.get(i).getId()) {
+                    commentApiResponseList.get(i).setCheckLike(true);
+                }
+            }
+            qnaDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
+        });
+
+        return qnaDetailApiResponse;
     }
 
     @Override

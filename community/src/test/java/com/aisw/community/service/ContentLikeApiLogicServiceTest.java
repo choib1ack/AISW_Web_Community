@@ -1,28 +1,28 @@
 package com.aisw.community.service;
 
+import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Comment;
 import com.aisw.community.model.entity.ContentLike;
 import com.aisw.community.model.enumclass.LikeStatus;
-import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.ContentLikeApiRequest;
 import com.aisw.community.model.network.response.ContentLikeApiResponse;
 import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.BoardRepository;
 import com.aisw.community.repository.CommentRepository;
 import com.aisw.community.repository.ContentLikeRepository;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-@Service
-public class ContentLikeApiLogicService {
+class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
 
     @Autowired
     private ContentLikeRepository contentLikeRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Autowired
     private BoardRepository<Board> boardRepository;
@@ -30,37 +30,45 @@ public class ContentLikeApiLogicService {
     @Autowired
     private CommentRepository commentRepository;
 
-    @Autowired
-    private AccountRepository accountRepository;
-
-    public List<ContentLikeApiResponse> readPostLikeByAccount(Long id) {
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(id);
-
-        List<ContentLikeApiResponse> contentLikeApiResponseList = new ArrayList<>();
-        contentLikeList.stream().forEach(contentLike -> {
-            ContentLikeApiResponse contentLikeApiResponse = ContentLikeApiResponse.builder()
-                    .id(contentLike.getId())
-                    .accountId(contentLike.getAccount().getId())
-                    .build();
-            if(contentLike.getComment() != null) {
-                contentLikeApiResponse.setCommentId(contentLike.getComment().getId());
-            }
-            else if(contentLike.getBoard() != null) {
-                contentLikeApiResponse.setBoardId(contentLike.getBoard().getId());
-            }
-            contentLikeApiResponseList.add(contentLikeApiResponse);
-        });
-        return contentLikeApiResponseList;
-    }
-
-//    public Header<ContentLikeApiResponse> pressLike(Header<ContentLikeApiRequest> request) {
+//    @Test
+//    public void pressLike() {
+//        // board like
+//        // request
+//        ContentLikeApiRequest contentLikeApiRequest = ContentLikeApiRequest.builder()
+//                .likeStatus(LikeStatus.UNPRESSED)
+//                .accountId(1L)
+////                .boardId(1L)
+//                .commentId(1L)
+//                .build();
+//
 //        // request가 board인지 comment인지 확인하여 해당 data update
 //        // 안 눌려있을 때
-//        ContentLikeApiResponse contentLikeApiResponse;
-//        ContentLikeApiRequest contentLikeApiRequest = request.getData();
 //        if(contentLikeApiRequest.getLikeStatus() == LikeStatus.UNPRESSED) {
 //            if(contentLikeApiRequest.getBoardId() != null) {
-//                contentLikeApiResponse = createLikeToBoard(contentLikeApiRequest);
+//                Optional<ContentLike> contentLike = contentLikeRepository.findContentLikeByAccountIdAndBoardId(
+//                        contentLikeApiRequest.getAccountId(), contentLikeApiRequest.getBoardId());
+//                if(!contentLike.isPresent()) {
+//                    Optional<Board> board = boardRepository.findById(contentLikeApiRequest.getBoardId());
+//                    board.ifPresent(readBoard -> {
+//                        readBoard.setLikes(readBoard.getLikes() + 1);
+//                        boardRepository.save(readBoard);
+//                        // create like
+//                        ContentLike newContentLike = ContentLike.builder()
+//                                .account(accountRepository.getOne(contentLikeApiRequest.getAccountId()))
+//                                .board(boardRepository.getOne(contentLikeApiRequest.getBoardId()))
+//                                .build();
+//                        newContentLike = contentLikeRepository.save(newContentLike);
+//
+//                        // create response
+//                        ContentLikeApiResponse contentLikeApiResponse = ContentLikeApiResponse.builder()
+//                                .id(newContentLike.getId())
+//                                .accountId(newContentLike.getAccount().getId())
+//                                .boardId(newContentLike.getBoard().getId())
+//                                .likes(newContentLike.getBoard().getLikes())
+//                                .build();
+//                        System.out.println(contentLikeApiResponse);
+//                    });
+//                }
 //            }
 //            else if(contentLikeApiRequest.getCommentId() != null) {
 //                Optional<ContentLike> contentLike = contentLikeRepository.findContentLikeByAccountIdAndCommentId(
@@ -84,6 +92,7 @@ public class ContentLikeApiLogicService {
 //                                .commentId(newContentLike.getComment().getId())
 //                                .likes(newContentLike.getComment().getLikes())
 //                                .build();
+//                        System.out.println(contentLikeApiResponse);
 //                    });
 //                }
 //            }
@@ -116,32 +125,6 @@ public class ContentLikeApiLogicService {
 //                    });
 //                });
 //            }
-//        }
-//    }
-//
-//    private ContentLikeApiResponse createLikeToBoard(ContentLikeApiRequest contentLikeApiRequest) {
-//        Optional<ContentLike> contentLike = contentLikeRepository.findContentLikeByAccountIdAndBoardId(
-//                contentLikeApiRequest.getAccountId(), contentLikeApiRequest.getBoardId());
-//        if(!contentLike.isPresent()) {
-//            Optional<Board> board = boardRepository.findById(contentLikeApiRequest.getBoardId());
-//            board.ifPresent(readBoard -> {
-//                readBoard.setLikes(readBoard.getLikes() + 1);
-//                boardRepository.save(readBoard);
-//                // create like
-//                ContentLike newContentLike = ContentLike.builder()
-//                        .account(accountRepository.getOne(contentLikeApiRequest.getAccountId()))
-//                        .board(boardRepository.getOne(contentLikeApiRequest.getBoardId()))
-//                        .build();
-//                newContentLike = contentLikeRepository.save(newContentLike);
-//
-//                // create response
-//                 return ContentLikeApiResponse.builder()
-//                        .id(newContentLike.getId())
-//                        .accountId(newContentLike.getAccount().getId())
-//                        .boardId(newContentLike.getBoard().getId())
-//                        .likes(newContentLike.getBoard().getLikes())
-//                        .build();
-//            });
 //        }
 //    }
 }

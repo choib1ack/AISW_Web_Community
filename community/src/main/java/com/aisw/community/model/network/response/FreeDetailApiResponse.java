@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FreeWithCommentApiResponse {
+public class FreeDetailApiResponse {
 
     private Long id;
 
@@ -44,6 +44,8 @@ public class FreeWithCommentApiResponse {
     private String updatedBy;
 
     private Long accountId;
+
+    private Boolean checkLike = false;
 
     private List<CommentApiResponse> commentApiResponseList;
 }

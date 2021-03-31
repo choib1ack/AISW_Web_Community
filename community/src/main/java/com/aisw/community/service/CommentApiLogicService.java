@@ -6,6 +6,7 @@ import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.Board;
 import com.aisw.community.model.entity.Comment;
+import com.aisw.community.model.entity.ContentLike;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.CommentApiRequest;
 import com.aisw.community.model.network.response.CommentApiResponse;
@@ -107,7 +108,7 @@ public class CommentApiLogicService {
         return freeCommentApiResponse;
     }
 
-    public Header<List<CommentApiResponse>> searchByPost(Long id) {
+    public List<CommentApiResponse> searchByPost(Long id) {
         List<Comment> comments = commentRepository.findCommentByBoardId(id);
 
         List<CommentApiResponse> commentApiResponseList = new ArrayList<>();
@@ -121,7 +122,7 @@ public class CommentApiLogicService {
                 map.get(comment.getSuperComment().getId()).getSubComment().add(commentApiResponse);
             }
         });
-        return Header.OK(commentApiResponseList);
+        return commentApiResponseList;
     }
 
     @Transactional

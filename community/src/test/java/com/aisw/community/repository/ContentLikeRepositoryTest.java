@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ContentLikeRepositoryTest extends CommunityApplicationTests {
@@ -25,13 +26,13 @@ public class ContentLikeRepositoryTest extends CommunityApplicationTests {
     @Test
     public void create() {
         Account account = accountRepository.getOne(1L);
-        Board board = boardRepository.getOne(1L);
+        Board board = boardRepository.getOne(2L);
         Comment comment = commentRepository.getOne(1L);
 
         ContentLike contentLike = ContentLike.builder()
                 .account(account)
-//                .board(board)
-                .comment(comment)
+                .board(board)
+//                .comment(comment)
                 .build();
         ContentLike newContentLike = contentLikeRepository.save(contentLike);
         System.out.println(newContentLike);
@@ -42,6 +43,9 @@ public class ContentLikeRepositoryTest extends CommunityApplicationTests {
         Optional<ContentLike> contentLike = contentLikeRepository.findById(1L);
 
         contentLike.ifPresent(contentLike1 -> System.out.println(contentLike1));
+
+        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(1L);
+        contentLikeList.stream().forEach(contentLike1 -> System.out.println(contentLike1));
     }
 
     @Test

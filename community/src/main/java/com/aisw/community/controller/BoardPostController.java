@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 @Component
 @CrossOrigin("*")
-public abstract class BoardPostController<Req, ListRes, CommentRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
+public abstract class BoardPostController<Req, ListRes, DetailRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
 
     @Autowired(required = false)
-    protected BoardPostService<Req, ListRes, CommentRes, BaseRes, Entity> boardPostService;
+    protected BoardPostService<Req, ListRes, DetailRes, BaseRes, Entity> boardPostService;
 
     @Override
     @PostMapping("")
@@ -42,8 +42,14 @@ public abstract class BoardPostController<Req, ListRes, CommentRes, BaseRes, Ent
     }
 
     @GetMapping("/comment/{id}")
-    public Header<CommentRes> readWithComment(@PathVariable Long id) {
+    public Header<DetailRes> readWithComment(@PathVariable Long id) {
         return boardPostService.readWithComment(id);
+    }
+
+    @GetMapping("/comment&like/{postId}/{accountId}")
+    public Header<DetailRes> readWithCommentAndLike(
+            @PathVariable Long postId, @PathVariable Long accountId) {
+        return boardPostService.readWithCommentAndLike(postId, accountId);
     }
 
     @GetMapping("")

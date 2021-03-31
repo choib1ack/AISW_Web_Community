@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public abstract class BoardPostService<Req, ListRes, CommentRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
+public abstract class BoardPostService<Req, ListRes, DetailRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
 
     @Autowired(required = false)
     protected JpaRepository<Entity, Long> baseRepository;
 
-    public abstract Header<CommentRes> readWithComment(Long id);
+    public abstract Header<DetailRes> readWithComment(Long id);
+    public abstract Header<DetailRes> readWithCommentAndLike(Long postId, Long accountId);
     public abstract Header<ListRes> search(Pageable pageable);
     public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
     public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);

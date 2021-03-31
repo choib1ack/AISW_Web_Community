@@ -27,11 +27,13 @@ public class CommentApiResponse {
 
     private Long likes;
 
+    private Boolean checkLike = false;
+
     private Long boardId;
 
     private Long accountId;
 
-    private List<CommentApiResponse> subComment;
+    private List<CommentApiResponse> subComment = new ArrayList<>();
 
     public CommentApiResponse(Long id, String writer, String content, LocalDateTime createdAt, Boolean isAnonymous, Long likes, Long boardId, Long accountId) {
         this.id = id;
