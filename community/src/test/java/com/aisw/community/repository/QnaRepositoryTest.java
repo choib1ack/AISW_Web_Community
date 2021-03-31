@@ -40,7 +40,7 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
                 .title(title)
                 .writer(writer)
                 .content(content)
-                .attachmentFile(attachmentFile)
+//                .attachment(attachmentFile)
                 .status(status)
                 .views(views)
                 .likes(likes)

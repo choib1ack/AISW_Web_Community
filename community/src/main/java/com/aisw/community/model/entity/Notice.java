@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -20,9 +21,9 @@ public class Notice extends Bulletin {
 
     private SecondCategory category;
 
-    public Notice(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                  Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
-        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, account);
+    public Notice(Long id, String title, String writer, String content, BulletinStatus status,
+                  Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account, List<Attachment> attachment) {
+        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment);
         this.category = secondCategory;
     }
 }

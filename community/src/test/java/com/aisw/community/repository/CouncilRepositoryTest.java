@@ -36,7 +36,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
                 .title(title)
                 .writer(writer)
                 .content(content)
-                .attachmentFile(attachmentFile)
+//                .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
                 .level(level)

@@ -22,8 +22,6 @@ public class FreeWithCommentApiResponse {
 
     private String content;
 
-    private String attachmentFile;
-
     private BulletinStatus status;
 
     private Long views;

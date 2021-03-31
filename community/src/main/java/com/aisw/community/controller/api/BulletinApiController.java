@@ -3,7 +3,9 @@ package com.aisw.community.controller.api;
 import com.aisw.community.controller.BulletinController;
 import com.aisw.community.model.entity.Bulletin;
 import com.aisw.community.model.network.response.BulletinResponseDTO;
+import com.aisw.community.service.UniversityApiLogicService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 

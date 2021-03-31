@@ -29,10 +29,10 @@ public class Board extends Bulletin {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")
     private List<Comment> commentList;
 
-    public Board(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
+    public Board(Long id, String title, String writer, String content, BulletinStatus status,
                  Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
-                 Long likes, Boolean isAnonymous) {
-        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, account);
+                 List<Attachment> attachment, Long likes, Boolean isAnonymous) {
+        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment);
         this.likes = likes;
         this.isAnonymous = isAnonymous;
         this.category = secondCategory;

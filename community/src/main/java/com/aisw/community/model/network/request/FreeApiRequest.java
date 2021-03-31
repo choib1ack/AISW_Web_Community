@@ -21,8 +21,6 @@ public class FreeApiRequest {
 
     private String content;
 
-    private String attachmentFile;
-
     private BulletinStatus status;
 
     // 학교 공지 0

@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,10 +24,10 @@ public class University extends Notice {
     private Campus campus;
 
     @Builder
-    public University(Long id, String title, String writer, String content, String attachmentFile,
+    public University(Long id, String title, String writer, String content,
                       BulletinStatus status, Long views, Long level, FirstCategory firstCategory,
-                      SecondCategory secondCategory, Account account, Campus campus) {
-        super(id, title, writer, content, attachmentFile, status, views, level, firstCategory, secondCategory, account);
+                      SecondCategory secondCategory, Account account, List<Attachment> attachment, Campus campus) {
+        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment);
         this.campus = campus;
     }
 }

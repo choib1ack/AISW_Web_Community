@@ -15,10 +15,13 @@ import com.aisw.community.model.network.response.NoticeResponseDTO;
 import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .title(departmentApiRequest.getTitle())
                 .writer(account.getName())
                 .content(departmentApiRequest.getContent())
-                .attachmentFile(departmentApiRequest.getAttachmentFile())
                 .status(departmentApiRequest.getStatus())
                 .views(0L)
                 .level(departmentApiRequest.getLevel())
@@ -74,7 +76,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                     department
                             .setTitle(departmentApiRequest.getTitle())
                             .setContent(departmentApiRequest.getContent())
-                            .setAttachmentFile(departmentApiRequest.getAttachmentFile())
                             .setStatus(departmentApiRequest.getStatus())
                             .setLevel(departmentApiRequest.getLevel());
                     return department;
@@ -101,7 +102,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .title(department.getTitle())
                 .writer(department.getWriter())
                 .content(department.getContent())
-                .attachmentFile(department.getAttachmentFile())
                 .status(department.getStatus())
                 .views(department.getViews())
                 .level(department.getLevel())
@@ -114,6 +114,16 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .build();
 
         return departmentApiResponse;
+    }
+
+    @Override
+    public Header<DepartmentApiResponse> write(MultipartFile file) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Resource> download(Long id, String originFileName) {
+        return null;
     }
 
     @Override

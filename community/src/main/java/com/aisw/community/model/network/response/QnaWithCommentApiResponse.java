@@ -22,8 +22,6 @@ public class QnaWithCommentApiResponse {
 
     private String content;
 
-    private String attachmentFile;
-
     private BulletinStatus status;
 
     private Long views;

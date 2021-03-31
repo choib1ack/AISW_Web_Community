@@ -6,7 +6,6 @@ import com.aisw.community.model.network.request.AccountApiRequest;
 import com.aisw.community.model.network.response.AccountApiResponse;
 import com.aisw.community.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -4,11 +4,16 @@ import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.service.NoticePostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Component
 @CrossOrigin("*")
@@ -39,6 +44,16 @@ public abstract class NoticePostController<Req, ListRes, Res, Entity> implements
     @DeleteMapping("{id}")
     public Header delete(@PathVariable Long id) {
         return noticePostService.delete(id);
+    }
+
+    @PostMapping("write")
+    public Header<Res> write(@RequestPart MultipartFile file) throws IOException {
+        return noticePostService.write(file);
+    }
+
+    @GetMapping("download")
+    public ResponseEntity<Resource> download(@RequestParam Long id, @RequestParam String originFileName) throws IOException{
+        return noticePostService.download(id, originFileName);
     }
 
     @GetMapping("")

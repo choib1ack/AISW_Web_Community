@@ -45,7 +45,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .title(freeApiRequest.getTitle())
                 .writer(account.getName())
                 .content(freeApiRequest.getContent())
-                .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
                 .views(0L)
                 .likes(0L)
@@ -80,7 +79,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                     free
                             .setTitle(freeApiRequest.getTitle())
                             .setContent(freeApiRequest.getContent())
-                            .setAttachmentFile(freeApiRequest.getAttachmentFile())
                             .setStatus(freeApiRequest.getStatus())
                             .setLevel(freeApiRequest.getLevel());
                     free.setIsAnonymous(freeApiRequest.getIsAnonymous());
@@ -108,7 +106,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .title(free.getTitle())
                 .writer(free.getWriter())
                 .content(free.getContent())
-                .attachmentFile(free.getAttachmentFile())
                 .status(free.getStatus())
                 .createdAt(free.getCreatedAt())
                 .createdBy(free.getCreatedBy())
@@ -142,7 +139,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .title(free.getTitle())
                 .writer(free.getWriter())
                 .content(free.getContent())
-                .attachmentFile(free.getAttachmentFile())
                 .status(free.getStatus())
                 .createdAt(free.getCreatedAt())
                 .createdBy(free.getCreatedBy())

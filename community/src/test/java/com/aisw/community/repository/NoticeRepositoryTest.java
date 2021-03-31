@@ -26,4 +26,6 @@ public class NoticeRepositoryTest extends CommunityApplicationTests {
             System.out.println(notice);
         });
     }
+
+
 }

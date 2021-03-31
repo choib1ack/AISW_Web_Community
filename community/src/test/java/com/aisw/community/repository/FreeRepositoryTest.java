@@ -40,7 +40,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
                 .title(title)
                 .writer(writer)
                 .content(content)
-                .attachmentFile(attachmentFile)
+//                .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
                 .likes(likes)

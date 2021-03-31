@@ -45,7 +45,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .title(qnaApiRequest.getTitle())
                 .writer(account.getName())
                 .content(qnaApiRequest.getContent())
-                .attachmentFile(qnaApiRequest.getAttachmentFile())
                 .status(qnaApiRequest.getStatus())
                 .views(0L)
                 .likes(0L)
@@ -81,7 +80,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                     qna
                             .setTitle(qnaApiRequest.getTitle())
                             .setContent(qnaApiRequest.getContent())
-                            .setAttachmentFile(qnaApiRequest.getAttachmentFile())
                             .setStatus(qnaApiRequest.getStatus())
                             .setLevel(qnaApiRequest.getLevel());
                     qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
@@ -111,7 +109,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .title(qna.getTitle())
                 .writer(qna.getWriter())
                 .content(qna.getContent())
-                .attachmentFile(qna.getAttachmentFile())
                 .status(qna.getStatus())
                 .createdAt(qna.getCreatedAt())
                 .createdBy(qna.getCreatedBy())
@@ -146,7 +143,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .title(qna.getTitle())
                 .writer(qna.getWriter())
                 .content(qna.getContent())
-                .attachmentFile(qna.getAttachmentFile())
                 .status(qna.getStatus())
                 .createdAt(qna.getCreatedAt())
                 .createdBy(qna.getCreatedBy())
