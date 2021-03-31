@@ -4,35 +4,20 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Title from "./Title";
 import YearList from "./YearList";
-import {Document, Page} from 'react-pdf';
 import PDF2020 from "./booklet/2020_sw.pdf";
-import { pdfjs } from 'react-pdf';
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
+import PDF2019 from "./booklet/2019_sw.pdf";
+import PDF2018 from "./booklet/2018_sw.pdf";
+import PDF2017 from "./booklet/2017_sw.pdf";
+import PDF2016 from "./booklet/2016_sw.pdf";
+import PDF2015 from "./booklet/2015_sw.pdf";
+import { Worker } from '@react-pdf-viewer/core';
+import { Viewer, SpecialZoomLevel} from '@react-pdf-viewer/core';
+import '@react-pdf-viewer/core/lib/styles/index.css';
 
 export default function Booklet() {
-    const [selectedYear, setSelectedYear] = useState(null);
+    const [selectedYear, setSelectedYear] = useState("2020");
 
-    //pdf
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
-
-    function onDocumentLoadSuccess({ numPages }) {
-        setNumPages(numPages);
-        setPageNumber(1);
-    }
-
-    function changePage(offset) {
-        setPageNumber(prevPageNumber => prevPageNumber + offset);
-    }
-
-    function previousPage() {
-        changePage(-1);
-    }
-
-    function nextPage() {
-        changePage(1);
-    }
+    //https://github.com/react-pdf-viewer/examples
 
     return (
         <div className="Booklet">
@@ -47,32 +32,38 @@ export default function Booklet() {
                     setSelectedYear={setSelectedYear}
                 />
 
-                <Document
-                    file={PDF2020}
-                    onLoadSuccess={onDocumentLoadSuccess}
-                >
-                    <Page pageNumber={pageNumber} />
-                </Document>
-                <div>
-                    <p>
-                        Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
-                    </p>
-                    <button
-                        type="button"
-                        disabled={pageNumber <= 1}
-                        onClick={previousPage}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        type="button"
-                        disabled={pageNumber >= numPages}
-                        onClick={nextPage}
-                    >
-                        Next
-                    </button>
-                </div>
+                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.6.347/build/pdf.worker.min.js"/>
+
+                <PDFView
+                    selectedYear={selectedYear}/>
+
             </Container>
         </div>
     );
+}
+function PDFView(props){
+    let file;
+    switch (props.selectedYear) {
+        case "2020": file = PDF2020; break;
+        case "2019": file = PDF2019; break;
+        case "2018": file = PDF2018; break;
+        case "2017": file = PDF2017; break;
+        case "2016": file = PDF2016; break;
+        case "2015": file = PDF2015; break;
+    }
+
+    return (
+        <div
+            style={{
+                border: '1px solid rgba(0, 0, 0, 0.3)',
+                height: '750px',
+            }}
+        >
+            <Viewer fileUrl={file}
+                    defaultScale={SpecialZoomLevel.PageFit}
+            />
+
+        </div>
+    );
+
 }

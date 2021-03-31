@@ -24,7 +24,7 @@ export default function YearList({selectedYear, setSelectedYear}) {
         );
     }
     return(
-        <div>
+        <div style={{display: 'inline-block'}}>
             {year_btn_list}
         </div>
     );
