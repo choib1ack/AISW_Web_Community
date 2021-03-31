@@ -17,7 +17,7 @@ export default function WriteComment({board_id, setIsLatest}) {
             "content": commentText.trim(),
             "is_anonymous": anonymousState,
             "board_id": board_id,
-            "user_id": 1
+            "account_id": 1
         }
         await axios.post("/board/comment",
             {
