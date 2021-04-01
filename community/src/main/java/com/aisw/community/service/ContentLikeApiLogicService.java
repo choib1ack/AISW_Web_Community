@@ -1,11 +1,7 @@
 package com.aisw.community.service;
 
 import com.aisw.community.model.entity.Board;
-import com.aisw.community.model.entity.Comment;
 import com.aisw.community.model.entity.ContentLike;
-import com.aisw.community.model.enumclass.LikeStatus;
-import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.ContentLikeApiRequest;
 import com.aisw.community.model.network.response.ContentLikeApiResponse;
 import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.BoardRepository;
@@ -16,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ContentLikeApiLogicService {
