@@ -46,14 +46,19 @@ public abstract class NoticePostController<Req, ListRes, Res, Entity> implements
         return noticePostService.delete(id);
     }
 
+    @PostMapping("crawl")
+    public void crawling(@RequestParam Long board_no) throws IOException{
+        noticePostService.crawling(board_no);
+    }
+
     @PostMapping("write")
-    public Header<Res> write(@RequestPart MultipartFile file) throws IOException {
-        return noticePostService.write(file);
+    public Header<Res> write(@RequestPart MultipartFile[] files) throws IOException {
+        return noticePostService.write(files);
     }
 
     @GetMapping("download")
-    public ResponseEntity<Resource> download(@RequestParam Long id, @RequestParam String originFileName) throws IOException{
-        return noticePostService.download(id, originFileName);
+    public ResponseEntity<Resource> download(@RequestParam Long id, @RequestParam String file_name) throws IOException{
+        return noticePostService.download(id, file_name);
     }
 
     @GetMapping("")
