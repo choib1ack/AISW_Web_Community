@@ -19,8 +19,6 @@ public class FreeApiRequest {
 
     private String content;
 
-    private String attachmentFile;
-
     private BulletinStatus status;
 
     // 익명 true, 비익명 false

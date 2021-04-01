@@ -36,7 +36,7 @@ public class DepartmentRepositoryTest extends CommunityApplicationTests {
                 .title(title)
                 .writer(writer)
                 .content(content)
-                .attachmentFile(attachmentFile)
+//                .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
                 .firstCategory(FirstCategory.NOTICE)

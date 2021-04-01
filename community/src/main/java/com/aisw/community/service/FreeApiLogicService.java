@@ -2,7 +2,6 @@ package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Account;
-import com.aisw.community.model.entity.ContentLike;
 import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -10,9 +9,11 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.FreeApiRequest;
-import com.aisw.community.model.network.response.*;
+import com.aisw.community.model.network.response.BoardApiResponse;
+import com.aisw.community.model.network.response.BoardResponseDTO;
+import com.aisw.community.model.network.response.FreeApiResponse;
+import com.aisw.community.model.network.response.FreeWithCommentApiResponse;
 import com.aisw.community.repository.AccountRepository;
-import com.aisw.community.repository.ContentLikeRepository;
 import com.aisw.community.repository.FreeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
+public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardResponseDTO, FreeWithCommentApiResponse, FreeApiResponse, Free> {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -34,13 +35,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     private FreeRepository freeRepository;
 
     @Autowired
-    private ContentLikeRepository contentLikeRepository;
-
-    @Autowired
     private CommentApiLogicService commentApiLogicService;
-
-    @Autowired
-    private ContentLikeApiLogicService contentLikeApiLogicService;
 
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
@@ -50,11 +45,11 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .title(freeApiRequest.getTitle())
                 .writer(account.getName())
                 .content(freeApiRequest.getContent())
-                .attachmentFile(freeApiRequest.getAttachmentFile())
                 .status(freeApiRequest.getStatus())
                 .views(0L)
                 .likes(0L)
                 .isAnonymous(freeApiRequest.getIsAnonymous())
+                .level(freeApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .account(account)
@@ -69,7 +64,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save((Free) free))
+                .map(free -> baseRepository.save((Free)free))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -84,8 +79,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                     free
                             .setTitle(freeApiRequest.getTitle())
                             .setContent(freeApiRequest.getContent())
-                            .setAttachmentFile(freeApiRequest.getAttachmentFile())
-                            .setStatus(freeApiRequest.getStatus());
+                            .setStatus(freeApiRequest.getStatus())
+                            .setLevel(freeApiRequest.getLevel());
                     free.setIsAnonymous(freeApiRequest.getIsAnonymous());
                     return free;
                 })
@@ -111,13 +106,13 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .title(free.getTitle())
                 .writer(free.getWriter())
                 .content(free.getContent())
-                .attachmentFile(free.getAttachmentFile())
                 .status(free.getStatus())
                 .createdAt(free.getCreatedAt())
                 .createdBy(free.getCreatedBy())
                 .updatedAt(free.getUpdatedAt())
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
+                .level(free.getLevel())
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
@@ -129,84 +124,36 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
 
     @Override
     @Transactional
-    public Header<FreeDetailApiResponse> readWithComment(Long id) {
+    public Header<FreeWithCommentApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save((Free) free))
+                .map(free -> baseRepository.save((Free)free))
                 .map(this::responseWithComment)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
-    private FreeDetailApiResponse responseWithComment(Free free) {
-        FreeDetailApiResponse freeDetailApiResponse = FreeDetailApiResponse.builder()
+    private FreeWithCommentApiResponse responseWithComment(Free free) {
+        FreeWithCommentApiResponse freeWithCommentApiResponse = FreeWithCommentApiResponse.builder()
                 .id(free.getId())
                 .title(free.getTitle())
                 .writer(free.getWriter())
                 .content(free.getContent())
-                .attachmentFile(free.getAttachmentFile())
                 .status(free.getStatus())
                 .createdAt(free.getCreatedAt())
                 .createdBy(free.getCreatedBy())
                 .updatedAt(free.getUpdatedAt())
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
+                .level(free.getLevel())
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .accountId(free.getAccount().getId())
-                .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()))
+                .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()).getData())
                 .build();
 
-        return freeDetailApiResponse;
-    }
-
-    @Override
-    @Transactional
-    public Header<FreeDetailApiResponse> readWithCommentAndLike(Long postId, Long accountId) {
-        return baseRepository.findById(postId)
-                .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save((Free) free))
-                .map(free -> responseWithCommentAndLike(free, accountId))
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
-
-    private FreeDetailApiResponse responseWithCommentAndLike(Free free, Long accountId) {
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
-        List<CommentApiResponse> commentApiResponseList = commentApiLogicService.searchByPost(free.getId());
-
-        FreeDetailApiResponse freeDetailApiResponse = FreeDetailApiResponse.builder()
-                .id(free.getId())
-                .title(free.getTitle())
-                .writer(free.getWriter())
-                .content(free.getContent())
-                .attachmentFile(free.getAttachmentFile())
-                .status(free.getStatus())
-                .createdAt(free.getCreatedAt())
-                .createdBy(free.getCreatedBy())
-                .updatedAt(free.getUpdatedAt())
-                .updatedBy(free.getUpdatedBy())
-                .views(free.getViews())
-                .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
-                .category(free.getCategory())
-                .accountId(free.getAccount().getId())
-                .build();
-        contentLikeList.stream().forEach(contentLike -> {
-            if (contentLike.getBoard() != null && contentLike.getBoard().getId() == free.getId()) {
-                freeDetailApiResponse.setCheckLike(true);
-            }
-            for (int i = 0; i < commentApiResponseList.size(); i++) {
-                if (contentLike.getComment() != null &&
-                        contentLike.getComment().getId() == commentApiResponseList.get(i).getId()) {
-                    commentApiResponseList.get(i).setCheckLike(true);
-                }
-            }
-            freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
-        });
-
-        return freeDetailApiResponse;
+        return freeWithCommentApiResponse;
     }
 
     @Override
@@ -276,9 +223,10 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                     .views(board.getViews())
                     .writer(board.getWriter())
                     .build();
-            if (boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);
-            } else if (boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+            }
+            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
                 boardApiUrgentResponseList.add(boardApiResponse);
             }
         });
@@ -300,7 +248,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     public Header<FreeApiResponse> pressLikes(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setLikes(free.getLikes() + 1))
-                .map(free -> baseRepository.save((Free) free))
+                .map(free -> baseRepository.save((Free)free))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));

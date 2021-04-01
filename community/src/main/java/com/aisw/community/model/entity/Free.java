@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,10 +22,10 @@ import javax.persistence.EntityListeners;
 public class Free extends Board {
 
     @Builder
-    public Free(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
-                Long likes, Boolean isAnonymous) {
-        super(id, title, writer, content, attachmentFile, status, views, firstCategory, secondCategory, account,
+    public Free(Long id, String title, String writer, String content, BulletinStatus status,
+                Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
+                List<Attachment> attachment, Long likes, Boolean isAnonymous) {
+        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment,
                 likes, isAnonymous);
     }
 }

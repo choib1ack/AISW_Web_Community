@@ -2,8 +2,11 @@ package com.aisw.community.service;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Account;
+import com.aisw.community.model.entity.Attachment;
+import com.aisw.community.model.entity.Bulletin;
 import com.aisw.community.model.entity.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
+import com.aisw.community.model.enumclass.Campus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
@@ -13,15 +16,37 @@ import com.aisw.community.model.network.response.NoticeApiResponse;
 import com.aisw.community.model.network.response.NoticeResponseDTO;
 import com.aisw.community.model.network.response.UniversityApiResponse;
 import com.aisw.community.repository.AccountRepository;
+import com.aisw.community.repository.AttachmentRepository;
 import com.aisw.community.repository.UniversityRepository;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +58,9 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Autowired
     private UniversityRepository universityRepository;
 
+    @Autowired
+    private AttachmentRepository attachmentRepository;
+
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
@@ -41,9 +69,9 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .title(universityApiRequest.getTitle())
                 .writer(account.getName())
                 .content(universityApiRequest.getContent())
-                .attachmentFile(universityApiRequest.getAttachmentFile())
                 .status(universityApiRequest.getStatus())
                 .views(0L)
+                .level(universityApiRequest.getLevel())
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
@@ -74,8 +102,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                     university
                             .setTitle(universityApiRequest.getTitle())
                             .setContent(universityApiRequest.getContent())
-                            .setAttachmentFile(universityApiRequest.getAttachmentFile())
-                            .setStatus(universityApiRequest.getStatus());
+                            .setStatus(universityApiRequest.getStatus())
+                            .setLevel(universityApiRequest.getLevel());
                     university.setCampus(universityApiRequest.getCampus());
                     return university;
                 })
@@ -95,15 +123,160 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
+    @Override
+    public void crawling(Long boardNo) throws IOException{
+        Document doc = Jsoup.connect("https://www.gachon.ac.kr/community/opencampus/03.jsp?mode=view&boardType_seq=358&board_no=" + boardNo.toString()).get();
+        Elements elements = doc.select("table.view").select("tbody").select("tr");
+
+        String title = elements.get(0).select("td").text();
+        String writer = elements.get(1).select("td").get(0).text();
+        String createdAt = elements.get(2).select("td").text();
+        String campus = elements.get(3).select("td").text();
+        Elements files = elements.get(4).select("td a");
+        String contentHtml = elements.get(elements.size() - 1).toString();
+
+//        System.out.println(title);
+//        System.out.println(writer);
+//        System.out.println(createdAt);
+//        System.out.println(campus);
+//        for(Element file : files){
+//            System.out.println(file.text());
+//            System.out.println("gachon.ac.kr" + file.attr("href"));
+//        }
+//        System.out.println(contentHtml);
+
+        Campus univ;
+        if(campus.equals("공통"))
+            univ = Campus.COMMON;
+        else if(campus.equals("글로벌"))
+            univ = Campus.GLOBAL;
+        else
+            univ = Campus.MEDICAL;
+
+        Account account = accountRepository.findById(1L).orElseThrow(UserNotFoundException::new);
+        University university = University.builder()
+                .title(title)
+                .writer(writer)
+                .content(contentHtml)
+                .status(BulletinStatus.GENERAL)
+                .views(0L)
+                .level(1L)
+                .campus(univ)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.UNIVERSITY)
+                .account(account)
+                .build();
+
+        University newUniversity = baseRepository.save(university);
+
+        List<Attachment> attachmentList = new ArrayList<>();
+        for(Element file : files){
+            Attachment attachment = Attachment.builder()
+                    .originFileName(file.text())
+                    .fileName(file.text())
+                    .filePath("gachon.ac.kr" + file.attr("href"))
+                    .fileType(file.text())
+                    .fileSize(1L)
+                    .bulletin(newUniversity)
+                    .build();
+
+            attachmentList.add(attachment);
+            attachmentRepository.save(attachment);
+        }
+    }
+
+    @Override
+    public Header<UniversityApiResponse> write(MultipartFile[] files) throws IOException{
+        Account account = accountRepository.findById(1L).orElseThrow(UserNotFoundException::new);
+        University university = University.builder()
+                .title("Test01")
+                .writer("Test01")
+                .content("Content01")
+                .status(BulletinStatus.GENERAL)
+                .views(0L)
+                .level(1L)
+                .campus(Campus.GLOBAL)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.UNIVERSITY)
+                .account(account)
+                .build();
+
+        University newUniversity = baseRepository.save(university);
+
+        List<Attachment> attachmentList = new ArrayList<>();
+        for(MultipartFile file : files) {
+            File destinationFile;
+            String fileName = file.getOriginalFilename();
+            String fileNameExtension = FilenameUtils.getExtension(fileName).toLowerCase();
+            String destinationFileName;
+
+            destinationFileName = RandomStringUtils.randomAlphanumeric(32) + "." + fileNameExtension;
+            destinationFile = new File("/Users/wonchang/desktop/files/" + destinationFileName);
+            destinationFile.getParentFile().mkdirs();
+            file.transferTo(destinationFile);
+
+            Attachment attachment = Attachment.builder()
+                    .originFileName(fileName)
+                    .fileName(destinationFileName)
+                    .filePath(destinationFile.getAbsolutePath())
+                    .fileType(file.getContentType())
+                    .fileSize(file.getSize())
+                    .bulletin(newUniversity)
+                    .build();
+
+            Attachment newAttachment = attachmentRepository.save(attachment);
+            attachmentList.add(newAttachment);
+        }
+//        try {
+//            fileName = new MD5Generator(file.getOriginalFilename()).toString();
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//        destinationFile = new File("/Users/wonchang/desktop/files/" + fileName);
+//        destinationFile.getParentFile().mkdirs();
+//        file.transferTo(destinationFile);
+
+        return Header.OK(response(newUniversity));
+    }
+
+    @Override
+    public ResponseEntity<Resource> download(Long id, String originFileName) throws IOException{
+        University university = universityRepository.findById(id).orElseThrow(UserNotFoundException::new);
+
+        List<Attachment> attachmentList = university.getAttachment();
+
+        for(Attachment attachment : attachmentList){
+            if(attachment.getOriginFileName().equals(originFileName)){
+                System.out.println("=============== Same ===============");
+                System.out.println("Original File Name : " + attachment.getOriginFileName());
+                System.out.println("Stored File Name : " + attachment.getFileName());
+                System.out.println("File Type : " + attachment.getFileType());
+                System.out.println("File Path : " + attachment.getFilePath());
+                System.out.println("File Size : " + attachment.getFileSize());
+
+                Path filePath = Paths.get(attachment.getFilePath()).toAbsolutePath().normalize();
+                Resource resource = new UrlResource(filePath.toUri());
+
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getOriginFileName() + "\"")
+                        .body(resource);
+            }
+        }
+
+        return null;
+    }
+
     private UniversityApiResponse response(University university) {
         UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
                 .writer(university.getWriter())
                 .content(university.getContent())
-                .attachmentFile(university.getAttachmentFile())
                 .status(university.getStatus())
                 .views(university.getViews())
+                .level(university.getLevel())
                 .campus(university.getCampus())
                 .category(university.getCategory())
                 .createdAt(university.getCreatedAt())

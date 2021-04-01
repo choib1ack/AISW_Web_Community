@@ -16,8 +16,6 @@ public class QnaApiRequest {
 
     private String content;
 
-    private String attachmentFile;
-
     private BulletinStatus status;
 
     private String subject;

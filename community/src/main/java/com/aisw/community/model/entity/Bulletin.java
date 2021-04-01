@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -35,12 +36,13 @@ public class Bulletin {
 
     private String content;
 
-    private String attachmentFile;
-
     @Enumerated(EnumType.STRING)
     private BulletinStatus status;
 
     private Long views;
+
+    // 학생회 공지1
+    private Long level;
 
     private FirstCategory firstCategory;
 
@@ -61,17 +63,21 @@ public class Bulletin {
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account; // user id
 
-    public Bulletin(Long id, String title, String writer, String content, String attachmentFile, BulletinStatus status,
-                    Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bulletin")
+    private List<Attachment> attachment;
+
+    public Bulletin(Long id, String title, String writer, String content, BulletinStatus status,
+                    Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account, List<Attachment> attachment) {
         this.id = id;
         this.title = title;
         this.writer = writer;
         this.content = content;
-        this.attachmentFile = attachmentFile;
         this.status = status;
         this.views = views;
+        this.level = level;
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
         this.account= account;
+        this.attachment = attachment;
     }
 }

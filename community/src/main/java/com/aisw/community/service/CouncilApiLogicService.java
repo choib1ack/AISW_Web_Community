@@ -15,11 +15,15 @@ import com.aisw.community.model.network.response.NoticeResponseDTO;
 import com.aisw.community.repository.AccountRepository;
 import com.aisw.community.repository.CouncilRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,9 +45,9 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .title(councilApiRequest.getTitle())
                 .writer(account.getName())
                 .content(councilApiRequest.getContent())
-                .attachmentFile(councilApiRequest.getAttachmentFile())
                 .status(councilApiRequest.getStatus())
                 .views(0L)
+                .level(councilApiRequest.getLevel())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
                 .account(account)
@@ -73,8 +77,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                     council
                             .setTitle(councilApiRequest.getTitle())
                             .setContent(councilApiRequest.getContent())
-                            .setAttachmentFile(councilApiRequest.getAttachmentFile())
-                            .setStatus(councilApiRequest.getStatus());
+                            .setStatus(councilApiRequest.getStatus())
+                            .setLevel(councilApiRequest.getLevel());
                     return council;
                 })
                 .map(council -> baseRepository.save(council))
@@ -99,9 +103,9 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .title(council.getTitle())
                 .writer(council.getWriter())
                 .content(council.getContent())
-                .attachmentFile(council.getAttachmentFile())
                 .status(council.getStatus())
                 .views(council.getViews())
+                .level(council.getLevel())
                 .category(council.getCategory())
                 .createdAt(council.getCreatedAt())
                 .createdBy(council.getCreatedBy())
@@ -111,6 +115,20 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .build();
 
         return councilApiResponse;
+    }
+
+    @Override
+    public void crawling(Long boardNo) throws IOException {
+    }
+
+    @Override
+    public Header<CouncilApiResponse> write(MultipartFile[] files) {
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<Resource> download(Long id, String originFileName) {
+        return null;
     }
 
     @Override
