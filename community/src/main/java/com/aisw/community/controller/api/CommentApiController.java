@@ -32,11 +32,6 @@ public class CommentApiController {
         return commentApiLogicService.delete(id);
     }
 
-    @GetMapping("{id}")
-    public Header<List<CommentApiResponse>> searchByPost(@PathVariable Long id) {
-        return commentApiLogicService.searchByPost(id);
-    }
-
     @GetMapping("/likes/{id}")
     public Header<CommentApiResponse> pressLikes(@PathVariable Long id) {
         return commentApiLogicService.pressLikes(id);

@@ -31,7 +31,6 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         String attachmentFile = "test attachment";
         BulletinStatus status = BulletinStatus.GENERAL;
         Long views = 0L;
-        Long level = 1L;
         Account userId = accountRepository.getOne(1L);
 
 
@@ -42,7 +41,6 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
                 .attachmentFile(attachmentFile)
                 .status(status)
                 .views(views)
-                .level(level)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
                 .account(userId)
@@ -68,7 +66,6 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
         Optional<University> university = universityRepository.findById(3L);
 
         university.ifPresent(readUniversity -> {
-            readUniversity.setLevel(2L);
 
             universityRepository.save(readUniversity);
         });

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QnaWithCommentApiResponse {
+public class QnaDetailApiResponse {
 
     private Long id;
 
@@ -46,6 +46,8 @@ public class QnaWithCommentApiResponse {
     private String updatedBy;
 
     private Long accountId;
+
+    private Boolean checkLike = false;
 
     private List<CommentApiResponse> commentApiResponseList;
 }

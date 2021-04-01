@@ -33,6 +33,7 @@ class CommentRepositoryTest extends CommunityApplicationTests  {
                 .writer(writer)
                 .content(content)
                 .isAnonymous(isAnonymous)
+                .isDeleted(false)
                 .likes(0L)
                 .board(boardId)
                 .account(userId)
