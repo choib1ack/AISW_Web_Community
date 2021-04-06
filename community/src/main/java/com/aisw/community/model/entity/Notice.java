@@ -22,8 +22,8 @@ public class Notice extends Bulletin {
     private SecondCategory category;
 
     public Notice(Long id, String title, String writer, String content, BulletinStatus status,
-                  Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account, List<Attachment> attachment) {
-        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment);
+                  Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account, List<Attachment> attachment) {
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, account, attachment);
         this.category = secondCategory;
     }
 }

@@ -50,7 +50,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .likes(0L)
                 .subject(qnaApiRequest.getSubject())
                 .isAnonymous(qnaApiRequest.getIsAnonymous())
-                .level(qnaApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
                 .account(account)
@@ -80,8 +79,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                     qna
                             .setTitle(qnaApiRequest.getTitle())
                             .setContent(qnaApiRequest.getContent())
-                            .setStatus(qnaApiRequest.getStatus())
-                            .setLevel(qnaApiRequest.getLevel());
+                            .setStatus(qnaApiRequest.getStatus());
                     qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
                     qna.setSubject(qnaApiRequest.getSubject());
 
@@ -115,7 +113,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .updatedAt(qna.getUpdatedAt())
                 .updatedBy(qna.getUpdatedBy())
                 .views(qna.getViews())
-                .level(qna.getLevel())
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
@@ -149,7 +146,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .updatedAt(qna.getUpdatedAt())
                 .updatedBy(qna.getUpdatedBy())
                 .views(qna.getViews())
-                .level(qna.getLevel())
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())

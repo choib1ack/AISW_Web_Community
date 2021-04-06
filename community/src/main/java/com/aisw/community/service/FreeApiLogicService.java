@@ -49,7 +49,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .views(0L)
                 .likes(0L)
                 .isAnonymous(freeApiRequest.getIsAnonymous())
-                .level(freeApiRequest.getLevel())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .account(account)
@@ -79,8 +78,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                     free
                             .setTitle(freeApiRequest.getTitle())
                             .setContent(freeApiRequest.getContent())
-                            .setStatus(freeApiRequest.getStatus())
-                            .setLevel(freeApiRequest.getLevel());
+                            .setStatus(freeApiRequest.getStatus());
                     free.setIsAnonymous(freeApiRequest.getIsAnonymous());
                     return free;
                 })
@@ -112,7 +110,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .updatedAt(free.getUpdatedAt())
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
-                .level(free.getLevel())
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
@@ -145,7 +142,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .updatedAt(free.getUpdatedAt())
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
-                .level(free.getLevel())
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())

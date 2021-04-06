@@ -41,9 +41,6 @@ public class Bulletin {
 
     private Long views;
 
-    // 학생회 공지1
-    private Long level;
-
     private FirstCategory firstCategory;
 
     private SecondCategory secondCategory;
@@ -67,14 +64,13 @@ public class Bulletin {
     private List<Attachment> attachment;
 
     public Bulletin(Long id, String title, String writer, String content, BulletinStatus status,
-                    Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account, List<Attachment> attachment) {
+                    Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account, List<Attachment> attachment) {
         this.id = id;
         this.title = title;
         this.writer = writer;
         this.content = content;
         this.status = status;
         this.views = views;
-        this.level = level;
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
         this.account= account;
