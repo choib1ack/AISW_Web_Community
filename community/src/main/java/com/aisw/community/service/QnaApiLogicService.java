@@ -44,6 +44,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
 
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
+        //
         QnaApiRequest qnaApiRequest = request.getData();
         Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Qna qna = Qna.builder()
