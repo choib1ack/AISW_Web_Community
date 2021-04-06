@@ -273,7 +273,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .content(university.getContent())
                 .status(university.getStatus())
                 .views(university.getViews())
-                .level(university.getLevel())
                 .campus(university.getCampus())
                 .category(university.getCategory())
                 .createdAt(university.getCreatedAt())
