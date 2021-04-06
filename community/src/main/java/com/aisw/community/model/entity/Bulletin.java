@@ -13,6 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -41,9 +42,6 @@ public class Bulletin {
 
     private Long views;
 
-    // 학생회 공지1
-    private Long level;
-
     private FirstCategory firstCategory;
 
     private SecondCategory secondCategory;
@@ -64,20 +62,18 @@ public class Bulletin {
     private Account account; // user id
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bulletin")
-    private List<Attachment> attachment;
+    private List<Attachment> attachment = new ArrayList<>();
 
     public Bulletin(Long id, String title, String writer, String content, BulletinStatus status,
-                    Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account, List<Attachment> attachment) {
+                    Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
         this.id = id;
         this.title = title;
         this.writer = writer;
         this.content = content;
         this.status = status;
         this.views = views;
-        this.level = level;
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
         this.account= account;
-        this.attachment = attachment;
     }
 }

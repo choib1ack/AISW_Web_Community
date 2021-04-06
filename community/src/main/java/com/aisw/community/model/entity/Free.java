@@ -22,10 +22,8 @@ import java.util.List;
 public class Free extends Board {
 
     @Builder
-    public Free(Long id, String title, String writer, String content, BulletinStatus status,
-                Long views, Long level, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
-                List<Attachment> attachment, Long likes, Boolean isAnonymous) {
-        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment,
-                likes, isAnonymous);
+    public Free(Long id, String title, String writer, String content, BulletinStatus status, Long views,
+                FirstCategory firstCategory, SecondCategory secondCategory, Account account, Long likes, Boolean isAnonymous) {
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, account, likes, isAnonymous);
     }
 }

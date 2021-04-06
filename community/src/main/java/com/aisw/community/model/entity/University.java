@@ -24,10 +24,10 @@ public class University extends Notice {
     private Campus campus;
 
     @Builder
-    public University(Long id, String title, String writer, String content,
-                      BulletinStatus status, Long views, Long level, FirstCategory firstCategory,
-                      SecondCategory secondCategory, Account account, List<Attachment> attachment, Campus campus) {
-        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment);
+    public University(Long id, String title, String writer, String content, BulletinStatus status,
+                      Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
+                      Campus campus) {
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, account);
         this.campus = campus;
     }
 }
