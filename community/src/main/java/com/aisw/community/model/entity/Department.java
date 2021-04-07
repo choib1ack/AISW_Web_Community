@@ -18,9 +18,8 @@ import java.util.List;
 public class Department extends Notice {
 
     @Builder
-    public Department(Long id, String title, String writer, String content,
-                      BulletinStatus status, Long views, Long level, FirstCategory firstCategory,
-                      SecondCategory secondCategory, Account account, List<Attachment> attachment) {
-        super(id, title, writer, content, status, views, level, firstCategory, secondCategory, account, attachment);
+    public Department(Long id, String title, String writer, String content, BulletinStatus status, Long views,
+                      FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, account);
     }
 }

@@ -158,7 +158,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .content(contentHtml)
                 .status(BulletinStatus.GENERAL)
                 .views(0L)
-                .level(1L)
                 .campus(univ)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
