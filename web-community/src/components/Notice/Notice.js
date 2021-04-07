@@ -13,7 +13,6 @@ function Notice({match}) {
             <Route path={`${match.path}/newNotice`} component={NewNotice}/>
             <Route exact path={`${match.path}/:notice_category/:id`} component={NoticeDetail}/>
             <Route path={`${match.path}/:notice_category/:id/edit`} component={EditNotice}/>
-
         </>
     );
 }

@@ -147,7 +147,7 @@ export function checkTitle(title) {
 }
 
 export function checkContent(content) {
-    if (content === undefined) {
+    if (content === null) {
         alert("내용을 입력하세요.");
         return false;
     }

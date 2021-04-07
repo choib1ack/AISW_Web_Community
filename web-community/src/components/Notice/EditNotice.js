@@ -12,10 +12,17 @@ import axios from "axios";
 import FinishModal from "../FinishModal";
 import TextEditor from "../TextEditor";
 import {checkContent, checkTitle} from "../Board/NewBoard";
+import {useLocation} from "react-router-dom";
+import WriteEditor from "../WriteEditor";
+import WriteEditorContainer from "../WriteEditorContainer";
 
-export default function EditNotice() {
+export default function EditNotice({match}, props) {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
+    const location = useLocation();
+
+    const detail = location.state.detail;
+    const {notice_category} = match.params;
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
@@ -89,7 +96,7 @@ export default function EditNotice() {
                     <Row>
                         <Col>
                             <Form.Group>
-                                <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
+                                <Form.Control as="select" defaultValue={notice_category} id='board_category'
                                               name="board_type" ref={register}>
                                     <option value="university">학교 홈페이지</option>
                                     <option value="department">학과사무실</option>
@@ -101,18 +108,20 @@ export default function EditNotice() {
                     <Row>
                         <Col>
                             <Form.Group controlId="subject">
-                                <Form.Control type="text" placeholder="제목을 입력해주세요."
+                                <Form.Control type="text" value={detail.title}
                                               name="title" ref={register}/>
                             </Form.Group>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                            <Controller
-                                as={<TextEditor/>}
-                                name="content"
-                                control={control}
-                            />
+                            {/*<Controller*/}
+                            {/*    as={<WriteEditor/>}*/}
+                            {/*    name="content"*/}
+                            {/*    control={control}*/}
+                            {/*/>*/}
+
+                            <WriteEditorContainer/>
 
                             {/*<Form.Group controlId="content">*/}
                             {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}

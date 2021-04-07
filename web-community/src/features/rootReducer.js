@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux'
 import userReducer from './userSlice'
-import counterReducer from './counterSlice'
+import writeReducer from './writeSlice'
 
 const rootReducer = combineReducers({
     user: userReducer,
-    counter: counterReducer
+    write: writeReducer,
 })
 
 export default rootReducer;

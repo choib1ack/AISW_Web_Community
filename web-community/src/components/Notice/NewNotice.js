@@ -5,13 +5,15 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useForm, Controller} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import FinishModal from "../FinishModal";
 import TextEditor from "../TextEditor";
 import {checkContent, checkTitle} from "../Board/NewBoard";
+import WriteEditorContainer from "../WriteEditorContainer";
+import {changeWriteField} from "../../features/writeSlice";
 
 export default function NewNotice() {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
@@ -19,6 +21,7 @@ export default function NewNotice() {
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
+    const write = useSelector(state => state.write)
     const dispatch = useDispatch()
 
     async function sendNotice(data, path) {
@@ -42,6 +45,8 @@ export default function NewNotice() {
     }
 
     const onSubmit = (data) => {
+        data.content = write.value;
+
         if (checkTitle(data.title) && checkContent(data.content)) {
             let test;
             if (data.board_type === "university") {
@@ -108,11 +113,13 @@ export default function NewNotice() {
                     </Row>
                     <Row>
                         <Col>
-                            <Controller
-                                as={<TextEditor/>}
-                                name="content"
-                                control={control}
-                            />
+                            {/*<Controller*/}
+                            {/*    as={<TextEditor/>}*/}
+                            {/*    name="content"*/}
+                            {/*    control={control}*/}
+                            {/*/>*/}
+
+                            <WriteEditorContainer/>
 
                             {/*<Form.Group controlId="content">*/}
                             {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
