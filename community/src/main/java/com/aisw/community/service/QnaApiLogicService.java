@@ -155,6 +155,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .accountId(qna.getAccount().getId())
+                .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()))
                 .build();
 
         return qnaWithCommentApiResponse;
