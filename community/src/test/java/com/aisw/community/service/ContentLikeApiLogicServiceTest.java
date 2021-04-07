@@ -38,7 +38,7 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
         ContentLikeApiRequest contentLikeApiRequest = ContentLikeApiRequest.builder()
                 .accountId(1L)
 //                .boardId(1L)
-                .commentId(3L)
+                .commentId(7L)
                 .build();
 
         Account account = accountRepository.findById(contentLikeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
@@ -47,7 +47,7 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
 
 //        contentLikeRepository.findContentLikeByAccountIdAndBoardId(1L, 3L)
 //                .ifPresent(contentLike -> {throw new RuntimeException();});
-        contentLikeRepository.findContentLikeByAccountIdAndCommentId(1L, 3L)
+        contentLikeRepository.findContentLikeByAccountIdAndCommentId(1L, 7L)
                 .ifPresent(contentLike -> {throw new RuntimeException();});
 
         ContentLike contentLike = ContentLike.builder()
@@ -65,7 +65,7 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
         ContentLikeApiRequest contentLikeApiRequest = ContentLikeApiRequest.builder()
                 .accountId(1L)
 //                .boardId(1L)
-                .commentId(3L)
+                .commentId(7L)
                 .build();
 
         Account account = accountRepository.findById(contentLikeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
@@ -73,7 +73,7 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
         Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId()).orElseThrow(CommentNotFoundException::new);
 
 //        contentLikeRepository.findContentLikeByAccountIdAndBoardId(1L, 3L).orElseThrow(RuntimeException::new);
-        ContentLike deleteContentLike = contentLikeRepository.findContentLikeByAccountIdAndCommentId(1L, 3L).orElseThrow(RuntimeException::new);
+        ContentLike deleteContentLike = contentLikeRepository.findContentLikeByAccountIdAndCommentId(1L, 7L).orElseThrow(RuntimeException::new);
         contentLikeRepository.delete(deleteContentLike);
     }
 }

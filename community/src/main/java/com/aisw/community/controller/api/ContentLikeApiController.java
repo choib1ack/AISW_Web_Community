@@ -20,8 +20,13 @@ public class ContentLikeApiController {
     @Autowired
     private ContentLikeApiLogicService contentLikeApiLogicService;
 
-//    @PostMapping("")
-//    public Header<ContentLikeApiResponse> pressLike(@RequestBody Header<ContentLikeApiRequest> request) {
-//        return contentLikeApiLogicService.pressLike(request);
-//    }
+    @PostMapping("/press")
+    public Header<ContentLikeApiResponse> pressLike(@RequestBody Header<ContentLikeApiRequest> request) {
+        return contentLikeApiLogicService.pressLike(request);
+    }
+
+    @PostMapping("remove")
+    public Header removeLike(@RequestBody Header<ContentLikeApiRequest> request) {
+        return contentLikeApiLogicService.removeLike(request);
+    }
 }
