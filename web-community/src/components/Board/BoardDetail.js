@@ -15,6 +15,7 @@ import Loading from '../Loading';
 import {Link, useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
+import {useSelector} from "react-redux";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -23,6 +24,9 @@ export default function BoardDetail({match}) {
     const [likes, setLikes] = useState(0);
     const [isCommentLatest, setIsCommentLatest] = useState(false);
     let history = useHistory();
+
+    // redux toolkit
+    const user = useSelector(state => state.user)
 
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);

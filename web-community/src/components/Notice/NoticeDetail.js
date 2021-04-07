@@ -6,16 +6,24 @@ import {ListButton} from "../Button/ListButton";
 import axios from "axios";
 import Loading from "../Loading";
 import parse from 'html-react-parser';
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import {useHistory} from "react-router-dom";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [htmlToReact, setHtmlToReact] = useState(null);
+    let history = useHistory();
 
     const { notice_category } = match.params;
     const { id } = match.params;
     const url = match.url;
+
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
 
     window.scrollTo(0, 0);
 
@@ -67,12 +75,57 @@ export default function NoticeDetail({match}) {
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
     if (!noticeDetailData) return null;
 
+    function handleEdit() {
+        history.push(`${url}/edit`);
+    }
+
+    async function handleDelete() {
+        await axios.delete("/notice/" + notice_category + "/" + id)
+            .then((res) => {
+                console.log(res)
+                history.push('/notice')  // BoardList로 이동
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log("에러 발생");
+                console.log(errorObject);
+            })
+    }
+
+    function CustomModal() {
+        return (
+            <>
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>삭제</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>정말로 삭제 하시겠습니까 ?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            아니오
+                        </Button>
+                        <Button variant="primary" onClick={handleDelete}>
+                            네
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        )
+    }
+
     return (
         <div className="NoticeDetail">
+            <CustomModal/>
 
             <Container>
                 <Title text='공지사항' type='1'/>
-                <div className="text-left mt-5 mb-4"
+                <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
+                    <p style={{cursor: 'pointer', marginLeft: "auto"}}
+                       onClick={handleEdit}>수정</p>
+                    <p style={{cursor: 'pointer', marginLeft: "10px"}}
+                       onClick={handleShow}>삭제</p>
+                </div>
+
+                <div className="text-left mb-4"
                      style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
                     <div style={{
                         backgroundColor: "#EFF7F9",

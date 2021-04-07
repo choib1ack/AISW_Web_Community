@@ -1,31 +1,28 @@
-import {Controller, useForm} from "react-hook-form";
-import React, {useRef, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import axios from "axios";
 import Container from "react-bootstrap/Container";
-import FinishModal from "../FinishModal";
 import Title from "../Title";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import {subject_list} from "./SubjectList";
-import TextEditor from "../TextEditor";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
-import {checkContent, checkTitle} from "./NewBoard";
+import React, {useState} from "react";
+import {useForm, Controller} from "react-hook-form";
+import {useDispatch, useSelector} from "react-redux";
+import axios from "axios";
+import FinishModal from "../FinishModal";
+import TextEditor from "../TextEditor";
+import {checkContent, checkTitle} from "../Board/NewBoard";
 
-function EditBoard(){
-    const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
+export default function EditNotice() {
+    const {register, handleSubmit, control} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
-    const board_type = useRef();
-    board_type.current = watch("board_type");
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
     const dispatch = useDispatch()
 
-    async function sendBoard(data, path) {
-        await axios.post("/board/" + path,
+    async function sendNotice(data, path) {
+        await axios.post("/notice/" + path,
             {
                 headers: {
                     "Content-Type": `application/json`
@@ -47,59 +44,58 @@ function EditBoard(){
     const onSubmit = (data) => {
         if (checkTitle(data.title) && checkContent(data.content)) {
             let test;
-            if (data.board_type === 'free') {
+            if (data.board_type === "university") {
+                test = {
+                    attachment_file: "string",
+                    campus: "COMMON",
+                    content: data.content,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id,
+                    writer: "string"
+                }
+            } else if (data.board_type === "department") {
                 test = {
                     attachment_file: "string",
                     content: data.content,
-                    is_anonymous: true,
                     level: 0,
                     status: "GENERAL",
                     title: data.title,
                     account_id: user.id
                 }
-            } else if (data.board_type === 'qna') {
+            } else if (data.board_type === "council") {
                 test = {
                     attachment_file: "string",
                     content: data.content,
-                    is_anonymous: true,
                     level: 0,
                     status: "GENERAL",
-                    subject: data.subject,
                     title: data.title,
                     account_id: user.id
                 }
             }
-            sendBoard(test, data.board_type)
+            sendNotice(test, data.board_type)
         }
     }
 
     return (
-        <div className="EditBoard">
+        <div className="EditNotice">
             <Container>
-                <FinishModal show={modalShow} link={`/board`}
-                             title="게시판" body="글 게시가 완료되었습니다 !"/>
+                <FinishModal show={modalShow} link={`/notice`}
+                             title="공지사항" body="글 게시가 완료되었습니다 !"/>
 
-                <Title text='게시글 수정' type='1'/>
+                <Title text='공지사항 수정' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>
                         <Col>
                             <Form.Group>
                                 <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
                                               name="board_type" ref={register}>
-                                    <option value="free">자유게시판</option>
-                                    <option value="qna">과목별게시판</option>
+                                    <option value="university">학교 홈페이지</option>
+                                    <option value="department">학과사무실</option>
+                                    <option value="council">학생회</option>
                                 </Form.Control>
                             </Form.Group>
-                        </Col>
-                        <Col>
-                            {board_type.current == "qna" &&
-                            <Form.Control as="select" defaultValue="과목 선택" id='lecture'
-                                          name="subject" ref={register}>
-                                {subject_list.map((subject, index) => {
-                                    return <option value={subject} key={index}>{subject}</option>
-                                })}
-                            </Form.Control>
-                            }
                         </Col>
                     </Row>
                     <Row>
@@ -112,13 +108,16 @@ function EditBoard(){
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group controlId="content">
-                                <Controller
-                                    as={<TextEditor/>}
-                                    name="content"
-                                    control={control}
-                                />
-                            </Form.Group>
+                            <Controller
+                                as={<TextEditor/>}
+                                name="content"
+                                control={control}
+                            />
+
+                            {/*<Form.Group controlId="content">*/}
+                            {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
+                            {/*                  name="content" ref={register}/>*/}
+                            {/*</Form.Group>*/}
                         </Col>
                     </Row>
                     <Row>
@@ -136,5 +135,3 @@ function EditBoard(){
         </div>
     );
 }
-
-export default EditBoard;
