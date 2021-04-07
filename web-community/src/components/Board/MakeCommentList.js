@@ -4,11 +4,14 @@ import Card from "react-bootstrap/Card";
 import userImage from "../../icon/user.svg";
 import likeImage from "../../icon/like.svg";
 import Loading from "../Loading";
+import WriteReComment from "./WriteReComment";
+import MakeReCommentList from "./MakeReCommentList";
 
 export default function MakeCommentList({id, isLatest, setIsLatest}) {
     const [boardCommentData, setBoardCommentData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
     // const [isLatest, setIsLatest] = useState(false);
 
     const dateFormat = (s) => {
@@ -44,7 +47,10 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
             })
     }
 
-
+    const handleReCommentClick = () => {
+        alert("답글쓰기 누름");
+    }
+    
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
@@ -53,6 +59,7 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
                 setLoading(true);
                 const response = await axios.get("/board/comment/" + id);
                 setBoardCommentData(response.data.data);
+                console.log(response.data.data);
                 setIsLatest(true);
             } catch (e) {
                 setError(e);
@@ -75,6 +82,7 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
     return (
         <>
             {boardCommentData.map(data => (
+                <div style={{marginBottom:'1rem'}} key={data.id}>
                 <Card style={{borderRadius: '10px'}} className="text-left flex-row m-2" key={data.id}>
                     <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
 
@@ -88,13 +96,27 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
                                 {dateFormat(data.created_at.substring(0, 16))}</span>
                         </Card.Title>
                         <Card.Text className="mb-0">
-                            <span className={'delete-style'} onClick={() => handleDeleteClick(data.id)}>삭제</span>
+
+                            <span className={'delete-style'} onClick={() => handleDeleteClick(data.id)} style={{marginLeft:'0.5rem'}}>삭제</span>
+                            <span className={'recomment-style'} onClick={() => handleReCommentClick(data.id)}>답글쓰기</span>
                             <p className=" mr-3 mb-1" style={{fontSize: '13px'}}>
                                 {data.content}
                             </p>
                         </Card.Text>
                     </Card.Body>
                 </Card>
+                <WriteReComment
+                    board_id={id}
+                    setIsLatest={setIsLatest}
+                    parent={data.id}
+                    display={false}
+                />
+                <MakeReCommentList
+                    boardReCommentData={data.sub_comment}
+                    setIsLatest={setIsLatest}
+                />
+                {/*<hr/>*/}
+                </div>
             ))}
         </>
     );

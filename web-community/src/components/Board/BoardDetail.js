@@ -12,6 +12,7 @@ import WriteComment from "./WriteComment";
 import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
 import Loading from '../Loading';
+import WriteReComment from "./WriteReComment";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -124,8 +125,11 @@ export default function BoardDetail({match}) {
                             isLatest={isCommentLatest}
                             setIsLatest={setIsCommentLatest}
                         />
-                        <ReplyBox/>
-                        <ReplyBox/>
+                        {/*<ReplyBox/>*/}
+                        {/*<WriteReComment*/}
+                        {/*    board_id={id}*/}
+                        {/*    setIsLatest={setIsCommentLatest}*/}
+                        {/*/>*/}
                         <WriteComment
                             board_id={id}
                             setIsLatest={setIsCommentLatest}
