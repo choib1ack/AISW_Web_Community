@@ -301,15 +301,4 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
 
         return Header.OK(boardResponseDTO, pagination);
     }
-
-    @Override
-    @Transactional
-    public Header<QnaApiResponse> pressLikes(Long id) {
-        return baseRepository.findById(id)
-                .map(qna -> qna.setLikes(qna.getLikes() + 1))
-                .map(qna -> baseRepository.save((Qna)qna))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
 }

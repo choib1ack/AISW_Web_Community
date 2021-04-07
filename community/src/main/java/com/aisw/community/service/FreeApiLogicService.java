@@ -288,15 +288,4 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
 
         return Header.OK(boardResponseDTO, pagination);
     }
-
-    @Override
-    @Transactional
-    public Header<FreeApiResponse> pressLikes(Long id) {
-        return baseRepository.findById(id)
-                .map(free -> free.setLikes(free.getLikes() + 1))
-                .map(free -> baseRepository.save((Free)free))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
 }

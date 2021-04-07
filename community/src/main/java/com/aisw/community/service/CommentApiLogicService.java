@@ -124,14 +124,4 @@ public class CommentApiLogicService {
         });
         return commentApiResponseList;
     }
-
-    @Transactional
-    public Header<CommentApiResponse> pressLikes(Long id) {
-        return commentRepository.findById(id)
-                .map(comment -> comment.setLikes(comment.getLikes() + 1))
-                .map(comment -> commentRepository.save(comment))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
-    }
 }

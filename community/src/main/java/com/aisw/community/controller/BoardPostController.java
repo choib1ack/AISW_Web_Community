@@ -80,9 +80,4 @@ public abstract class BoardPostController<Req, ListRes, DetailRes, BaseRes, Enti
 
         return boardPostService.searchByTitleOrContent(title, content, pageable);
     }
-
-    @GetMapping("/likes/{id}")
-    public Header<BaseRes> pressLikes(@PathVariable Long id) {
-        return boardPostService.pressLikes(id);
-    }
 }

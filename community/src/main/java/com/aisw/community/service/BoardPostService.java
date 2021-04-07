@@ -19,5 +19,4 @@ public abstract class BoardPostService<Req, ListRes, DetailRes, BaseRes, Entity>
     public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
     public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);
     public abstract Header<ListRes> searchByTitleOrContent(String title, String content, Pageable pageable);
-    public abstract Header<BaseRes> pressLikes(Long id);
 }
