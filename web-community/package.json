@@ -13,6 +13,8 @@
     "classnames": "^2.2.6",
     "draft-js": "0.11.7",
     "draftjs-to-html": "0.9.1",
+    "html-to-draftjs": "1.5.0",
+    "html-to-react": "1.4.5",
     "http-proxy-middleware": "^1.0.6",
     "multiselect-react-dropdown": "^1.6.7",
     "pdfjs-dist": "^2.6.347",
@@ -58,6 +60,7 @@
   },
   "devDependencies": {
     "@reduxjs/toolkit": "1.5.0",
+    "html-react-parser": "1.2.4",
     "prop-types": "15.7.2",
     "react-hook-form": "6.14.2",
     "semantic-ui-react": "2.0.2"

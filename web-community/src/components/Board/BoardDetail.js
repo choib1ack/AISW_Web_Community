@@ -13,6 +13,10 @@ import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
 import Loading from '../Loading';
 import WriteReComment from "./WriteReComment";
+import {Link, useHistory} from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import {useSelector} from "react-redux";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -20,6 +24,14 @@ export default function BoardDetail({match}) {
     const [error, setError] = useState(null);
     const [likes, setLikes] = useState(0);
     const [isCommentLatest, setIsCommentLatest] = useState(false);
+    let history = useHistory();
+
+    // redux toolkit
+    const user = useSelector(state => state.user)
+
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
 
     window.scrollTo(0, 0);
 
@@ -36,7 +48,7 @@ export default function BoardDetail({match}) {
         }
     }
     const handleLikeCilck = async () => {
-        let this_url = '/board/'+board_category+'/likes/'+id;
+        let this_url = '/board/' + board_category + '/likes/' + id;
         console.log(this_url);
         await axios.get(this_url)
             .then((res) => {
@@ -85,15 +97,68 @@ export default function BoardDetail({match}) {
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;
     if (!boardDetailData) return null;
+
+    function handleEdit() {
+        history.push(`${url}/edit`);
+    }
+
+    async function handleDelete() {
+        await axios.delete("/board/" + board_category + "/" + id)
+            .then((res) => {
+                console.log(res)
+                history.push('/board')  // BoardList로 이동
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log("에러 발생");
+                console.log(errorObject);
+            })
+    }
+
+    function CustomModal() {
+        return (
+            <>
+                <Modal show={show} onHide={handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>삭제</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>정말로 삭제 하시겠습니까 ?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            아니오
+                        </Button>
+                        <Button variant="primary" onClick={handleDelete}>
+                            네
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        )
+    }
+
     return (
         <div className="BoardDetail">
+            <CustomModal/>
+
             <Container>
                 <Title text='게시판' type='1'/>
-                <div className="text-left mt-5 mb-4"
-                     style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
-                    <div style={{backgroundColor: "#e7f1ff"}} className="p-4">
-                        <p style={{color: "#0472FD", fontSize: '12px'}}
-                           className="mb-1">{Category(board_category)}</p>
+// <<<<<<< HEAD
+//                 <div className="text-left mt-5 mb-4"
+//                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
+//                     <div style={{backgroundColor: "#e7f1ff"}} className="p-4">
+//                         <p style={{color: "#0472FD", fontSize: '12px'}}
+// =======
+                <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
+                    <p style={{cursor: 'pointer', marginLeft: "auto"}}
+                       onClick={handleEdit}>수정</p>
+                    <p style={{cursor: 'pointer', marginLeft: "10px"}}
+                       onClick={handleShow}>삭제</p>
+                </div>
+
+                <div className="text-left mb-4"
+                     style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
+                    <div style={{backgroundColor: "#EFF7F9"}} className="p-4">
+                        <p style={{color: "#6CBACB", fontSize: '12px'}}
+                        className="mb-1">{Category(board_category)}</p>
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
                         {boardDetailData.attachment_file == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}
@@ -113,7 +178,7 @@ export default function BoardDetail({match}) {
                         <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCilck}
                                      style={{cursor: "pointer"}}/> {likes}</span>
-                        <p>{boardDetailData.content}​</p>
+                        <p>{boardDetailData.content}</p>
                     </div>
                     {AttachmentFile(boardDetailData.attachment_file)}
                     <hr/>
@@ -145,7 +210,7 @@ export default function BoardDetail({match}) {
 export function ReplyBox() {
     return (
         <div style={{display: 'flex', flexDirection: 'row'}} className="ml-5">
-            <img src={arrowImage} style={{height: "20px", opacity:'0.7'}} className="ml-3 mt-3"/>
+            <img src={arrowImage} style={{height: "20px", opacity: '0.7'}} className="ml-3 mt-3"/>
             <Card style={{borderRadius: '10px', backgroundColor: '#F9F9F9'}}
                   className="text-left flex-row m-2 border-0 w-100">
                 <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
@@ -163,7 +228,6 @@ export function ReplyBox() {
                             네..
                         </p>
                     </Card.Text>
-
                 </Card.Body>
             </Card>
         </div>

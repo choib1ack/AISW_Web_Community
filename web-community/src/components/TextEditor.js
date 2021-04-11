@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Editor} from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import styled from 'styled-components';
@@ -20,6 +20,17 @@ const MyBlock = styled.div`
     padding: 5px !important;
     border-radius: 2px !important;
   }
+`;
+
+// 변환시켜준 editorState 값을 넣기 위한 div 태그 css
+const IntroduceContent = styled.div`
+  position: relative;
+  border: 0.0625rem solid #d7e2eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  padding: 1.5rem;
+  width: 50%;
+  margin: 0 auto 4rem;
 `;
 
 function uploadImageCallBack(file) {
@@ -45,6 +56,14 @@ function uploadImageCallBack(file) {
 
 const TextEditor = (props) => {
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+    // editorState의 현재 contentState 값을 원시 JS 구조로 변환시킨뒤, HTML 태그로 변환시켜준다.
+    const editorToHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+
+    useEffect(()=>{
+        console.log(editorState);
+    }, [editorState])
+
     const onEditorStateChange = (editorState) => {
         // editorState에 값 설정
         setEditorState(editorState);
@@ -84,6 +103,7 @@ const TextEditor = (props) => {
                     onEditorStateChange={onEditorStateChange}
                 />
             </MyBlock>
+            <IntroduceContent dangerouslySetInnerHTML={{__html: editorToHtml}}/>
         </>
     );
 };
