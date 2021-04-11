@@ -118,10 +118,10 @@ export default function NoticeDetail({match}) {
 
             <Container>
                 <Title text='공지사항' type='1'/>
-// <<<<<<< HEAD
-//                 <div className="text-left mt-5 mb-4"
-//                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
-// =======
+{/*// <<<<<<< HEAD*/}
+{/*//                 <div className="text-left mt-5 mb-4"*/}
+{/*//                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>*/}
+{/*// =======*/}
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
