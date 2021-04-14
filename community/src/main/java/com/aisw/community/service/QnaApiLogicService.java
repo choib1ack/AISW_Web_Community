@@ -131,8 +131,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     @Transactional
     public Header<QnaDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
-                .map(qna -> qna.setViews(qna.getViews() + 1))
-                .map(qna -> baseRepository.save((Qna) qna))
+                .map(qna -> (Qna)qna.setViews(qna.getViews() + 1))
                 .map(this::responseWithComment)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -155,6 +154,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .accountId(qna.getAccount().getId())
+                .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()))
                 .build();
 
         return qnaWithCommentApiResponse;

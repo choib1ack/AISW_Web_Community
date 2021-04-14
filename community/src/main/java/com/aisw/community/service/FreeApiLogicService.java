@@ -125,8 +125,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     @Transactional
     public Header<FreeDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
-                .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save((Free)free))
+                .map(free -> (Free)free.setViews(free.getViews() + 1))
                 .map(this::responseWithComment)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
