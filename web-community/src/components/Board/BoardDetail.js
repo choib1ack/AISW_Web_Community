@@ -23,7 +23,7 @@ export default function BoardDetail({match}) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [likes, setLikes] = useState(0);
-    const [isCommentLatest, setIsCommentLatest] = useState(false);
+    const [isLatest, setIsLatest] = useState(false);
     let history = useHistory();
 
     // redux toolkit
@@ -37,7 +37,8 @@ export default function BoardDetail({match}) {
 
     const {board_category} = match.params;
     const {id} = match.params;
-    const url = match.url;
+    const url = match.url.substring(0,11)+"/comment&like/"+id+"/"+1;
+    console.log("url!! -->", url);
 
     const Category = (c) => {
         switch (c) {
@@ -83,6 +84,7 @@ export default function BoardDetail({match}) {
                 const response = await axios.get(url);
                 setLikes(response.data.data.likes);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
+                setIsLatest(true);
             } catch (e) {
                 setError(e);
             }
@@ -90,7 +92,7 @@ export default function BoardDetail({match}) {
         };
 
         fetchNoticeData();
-    }, []); // 여기 빈배열 안써주면 무한루프,,
+    }, [isLatest]); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
     if (error) return <tr>
@@ -187,17 +189,14 @@ export default function BoardDetail({match}) {
                         <Title text='댓글' type='2'/>
                         <MakeCommentList
                             id={id}
-                            isLatest={isCommentLatest}
-                            setIsLatest={setIsCommentLatest}
+                            isLatest={isLatest}
+                            setIsLatest={setIsLatest}
+                            board_category={board_category}
+                            board_comment_data={boardDetailData.comment_api_response_list}
                         />
-                        {/*<ReplyBox/>*/}
-                        {/*<WriteReComment*/}
-                        {/*    board_id={id}*/}
-                        {/*    setIsLatest={setIsCommentLatest}*/}
-                        {/*/>*/}
                         <WriteComment
                             board_id={id}
-                            setIsLatest={setIsCommentLatest}
+                            setIsLatest={setIsLatest}
                         />
                     </div>
                 </div>
@@ -207,30 +206,30 @@ export default function BoardDetail({match}) {
     )
 }
 
-export function ReplyBox() {
-    return (
-        <div style={{display: 'flex', flexDirection: 'row'}} className="ml-5">
-            <img src={arrowImage} style={{height: "20px", opacity: '0.7'}} className="ml-3 mt-3"/>
-            <Card style={{borderRadius: '10px', backgroundColor: '#F9F9F9'}}
-                  className="text-left flex-row m-2 border-0 w-100">
-                <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
-
-                <Card.Body>
-                    <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                        <img src={likeImage} style={{cursor: "pointer"}}/> 0
-                    </span>
-                    <Card.Title className="mb-2" style={{fontSize: '14px'}}>익명1
-                        <span style={{color: "#8C8C8C", fontSize: '12px', marginLeft: "10px"}}>01/09 11:10</span>
-                    </Card.Title>
-                    <Card.Text className="mb-0">
-                        <span className={'delete-style'}>삭제</span>
-                        <p className="d-inline-block mr-3 mb-1" style={{fontSize: '14px'}}>
-                            네..
-                        </p>
-                    </Card.Text>
-                </Card.Body>
-            </Card>
-        </div>
-    )
-}
+// export function ReplyBox() {
+//     return (
+//         <div style={{display: 'flex', flexDirection: 'row'}} className="ml-5">
+//             <img src={arrowImage} style={{height: "20px", opacity: '0.7'}} className="ml-3 mt-3"/>
+//             <Card style={{borderRadius: '10px', backgroundColor: '#F9F9F9'}}
+//                   className="text-left flex-row m-2 border-0 w-100">
+//                 <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
+//
+//                 <Card.Body>
+//                     <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
+//                         <img src={likeImage} style={{cursor: "pointer"}}/> 0
+//                     </span>
+//                     <Card.Title className="mb-2" style={{fontSize: '14px'}}>익명1
+//                         <span style={{color: "#8C8C8C", fontSize: '12px', marginLeft: "10px"}}>01/09 11:10</span>
+//                     </Card.Title>
+//                     <Card.Text className="mb-0">
+//                         <span className={'delete-style'}>삭제</span>
+//                         <p className="d-inline-block mr-3 mb-1" style={{fontSize: '14px'}}>
+//                             네..
+//                         </p>
+//                     </Card.Text>
+//                 </Card.Body>
+//             </Card>
+//         </div>
+//     )
+// }
 

@@ -7,8 +7,8 @@ import Loading from "../Loading";
 import WriteReComment from "./WriteReComment";
 import MakeReCommentList from "./MakeReCommentList";
 
-export default function MakeCommentList({id, isLatest, setIsLatest}) {
-    const [boardCommentData, setBoardCommentData] = useState(null);
+export default function MakeCommentList({id, isLatest, setIsLatest, board_category, board_comment_data}) {
+    const [boardCommentData, setBoardCommentData] = useState(board_comment_data);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -51,24 +51,25 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
         alert("답글쓰기 누름");
     }
     
-    useEffect(() => {
-        const fetchNoticeData = async () => {
-            try {
-                setError(null);
-                setBoardCommentData(null);
-                setLoading(true);
-                const response = await axios.get("/board/comment/" + id);
-                setBoardCommentData(response.data.data);
-                console.log(response.data.data);
-                setIsLatest(true);
-            } catch (e) {
-                setError(e);
-            }
-            setLoading(false);
-        };
-
-        fetchNoticeData();
-    }, [isLatest]);
+    // useEffect(() => {
+    //     const fetchNoticeData = async () => {
+    //         try {
+    //             setError(null);
+    //             setBoardCommentData(null);
+    //             setLoading(true);
+    //             const response = await axios.get("/board/"+board_category+"/comment/" + id);
+    //             console.log("/board/"+board_category+"/comment/" + id);
+    //             setBoardCommentData(response.data.data.comment_api_response_list);
+    //             console.log(response.data.data);
+    //             setIsLatest(true);
+    //         } catch (e) {
+    //             setError(e);
+    //         }
+    //         setLoading(false);
+    //     };
+    //
+    //     fetchNoticeData();
+    // }, [isLatest]);
 
     if (loading) return <Loading/>;
     if (error) return <tr>
@@ -90,6 +91,7 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
                         <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                             <img src={likeImage} style={{cursor: "pointer"}} onClick={()=>handleLikeClick(data.id)}/> {data.likes}
                         </span>
+                        {data.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
 
                         <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
                             <span style={{color: "#8C8C8C", fontSize: '12px', marginLeft: "10px"}}>
@@ -115,7 +117,6 @@ export default function MakeCommentList({id, isLatest, setIsLatest}) {
                     boardReCommentData={data.sub_comment}
                     setIsLatest={setIsLatest}
                 />
-                {/*<hr/>*/}
                 </div>
             ))}
         </>
