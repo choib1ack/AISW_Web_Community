@@ -8,6 +8,7 @@ import Title from "../Title";
 import fileImage from "../../icon/file.svg";
 import axios from "axios";
 import likeImage from "../../icon/like.svg"
+import likeGrayImage from "../../icon/like_gray.svg"
 import WriteComment from "./WriteComment";
 import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
@@ -48,18 +49,50 @@ export default function BoardDetail({match}) {
                 return "과목별게시판";
         }
     }
-    const handleLikeCilck = async () => {
-        let this_url = '/board/' + board_category + '/likes/' + id;
-        console.log(this_url);
-        await axios.get(this_url)
-            .then((res) => {
-                alert("게시글에 좋아요를 눌렀습니다");
-                setLikes(res.data.data.likes);
 
-            }).catch(error => {
-                alert("에러!");
-                console.log(error);
-            })
+    const handleLikeClick = async () => {
+        // account_id는 나중에 바꿔야함
+        const data = {
+            "account_id": 1,
+            "board_id": id
+            // "comment_id": 1
+        }
+        await axios.post('/like/press/',
+            {
+                headers: {
+                    "Content-Type": `application/json`
+                },
+                data
+            }
+        ).then((res) => {
+            alert("게시글에 좋아요를 눌렀습니다");
+            setIsLatest(false);
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            alert("좋아요 누름 에러!"+errorObject);
+        })
+    }
+    const handleLikeCancleClick = async () => {
+        // account_id는 나중에 바꿔야함
+        const data = {
+            "account_id": 1,
+            "board_id": id
+            // "comment_id": 1
+        }
+        await axios.post('/like/remove/',
+            {
+                headers: {
+                    "Content-Type": `application/json`
+                },
+                data
+            }
+        ).then((res) => {
+            alert("게시글에 좋아요를 취소했습니다");
+            setIsLatest(false);
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            alert("좋아요 취소 에러!"+errorObject);
+        })
     }
 
     // 첨부파일이 있을 때만 보여줌
@@ -177,9 +210,13 @@ export default function BoardDetail({match}) {
 
                     <div className="p-4" style={{minHeight: "100px"}}>
                         {/*좋아요*/}
-                        <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                                <img src={likeImage} onClick={handleLikeCilck}
-                                     style={{cursor: "pointer"}}/> {likes}</span>
+                        {boardDetailData.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
+                                <img src={likeImage} onClick={handleLikeCancleClick}
+                                     style={{cursor: "pointer"}}/> {likes}</span>:
+                            <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
+                                <img src={likeGrayImage} onClick={handleLikeClick}
+                                     style={{cursor: "pointer"}}/> {likes}</span>}
+
                         <p>{boardDetailData.content}</p>
                     </div>
                     {AttachmentFile(boardDetailData.attachment_file)}
