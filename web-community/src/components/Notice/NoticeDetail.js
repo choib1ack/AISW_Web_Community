@@ -130,7 +130,7 @@ export default function NoticeDetail({match}) {
                 </div>
 
                 <div className="text-left mb-4"
-                     style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
+                     style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
 
                     <div style={{
                         backgroundColor: "#e7f1ff",

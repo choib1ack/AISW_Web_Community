@@ -182,9 +182,9 @@ export default function BoardDetail({match}) {
                 </div>
 
                 <div className="text-left mb-4"
-                     style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
-                    <div style={{backgroundColor: "#EFF7F9"}} className="p-4">
-                        <p style={{color: "#6CBACB", fontSize: '12px'}}
+                     style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
+                    <div style={{backgroundColor: "#e7f1ff"}} className="p-4">
+                        <p style={{color: "#0472FD", fontSize: '12px'}}
                         className="mb-1">{Category(board_category)}</p>
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
                         {boardDetailData.attachment_file == null ? "" :
