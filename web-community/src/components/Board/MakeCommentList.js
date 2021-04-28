@@ -8,15 +8,13 @@ import Loading from "../Loading";
 import WriteReComment from "./WriteReComment";
 import MakeReCommentList from "./MakeReCommentList";
 
-export default function MakeCommentList({id, isLatest, setIsLatest, board_category, board_comment_data}) {
+export default function MakeCommentList({id, Refresh, board_comment_data}) {
     const [boardCommentData, setBoardCommentData] = useState(board_comment_data);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    // const [loading, setLoading] = useState(false);
+    // const [error, setError] = useState(null);
 
-    // const [isLatest, setIsLatest] = useState(false);
 
     const dateFormat = (s) => {
-        // console.log(s);
         let result = "";
         result += s.substring(5, 7) + "/" + s.substring(8, 10) + "  " + s.substring(11, 16);
         return result;
@@ -38,7 +36,7 @@ export default function MakeCommentList({id, isLatest, setIsLatest, board_catego
             }
         ).then((res) => {
             alert("댓글에 좋아요를 눌렀습니다");
-            setIsLatest(false);
+            // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
@@ -50,7 +48,8 @@ export default function MakeCommentList({id, isLatest, setIsLatest, board_catego
         await axios.delete("/board/comment/" + comment_id)
             .then((res) => {
                 alert("댓글을 지웠습니다");
-                setIsLatest(false);
+                // setIsLatest(false);
+                Refresh();
                 console.log(res);
 
             }).catch(error => {

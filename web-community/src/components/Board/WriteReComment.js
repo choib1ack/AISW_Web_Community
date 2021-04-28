@@ -8,7 +8,7 @@ import Card from "react-bootstrap/Card";
 import Loading from "../Loading";
 
 
-export default function WriteReComment({board_id, setIsLatest, display, parent}) {
+export default function WriteReComment({board_id, Refresh, display, parent}) {
     const [reCommentText, setReCommentText] = useState("");
     const [anonymousState, setAnonymousState] = useState(true);
 
@@ -32,7 +32,7 @@ export default function WriteReComment({board_id, setIsLatest, display, parent})
         ).then((res) => {
             setReCommentText("");
             alert("대댓글을 달았어요!");
-            setIsLatest(false);
+            Refresh();
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject.valueOf());

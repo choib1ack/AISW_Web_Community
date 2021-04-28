@@ -23,8 +23,7 @@ export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [likes, setLikes] = useState(0);
-    const [isLatest, setIsLatest] = useState(false);
+    const [refresh, setRefresh] = useState(0);
     let history = useHistory();
 
     // redux toolkit
@@ -39,7 +38,6 @@ export default function BoardDetail({match}) {
     const {board_category} = match.params;
     const {id} = match.params;
     const url = match.url.substring(0,11)+"/comment&like/"+id+"/"+1;
-    console.log("url!! -->", url);
 
     const Category = (c) => {
         switch (c) {
@@ -66,7 +64,7 @@ export default function BoardDetail({match}) {
             }
         ).then((res) => {
             alert("게시글에 좋아요를 눌렀습니다");
-            setIsLatest(false);
+            // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             alert("좋아요 누름 에러!"+errorObject);
@@ -88,7 +86,7 @@ export default function BoardDetail({match}) {
             }
         ).then((res) => {
             alert("게시글에 좋아요를 취소했습니다");
-            setIsLatest(false);
+            // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             alert("좋아요 취소 에러!"+errorObject);
@@ -107,17 +105,19 @@ export default function BoardDetail({match}) {
         );
     }
 
+    const Refresh = () => {
+        setRefresh(refresh + 1);
+    }
+
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
                 setError(null);
-                setBoardDetailData(null);
                 setLoading(true);
 
                 const response = await axios.get(url);
-                setLikes(response.data.data.likes);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
-                setIsLatest(true);
+                console.log(response.data.data);
             } catch (e) {
                 setError(e);
             }
@@ -125,7 +125,7 @@ export default function BoardDetail({match}) {
         };
 
         fetchNoticeData();
-    }, [isLatest]); // 여기 빈배열 안써주면 무한루프,,
+    }, [refresh]); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
     if (error) return <tr>
@@ -212,10 +212,10 @@ export default function BoardDetail({match}) {
                         {/*좋아요*/}
                         {boardDetailData.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCancleClick}
-                                     style={{cursor: "pointer"}}/> {likes}</span>:
+                                     style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>:
                             <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
                                 <img src={likeGrayImage} onClick={handleLikeClick}
-                                     style={{cursor: "pointer"}}/> {likes}</span>}
+                                     style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>}
 
                         <p>{boardDetailData.content}</p>
                     </div>
@@ -226,14 +226,13 @@ export default function BoardDetail({match}) {
                         <Title text='댓글' type='2'/>
                         <MakeCommentList
                             id={id}
-                            isLatest={isLatest}
-                            setIsLatest={setIsLatest}
+                            Refresh={Refresh}
                             board_category={board_category}
                             board_comment_data={boardDetailData.comment_api_response_list}
                         />
                         <WriteComment
                             board_id={id}
-                            setIsLatest={setIsLatest}
+                            Refresh={Refresh}
                         />
                     </div>
                 </div>

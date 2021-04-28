@@ -6,7 +6,7 @@ import FormControl from "react-bootstrap/FormControl";
 import Button from "react-bootstrap/Button";
 import sendImage from "../../icon/send.svg";
 
-export default function WriteComment({board_id, setIsLatest}) {
+export default function WriteComment({board_id, Refresh}) {
     const [commentText, setCommentText] = useState("");
     const [anonymousState, setAnonymousState] = useState(true);
 
@@ -29,7 +29,7 @@ export default function WriteComment({board_id, setIsLatest}) {
         ).then((res) => {
             setCommentText("");
             alert("댓글을 달았어요!");
-            setIsLatest(false);
+            Refresh();
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             alert("에러!"+errorObject);
@@ -72,3 +72,4 @@ export default function WriteComment({board_id, setIsLatest}) {
 
     )
 }
+
