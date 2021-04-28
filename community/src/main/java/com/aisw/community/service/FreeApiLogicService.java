@@ -72,6 +72,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     @Override
+    @Transactional
     public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
@@ -165,7 +166,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     private FreeDetailApiResponse responseWithCommentAndLike(Free free, Long accountId) {
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
+        List<ContentLike> contentLikeList = contentLikeRepository.findByAccountId(accountId, free.getId());
         List<CommentApiResponse> commentApiResponseList = commentApiLogicService.searchByPost(free.getId());
 
         FreeDetailApiResponse freeDetailApiResponse = FreeDetailApiResponse.builder()
@@ -184,14 +185,15 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .category(free.getCategory())
                 .accountId(free.getAccount().getId())
                 .build();
+
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null && contentLike.getBoard().getId() == free.getId()) {
                 freeDetailApiResponse.setCheckLike(true);
             }
-            for (int i = 0; i < commentApiResponseList.size(); i++) {
+            for(CommentApiResponse commentApiResponse : commentApiResponseList) {
                 if (contentLike.getComment() != null &&
-                        contentLike.getComment().getId() == commentApiResponseList.get(i).getId()) {
-                    commentApiResponseList.get(i).setCheckLike(true);
+                        contentLike.getComment().getId() == commentApiResponse.getId()) {
+                    commentApiResponse.setCheckLike(true);
                 }
             }
             freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
