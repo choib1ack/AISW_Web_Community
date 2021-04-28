@@ -128,9 +128,7 @@ export default function BoardDetail({match}) {
     }, [refresh]); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
-    if (error) return <tr>
-        <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
-    </tr>;
+    if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
     if (!boardDetailData) return null;
 
     function handleEdit() {
@@ -176,12 +174,6 @@ export default function BoardDetail({match}) {
 
             <Container>
                 <Title text='게시판' type='1'/>
-{/*// <<<<<<< HEAD*/}
-{/*//                 <div className="text-left mt-5 mb-4"*/}
-{/*//                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>*/}
-{/*//                     <div style={{backgroundColor: "#e7f1ff"}} className="p-4">*/}
-{/*//                         <p style={{color: "#0472FD", fontSize: '12px'}}*/}
-{/*// =======*/}
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>

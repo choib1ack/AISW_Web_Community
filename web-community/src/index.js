@@ -42,13 +42,13 @@ const store = configureStore({
 let persistor = persistStore(store)
 
 ReactDOM.render(
-    <React.StrictMode>
+    // <React.StrictMode>
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <App />
             </PersistGate>
         </Provider>,
-      </React.StrictMode>,
+      // </React.StrictMode>,
     document.getElementById('root')
 );
 

@@ -1,11 +1,11 @@
 import './App.css';
 import Menu from "./components/Menu";
-import React, {useState} from "react";
+import React from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Notice from "./components/Notice/Notice";
-import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import Home from "./components/Home";
 import Board from "./components/Board/Board";
 import DeptInfo from "./components/DeptInfo";
