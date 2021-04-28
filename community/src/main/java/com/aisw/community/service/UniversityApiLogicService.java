@@ -93,6 +93,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Transactional
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 

@@ -40,12 +40,8 @@ public class ContentLikeRepositoryTest extends CommunityApplicationTests {
 
     @Test
     public void read() {
-        Optional<ContentLike> contentLike = contentLikeRepository.findById(1L);
-
-        contentLike.ifPresent(contentLike1 -> System.out.println(contentLike1));
-
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(1L);
-        contentLikeList.stream().forEach(contentLike1 -> System.out.println(contentLike1));
+        List<ContentLike> contentLikeList = contentLikeRepository.findByAccountId(1L, 1L);
+        contentLikeList.stream().forEach(System.out::println);
     }
 
     @Test

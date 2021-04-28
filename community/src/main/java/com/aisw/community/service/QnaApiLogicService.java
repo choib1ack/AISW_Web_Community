@@ -3,7 +3,6 @@ package com.aisw.community.service;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.Account;
 import com.aisw.community.model.entity.ContentLike;
-import com.aisw.community.model.entity.Free;
 import com.aisw.community.model.entity.Qna;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -42,7 +41,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
 
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
-        //
         QnaApiRequest qnaApiRequest = request.getData();
         Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
         Qna qna = Qna.builder()
@@ -64,6 +62,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
+    @Transactional
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
@@ -172,7 +171,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     private QnaDetailApiResponse responseWithCommentAndLike(Qna qna, Long accountId) {
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
+        List<ContentLike> contentLikeList = contentLikeRepository.findByAccountId(accountId, qna.getId());
         List<CommentApiResponse> commentApiResponseList = commentApiLogicService.searchByPost(qna.getId());
 
         QnaDetailApiResponse qnaDetailApiResponse = QnaDetailApiResponse.builder()
@@ -192,14 +191,15 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .category(qna.getCategory())
                 .accountId(qna.getAccount().getId())
                 .build();
+
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null && contentLike.getBoard().getId() == qna.getId()) {
                 qnaDetailApiResponse.setCheckLike(true);
             }
-            for (int i = 0; i < commentApiResponseList.size(); i++) {
+            for(CommentApiResponse commentApiResponse : commentApiResponseList) {
                 if (contentLike.getComment() != null &&
-                        contentLike.getComment().getId() == commentApiResponseList.get(i).getId()) {
-                    commentApiResponseList.get(i).setCheckLike(true);
+                        contentLike.getComment().getId() == commentApiResponse.getId()) {
+                    commentApiResponse.setCheckLike(true);
                 }
             }
             qnaDetailApiResponse.setCommentApiResponseList(commentApiResponseList);

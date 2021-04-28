@@ -34,6 +34,7 @@ public class ContentLikeApiLogicService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Transactional
     public Header<ContentLikeApiResponse> pressLike(Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
         Account account = accountRepository.findById(contentLikeApiRequest.getAccountId())
@@ -70,6 +71,7 @@ public class ContentLikeApiLogicService {
         return Header.OK(response(newContentLike));
     }
 
+    @Transactional
     public Header removeLike(Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
         Account account = accountRepository.findById(contentLikeApiRequest.getAccountId())
