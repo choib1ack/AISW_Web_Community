@@ -5,14 +5,14 @@ import Button from "react-bootstrap/Button";
 import classNames from "classnames";
 import React from "react";
 
-export function WriteButton(props) {
+export function BlueButton(props) {
     return (
         <Row>
             <Col lg={12} md={12} sm={12}>
                 <Link to={`${props.match.url}/${props.type}`}>
                     <Button className={classNames("select-btn", "on")}
                             style={{float: 'right'}}>
-                        글쓰기
+                        {props.title}
                     </Button>
                 </Link>
             </Col>

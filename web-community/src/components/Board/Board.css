@@ -7,3 +7,13 @@
 .delete-style:hover{
     color: #ff6262;
 }
+
+.recomment-style{
+    float : right;
+    font-size: 11px;
+    color: #cdcdcd;
+    cursor: pointer;
+}
+.recomment-style:hover{
+    color: #404040;
+}

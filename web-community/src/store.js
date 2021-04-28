@@ -1,10 +1,10 @@
 import {configureStore} from '@reduxjs/toolkit'
-import counterReducer from "./features/counterSlice";
+import writeReducer from "./features/writeSlice";
 import userReducer from "./features/userSlice"
 
 export default configureStore({
     reducer: {
-        counter: counterReducer,
+        write: writeReducer,
         user: userReducer,
     }
 })
