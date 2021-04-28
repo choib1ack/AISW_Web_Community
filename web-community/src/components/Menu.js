@@ -53,7 +53,7 @@ export default function Menu() {
                         </Link>
                     </Col>
                     {
-                        user.isOnline ? (
+                        (user.isOnline && user.userData != null) ? (
                             <>
                                 <Col xs={3}>
                                     <button className="Menu-button" onClick={() => setModalShow(true)}>
