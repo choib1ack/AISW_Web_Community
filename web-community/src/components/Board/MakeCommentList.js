@@ -61,40 +61,12 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
     const handleReCommentClick = () => {
         alert("답글쓰기 누름");
     }
-    
-    // useEffect(() => {
-    //     const fetchNoticeData = async () => {
-    //         try {
-    //             setError(null);
-    //             setBoardCommentData(null);
-    //             setLoading(true);
-    //             const response = await axios.get("/board/"+board_category+"/comment/" + id);
-    //             console.log("/board/"+board_category+"/comment/" + id);
-    //             setBoardCommentData(response.data.data.comment_api_response_list);
-    //             console.log(response.data.data);
-    //             setIsLatest(true);
-    //         } catch (e) {
-    //             setError(e);
-    //         }
-    //         setLoading(false);
-    //     };
-    //
-    //     fetchNoticeData();
-    // }, [isLatest]);
 
-    if (loading) return <Loading/>;
-    if (error) return <tr>
-        <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
-    </tr>;
-    if (!boardCommentData) return null;
-    if (Object.keys(boardCommentData).length == 0) return <tr>
-        <td colSpan={5}>댓글이 없습니다.</td>
-    </tr>;
-
-    return (
-        <>
-            {boardCommentData.map(data => (
-                <div style={{marginBottom:'1rem'}} key={data.id}>
+    // 일반 댓글
+    const CommentComponent = (data) => {
+        console.log(data);
+        return(
+            <div style={{marginBottom:'1rem'}} key={data.id}>
                 <Card style={{borderRadius: '10px'}} className="text-left flex-row m-2" key={data.id}>
                     <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
 
@@ -122,15 +94,51 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
                 </Card>
                 <WriteReComment
                     board_id={id}
-                    setIsLatest={setIsLatest}
+                    Refresh={Refresh}
                     parent={data.id}
-                    display={false}
+                    display={true}
                 />
                 <MakeReCommentList
                     boardReCommentData={data.sub_comment}
-                    setIsLatest={setIsLatest}
+                    Refresh={Refresh}
                 />
-                </div>
+            </div>
+        )
+    }
+
+    // 삭제된 댓글인데 대댓글이 있을 경우
+    const RemovedCommentComponent = (data) => {
+        return(
+            <div style={{marginBottom:'1rem'}} key={data.id}>
+                <Card style={{borderRadius: '10px'}} className="text-left flex-row m-2" key={data.id}>
+                    <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
+
+                    <Card.Body>
+
+                        <Card.Text className="mb-0">
+                            <p className=" mr-3 mb-1" style={{fontSize: '13px'}}>
+                                삭제된 댓글입니다.
+                            </p>
+                        </Card.Text>
+                    </Card.Body>
+                </Card>
+                <MakeReCommentList
+                    boardReCommentData={data.sub_comment}
+                    Refresh={Refresh}
+                />
+            </div>
+        )
+    }
+
+    // if (loading) return <Loading/>;
+    // if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
+    if (!boardCommentData) return null;
+    if (Object.keys(boardCommentData).length == 0) return <div>댓글이 없습니다.</div>;
+
+    return (
+        <>
+            {boardCommentData.map(data => (
+                data.board_id != null ? CommentComponent(data) : RemovedCommentComponent(data)
             ))}
         </>
     );
