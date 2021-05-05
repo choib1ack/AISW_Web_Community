@@ -171,7 +171,6 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     private QnaDetailApiResponse responseWithCommentAndLike(Qna qna, Long accountId) {
-        List<ContentLike> contentLikeList = contentLikeRepository.findByAccountId(accountId, qna.getId());
         List<CommentApiResponse> commentApiResponseList = commentApiLogicService.searchByPost(qna.getId());
 
         QnaDetailApiResponse qnaDetailApiResponse = QnaDetailApiResponse.builder()
@@ -192,14 +191,17 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .accountId(qna.getAccount().getId())
                 .build();
 
+        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
         contentLikeList.stream().forEach(contentLike -> {
-            if (contentLike.getBoard() != null && contentLike.getBoard().getId() == qna.getId()) {
-                qnaDetailApiResponse.setCheckLike(true);
-            }
-            for(CommentApiResponse commentApiResponse : commentApiResponseList) {
-                if (contentLike.getComment() != null &&
-                        contentLike.getComment().getId() == commentApiResponse.getId()) {
-                    commentApiResponse.setCheckLike(true);
+            if (contentLike.getBoard() != null) {
+                if (contentLike.getBoard().getId() == qna.getId()) {
+                    qnaDetailApiResponse.setCheckLike(true);
+                }
+            } else if (contentLike.getComment() != null) {
+                for (CommentApiResponse commentApiResponse : commentApiResponseList) {
+                    if (contentLike.getComment().getId() == commentApiResponse.getId()) {
+                        commentApiResponse.setCheckLike(true);
+                    }
                 }
             }
             qnaDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
