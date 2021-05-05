@@ -39,6 +39,31 @@ export default function MakeReCommentList({Refresh, boardReCommentData}) {
         })
     }
 
+    const handleLikeRemoveClick = async (comment_id) => {
+        // account_id는 나중에 바꿔야함
+        console.log(comment_id);
+        const data = {
+            "account_id": 1,
+            // "board_id": id
+            "comment_id": comment_id
+        }
+        await axios.post('/like/remove/',
+            {
+                headers: {
+                    "Content-Type": `application/json`
+                },
+                data
+            }
+        ).then((res) => {
+            alert("댓글에 좋아요를 취소했습니다");
+            // setIsLatest(false);
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log(errorObject);
+            alert("좋아요 클릭 에러!"+errorObject);
+        })
+    }
+
     const handleDeleteClick = async (comment_id) => {
         await axios.delete("/board/comment/" + comment_id)
             .then((res) => {
@@ -68,7 +93,7 @@ export default function MakeReCommentList({Refresh, boardReCommentData}) {
 
                         <Card.Body>
                             {data.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                                <img src={likeImage} onClick={()=>handleDeleteClick(data.id)}
+                                <img src={likeImage} onClick={()=>handleLikeRemoveClick(data.id)}
                                      style={{cursor: "pointer"}}/> {data.likes}</span>:
                                 <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
                                 <img src={likeGrayImage} onClick={()=>handleLikeClick(data.id)}
