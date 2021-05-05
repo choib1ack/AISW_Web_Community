@@ -5,7 +5,6 @@ import Title from "../Title";
 import {ListButton} from "../Button/ListButton";
 import axios from "axios";
 import Loading from "../Loading";
-import parse from 'html-react-parser';
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
@@ -14,7 +13,7 @@ export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [htmlToReact, setHtmlToReact] = useState(null);
+    const [htmlContent, setHtmlContent] = useState(null);
     let history = useHistory();
 
     const { notice_category } = match.params;
@@ -57,11 +56,10 @@ export default function NoticeDetail({match}) {
                 setNoticeDetailData(null);
                 setLoading(true);
                 const response = await axios.get(url);
-                console.log(response.data);
+                console.log(response.data.data.content);
                 setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
 
-                const reactContent = parse(response.data.data.content);
-                setHtmlToReact(reactContent);
+                setHtmlContent(response.data.data.content);
             } catch (e) {
                 setError(e);
             }
@@ -76,7 +74,7 @@ export default function NoticeDetail({match}) {
     if (!noticeDetailData) return null;
 
     function handleEdit() {
-        history.push({pathname: `${url}/edit`, state: {detail: noticeDetailData}});
+        history.push({pathname: `${url}/edit`, state: {detail: noticeDetailData, content: htmlContent}});
     }
 
     async function handleDelete() {
@@ -118,10 +116,6 @@ export default function NoticeDetail({match}) {
 
             <Container>
                 <Title text='공지사항' type='1'/>
-{/*// <<<<<<< HEAD*/}
-{/*//                 <div className="text-left mt-5 mb-4"*/}
-{/*//                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>*/}
-{/*// =======*/}
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
@@ -151,9 +145,7 @@ export default function NoticeDetail({match}) {
                         </div>
                     </div>
 
-                    <div className="p-3" style={{minHeight:"100px"}}>
-                        {htmlToReact}
-                    </div>
+                    <div className="p-3" style={{minHeight:"100px"}} dangerouslySetInnerHTML={{ __html: htmlContent }} />
                     {AttachmentFile(noticeDetailData.attachment_file)}
                 </div>
 

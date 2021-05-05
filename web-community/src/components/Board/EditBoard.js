@@ -9,23 +9,28 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import {subject_list} from "./SubjectList";
-import TextEditor from "../TextEditor";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
 import {checkContent, checkTitle} from "./NewBoard";
+import WriteEditorContainer from "../WriteEditorContainer";
+import {useLocation} from "react-router-dom";
 
-function EditBoard(){
+function EditBoard({match}, props) {
     const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
-    const board_type = useRef();
-    board_type.current = watch("board_type");
+    const location = useLocation();
+
+    const detail = location.state.detail;
+    const content = location.state.content;
+    const {board_category, id} = match.params;
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
+    const write = useSelector(state => state.write)
     const dispatch = useDispatch()
 
     async function sendBoard(data, path) {
-        await axios.post("/board/" + path,
+        await axios.put("/board/" + path,
             {
                 headers: {
                     "Content-Type": `application/json`
@@ -45,31 +50,21 @@ function EditBoard(){
     }
 
     const onSubmit = (data) => {
+        data.content = write.value;
+
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
-            if (data.board_type === 'free') {
-                test = {
-                    attachment_file: "string",
-                    content: data.content,
-                    is_anonymous: true,
-                    level: 0,
-                    status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id
-                }
-            } else if (data.board_type === 'qna') {
-                test = {
-                    attachment_file: "string",
-                    content: data.content,
-                    is_anonymous: true,
-                    level: 0,
-                    status: "GENERAL",
-                    subject: data.subject,
-                    title: data.title,
-                    account_id: user.id
-                }
+            let test = {
+                attachment_file: "string",
+                content: data.content,
+                is_anonymous: true,
+                level: 0,
+                status: "GENERAL",
+                subject: data.subject,
+                title: data.title,
+                account_id: user.id,
+                id: id
             }
-            sendBoard(test, data.board_type)
+            sendBoard(test, board_category)
         }
     }
 
@@ -84,7 +79,8 @@ function EditBoard(){
                     <Row>
                         <Col>
                             <Form.Group>
-                                <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
+                                <Form.Control as="select" defaultValue={board_category} id='board_category'
+                                              disabled={true}
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
                                     <option value="qna">과목별게시판</option>
@@ -92,8 +88,8 @@ function EditBoard(){
                             </Form.Group>
                         </Col>
                         <Col>
-                            {board_type.current == "qna" &&
-                            <Form.Control as="select" defaultValue="과목 선택" id='lecture'
+                            {board_category == "qna" &&
+                            <Form.Control as="select" defaultValue={detail.subject} id='lecture'
                                           name="subject" ref={register}>
                                 {subject_list.map((subject, index) => {
                                     return <option value={subject} key={index}>{subject}</option>
@@ -105,20 +101,14 @@ function EditBoard(){
                     <Row>
                         <Col>
                             <Form.Group controlId="subject">
-                                <Form.Control type="text" placeholder="제목을 입력해주세요."
+                                <Form.Control type="text" value={detail.title}
                                               name="title" ref={register}/>
                             </Form.Group>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group controlId="content">
-                                <Controller
-                                    as={<TextEditor/>}
-                                    name="content"
-                                    control={control}
-                                />
-                            </Form.Group>
+                            <WriteEditorContainer type="edit" text={content}/>
                         </Col>
                     </Row>
                     <Row>
@@ -130,7 +120,6 @@ function EditBoard(){
                         </Col>
                     </Row>
                 </Form>
-
 
             </Container>
         </div>
