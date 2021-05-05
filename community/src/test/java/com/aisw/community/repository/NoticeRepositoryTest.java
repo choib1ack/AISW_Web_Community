@@ -1,7 +1,8 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.Notice;
+import com.aisw.community.model.entity.post.notice.Notice;
+import com.aisw.community.repository.post.notice.NoticeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,22 +2,18 @@ package com.aisw.community.service;
 
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.advice.exception.CommentNotFoundException;
-import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.Account;
-import com.aisw.community.model.entity.Board;
-import com.aisw.community.model.entity.Comment;
-import com.aisw.community.model.entity.ContentLike;
-import com.aisw.community.model.network.request.ContentLikeApiRequest;
-import com.aisw.community.model.network.response.ContentLikeApiResponse;
-import com.aisw.community.repository.AccountRepository;
-import com.aisw.community.repository.BoardRepository;
-import com.aisw.community.repository.CommentRepository;
-import com.aisw.community.repository.ContentLikeRepository;
+import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.post.board.Board;
+import com.aisw.community.model.entity.post.comment.Comment;
+import com.aisw.community.model.entity.post.like.ContentLike;
+import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;
+import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.post.board.BoardRepository;
+import com.aisw.community.repository.post.comment.CommentRepository;
+import com.aisw.community.repository.post.like.ContentLikeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Optional;
 
 class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
 
