@@ -10,8 +10,8 @@ import {Controller, useForm} from "react-hook-form";
 import axios from "axios";
 import FinishModal from "../FinishModal";
 import {useDispatch, useSelector} from "react-redux";
-import TextEditor from "../TextEditor";
 import {subject_list} from "./SubjectList";
+import WriteEditorContainer from "../WriteEditorContainer";
 
 function NewBoard() {
     const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
@@ -21,6 +21,7 @@ function NewBoard() {
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
+    const write = useSelector(state => state.write)
     const dispatch = useDispatch()
 
     async function postBoard(data, path) {
@@ -44,6 +45,8 @@ function NewBoard() {
     }
 
     const onSubmit = (data) => {
+        data.content = write.value;
+
         if (checkTitle(data.title) && checkContent(data.content)) {
             let test;
             if (data.board_type === 'free') {
@@ -111,17 +114,7 @@ function NewBoard() {
                     </Row>
                     <Row>
                         <Col>
-                            <Form.Group controlId="content">
-                                <Controller
-                                    as={<TextEditor/>}
-                                    name="content"
-                                    control={control}
-                                />
-
-                                {/*<Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
-                                {/*              name="content" ref={register}/>*/}
-                                {/*<Form.Control className="p-3" as="textarea" rows={3} placeholder="#태그입력"/>*/}
-                            </Form.Group>
+                            <WriteEditorContainer type="new"/>
                         </Col>
                     </Row>
                     <Row>
