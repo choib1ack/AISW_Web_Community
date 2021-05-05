@@ -10,10 +10,8 @@ import {useForm, Controller} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import FinishModal from "../FinishModal";
-import TextEditor from "../TextEditor";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import {useLocation} from "react-router-dom";
-import WriteEditor from "../WriteEditor";
 import WriteEditorContainer from "../WriteEditorContainer";
 
 export default function EditNotice({match}, props) {
@@ -22,14 +20,16 @@ export default function EditNotice({match}, props) {
     const location = useLocation();
 
     const detail = location.state.detail;
-    const {notice_category} = match.params;
+    const content = location.state.content;
+    const {notice_category, id} = match.params;
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
+    const write = useSelector(state => state.write)
     const dispatch = useDispatch()
 
     async function sendNotice(data, path) {
-        await axios.post("/notice/" + path,
+        await axios.put("/notice/" + path,
             {
                 headers: {
                     "Content-Type": `application/json`
@@ -49,6 +49,8 @@ export default function EditNotice({match}, props) {
     }
 
     const onSubmit = (data) => {
+        data.content = write.value;
+
         if (checkTitle(data.title) && checkContent(data.content)) {
             let test;
             if (data.board_type === "university") {
@@ -60,7 +62,8 @@ export default function EditNotice({match}, props) {
                     status: "GENERAL",
                     title: data.title,
                     account_id: user.id,
-                    writer: "string"
+                    writer: "string",
+                    id: id
                 }
             } else if (data.board_type === "department") {
                 test = {
@@ -69,7 +72,8 @@ export default function EditNotice({match}, props) {
                     level: 0,
                     status: "GENERAL",
                     title: data.title,
-                    account_id: user.id
+                    account_id: user.id,
+                    id: id
                 }
             } else if (data.board_type === "council") {
                 test = {
@@ -78,7 +82,8 @@ export default function EditNotice({match}, props) {
                     level: 0,
                     status: "GENERAL",
                     title: data.title,
-                    account_id: user.id
+                    account_id: user.id,
+                    id: id
                 }
             }
             sendNotice(test, data.board_type)
@@ -115,18 +120,7 @@ export default function EditNotice({match}, props) {
                     </Row>
                     <Row>
                         <Col>
-                            {/*<Controller*/}
-                            {/*    as={<WriteEditor/>}*/}
-                            {/*    name="content"*/}
-                            {/*    control={control}*/}
-                            {/*/>*/}
-
-                            <WriteEditorContainer/>
-
-                            {/*<Form.Group controlId="content">*/}
-                            {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
-                            {/*                  name="content" ref={register}/>*/}
-                            {/*</Form.Group>*/}
+                            <WriteEditorContainer type="edit" text={content}/>
                         </Col>
                     </Row>
                     <Row>
@@ -138,7 +132,6 @@ export default function EditNotice({match}, props) {
                         </Col>
                     </Row>
                 </Form>
-
 
             </Container>
         </div>

@@ -74,7 +74,7 @@ export default function NoticeDetail({match}) {
     if (!noticeDetailData) return null;
 
     function handleEdit() {
-        history.push({pathname: `${url}/edit`, state: {detail: noticeDetailData}});
+        history.push({pathname: `${url}/edit`, state: {detail: noticeDetailData, content: htmlContent}});
     }
 
     async function handleDelete() {

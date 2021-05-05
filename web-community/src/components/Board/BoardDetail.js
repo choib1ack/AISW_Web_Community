@@ -137,7 +137,7 @@ export default function BoardDetail({match}) {
     if (!boardDetailData) return null;
 
     function handleEdit() {
-        history.push(`${url}/edit`);
+        history.push({pathname: `${match.url}/edit`, state: {detail: boardDetailData, content: htmlContent}});
     }
 
     async function handleDelete() {

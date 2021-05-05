@@ -10,10 +10,8 @@ import {useForm, Controller} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import FinishModal from "../FinishModal";
-import TextEditor from "../TextEditor";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
-import {changeWriteField} from "../../features/writeSlice";
 
 export default function NewNotice() {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
@@ -40,7 +38,6 @@ export default function NewNotice() {
             console.log("에러 발생");
             console.log(errorObject);
 
-            console.log("/notice/" + path)
             alert("글 게시에 실패하였습니다.") // 실패 메시지
         })
     }
@@ -114,7 +111,7 @@ export default function NewNotice() {
                     </Row>
                     <Row>
                         <Col>
-                            <WriteEditorContainer/>
+                            <WriteEditorContainer type="new"/>
                         </Col>
                     </Row>
                     <Row>
