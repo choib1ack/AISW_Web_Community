@@ -196,6 +196,13 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                     if (contentLike.getComment().getId() == commentApiResponse.getId()) {
                         commentApiResponse.setCheckLike(true);
                     }
+                    else {
+                        for(CommentApiResponse subCommentApiResponse : commentApiResponse.getSubComment()) {
+                            if (contentLike.getComment().getId() == subCommentApiResponse.getId()) {
+                                subCommentApiResponse.setCheckLike(true);
+                            }
+                        }
+                    }
                 }
             }
             freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
