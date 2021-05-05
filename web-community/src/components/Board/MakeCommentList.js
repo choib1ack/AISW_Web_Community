@@ -22,6 +22,7 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
 
     const handleLikeClick = async (comment_id) => {
         // account_id는 나중에 바꿔야함
+        console.log(comment_id);
         const data = {
             "account_id": 1,
             // "board_id": id
@@ -40,7 +41,7 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
-            alert("에러!"+errorObject);
+            alert("좋아요 클릭 에러!"+errorObject);
         })
     }
 
@@ -53,7 +54,7 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
                 console.log(res);
 
             }).catch(error => {
-                alert("에러!");
+                alert("좋아요 취소 에러!");
                 console.log(error);
             })
     }
@@ -72,10 +73,10 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
 
                     <Card.Body>
                         {data.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                                <img src={likeImage} onClick={()=>handleLikeClick(data.comment_id)}
+                                <img src={likeImage} onClick={()=>handleDeleteClick(data.id)}
                                      style={{cursor: "pointer"}}/> {data.likes}</span>:
                             <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
-                                <img src={likeGrayImage} onClick={()=>handleLikeClick(data.comment_id)}
+                                <img src={likeGrayImage} onClick={()=>handleLikeClick(data.id)}
                                      style={{cursor: "pointer"}}/> {data.likes}</span>}
 
                         <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
