@@ -40,6 +40,7 @@ export default function NewNotice() {
             console.log("에러 발생");
             console.log(errorObject);
 
+            console.log("/notice/" + path)
             alert("글 게시에 실패하였습니다.") // 실패 메시지
         })
     }
@@ -113,18 +114,7 @@ export default function NewNotice() {
                     </Row>
                     <Row>
                         <Col>
-                            {/*<Controller*/}
-                            {/*    as={<TextEditor/>}*/}
-                            {/*    name="content"*/}
-                            {/*    control={control}*/}
-                            {/*/>*/}
-
                             <WriteEditorContainer/>
-
-                            {/*<Form.Group controlId="content">*/}
-                            {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
-                            {/*                  name="content" ref={register}/>*/}
-                            {/*</Form.Group>*/}
                         </Col>
                     </Row>
                     <Row>

@@ -25,6 +25,7 @@ export default function BoardDetail({match}) {
     const [error, setError] = useState(null);
     const [likes, setLikes] = useState(0);
     const [isLatest, setIsLatest] = useState(false);
+    const [htmlContent, setHtmlContent] = useState(null);
     let history = useHistory();
 
     // redux toolkit
@@ -38,7 +39,7 @@ export default function BoardDetail({match}) {
 
     const {board_category} = match.params;
     const {id} = match.params;
-    const url = match.url.substring(0,11)+"/comment&like/"+id+"/"+1;
+    const url = match.url.substring(0, 11) + "/comment&like/" + id + "/" + 1;
     console.log("url!! -->", url);
 
     const Category = (c) => {
@@ -69,7 +70,7 @@ export default function BoardDetail({match}) {
             setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            alert("좋아요 누름 에러!"+errorObject);
+            alert("좋아요 누름 에러!" + errorObject);
         })
     }
     const handleLikeCancleClick = async () => {
@@ -91,7 +92,7 @@ export default function BoardDetail({match}) {
             setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            alert("좋아요 취소 에러!"+errorObject);
+            alert("좋아요 취소 에러!" + errorObject);
         })
     }
 
@@ -118,6 +119,8 @@ export default function BoardDetail({match}) {
                 setLikes(response.data.data.likes);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
                 setIsLatest(true);
+
+                setHtmlContent(response.data.data.content);
             } catch (e) {
                 setError(e);
             }
@@ -176,12 +179,6 @@ export default function BoardDetail({match}) {
 
             <Container>
                 <Title text='게시판' type='1'/>
-{/*// <<<<<<< HEAD*/}
-{/*//                 <div className="text-left mt-5 mb-4"*/}
-{/*//                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>*/}
-{/*//                     <div style={{backgroundColor: "#e7f1ff"}} className="p-4">*/}
-{/*//                         <p style={{color: "#0472FD", fontSize: '12px'}}*/}
-{/*// =======*/}
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
@@ -193,7 +190,7 @@ export default function BoardDetail({match}) {
                      style={{borderTop: 'solid 2px #6CBACB', borderBottom: 'solid 2px #6CBACB'}}>
                     <div style={{backgroundColor: "#EFF7F9"}} className="p-4">
                         <p style={{color: "#6CBACB", fontSize: '12px'}}
-                        className="mb-1">{Category(board_category)}</p>
+                           className="mb-1">{Category(board_category)}</p>
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
                         {boardDetailData.attachment_file == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}
@@ -210,14 +207,16 @@ export default function BoardDetail({match}) {
 
                     <div className="p-4" style={{minHeight: "100px"}}>
                         {/*좋아요*/}
-                        {boardDetailData.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
+                        {boardDetailData.check_like ?
+                            <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCancleClick}
-                                     style={{cursor: "pointer"}}/> {likes}</span>:
+                                     style={{cursor: "pointer"}}/> {likes}</span> :
                             <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
                                 <img src={likeGrayImage} onClick={handleLikeClick}
                                      style={{cursor: "pointer"}}/> {likes}</span>}
 
-                        <p>{boardDetailData.content}</p>
+                        <div className="p-3" style={{minHeight: "100px"}}
+                             dangerouslySetInnerHTML={{__html: htmlContent}}/>
                     </div>
                     {AttachmentFile(boardDetailData.attachment_file)}
                     <hr/>
@@ -242,31 +241,4 @@ export default function BoardDetail({match}) {
         </div>
     )
 }
-
-// export function ReplyBox() {
-//     return (
-//         <div style={{display: 'flex', flexDirection: 'row'}} className="ml-5">
-//             <img src={arrowImage} style={{height: "20px", opacity: '0.7'}} className="ml-3 mt-3"/>
-//             <Card style={{borderRadius: '10px', backgroundColor: '#F9F9F9'}}
-//                   className="text-left flex-row m-2 border-0 w-100">
-//                 <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
-//
-//                 <Card.Body>
-//                     <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-//                         <img src={likeImage} style={{cursor: "pointer"}}/> 0
-//                     </span>
-//                     <Card.Title className="mb-2" style={{fontSize: '14px'}}>익명1
-//                         <span style={{color: "#8C8C8C", fontSize: '12px', marginLeft: "10px"}}>01/09 11:10</span>
-//                     </Card.Title>
-//                     <Card.Text className="mb-0">
-//                         <span className={'delete-style'}>삭제</span>
-//                         <p className="d-inline-block mr-3 mb-1" style={{fontSize: '14px'}}>
-//                             네..
-//                         </p>
-//                     </Card.Text>
-//                 </Card.Body>
-//             </Card>
-//         </div>
-//     )
-// }
 

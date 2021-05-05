@@ -11,6 +11,7 @@ const WriteEditorContainer = () => {
 
     const dispatch = useDispatch();
 
+    // 미리 있는 데이터 불러오기
     const { contents } = useSelector(state => state.write);
 
     const onChangeContent = useCallback((state) => {
@@ -18,7 +19,7 @@ const WriteEditorContainer = () => {
 
         setEditorState(state);
 
-        dispatch(changeWriteField(value));
+        dispatch(changeWriteField(value));  // redux에 글 내용 업데이트
 
     }, [dispatch]);
 
