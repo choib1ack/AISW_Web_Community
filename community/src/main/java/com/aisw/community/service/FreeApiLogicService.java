@@ -65,7 +65,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save((Free)free))
+                .map(free -> baseRepository.save((Free) free))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -126,7 +126,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     @Transactional
     public Header<FreeDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
-                .map(free -> (Free)free.setViews(free.getViews() + 1))
+                .map(free -> (Free) free.setViews(free.getViews() + 1))
                 .map(this::responseWithComment)
                 .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
@@ -166,7 +166,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     private FreeDetailApiResponse responseWithCommentAndLike(Free free, Long accountId) {
-        List<ContentLike> contentLikeList = contentLikeRepository.findByAccountId(accountId, free.getId());
         List<CommentApiResponse> commentApiResponseList = commentApiLogicService.searchByPost(free.getId());
 
         FreeDetailApiResponse freeDetailApiResponse = FreeDetailApiResponse.builder()
@@ -186,14 +185,17 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .accountId(free.getAccount().getId())
                 .build();
 
+        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
         contentLikeList.stream().forEach(contentLike -> {
-            if (contentLike.getBoard() != null && contentLike.getBoard().getId() == free.getId()) {
-                freeDetailApiResponse.setCheckLike(true);
-            }
-            for(CommentApiResponse commentApiResponse : commentApiResponseList) {
-                if (contentLike.getComment() != null &&
-                        contentLike.getComment().getId() == commentApiResponse.getId()) {
-                    commentApiResponse.setCheckLike(true);
+            if (contentLike.getBoard() != null) {
+                if (contentLike.getBoard().getId() == free.getId()) {
+                    freeDetailApiResponse.setCheckLike(true);
+                }
+            } else if (contentLike.getComment() != null) {
+                for (CommentApiResponse commentApiResponse : commentApiResponseList) {
+                    if (contentLike.getComment().getId() == commentApiResponse.getId()) {
+                        commentApiResponse.setCheckLike(true);
+                    }
                 }
             }
             freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
@@ -270,10 +272,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                     .views(board.getViews())
                     .writer(board.getWriter())
                     .build();
-            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+            if (boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);
-            }
-            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+            } else if (boardApiResponse.getStatus() == BulletinStatus.URGENT) {
                 boardApiUrgentResponseList.add(boardApiResponse);
             }
         });
