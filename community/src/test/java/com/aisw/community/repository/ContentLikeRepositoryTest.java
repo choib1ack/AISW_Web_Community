@@ -40,7 +40,7 @@ public class ContentLikeRepositoryTest extends CommunityApplicationTests {
 
     @Test
     public void read() {
-        List<ContentLike> contentLikeList = contentLikeRepository.findByAccountId(1L, 1L);
+        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(1L);
         contentLikeList.stream().forEach(System.out::println);
     }
 
