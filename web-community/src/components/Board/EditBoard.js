@@ -15,13 +15,10 @@ import {checkContent, checkTitle} from "./NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import {useLocation} from "react-router-dom";
 
-function EditBoard({match}, props){
+function EditBoard({match}, props) {
     const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
-
-    const board_type = useRef();
-    board_type.current = watch("board_type");
 
     const detail = location.state.detail;
     const content = location.state.content;
@@ -56,32 +53,18 @@ function EditBoard({match}, props){
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
-            if (data.board_type === 'free') {
-                test = {
-                    attachment_file: "string",
-                    content: data.content,
-                    is_anonymous: true,
-                    level: 0,
-                    status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id,
-                    id: id
-                }
-            } else if (data.board_type === 'qna') {
-                test = {
-                    attachment_file: "string",
-                    content: data.content,
-                    is_anonymous: true,
-                    level: 0,
-                    status: "GENERAL",
-                    subject: data.subject,
-                    title: data.title,
-                    account_id: user.id,
-                    id: id
-                }
+            let test = {
+                attachment_file: "string",
+                content: data.content,
+                is_anonymous: true,
+                level: 0,
+                status: "GENERAL",
+                subject: data.subject,
+                title: data.title,
+                account_id: user.id,
+                id: id
             }
-            sendBoard(test, data.board_type)
+            sendBoard(test, board_category)
         }
     }
 
@@ -97,6 +80,7 @@ function EditBoard({match}, props){
                         <Col>
                             <Form.Group>
                                 <Form.Control as="select" defaultValue={board_category} id='board_category'
+                                              disabled={true}
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
                                     <option value="qna">과목별게시판</option>

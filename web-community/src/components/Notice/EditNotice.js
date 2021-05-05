@@ -52,41 +52,16 @@ export default function EditNotice({match}, props) {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
-            if (data.board_type === "university") {
-                test = {
-                    attachment_file: "string",
-                    campus: "COMMON",
-                    content: data.content,
-                    level: 0,
-                    status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id,
-                    writer: "string",
-                    id: id
-                }
-            } else if (data.board_type === "department") {
-                test = {
-                    attachment_file: "string",
-                    content: data.content,
-                    level: 0,
-                    status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id,
-                    id: id
-                }
-            } else if (data.board_type === "council") {
-                test = {
-                    attachment_file: "string",
-                    content: data.content,
-                    level: 0,
-                    status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id,
-                    id: id
-                }
+            let test = {
+                attachment_file: "string",
+                content: data.content,
+                level: 0,
+                status: "GENERAL",
+                title: data.title,
+                account_id: user.id,
+                id: id
             }
-            sendNotice(test, data.board_type)
+            sendNotice(test, notice_category)
         }
     }
 
@@ -102,6 +77,7 @@ export default function EditNotice({match}, props) {
                         <Col>
                             <Form.Group>
                                 <Form.Control as="select" defaultValue={notice_category} id='board_category'
+                                              disabled={true}
                                               name="board_type" ref={register}>
                                     <option value="university">학교 홈페이지</option>
                                     <option value="department">학과사무실</option>
