@@ -52,6 +52,7 @@ public class ContentLikeApiLogicService {
                     .build();
 
             comment.setLikes(comment.getLikes() + 1);
+            commentRepository.save(comment);
             newContentLike = contentLikeRepository.save(contentLike);
         }
         else if(contentLikeApiRequest.getCommentId() == null) {
@@ -66,6 +67,7 @@ public class ContentLikeApiLogicService {
                     .build();
 
             board.setLikes(board.getLikes() + 1);
+            boardRepository.save(board);
             newContentLike = contentLikeRepository.save(contentLike);
         }
         return Header.OK(response(newContentLike));
@@ -84,6 +86,7 @@ public class ContentLikeApiLogicService {
                     .findContentLikeByAccountIdAndCommentId(account.getId(), comment.getId())
                     .map(contentLike -> {
                         comment.setLikes(comment.getLikes() - 1);
+                        commentRepository.save(comment);
                         contentLikeRepository.delete(contentLike);
                         return Header.OK();
                     })
@@ -96,6 +99,7 @@ public class ContentLikeApiLogicService {
                     .findContentLikeByAccountIdAndBoardId(account.getId(), board.getId())
                     .map(contentLike -> {
                         board.setLikes(board.getLikes() - 1);
+                        boardRepository.save(board);
                         contentLikeRepository.delete(contentLike);
                         return Header.OK();
                     })
