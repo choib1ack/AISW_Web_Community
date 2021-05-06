@@ -10,10 +10,8 @@ import {useForm, Controller} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import FinishModal from "../FinishModal";
-import TextEditor from "../TextEditor";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
-import {changeWriteField} from "../../features/writeSlice";
 
 export default function NewNotice() {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
@@ -113,18 +111,7 @@ export default function NewNotice() {
                     </Row>
                     <Row>
                         <Col>
-                            {/*<Controller*/}
-                            {/*    as={<TextEditor/>}*/}
-                            {/*    name="content"*/}
-                            {/*    control={control}*/}
-                            {/*/>*/}
-
-                            <WriteEditorContainer/>
-
-                            {/*<Form.Group controlId="content">*/}
-                            {/*    <Form.Control className="p-3" as="textarea" rows={20} placeholder="내용을 입력해주세요."*/}
-                            {/*                  name="content" ref={register}/>*/}
-                            {/*</Form.Group>*/}
+                            <WriteEditorContainer type="new"/>
                         </Col>
                     </Row>
                     <Row>

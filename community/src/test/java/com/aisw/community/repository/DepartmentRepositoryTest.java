@@ -1,11 +1,13 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.Account;
-import com.aisw.community.model.entity.Department;
+import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
+import com.aisw.community.repository.post.notice.DepartmentRepository;
+import com.aisw.community.repository.user.AccountRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

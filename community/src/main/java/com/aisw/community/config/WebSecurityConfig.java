@@ -1,8 +1,6 @@
 package com.aisw.community.config;
 
 import com.aisw.community.provider.CustomAuthenticationProvider;
-import com.aisw.community.service.CustomUserDetailsService;
-import com.mysql.cj.protocol.x.XAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

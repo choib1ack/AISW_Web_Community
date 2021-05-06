@@ -1,21 +1,21 @@
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const {createProxyMiddleware} = require('http-proxy-middleware');
 
-module.exports = function(app) {
+module.exports = function (app) {
     app.use(
-        createProxyMiddleware('/board/comment',{
+        createProxyMiddleware('/board/comment', {
             target: 'http://localhost:8080',
             changeOrigin: true,
         }),
-        createProxyMiddleware('/user/signup',{
+        createProxyMiddleware('/user/signup', {
             target: 'http://localhost:8080',
             changeOrigin: true,
         }),
-        createProxyMiddleware('/user/login',{
+        createProxyMiddleware('/user/login', {
             target: 'http://localhost:8080',
             changeOrigin: true,
         })
         ,
-        createProxyMiddleware('/like/press',{
+        createProxyMiddleware('/like/press', {
             target: 'http://localhost:8080',
             changeOrigin: true,
         })
