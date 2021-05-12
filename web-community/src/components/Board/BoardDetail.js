@@ -59,7 +59,7 @@ export default function BoardDetail({match}) {
                     press: false
                 };
             default:
-                return likeState;
+                return state;
         }
     }
 
