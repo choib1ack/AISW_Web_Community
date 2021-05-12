@@ -1,6 +1,6 @@
 package com.aisw.community.model.network.request;
 
-import com.aisw.community.model.entity.Account;
+import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.UserRole;
 import lombok.Builder;
 import lombok.Getter;

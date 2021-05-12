@@ -1,9 +1,9 @@
 package com.aisw.community.service;
 
-import com.aisw.community.model.entity.Account;
+import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.SessionUser;
 import com.aisw.community.model.network.request.OAuthAttributes;
-import com.aisw.community.repository.AccountRepository;
+import com.aisw.community.repository.user.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

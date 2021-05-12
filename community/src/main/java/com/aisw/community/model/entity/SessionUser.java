@@ -3,6 +3,7 @@ package com.aisw.community.model.entity;
 import lombok.Getter;
 
 import java.io.Serializable;
+import com.aisw.community.model.entity.user.Account;
 
 @Getter
 public class SessionUser implements Serializable {
