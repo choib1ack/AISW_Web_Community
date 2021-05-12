@@ -1,6 +1,7 @@
 package com.aisw.community.provider;
 
 import com.aisw.community.service.user.AccountContext;
+import com.aisw.community.service.AccountContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;

@@ -20,6 +20,8 @@ public class AccountApiRequest {
 
     private String password;
 
+    private String picture;
+
     private String phoneNumber;
 
     private Grade grade;

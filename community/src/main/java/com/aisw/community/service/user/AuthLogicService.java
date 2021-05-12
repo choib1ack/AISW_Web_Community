@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+// Authentication 인증
 @Service
 public class AuthLogicService implements UserDetailsService {
 
