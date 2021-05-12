@@ -6,13 +6,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum UserRole {
-    NOT_PERMITTED(0, "미가입", ""),
-    STUDENT(1, "재학생", ""),
-    COUNCIL(2, "학생회", ""),
-    FACULTY(3, "교직원", "교수 및 조교"),
-    ADMIN(4, "관리자", "");
+    NOT_PERMITTED("ROLE_GUEST", "미가입"),
+    STUDENT("ROLE_STUDENT", "재학생"),
+    COUNCIL("ROLE_COUNCIL", "학생회"),
+    FACULTY("ROLE_FACULTY", "교수 및 조교"),
+    ADMIN("ROLE_ADMIN", "관리자");
 
-    private Integer id;
-    private String title;
-    private String description;
+    private final String key;
+    private final String title;
 }

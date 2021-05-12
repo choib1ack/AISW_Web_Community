@@ -38,6 +38,9 @@ public class Account {
 
     private String phoneNumber;
 
+    @Column
+    private String picture;
+
     @Enumerated(EnumType.STRING)
     private Grade grade;
 
@@ -78,4 +81,47 @@ public class Account {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
     private Set<ContentLike> contentLikeList;
+
+
+    @Builder
+    public Account(Long id, String name, String email, String password, String phoneNumber, Grade grade, Integer studentId, Gender gender, Campus university, CollegeName collegeName, DepartmentName departmentName,
+                   LocalDateTime createdAt,LocalDateTime updatedAt,String createdBy,String updatedBy,UserRole role) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.grade = grade;
+        this.studentId = studentId;
+        this.role = role;
+        this.gender = gender;
+        this.university = university;
+        this.collegeName = collegeName;
+        this.departmentName = departmentName;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.updatedAt = updatedAt;
+        this.updatedBy = updatedBy;
+
+    }
+
+    @Builder(builderMethodName = "OauthBuilder")
+    public Account(String name, String email, String picture, UserRole role) {
+        this.name = name;
+        this.email = email;
+        this.picture = picture;
+        this.role = role;
+    }
+
+
+
+    public String getUserRoleKey() {
+        return this.role.getKey();
+    }
+
+    public Account update(String name, String picture) {
+        this.name = name;
+        this.picture = picture;
+        return this;
+    }
 }
