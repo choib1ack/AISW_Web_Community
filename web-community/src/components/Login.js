@@ -75,6 +75,8 @@ export default function Login() {
                 <button type="submit" className="Menu-button blue-button Login-form-control">
                     로그인
                 </button>
+
+                <a href="/oauth2/authorization/google" className="btn btn-success active" role="button">Google Login</a>
             </Form>
 
             <div>

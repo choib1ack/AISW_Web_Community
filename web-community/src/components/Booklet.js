@@ -25,7 +25,7 @@ export default function Booklet() {
 
     return (
         <div className="Booklet">
-            <Container>
+            <Container className="mb-5">
                 <Row style={{marginBottom: '1rem'}}>
                     <Col>
                         <Title text='학사요람' type='1'/>
