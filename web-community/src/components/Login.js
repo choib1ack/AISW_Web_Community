@@ -25,12 +25,14 @@ export default function Login() {
                 headers: {
                     "Content-Type": `application/json`
                 },
-                // data,
             },
         ).then((res) => {
-            dispatch(login(res.data.data))   // 리덕스에 로그인한 유저 정보 저장
-
-            history.push('/')   // 홈으로 가기
+            if(res.data.data==null){
+                alert("회원이 존재하지 않습니다.")
+            }else{
+                dispatch(login(res.data.data))   // 리덕스에 로그인한 유저 정보 저장
+                history.push('/')   // 홈으로 가기
+            }
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log("에러 발생");
@@ -41,11 +43,13 @@ export default function Login() {
     }
 
     const onSubmit = (data) => {
-        const test = {
-            email: "string",
-            password: "string"
+        if (data.email === "") {
+            alert("이메일을 입력해주세요.")
+        } else if (data.password === "") {
+            alert("비밀번호를 입력해주세요.")
+        } else{
+            getLoginUser(data);
         }
-        getLoginUser(data);
     }
 
     return (

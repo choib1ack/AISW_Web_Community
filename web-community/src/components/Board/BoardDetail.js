@@ -188,8 +188,14 @@ export default function BoardDetail({match}) {
 
                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
                     <div style={{backgroundColor: "#e7f1ff"}} className="p-4">
-                        <p style={{color: "#0472FD", fontSize: '12px'}}
-                        className="mb-1">{Category(board_category)}</p>
+                        <div>
+                            <p style={{color: "#0472FD", fontSize: '12px'}}
+                               className="d-inline-block mb-1 mr-2">{Category(board_category)}</p>
+                            <p style={{color: "#0472FD", fontSize: '12px'}}
+                               className="d-inline-block mb-1 mr-2"> > </p>
+                            <p style={{color: "#0472FD", fontSize: '12px'}}
+                               className="d-inline-block mb-1">{boardDetailData.subject}</p>
+                        </div>
 
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
                         {boardDetailData.attachment_file == null ? "" :
@@ -207,15 +213,17 @@ export default function BoardDetail({match}) {
 
                     <div className="p-4" style={{minHeight: "100px"}}>
                         {/*좋아요*/}
-                        {boardDetailData.check_like ?
-                            <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
+                        <div>
+                            {boardDetailData.check_like ?
+                                <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCancleClick}
                                      style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>:
-                            <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
+                                <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
                                 <img src={likeGrayImage} onClick={handleLikeClick}
                                      style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>}
+                        </div>
 
-                        <div className="p-3" style={{minHeight: "100px"}}
+                        <div style={{minHeight: "100px"}}
                              dangerouslySetInnerHTML={{__html: htmlContent}}/>
                     </div>
                     {AttachmentFile(boardDetailData.attachment_file)}
