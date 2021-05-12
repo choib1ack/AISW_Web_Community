@@ -52,15 +52,38 @@ export default function EditNotice({match}, props) {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test = {
-                attachment_file: "string",
-                content: data.content,
-                level: 0,
-                status: "GENERAL",
-                title: data.title,
-                account_id: user.id,
-                id: id
+            let test;
+            if (notice_category === "university") {
+                test = {
+                    attachment_file: "string",
+                    campus: "COMMON",
+                    content: data.content,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id,
+                    writer: "string"
+                }
+            } else if (notice_category === "department") {
+                test = {
+                    attachment_file: "string",
+                    content: data.content,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id
+                }
+            } else if (notice_category === "council") {
+                test = {
+                    attachment_file: "string",
+                    content: data.content,
+                    level: 0,
+                    status: "GENERAL",
+                    title: data.title,
+                    account_id: user.id
+                }
             }
+            test.id = id
             sendNotice(test, notice_category)
         }
     }
