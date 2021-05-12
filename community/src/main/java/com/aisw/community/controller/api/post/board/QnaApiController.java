@@ -28,7 +28,7 @@ public class QnaApiController extends BoardPostController<QnaApiRequest, BoardRe
     @GetMapping("/subject")
     public Header<BoardResponseDTO> searchBySubject(
             @RequestParam List<String> subject,
-            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) throws InterruptedException {
         return qnaApiLogicService.searchBySubject(subject, pageable);
     }
 }
