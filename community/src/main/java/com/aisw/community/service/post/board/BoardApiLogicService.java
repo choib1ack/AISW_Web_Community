@@ -9,6 +9,7 @@ import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.service.post.BulletinService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     @Autowired
     private BoardRepository boardRepository;
 
+    @Cacheable(value = "boardSearch", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> searchList(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
@@ -31,6 +33,7 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     }
 
     @Override
+    @Cacheable(value = "boardSearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByWriterContaining(writer, pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
@@ -39,6 +42,7 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     }
 
     @Override
+    @Cacheable(value = "boardSearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByTitleContaining(title, pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
@@ -47,6 +51,8 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     }
 
     @Override
+    @Cacheable(value = "boardSearchByTitleOrContent",
+            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
