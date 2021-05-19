@@ -32,6 +32,9 @@ export default function MakeBoardList(props) {
                 break;
         }
         if (is_search) {
+            if(category==0){
+                url = url.substring(0, url.length - 5);
+            }
             switch (search_type) {
                 case "select_title":
                     url += "/search/title?title=" + search_text;
@@ -47,7 +50,7 @@ export default function MakeBoardList(props) {
         if(selected_subject_list.length!=0){
             url += "/subject";
         }
-        url += "?page=" + (props.current_page);
+        url += is_search ? "" : "?page="+(props.current_page);
         if(selected_subject_list.length!=0){
             console.log("서브젝트");
             url += "&subject=" + selected_subject_list.join(",");
