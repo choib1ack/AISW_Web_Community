@@ -16,7 +16,7 @@ export default function MakeNoticeList(props) {
     let search_type = props.search_type;
     let search_text = props.search_text;
 
-    const url = (category, page) => {
+    const url = (category) => {
         let url = "/notice"
         switch (category) {
             case 0:
@@ -33,6 +33,9 @@ export default function MakeNoticeList(props) {
                 break;
         }
         if(is_search){
+            if(category==0){
+                url = url.substring(0, url.length - 5);
+            }
             switch (search_type) {
                 case "select_title":
                     url += "/search/title?title="+search_text;
@@ -45,7 +48,9 @@ export default function MakeNoticeList(props) {
                     break;
             }
         }
-        url+="?page="+(props.current_page);
+        url += is_search ? "" : "?page="+(props.current_page);
+        // url+="page="+(props.current_page);
+        // console.log(url);
         return url;
     }
 
@@ -74,9 +79,7 @@ export default function MakeNoticeList(props) {
     }
 
     const indexing = (index) =>{
-
         let current_max = pageInfo.total_elements-(pageInfo.current_page*10);
-        console.log("index="+index+", current_max="+current_max);
         return current_max-index.toString();
     }
 
@@ -95,7 +98,7 @@ export default function MakeNoticeList(props) {
 
     // <tr> 전체에 링크 연결
     let history = useHistory();
-    const ToLink = (url) =>{
+    const ToLink = (url) => {
         history.push(url);
     }
 

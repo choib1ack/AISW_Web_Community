@@ -49,13 +49,13 @@ export default function NoticeList({match}) {
         // 검색 시 실행
         setSearchText(nowSearchText);
         setIsSearch(true);
-        console.log("서치 활성화");
+        // console.log("서치 활성화");
     }
 
     const searchEnterPress = (e) => {
         // 검색 시 엔터를 눌렀을 때
         if (e.key == 'Enter') {
-            console.log("엔터누름");
+            // console.log("엔터누름");
             searchContents();
         }
     }
