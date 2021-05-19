@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomOAuth2AccountService customOAuth2UserService;
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
 
         return new BCryptPasswordEncoder();
     }
@@ -33,28 +33,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(authenticationProvider());
     }
 
 
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/","/css/**","/images/**","/js/**").permitAll()
+        http.authorizeRequests()
+                .antMatchers("/", "/oauth2/**", "/login/**", "/css/**", "/images/**", "/js/**").permitAll()
 //                .antMatchers("api주소").hasRole(UserRole.FACULTY.name()) 권한에 따른 주소설정
                 .anyRequest().authenticated()
                 .and()
-                .logout()
-                .logoutSuccessUrl("/")
+                 .logout()
+                  .logoutSuccessUrl("/")
                 .and()
-                .oauth2Login()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService);
+                     .oauth2Login()
+                      .userInfoEndpoint()
+                        .userService(customOAuth2UserService);
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         return new CustomAuthenticationProvider();
     }
 //
