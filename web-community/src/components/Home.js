@@ -15,6 +15,7 @@ import {Link, useHistory} from "react-router-dom";
 import axios from "axios";
 import fileImage from "../icon/file.svg";
 import Loading from "./Loading";
+import IntegratedSearch from "./IntegratedSearch";
 
 export default function Home() {
     let history = useHistory();
@@ -28,6 +29,9 @@ export default function Home() {
             {/*<MyPage/>*/}
             <div className="Banner">
                 <img src={exampleBanner} style={{width: "100%"}}/>
+            </div>
+            <div className="IntegratedSearch" style={{width: "70%", marginLeft: "auto", marginRight: "auto", marginTop: "30px"}}>
+                <IntegratedSearch/>
             </div>
             <div style={{width: "70%", margin: "auto"}}>
                 <Row style={{margin: "30px 0px", textAlign: "center"}}>
