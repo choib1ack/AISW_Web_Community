@@ -40,7 +40,7 @@ export default function Booklet() {
 
                 <PDFView
                     selectedYear={selectedYear}/>
-
+                <Row style={{marginBottom: '3rem'}}/>
             </Container>
         </div>
     );

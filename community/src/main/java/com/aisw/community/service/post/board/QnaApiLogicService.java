@@ -1,9 +1,9 @@
 package com.aisw.community.service.post.board;
 
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.user.Account;
-import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.post.board.Qna;
+import com.aisw.community.model.entity.post.like.ContentLike;
+import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -15,11 +15,12 @@ import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.model.network.response.post.board.QnaApiResponse;
 import com.aisw.community.model.network.response.post.board.QnaDetailApiResponse;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
-import com.aisw.community.repository.user.AccountRepository;
-import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.post.board.QnaRepository;
+import com.aisw.community.repository.post.like.ContentLikeRepository;
+import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -223,6 +224,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
+    @Cacheable(value = "searchByStatus", key = "#pageable.")
     public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -231,6 +233,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
+    @Cacheable(value = "searchByStatus", key = "#writer")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -239,6 +242,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
+    @Cacheable(value = "searchByTitle", key = "#title")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -247,6 +251,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
+    @Cacheable(value = "searchByTitleOrContent", key = "#title"+"content")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
@@ -255,8 +260,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
         return getListHeader(qnas, qnasByStatus);
     }
 
-//    @Cacheable(value = "searchBySubject", key = "#subject")
-    public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) {
+    @Cacheable(value = "searchBySubject", key = "#subject")
+    public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) throws InterruptedException {
         Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
 
