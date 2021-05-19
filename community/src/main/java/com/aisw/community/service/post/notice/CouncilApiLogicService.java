@@ -1,6 +1,8 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -8,6 +10,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
 import com.aisw.community.model.network.response.post.notice.CouncilApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -73,18 +76,19 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
-        return baseRepository.findById(councilApiRequest.getId())
-                .map(council -> {
-                    council
-                            .setTitle(councilApiRequest.getTitle())
-                            .setContent(councilApiRequest.getContent())
-                            .setStatus(councilApiRequest.getStatus());
-                    return council;
-                })
-                .map(council -> baseRepository.save(council))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+
+        if(council.getAccount().getId() != councilApiRequest.getAccountId()) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        council
+                .setTitle(councilApiRequest.getTitle())
+                .setContent(councilApiRequest.getContent())
+                .setStatus(councilApiRequest.getStatus());
+        baseRepository.save(council);
+
+        return Header.OK(response(council));
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.aisw.community.service.post.board;
 
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.Account;
@@ -9,6 +11,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.board.FreeApiRequest;
 import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
@@ -83,21 +86,21 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
-        return baseRepository.findById(qnaApiRequest.getId())
-                .map(qna -> {
-                    qna
-                            .setTitle(qnaApiRequest.getTitle())
-                            .setContent(qnaApiRequest.getContent())
-                            .setStatus(qnaApiRequest.getStatus());
-                    qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
-                    qna.setSubject(qnaApiRequest.getSubject());
+        Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(PostNotFoundException::new);
 
-                    return qna;
-                })
-                .map(qna -> baseRepository.save(qna))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        if(qna.getAccount().getId() != qnaApiRequest.getAccountId()) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        qna
+                .setTitle(qnaApiRequest.getTitle())
+                .setContent(qnaApiRequest.getContent())
+                .setStatus(qnaApiRequest.getStatus());
+        qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
+        qna.setSubject(qnaApiRequest.getSubject());
+        baseRepository.save(qna);
+
+        return Header.OK(response(qna));
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -8,6 +10,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
 import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
 import com.aisw.community.model.network.response.post.notice.DepartmentApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -73,18 +76,19 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     public Header<DepartmentApiResponse> update(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        return baseRepository.findById(departmentApiRequest.getId())
-                .map(department -> {
-                    department
-                            .setTitle(departmentApiRequest.getTitle())
-                            .setContent(departmentApiRequest.getContent())
-                            .setStatus(departmentApiRequest.getStatus());
-                    return department;
-                })
-                .map(department -> baseRepository.save(department))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+
+        if(department.getAccount().getId() != departmentApiRequest.getAccountId()) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        department
+                .setTitle(departmentApiRequest.getTitle())
+                .setContent(departmentApiRequest.getContent())
+                .setStatus(departmentApiRequest.getStatus());
+        baseRepository.save(department);
+
+        return Header.OK(response(department));
     }
 
     @Override

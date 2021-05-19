@@ -84,36 +84,20 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
-        baseRepository.findById(freeApiRequest.getId()).orElseThrow(PostNotFoundException::new)
-                .map(free -> {
-                    if(free.getAccount().getId() != freeApiRequest.getAccountId()) {
-                        return Header.ERROR("작성자가 아닙니다.");
-                    }
-                    free
-                            .setTitle(freeApiRequest.getTitle())
-                            .setContent(freeApiRequest.getContent())
-                            .setStatus(freeApiRequest.getStatus());
-                    free.setIsAnonymous(freeApiRequest.getIsAnonymous());
-                    return free;
-                })
-                .map(free -> baseRepository.save(free))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(PostNotFoundException::new);
 
-        return baseRepository.findById(freeApiRequest.getId())
-                .map(free -> {
-                    free
-                            .setTitle(freeApiRequest.getTitle())
-                            .setContent(freeApiRequest.getContent())
-                            .setStatus(freeApiRequest.getStatus());
-                    free.setIsAnonymous(freeApiRequest.getIsAnonymous());
-                    return free;
-                })
-                .map(free -> baseRepository.save(free))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        if(free.getAccount().getId() != freeApiRequest.getAccountId()) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        free
+                .setTitle(freeApiRequest.getTitle())
+                .setContent(freeApiRequest.getContent())
+                .setStatus(freeApiRequest.getStatus());
+        free.setIsAnonymous(freeApiRequest.getIsAnonymous());
+        baseRepository.save(free);
+
+        return Header.OK(response(free));
     }
 
     @Override
