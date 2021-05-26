@@ -1,6 +1,8 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.attachment.Attachment;
 import com.aisw.community.model.entity.post.notice.University;
@@ -10,6 +12,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
 import com.aisw.community.model.network.request.post.notice.UniversityApiRequest;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
@@ -24,6 +27,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -91,19 +95,20 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
-        return baseRepository.findById(universityApiRequest.getId())
-                .map(university -> {
-                    university
-                            .setTitle(universityApiRequest.getTitle())
-                            .setContent(universityApiRequest.getContent())
-                            .setStatus(universityApiRequest.getStatus());
-                    university.setCampus(universityApiRequest.getCampus());
-                    return university;
-                })
-                .map(university -> baseRepository.save(university))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+
+        if(university.getAccount().getId() != universityApiRequest.getAccountId()) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        university
+                .setTitle(universityApiRequest.getTitle())
+                .setContent(universityApiRequest.getContent())
+                .setStatus(universityApiRequest.getStatus());
+        university.setCampus(universityApiRequest.getCampus());
+        baseRepository.save(university);
+
+        return Header.OK(response(university));
     }
 
     @Override
@@ -280,6 +285,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Cacheable(value = "universitySearch", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<University> universities = baseRepository.findAll(pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
@@ -288,6 +294,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Cacheable(value = "universitySearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByWriterContaining(writer, pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
@@ -296,6 +303,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Cacheable(value = "universitySearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByTitleContaining(title, pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
@@ -304,6 +312,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Cacheable(value = "universitySearchByTitleOrContent",
+            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<University> universities = universityRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
