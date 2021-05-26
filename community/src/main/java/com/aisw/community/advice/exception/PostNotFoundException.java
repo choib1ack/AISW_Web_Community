@@ -1,15 +1,16 @@
 package com.aisw.community.advice.exception;
 
+import lombok.Getter;
+
+@Getter
 public class PostNotFoundException extends RuntimeException {
+
+    private Long id;
 
     public PostNotFoundException() {
     }
 
-    public PostNotFoundException(String message) {
-        super(message);
-    }
-
-    public PostNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+    public PostNotFoundException(Long id) {
+        this.id = id;
     }
 }

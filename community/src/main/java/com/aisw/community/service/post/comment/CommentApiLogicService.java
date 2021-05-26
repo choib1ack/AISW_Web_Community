@@ -36,8 +36,11 @@ public class CommentApiLogicService {
     @Transactional
     public Header<CommentApiResponse> create(Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
-        Account account = accountRepository.findById(commentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
-        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
+        Account account = accountRepository.findById(commentApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(commentApiRequest.getAccountId()));
+        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
+                () -> new PostNotFoundException(commentApiRequest.getBoardId()));
+
         Comment superComment = commentApiRequest.getSuperCommentId() != null ?
                 getRootComment(commentApiRequest.getSuperCommentId()) : null;
         Comment comment = Comment.builder()
@@ -79,7 +82,7 @@ public class CommentApiLogicService {
     }
 
     private Comment getRootComment(Long id) {
-        Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
         return findRootComment(comment);
     }
 

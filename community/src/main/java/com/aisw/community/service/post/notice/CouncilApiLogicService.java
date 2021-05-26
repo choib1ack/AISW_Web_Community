@@ -44,7 +44,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-        Account account = accountRepository.findById(councilApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(councilApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(councilApiRequest.getAccountId()));
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
                 .writer(account.getName())
@@ -76,7 +77,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
-        Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+        Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(councilApiRequest.getId()));
 
         if(council.getAccount().getId() != councilApiRequest.getAccountId()) {
             return Header.ERROR("작성자가 아닙니다.");
@@ -93,12 +95,14 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(council -> {
-                    baseRepository.delete(council);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (council.getAccount().getId() != id) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        baseRepository.delete(council);
+        return Header.OK();
     }
 
     private CouncilApiResponse response(Council council) {

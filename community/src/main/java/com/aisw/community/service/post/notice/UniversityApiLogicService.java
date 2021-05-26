@@ -62,7 +62,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
-        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(universityApiRequest.getAccountId()));
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
                 .writer(account.getName())
@@ -95,7 +96,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
-        University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+        University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(universityApiRequest.getId()));
 
         if(university.getAccount().getId() != universityApiRequest.getAccountId()) {
             return Header.ERROR("작성자가 아닙니다.");
@@ -113,12 +115,14 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(university -> {
-                    baseRepository.delete(university);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (university.getAccount().getId() != id) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        baseRepository.delete(university);
+        return Header.OK();
     }
 
     @Override
@@ -151,7 +155,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
         else
             univ = Campus.MEDICAL;
 
-        Account account = accountRepository.findById(1L).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(1L).orElseThrow(() -> new UserNotFoundException(1L));
         University university = University.builder()
                 .title(title)
                 .writer(writer)

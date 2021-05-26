@@ -1,15 +1,16 @@
 package com.aisw.community.advice.exception;
 
+import lombok.Getter;
+
+@Getter
 public class UserNotFoundException extends RuntimeException {
+
+    private Long id;
 
     public UserNotFoundException() {
     }
 
-    public UserNotFoundException(String message) {
-        super(message);
-    }
-
-    public UserNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+    public UserNotFoundException(Long id) {
+        this.id = id;
     }
 }

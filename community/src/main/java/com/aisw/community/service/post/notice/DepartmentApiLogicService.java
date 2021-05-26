@@ -44,7 +44,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
-        Account account = accountRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(departmentApiRequest.getAccountId()));
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(account.getName())
@@ -76,7 +77,9 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     public Header<DepartmentApiResponse> update(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(departmentApiRequest.getId()));
+
 
         if(department.getAccount().getId() != departmentApiRequest.getAccountId()) {
             return Header.ERROR("작성자가 아닙니다.");
@@ -93,12 +96,14 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(department -> {
-                    baseRepository.delete(department);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (department.getAccount().getId() != id) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        baseRepository.delete(department);
+        return Header.OK();
     }
 
     private DepartmentApiResponse response(Department department) {

@@ -51,7 +51,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(qnaApiRequest.getAccountId()));
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(account.getName())
@@ -86,7 +87,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
-        Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+        Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(qnaApiRequest.getId()));
 
         if(qna.getAccount().getId() != qnaApiRequest.getAccountId()) {
             return Header.ERROR("작성자가 아닙니다.");
@@ -105,12 +107,14 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
 
     @Override
     public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(qna -> {
-                    baseRepository.delete(qna);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (qna.getAccount().getId() != id) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        baseRepository.delete(qna);
+        return Header.OK();
     }
 
     private QnaApiResponse response(Qna qna) {

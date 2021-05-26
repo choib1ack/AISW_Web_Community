@@ -2,9 +2,9 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.user.Account;
-import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.post.board.Free;
+import com.aisw.community.model.entity.post.like.ContentLike;
+import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -16,9 +16,9 @@ import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.model.network.response.post.board.FreeApiResponse;
 import com.aisw.community.model.network.response.post.board.FreeDetailApiResponse;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
-import com.aisw.community.repository.user.AccountRepository;
-import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.post.board.FreeRepository;
+import com.aisw.community.repository.post.like.ContentLikeRepository;
+import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +49,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(freeApiRequest.getAccountId()));
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
                 .writer(account.getName())
@@ -84,9 +84,10 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
-        Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(PostNotFoundException::new);
+        Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(freeApiRequest.getId()));
 
-        if(free.getAccount().getId() != freeApiRequest.getAccountId()) {
+        if (free.getAccount().getId() != freeApiRequest.getAccountId()) {
             return Header.ERROR("작성자가 아닙니다.");
         }
 
@@ -102,12 +103,14 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
 
     @Override
     public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(free -> {
-                    baseRepository.delete(free);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (free.getAccount().getId() != id) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        baseRepository.delete(free);
+        return Header.OK();
     }
 
     private FreeApiResponse response(Free free) {
