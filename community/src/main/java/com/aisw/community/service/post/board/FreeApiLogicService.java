@@ -102,10 +102,10 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     @Override
-    public Header delete(Long id) {
+    public Header delete(Long id, Long userId) {
         Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (free.getAccount().getId() != id) {
+        if (free.getAccount().getId() != userId) {
             return Header.ERROR("작성자가 아닙니다.");
         }
 

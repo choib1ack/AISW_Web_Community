@@ -94,10 +94,10 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    public Header delete(Long id) {
+    public Header delete(Long id, Long userId) {
         Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (council.getAccount().getId() != id) {
+        if (council.getAccount().getId() != userId) {
             return Header.ERROR("작성자가 아닙니다.");
         }
 

@@ -114,10 +114,10 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
-    public Header delete(Long id) {
+    public Header delete(Long id, Long userId) {
         University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (university.getAccount().getId() != id) {
+        if (university.getAccount().getId() != userId) {
             return Header.ERROR("작성자가 아닙니다.");
         }
 

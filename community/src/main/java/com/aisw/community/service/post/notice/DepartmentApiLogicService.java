@@ -95,10 +95,10 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    public Header delete(Long id) {
+    public Header delete(Long id, Long userId) {
         Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (department.getAccount().getId() != id) {
+        if (department.getAccount().getId() != userId) {
             return Header.ERROR("작성자가 아닙니다.");
         }
 

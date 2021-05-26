@@ -39,9 +39,9 @@ public abstract class CrudController<Req, Res, Entity> implements CrudInterface<
     }
 
     @Override
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return baseService.delete(id);
+    @DeleteMapping("{id}/{userId}")
+    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
+        return baseService.delete(id, userId);
     }
 
     @GetMapping("")

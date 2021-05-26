@@ -3,6 +3,7 @@ package com.aisw.community.service.post.comment;
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
@@ -61,17 +62,20 @@ public class CommentApiLogicService {
     }
 
     @Transactional
-    public Header delete(Long id) {
-        return commentRepository.findCommentByIdWithSuperComment(id)
-                .map(comment -> {
-                    if(comment.getSubComment().size() != 0) {
-                        comment.setIsDeleted(true);
-                    } else {
-                        commentRepository.delete(getDeletableAncestorComment(comment));
-                    }
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    public Header delete(Long id, Long userId) {
+        Comment comment = commentRepository.findCommentByIdWithSuperComment(id).orElseThrow(
+                () -> new CommentNotFoundException(id));
+
+        if (comment.getAccount().getId() != userId) {
+            return Header.ERROR("작성자가 아닙니다.");
+        }
+
+        if(comment.getSubComment().size() != 0) {
+            comment.setIsDeleted(true);
+        } else {
+            commentRepository.delete(getDeletableAncestorComment(comment));
+        }
+        return Header.OK();
     }
 
     private Comment getDeletableAncestorComment(Comment comment) {

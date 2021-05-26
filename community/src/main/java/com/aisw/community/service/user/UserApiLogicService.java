@@ -1,8 +1,11 @@
 package com.aisw.community.service.user;
 
+import com.aisw.community.advice.exception.AdminNotFoundException;
 import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.AdminUser;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.AccountApiRequest;
+import com.aisw.community.model.network.request.user.AdminUserApiRequest;
 import com.aisw.community.model.network.response.user.AccountApiResponse;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.BaseService;
@@ -67,35 +70,30 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
 
     @Override
     public Header<AccountApiResponse> update(Header<AccountApiRequest> request) {
-        // 1. data
+
         AccountApiRequest accountApiRequest = request.getData();
 
-        System.out.println(accountApiRequest);
+        Account account = baseRepository.findById(accountApiRequest.getId()).orElseThrow(
+                () -> new AdminNotFoundException(accountApiRequest.getId()));
 
-        // 2. id -> user data find
-        Optional<Account> optional = accountRepository.findByEmail(accountApiRequest.getEmail());
+        account.setName(accountApiRequest.getName())
+                .setEmail(accountApiRequest.getEmail())
+                .setPassword(accountApiRequest.getPassword())
+                .setPhoneNumber(accountApiRequest.getPhoneNumber())
+                .setGrade(accountApiRequest.getGrade())
+                .setStudentId(accountApiRequest.getStudentId())
+                .setGender(accountApiRequest.getGender())
+                .setUniversity(accountApiRequest.getUniversity())
+                .setCollegeName(accountApiRequest.getCollegeName())
+                .setDepartmentName(accountApiRequest.getDepartmentName())
+                .setRole(accountApiRequest.getRole());
+        baseRepository.save(account);
 
-        return optional.map(user ->
-            // 3. data -> update
-            // id
-            response(user
-                    .setName(accountApiRequest.getName())
-                    .setEmail(accountApiRequest.getEmail())
-                    .setPassword(accountApiRequest.getPassword())
-                    .setPhoneNumber(accountApiRequest.getPhoneNumber())
-                    .setGrade(accountApiRequest.getGrade())
-                    .setStudentId(accountApiRequest.getStudentId())
-                    .setGender(accountApiRequest.getGender())
-                    .setUniversity(accountApiRequest.getUniversity())
-                    .setCollegeName(accountApiRequest.getCollegeName())
-                    .setDepartmentName(accountApiRequest.getDepartmentName())
-                    .setRole(accountApiRequest.getRole()))
-        ).map(Header::OK)
-                .orElseGet(() -> Header.ERROR("No Data"));
+        return Header.OK(response(account));
     }
 
     @Override
-    public Header delete(Long id) {
+    public Header delete(Long id, Long userId) {
         // 1. id -> repository -> user
         Optional<Account> optional = baseRepository.findById(id);
 
@@ -107,7 +105,7 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         }).orElseGet(() -> Header.ERROR("No Data"));
     }
 
-    private AccountApiResponse response(Account account){
+    private AccountApiResponse response(Account account) {
         // user -> userApiResponse return
         AccountApiResponse accountApiResponse = AccountApiResponse.builder()
                 .name(account.getName())

@@ -1,6 +1,7 @@
 package com.aisw.community.advice.handler;
 
 import com.aisw.community.advice.ApiErrorResponse;
+import com.aisw.community.advice.exception.AdminNotFoundException;
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
@@ -30,6 +31,13 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleException(CommentNotFoundException ex) {
         ApiErrorResponse response =
                 new ApiErrorResponse("CommentNotFound", "comment is not found with ID : " + ex.getId());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AdminNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(AdminNotFoundException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("AdminUserNotFound", "admin user is not found with ID : " + ex.getId());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }

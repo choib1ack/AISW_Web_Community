@@ -36,9 +36,9 @@ public abstract class BoardPostController<Req, ListRes, DetailRes, BaseRes, Enti
     }
 
     @Override
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return boardPostService.delete(id);
+    @DeleteMapping("{id}/{userId}")
+    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
+        return boardPostService.delete(id, userId);
     }
 
     @GetMapping("/comment/{id}")

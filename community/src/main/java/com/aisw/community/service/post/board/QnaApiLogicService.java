@@ -106,10 +106,10 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
-    public Header delete(Long id) {
+    public Header delete(Long id, Long userId) {
         Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (qna.getAccount().getId() != id) {
+        if (qna.getAccount().getId() != userId) {
             return Header.ERROR("작성자가 아닙니다.");
         }
 

@@ -21,8 +21,8 @@ public class CommentApiController {
         return commentApiLogicService.create(request);
     }
 
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return commentApiLogicService.delete(id);
+    @DeleteMapping("{id}/{userId}")
+    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
+        return commentApiLogicService.delete(id, userId);
     }
 }
