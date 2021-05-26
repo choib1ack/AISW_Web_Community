@@ -1,8 +1,6 @@
 package com.aisw.community.service.post.notice;
 
-import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -10,7 +8,6 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
 import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
 import com.aisw.community.model.network.response.post.notice.DepartmentApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -18,7 +15,6 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.repository.post.notice.DepartmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,19 +72,18 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     public Header<DepartmentApiResponse> update(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(PostNotFoundException::new);
-
-        if(department.getAccount().getId() != departmentApiRequest.getAccountId()) {
-            return Header.ERROR("작성자가 아닙니다.");
-        }
-
-        department
-                .setTitle(departmentApiRequest.getTitle())
-                .setContent(departmentApiRequest.getContent())
-                .setStatus(departmentApiRequest.getStatus());
-        baseRepository.save(department);
-
-        return Header.OK(response(department));
+        return baseRepository.findById(departmentApiRequest.getId())
+                .map(department -> {
+                    department
+                            .setTitle(departmentApiRequest.getTitle())
+                            .setContent(departmentApiRequest.getContent())
+                            .setStatus(departmentApiRequest.getStatus());
+                    return department;
+                })
+                .map(department -> baseRepository.save(department))
+                .map(this::response)
+                .map(Header::OK)
+                .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
     @Override
@@ -136,7 +131,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    @Cacheable(value = "departmentSearch", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
@@ -145,7 +139,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    @Cacheable(value = "departmentSearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByWriterContaining(writer, pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
@@ -154,7 +147,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    @Cacheable(value = "departmentSearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByTitleContaining(title, pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
@@ -163,8 +155,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    @Cacheable(value = "departmentSearchByTitleOrContent",
-            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Department> departments = departmentRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
