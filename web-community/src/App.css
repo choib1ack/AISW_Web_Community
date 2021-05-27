@@ -55,3 +55,21 @@ html, body{
 body{
     overflow-x: hidden;
 }
+
+.search-bar{
+    width: 90%;
+    margin-top : auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-bar .input{
+    width: 100%;
+    font-size: 11px;
+}
+.search-bar .ui.input>input:focus{
+    border: 1px solid #dbdbdb;
+    /*box-shadow: 5px 5px 5px #0472FD;*/
+    background-color: #e7f1ff;
+    /*transition: all ease 0.3s;*/
+}

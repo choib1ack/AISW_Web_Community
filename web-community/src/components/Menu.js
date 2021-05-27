@@ -41,14 +41,19 @@ export default function Menu() {
                             </button>
                         </Link>
 
-                        <Link to="/jobInfo">
-                            <button className="Menu-button">
-                                채용정보
-                            </button>
-                        </Link>
+                        {/*<Link to="/jobInfo">*/}
+                        {/*    <button className="Menu-button">*/}
+                        {/*        채용정보*/}
+                        {/*    </button>*/}
+                        {/*</Link>*/}
                         <Link to="/contestInfo">
                             <button className="Menu-button">
                                 공모전/대외활동
+                            </button>
+                        </Link>
+                        <Link to="/goodInfo">
+                            <button className="Menu-button">
+                                유용한사이트
                             </button>
                         </Link>
                     </Col>
