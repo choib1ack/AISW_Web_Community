@@ -64,6 +64,11 @@ export default function Menu() {
                                     <button className="Menu-button" onClick={() => setModalShow(true)}>
                                         {user.userData.name}
                                     </button>
+                                    <Link to="/manager">
+                                        <button className="Menu-button">
+                                            관리자페이지
+                                        </button>
+                                    </Link>
                                 </Col>
 
                                 <MyPage show={modalShow} onHide={() => setModalShow(false)}/>

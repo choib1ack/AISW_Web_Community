@@ -22,7 +22,7 @@ import Pagination from "./PaginationCustom";
 import Title from "./Title";
 import Card from "react-bootstrap/Card";
 
-function ContestInfo() {
+function GoodInfo() {
     window.scrollTo(0, 0);
     return (
         <div className='ContestInfo'>
@@ -113,7 +113,7 @@ function ContestInfo() {
         </div>
     );
 }
-export default ContestInfo;
+export default GoodInfo;
 
 function GoodInfoCard(props) {
     return (
