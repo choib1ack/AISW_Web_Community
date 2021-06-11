@@ -12,6 +12,7 @@ import axios from "axios";
 import FinishModal from "../FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
+import FileUpload from "../FileUpload";
 
 export default function NewNotice() {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
@@ -114,6 +115,9 @@ export default function NewNotice() {
                             <WriteEditorContainer type="new"/>
                         </Col>
                     </Row>
+
+                    <FileUpload/>
+
                     <Row>
                         <Col>
                             <Button variant="primary" type="submit" style={{float: 'right'}}

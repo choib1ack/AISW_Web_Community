@@ -76,7 +76,7 @@ export default function Login() {
                     로그인
                 </button>
 
-                <a href="/oauth2/authorization/google" className="btn btn-success active" role="button">Google Login</a>
+                <a href="http://localhost:8080/oauth2/authorization/google" className="btn btn-success active" role="button">Google Login</a>
             </Form>
 
             <div>
