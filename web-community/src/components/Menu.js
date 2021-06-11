@@ -51,6 +51,11 @@ export default function Menu() {
                                 공모전/대외활동
                             </button>
                         </Link>
+                        <Link to="/banner">
+                            <button className="Menu-button font-weight-light">
+                                배너 관리
+                            </button>
+                        </Link>
                     </Col>
                     {
                         (user.isOnline && user.userData != null) ? (

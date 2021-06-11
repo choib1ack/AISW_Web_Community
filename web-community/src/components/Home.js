@@ -109,7 +109,6 @@ export default function Home() {
                                 </Row>
                             </div>
                         </div>
-
                     </Col>
                 </Row>
                 <Row style={{margin: "20px 0px"}}>

@@ -13,6 +13,7 @@ import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
 import Booklet from "./components/Booklet";
 import Join from "./components/Join";
+import Banner from "./components/AdminPage/Banner";
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
                             <Route path="/contestInfo" component={ContestInfo}/>
                             <Route path="/Booklet" component={Booklet}/>
                             <Route path="/join" component={Join}/>
+                            <Route path="/banner" component={Banner}/>
                         </Switch>
                     </main>
                 </div>
