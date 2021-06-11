@@ -2,10 +2,8 @@ package com.aisw.community.service.user;
 
 import com.aisw.community.advice.exception.AdminNotFoundException;
 import com.aisw.community.model.entity.user.Account;
-import com.aisw.community.model.entity.user.AdminUser;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.AccountApiRequest;
-import com.aisw.community.model.network.request.user.AdminUserApiRequest;
 import com.aisw.community.model.network.response.user.AccountApiResponse;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.BaseService;

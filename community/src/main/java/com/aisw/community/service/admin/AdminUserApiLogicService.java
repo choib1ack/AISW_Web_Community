@@ -1,13 +1,10 @@
-package com.aisw.community.service.user;
+package com.aisw.community.service.admin;
 
 import com.aisw.community.advice.exception.AdminNotFoundException;
-import com.aisw.community.advice.exception.PostNotFoundException;
-import com.aisw.community.model.entity.post.notice.University;
-import com.aisw.community.model.entity.user.AdminUser;
+import com.aisw.community.model.entity.admin.AdminUser;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.post.notice.UniversityApiRequest;
-import com.aisw.community.model.network.request.user.AdminUserApiRequest;
-import com.aisw.community.model.network.response.user.AdminUserApiResponse;
+import com.aisw.community.model.network.request.admin.AdminUserApiRequest;
+import com.aisw.community.model.network.response.admin.AdminUserApiResponse;
 import com.aisw.community.service.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,6 +64,10 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
 
     @Override
     public Header delete(Long id, Long userId) {
+        return null;
+    }
+
+    public Header delete(Long id) {
         AdminUser adminUser = baseRepository.findById(id).orElseThrow(() -> new AdminNotFoundException(id));
         baseRepository.delete(adminUser);
         return Header.OK();
