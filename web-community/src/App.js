@@ -14,6 +14,7 @@ import ContestInfo from "./components/ContestInfo";
 import Booklet from "./components/Booklet";
 import Join from "./components/Join";
 import GoodInfo from "./components/GoodInfo";
+import ManagerRouter from "./components/ManagerRouter";
 
 function App() {
     return (
@@ -34,6 +35,7 @@ function App() {
                             <Route path="/goodInfo" component={GoodInfo}/>
                             <Route path="/Booklet" component={Booklet}/>
                             <Route path="/join" component={Join}/>
+                            <Route path="/manager" component={ManagerRouter}/>
                         </Switch>
                     </main>
                 </div>
