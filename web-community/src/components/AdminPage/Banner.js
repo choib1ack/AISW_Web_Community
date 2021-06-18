@@ -6,8 +6,20 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import MakeBoardList from "../Board/MakeBoardList";
 import Table from "react-bootstrap/Table";
+import Switch from "react-switch";
 
 function Bannner() {
+    const [state, setState] = React.useState({checked: false});
+    const handleChange = (checked) => {
+        setState({checked});
+        console.log(state);
+        console.log("event")
+    };
+
+    const handleFileOnChange = (event) => {
+
+    }
+
     return (
         <div>
             <Container>
@@ -17,10 +29,15 @@ function Bannner() {
                         <Title text='배너 관리' type='2'/>
                     </Col>
                     <Col>
-                        <Button variant="secondary" style={{marginTop: '3rem', float: 'right', width: '50px'}}
-                                size='sm'>
-                            변경
-                        </Button>
+                        <form>
+                            <div className="form-group">
+                                <Button variant="secondary" style={{marginTop: '3rem', float: 'right', width: '50px', height: '30px'}}
+                                        size='sm'>
+                                    <label htmlFor="exampleFormControlFile1">변경</label>
+                                </Button>
+                                <input type="file" className="form-control-file" id="exampleFormControlFile1" hidden/>
+                            </div>
+                        </form>
                     </Col>
                 </Row>
 
@@ -75,19 +92,33 @@ function Bannner() {
 
                         <tbody>
                         <tr>
-                            <td>
+                            <td class="middle">
                                 2021-05-21
                             </td>
-                            <td>
+                            <td className="middle">
                                 중간고사 간식행사
                             </td>
-                            <td>
+                            <td className="middle">
                                 2021-05-22 ~ 2021-06-05
                             </td>
-                            <td>
-                                O / X
+                            <td className="middle">
+                                <Switch
+                                    checked={state.checked}
+                                    onChange={handleChange}
+                                    onColor="#E7F1FF"
+                                    onHandleColor="#0472fd"
+                                    handleDiameter={23}
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                    activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                    height={20}
+                                    width={40}
+                                    className="react-switch"
+                                    id="material-switch"
+                                />
                             </td>
-                            <td>
+                            <td className="middle">
                                 <Button size='sm'>
                                     수정
                                 </Button>

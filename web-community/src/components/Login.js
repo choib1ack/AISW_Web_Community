@@ -7,8 +7,10 @@ import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import {login} from "../features/userSlice";
 import axios from "axios";
+import GoogleLogin from 'react-google-login';
+import Button from "react-bootstrap/Button";
 
-export default function Login() {
+export default function Login(props) {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
     // const email = useRef();
     // const password = useRef();
@@ -20,6 +22,8 @@ export default function Login() {
     const user = useSelector(state => state.user)
     const dispatch = useDispatch()
 
+    const {onLoginGoogle} = props;
+
     async function getLoginUser(data) {
         await axios.get("/user/login?email=" + data.email + "&password=" + data.password, {
                 headers: {
@@ -27,9 +31,9 @@ export default function Login() {
                 },
             },
         ).then((res) => {
-            if(res.data.data==null){
+            if (res.data.data == null) {
                 alert("회원이 존재하지 않습니다.")
-            }else{
+            } else {
                 dispatch(login(res.data.data))   // 리덕스에 로그인한 유저 정보 저장
                 history.push('/')   // 홈으로 가기
             }
@@ -47,7 +51,7 @@ export default function Login() {
             alert("이메일을 입력해주세요.")
         } else if (data.password === "") {
             alert("비밀번호를 입력해주세요.")
-        } else{
+        } else {
             getLoginUser(data);
         }
     }
@@ -76,7 +80,22 @@ export default function Login() {
                     로그인
                 </button>
 
-                <a href="http://localhost:8080/oauth2/authorization/google" className="btn btn-success active" role="button">Google Login</a>
+                <GoogleLogin
+                    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                    render={renderProps => (
+                        <Button onClick={renderProps.onClick} disabled={renderProps.disabled}>Google Login</Button>
+                    )}
+                    onSuccess={result => {
+                        console.log("성공")
+                        onLoginGoogle(result)
+                    }}
+                    onFailure={result => {
+                        console.log("failure")
+                        console.log(result)
+                    }}
+                    cookiePolicy={'single_host_origin'}
+                />
+
             </Form>
 
             <div>

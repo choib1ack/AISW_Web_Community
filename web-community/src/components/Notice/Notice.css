@@ -22,7 +22,9 @@ tbody tr:hover{
     background-color: #f6f6f6;
     transition: all ease 0.2s;
 }
-
+td.middle{
+    vertical-align: middle;
+}
 div#banner > table > tbody > tr > td:nth-child(2) {
     text-align: center;
     padding-left: 0px !important;
@@ -40,7 +42,7 @@ div#banner > table > tbody > tr > td:nth-child(2) {
     padding: 5px 10px;
     max-width: 150px;
     height: 30px;
-    border: 1px solid #0472FD !important;
+    border: 1px solid #0472fd !important;
     outline: none !important;
 }
 .search-type{
