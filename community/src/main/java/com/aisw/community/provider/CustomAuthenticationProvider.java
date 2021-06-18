@@ -26,9 +26,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         AccountContext accountContext = (AccountContext)userDetailsService.loadUserByUsername(email);
 
-        if(!passwordEncoder.matches(password, accountContext.getAccount().getPassword())){
-            throw new BadCredentialsException("Wrong Password");
-        }
+//        if(!passwordEncoder.matches(password, accountContext.getAccount().getPassword())){
+//            throw new BadCredentialsException("Wrong Password");
+//        }
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(accountContext.getAccount(),

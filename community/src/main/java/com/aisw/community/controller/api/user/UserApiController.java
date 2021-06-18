@@ -7,7 +7,6 @@ import com.aisw.community.model.network.request.user.AccountApiRequest;
 import com.aisw.community.model.network.response.user.AccountApiResponse;
 import com.aisw.community.service.CustomOAuth2AccountService;
 import com.aisw.community.service.user.AuthLogicService;
-import com.aisw.community.service.user.UserApiLogicService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -21,61 +20,42 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/user")
-public class UserApiController implements AuthService {
+public class UserApiController {
 
     @Autowired
     AuthLogicService authLogicService;
 
-    @Autowired
-    CustomOAuth2AccountService customOAuth2AccountService;
 
-    @Autowired
-    UserApiLogicService userApiLogicService;
-
-//    @Override
+    //    @Override
     @ApiOperation("User Info Register")
     @PostMapping("/signup")
     public Header<AccountApiResponse> signUpUser(@ApiParam(value = "User Sign up", required = true) @RequestBody Header<AccountApiRequest> request) {
-
-        System.out.println("hello");
-        String email = request.getData().getEmail();
-        Integer studentId = request.getData().getStudentId();
-
-        if(!authLogicService.emailDoubleCheck(email))
-            return Header.ERROR("Email Already Exists");
-        else if(!authLogicService.sidDoubleCheck(studentId))
-            return Header.ERROR("Student Id Already Exists");
-        else
-            return authLogicService.signUpUser(request);
+        return authLogicService.signUpUser(request);
     }
 
     @ApiOperation("User Info Search")
     @GetMapping("{id}")
-    public Header<AccountApiResponse> read(@ApiParam(value = "User Info", required = true) @PathVariable(value = "id") final Long id){
+    public Header<AccountApiResponse> read(@ApiParam(value = "User Info", required = true) @PathVariable(value = "id") final Long id) {
         return authLogicService.read(id);
     }
 
-//    @Override
-    @ApiOperation("User Login")
-    @RequestMapping("/login")
-    public Header<AccountApiResponse> loginUser(LoginParam loginParam) {
-        return authLogicService.loginUser(loginParam);
+    @PostMapping("")
+    public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request) {
+        return authLogicService.create(request);
     }
 
-    @PostMapping("")
-    public Header<AccountApiResponse> create(@RequestBody Header<AccountApiRequest> request){
-        return userApiLogicService.create(request);
+    @ApiOperation("User Login")
+    @RequestMapping("/login/{email}")
+    public Header<AccountApiResponse> loginUser(@PathVariable String email) {
+        return authLogicService.loginUser(email);
     }
 
     @PutMapping("/update")
-    public Header<AccountApiResponse> update(@RequestBody Header<AccountApiRequest> request){
-        System.out.println(request.getData().getEmail());
-
-        return userApiLogicService.update(request);
+    public Header<AccountApiResponse> update(@RequestBody Header<AccountApiRequest> request) {
+        return authLogicService.update(request);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return authLogicService.loadUserByUsername(email);
-    }
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        return authLogicService.loadUserByUsername(email);
+//    }
 }

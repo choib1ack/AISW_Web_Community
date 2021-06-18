@@ -56,16 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationProvider authenticationProvider() {
         return new CustomAuthenticationProvider();
     }
-//
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception{
-//        http.csrf().disable()
-//                .authorizeRequests()
-//                .anyRequest().permitAll()
-//                .and()
-//                .formLogin()
-//                .disable();
-//    }
+
 
     @Override
     public void configure(WebSecurity web) throws Exception {

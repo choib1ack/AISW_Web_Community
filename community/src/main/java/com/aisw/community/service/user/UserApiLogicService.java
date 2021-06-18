@@ -33,7 +33,6 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         Account account = Account.builder()
                 .name(accountApiRequest.getName())
                 .email(accountApiRequest.getEmail())
-                .password(accountApiRequest.getPassword())
                 .phoneNumber(accountApiRequest.getPhoneNumber())
                 .grade(accountApiRequest.getGrade())
                 .studentId(accountApiRequest.getStudentId())
