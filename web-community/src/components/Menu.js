@@ -3,17 +3,50 @@ import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Grid from "@material-ui/core/Grid";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./MyPage";
+import Button from "react-bootstrap/Button";
+import GoogleLogin from "react-google-login";
 
 export default function Menu() {
+    const history = useHistory();
+
     // redux toolkit
     const user = useSelector(state => state.user)
     const dispatch = useDispatch()
 
     const [modalShow, setModalShow] = useState(false);
+
+    // 이미 있는 회원인지 확인
+    const isExistUser = () => {
+
+    }
+
+    // 구글 연동 성공시
+    const handleLoginSuccess = (result) => {
+        console.log("로그인 성공", result)
+
+        history.push('/')
+    }
+
+    // 구글 연동 실패시
+    const handleLoginFailure = (result) => {
+        console.log("로그인 실패", result)
+    }
+
+    // 구글 연동 성공시
+    const handleJoinSuccess = (result) => {
+        console.log("회원가입 성공", result)
+
+        history.push('/join')
+    }
+
+    // 구글 연동 실패시
+    const handleJoinFailure = (result) => {
+        console.log("회원가입 실패", result)
+    }
 
     return (
         <div className="Menu">
@@ -71,16 +104,27 @@ export default function Menu() {
                             </>
                         ) : (
                             <Col xs={3}>
-                                <Link to="/login">
-                                    <button className="Menu-button">
-                                        로그인
-                                    </button>
-                                </Link>
-                                <Link to="/join">
-                                    <button className="Menu-button blue-button">
-                                        회원가입
-                                    </button>
-                                </Link>
+                                <GoogleLogin
+                                    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                    render={renderProps => (
+                                        <button className="Menu-button" onClick={renderProps.onClick}
+                                                disabled={renderProps.disabled}>로그인</button>
+                                    )}
+                                    onSuccess={result => {handleLoginSuccess(result)}}
+                                    onFailure={result => {handleLoginFailure(result)}}
+                                    cookiePolicy={'single_host_origin'}
+                                />
+
+                                <GoogleLogin
+                                    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                    render={renderProps => (
+                                        <button className="Menu-button blue-button" onClick={renderProps.onClick}
+                                                disabled={renderProps.disabled}>회원가입</button>
+                                    )}
+                                    onSuccess={result => {handleJoinSuccess(result)}}
+                                    onFailure={result => {handleJoinFailure(result)}}
+                                    cookiePolicy={'single_host_origin'}
+                                />
                             </Col>
                         )
                     }
