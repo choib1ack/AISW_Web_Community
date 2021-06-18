@@ -5,6 +5,7 @@ import com.aisw.community.model.LoginParam;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.AccountApiRequest;
 import com.aisw.community.model.network.response.user.AccountApiResponse;
+import com.aisw.community.service.CustomOAuth2AccountService;
 import com.aisw.community.service.user.AuthLogicService;
 import com.aisw.community.service.user.UserApiLogicService;
 import io.swagger.annotations.Api;
@@ -26,12 +27,17 @@ public class UserApiController implements AuthService {
     AuthLogicService authLogicService;
 
     @Autowired
+    CustomOAuth2AccountService customOAuth2AccountService;
+
+    @Autowired
     UserApiLogicService userApiLogicService;
 
 //    @Override
     @ApiOperation("User Info Register")
     @PostMapping("/signup")
     public Header<AccountApiResponse> signUpUser(@ApiParam(value = "User Sign up", required = true) @RequestBody Header<AccountApiRequest> request) {
+
+        System.out.println("hello");
         String email = request.getData().getEmail();
         Integer studentId = request.getData().getStudentId();
 

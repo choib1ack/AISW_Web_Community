@@ -40,7 +40,6 @@ public class Account {
 
     private String phoneNumber;
 
-    @Column
     private String picture;
 
     @Enumerated(EnumType.STRING)
@@ -84,13 +83,21 @@ public class Account {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "account", cascade = CascadeType.ALL)
     private Set<ContentLike> contentLikeList;
 
+//    @Builder(builderMethodName = "OauthBuilder")
+//    public Account(String name, String email, String picture, UserRole role) {
+//        this.name = name;
+//        this.email = email;
+//        this.picture = picture;
+//        this.role = role;
+//    }
 
     @Builder
-    public Account(Long id, String name, String email, String password, String phoneNumber, Grade grade, Integer studentId, Gender gender, Campus university, CollegeName collegeName, DepartmentName departmentName,
+    public Account(Long id, String name, String email, String picture, String password, String phoneNumber, Grade grade, Integer studentId, Gender gender, Campus university, CollegeName collegeName, DepartmentName departmentName,
                    LocalDateTime createdAt,LocalDateTime updatedAt,String createdBy,String updatedBy,UserRole role) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.picture = picture;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.grade = grade;
@@ -107,13 +114,6 @@ public class Account {
 
     }
 
-    @Builder(builderMethodName = "OauthBuilder")
-    public Account(String name, String email, String picture, UserRole role) {
-        this.name = name;
-        this.email = email;
-        this.picture = picture;
-        this.role = role;
-    }
 
 
 

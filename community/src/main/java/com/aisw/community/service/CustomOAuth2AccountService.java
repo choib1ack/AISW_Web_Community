@@ -28,16 +28,19 @@ public class CustomOAuth2AccountService implements OAuth2UserService<OAuth2UserR
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 
-        OAuth2User oAuth2User=delegate.loadUser(userRequest);
+        OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-        String registrationId =userRequest.getClientRegistration().getRegistrationId();
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
-        // OAuth2UserService 를 통해 갖고온 OAuth2User 의 attribute 를 담는 클래스이다.
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         Account user = saveOrUpdate(attributes);
         httpSession.setAttribute("account", new SessionUser(user)); // sessionUser 는 세션에 사용자 정보를 저장하기 위한 dto 클래스이다.
+        System.out.println(user);
+        String[] Name_Dep = user.getName().split("/");
+        System.out.println(Name_Dep[0]);
+        System.out.println(Name_Dep[1]);
 
         return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority(user.getUserRoleKey())), attributes.getAttributes(), attributes.getNameAttributeKey());
 

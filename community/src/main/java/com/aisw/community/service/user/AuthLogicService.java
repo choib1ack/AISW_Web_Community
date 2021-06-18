@@ -30,9 +30,11 @@ public class AuthLogicService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     //    @Override
     public Header<AccountApiResponse> signUpUser(Header<AccountApiRequest> request){
         // 1. request data
+        System.out.println("AUTHLOGIC");
         AccountApiRequest accountApiRequest = request.getData();
 
         // 2. user create
