@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useReducer, useState} from "react";
 import axios from "axios";
 import Card from "react-bootstrap/Card";
 import userImage from "../../icon/user.svg";
@@ -10,8 +10,10 @@ import MakeReCommentList from "./MakeReCommentList";
 
 export default function MakeCommentList({id, Refresh, board_comment_data}) {
     const [boardCommentData, setBoardCommentData] = useState(board_comment_data);
+
     // const [loading, setLoading] = useState(false);
     // const [error, setError] = useState(null);
+
 
 
     const dateFormat = (s) => {
@@ -20,54 +22,7 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
         return result;
     }
 
-    const handleLikeClick = async (comment_id) => {
-        // account_id는 나중에 바꿔야함
-        console.log(comment_id);
-        const data = {
-            "account_id": 1,
-            // "board_id": id
-            "comment_id": comment_id
-        }
-        await axios.post('/like/press/',
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data
-            }
-        ).then((res) => {
-            alert("댓글에 좋아요를 눌렀습니다");
-            // setIsLatest(false);
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-            alert("좋아요 클릭 에러!"+errorObject);
-        })
-    }
-    const handleLikeRemoveClick = async (comment_id) => {
-        // account_id는 나중에 바꿔야함
-        console.log(comment_id);
-        const data = {
-            "account_id": 1,
-            // "board_id": id
-            "comment_id": comment_id
-        }
-        await axios.post('/like/remove/',
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data
-            }
-        ).then((res) => {
-            alert("댓글에 좋아요를 취소했습니다");
-            // setIsLatest(false);
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-            alert("좋아요 클릭 에러!"+errorObject);
-        })
-    }
+
 
     const handleDeleteClick = async (comment_id) => {
         await axios.delete("/board/comment/" + comment_id)
@@ -90,22 +45,98 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
     // 일반 댓글
     const CommentComponent = (data) => {
         const [isShow, setIsShow] = useState(false);
+        const [likeState, dispatch] = useReducer(reducer, { "press":data.check_like, "num":data.likes });
+
         // let isShow = false;
         const handleReCommentClick = () =>{
             setIsShow(!isShow);
         }
+
+        const handleLikeClick = async (comment_id) => {
+            // account_id는 나중에 바꿔야함
+            console.log(comment_id);
+            const data = {
+                "account_id": 1,
+                // "board_id": id
+                "comment_id": comment_id
+            }
+            await axios.post('/like/press/',
+                {
+                    headers: {
+                        "Content-Type": `application/json`
+                    },
+                    data
+                }
+            ).then((res) => {
+                alert("댓글에 좋아요를 눌렀습니다");
+                dispatch({ type: 'PRESS' });
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log(errorObject);
+                alert("좋아요 클릭 에러!"+errorObject);
+            })
+        }
+        const handleLikeCancelClick = async (comment_id) => {
+            // account_id는 나중에 바꿔야함
+            console.log(comment_id);
+            const data = {
+                "account_id": 1,
+                // "board_id": id
+                "comment_id": comment_id
+            }
+
+            await axios.post('/like/remove/',
+                {
+                    headers: {
+                        "Content-Type": `application/json`
+                    },
+                    data
+                }
+            ).then((res) => {
+                alert("댓글에 좋아요를 취소했습니다");
+                dispatch({ type: 'REMOVE' });
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log(errorObject);
+                alert("좋아요 클릭 에러!"+errorObject);
+            })
+        }
+
+        function reducer(state, action) {
+            switch (action.type) {
+                case 'INITIALIZE':
+                    console.log("초기화!");
+                    return {
+                        "num": action.value_likes,
+                        "press": action.value_press,
+                    };
+                case 'PRESS':
+                    return {
+                        num : state.num+1,
+                        press: true
+                    };
+                case 'REMOVE':
+                    return {
+                        num : state.num-1,
+                        press: false
+                    };
+                default:
+                    return state;
+            }
+        }
+
         return(
             <div style={{marginBottom:'1rem'}} key={data.id}>
                 <Card style={{borderRadius: '10px'}} className="text-left flex-row m-2" key={data.id}>
                     <img src={userImage} style={{height: "30px"}} className="ml-3 align-self-start mt-3"/>
 
                     <Card.Body>
-                        {data.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                                <img src={likeImage} onClick={()=>handleLikeRemoveClick(data.id)}
-                                     style={{cursor: "pointer"}}/> {data.likes}</span>:
+                        {likeState.press?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
+                                <img src={likeImage} onClick={() => handleLikeCancelClick(data.id)}
+                                     style={{cursor: "pointer"}}/> {likeState.num}</span>:
                             <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
-                                <img src={likeGrayImage} onClick={()=>handleLikeClick(data.id)}
-                                     style={{cursor: "pointer"}}/> {data.likes}</span>}
+                                <img src={likeGrayImage} onClick={() => handleLikeClick(data.id)}
+                                     style={{cursor: "pointer"}}/> {likeState.num}</span>}
 
                         <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
                             <span style={{color: "#8C8C8C", fontSize: '12px', marginLeft: "10px"}}>
@@ -137,6 +168,7 @@ export default function MakeCommentList({id, Refresh, board_comment_data}) {
 
     // 삭제된 댓글인데 대댓글이 있을 경우
     const RemovedCommentComponent = (data) => {
+
         return(
             <div style={{marginBottom:'1rem'}} key={data.id}>
                 <Card style={{borderRadius: '10px'}} className="text-left flex-row m-2" key={data.id}>

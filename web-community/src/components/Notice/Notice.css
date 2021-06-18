@@ -22,6 +22,12 @@ tbody tr:hover{
     background-color: #f6f6f6;
     transition: all ease 0.2s;
 }
+
+div#banner > table > tbody > tr > td:nth-child(2) {
+    text-align: center;
+    padding-left: 0px !important;
+}
+
 .title{
     font-size: 18px;
     text-align: left;
