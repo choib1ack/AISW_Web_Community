@@ -1,5 +1,6 @@
 package com.aisw.community.service.post.board;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Free;
@@ -79,7 +80,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .map(qna -> baseRepository.save((Qna) qna))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -91,7 +92,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
         if(qna.getAccount().getId() != qnaApiRequest.getAccountId()) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(qnaApiRequest.getAccountId());
         }
 
         qna
@@ -110,7 +111,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
         Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
         if (qna.getAccount().getId() != userId) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(userId);
         }
 
         baseRepository.delete(qna);
@@ -146,7 +147,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .map(qna -> (Qna) qna.setViews(qna.getViews() + 1))
                 .map(this::responseWithComment)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private QnaDetailApiResponse responseWithComment(Qna qna) {
@@ -180,7 +181,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .map(qna -> baseRepository.save((Qna) qna))
                 .map(qna -> responseWithCommentAndLike(qna, accountId))
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
     private QnaDetailApiResponse responseWithCommentAndLike(Qna qna, Long accountId) {

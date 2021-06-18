@@ -1,6 +1,7 @@
 package com.aisw.community.service.post.comment;
 
 import com.aisw.community.advice.exception.CommentNotFoundException;
+import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Qna;
@@ -67,7 +68,7 @@ public class CommentApiLogicService {
                 () -> new CommentNotFoundException(id));
 
         if (comment.getAccount().getId() != userId) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(userId);
         }
 
         if(comment.getSubComment().size() != 0) {

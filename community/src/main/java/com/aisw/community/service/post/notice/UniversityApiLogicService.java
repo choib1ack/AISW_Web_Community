@@ -1,5 +1,6 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.notice.Department;
@@ -88,7 +89,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .map(university -> baseRepository.save((University) university))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -100,7 +101,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 () -> new PostNotFoundException(universityApiRequest.getId()));
 
         if(university.getAccount().getId() != universityApiRequest.getAccountId()) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(universityApiRequest.getAccountId());
         }
 
         university
@@ -118,7 +119,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
         University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
         if (university.getAccount().getId() != userId) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(userId);
         }
 
         baseRepository.delete(university);

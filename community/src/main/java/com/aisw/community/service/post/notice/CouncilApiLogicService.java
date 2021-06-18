@@ -1,5 +1,6 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Qna;
@@ -69,7 +70,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .map(council -> baseRepository.save((Council)council))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -81,7 +82,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 () -> new PostNotFoundException(councilApiRequest.getId()));
 
         if(council.getAccount().getId() != councilApiRequest.getAccountId()) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(councilApiRequest.getAccountId());
         }
 
         council
@@ -98,7 +99,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
         Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
         if (council.getAccount().getId() != userId) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(userId);
         }
 
         baseRepository.delete(council);

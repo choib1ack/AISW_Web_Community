@@ -1,6 +1,7 @@
 package com.aisw.community.service.user;
 
 import com.aisw.community.advice.exception.AdminNotFoundException;
+import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.AccountApiRequest;
@@ -72,7 +73,7 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         AccountApiRequest accountApiRequest = request.getData();
 
         Account account = baseRepository.findById(accountApiRequest.getId()).orElseThrow(
-                () -> new AdminNotFoundException(accountApiRequest.getId()));
+                () -> new UserNotFoundException(accountApiRequest.getId()));
 
         account.setName(accountApiRequest.getName())
                 .setEmail(accountApiRequest.getEmail())

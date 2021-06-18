@@ -1,5 +1,6 @@
 package com.aisw.community.service.post.board;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Free;
@@ -76,7 +77,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .map(free -> baseRepository.save((Free) free))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -88,7 +89,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 () -> new PostNotFoundException(freeApiRequest.getId()));
 
         if (free.getAccount().getId() != freeApiRequest.getAccountId()) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(freeApiRequest.getAccountId());
         }
 
         free
@@ -106,7 +107,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
         Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
         if (free.getAccount().getId() != userId) {
-            return Header.ERROR("작성자가 아닙니다.");
+            throw new NotEqualAccountException(userId);
         }
 
         baseRepository.delete(free);
@@ -141,7 +142,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .map(free -> (Free) free.setViews(free.getViews() + 1))
                 .map(this::responseWithComment)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private FreeDetailApiResponse responseWithComment(Free free) {
@@ -174,7 +175,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .map(free -> baseRepository.save((Free) free))
                 .map(free -> responseWithCommentAndLike(free, accountId))
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
     private FreeDetailApiResponse responseWithCommentAndLike(Free free, Long accountId) {

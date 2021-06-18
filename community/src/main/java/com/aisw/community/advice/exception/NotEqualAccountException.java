@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostNotFoundException extends RuntimeException {
+public class NotEqualAccountException extends RuntimeException {
 
     private Long id;
 }
