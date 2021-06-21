@@ -114,56 +114,63 @@ export default function Join() {
                 <Col/>
                 <Col sm={12} md={10} lg={8}>
                     <Form onSubmit={handleSubmit(onSubmit)} className="text-left">
-                        <Form.Group>
-                            <Form.Label>이메일</Form.Label>
-                            <Form.Control required type="email" placeholder="E-mail"
-                                          name="email" ref={register}/>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Label>비밀번호</Form.Label>
-                            <Form.Control required type="password" placeholder="Password"
-                                          name="password"
-                                          ref={register({
-                                              validate: (value) => checkPassword(value)
-                                          })}
-                            />
-                        </Form.Group>
-                        {
-                            errors.password &&
-                            errors.password.type === "validate" &&
-                            (
-                                pwValidate === 1 && (
-                                    <p style={{color: 'red', fontSize: 12}}>8자리 ~ 20자리 이내로 입력해주세요.</p>
-                                )
-                            )
-                            || (
-                                pwValidate === 2 && (
-                                    <p style={{color: 'red', fontSize: 12}}> 비밀번호는 공백 없이 입력해주세요. .</p>
-                                )
-                            )
-                            || (
-                                pwValidate === 3 && (
-                                    <p style={{color: 'red', fontSize: 12}}>영문, 숫자, 특수문자를 혼합하여 입력해주세요.</p>
-                                )
-                            )
-                        }
-                        <Form.Group>
-                            <Form.Label>비밀번호 확인</Form.Label>
-                            <Form.Control required type="password" placeholder="Confirm Password"
-                                          name="password_confirm"
-                                          ref={register({validate: (value) => value === password.current})}/>
-                        </Form.Group>
-                        {
-                            errors.password_confirm &&
-                            errors.password_confirm.type === "validate" && (
-                                <p style={{color: 'red', fontSize: 12}}>비밀번호와 비밀번호 확인이 일치하지 않습니다.</p>
-                            )}
+                        {/*<Form.Group>*/}
+                        {/*    <Form.Label>이메일</Form.Label>*/}
+                        {/*    <Form.Control required type="email" placeholder="E-mail"*/}
+                        {/*                  name="email" ref={register}/>*/}
+                        {/*</Form.Group>*/}
+                        {/*<Form.Group>*/}
+                        {/*    <Form.Label>비밀번호</Form.Label>*/}
+                        {/*    <Form.Control required type="password" placeholder="Password"*/}
+                        {/*                  name="password"*/}
+                        {/*                  ref={register({*/}
+                        {/*                      validate: (value) => checkPassword(value)*/}
+                        {/*                  })}*/}
+                        {/*    />*/}
+                        {/*</Form.Group>*/}
+                        {/*{*/}
+                        {/*    errors.password &&*/}
+                        {/*    errors.password.type === "validate" &&*/}
+                        {/*    (*/}
+                        {/*        pwValidate === 1 && (*/}
+                        {/*            <p style={{color: 'red', fontSize: 12}}>8자리 ~ 20자리 이내로 입력해주세요.</p>*/}
+                        {/*        )*/}
+                        {/*    )*/}
+                        {/*    || (*/}
+                        {/*        pwValidate === 2 && (*/}
+                        {/*            <p style={{color: 'red', fontSize: 12}}> 비밀번호는 공백 없이 입력해주세요. .</p>*/}
+                        {/*        )*/}
+                        {/*    )*/}
+                        {/*    || (*/}
+                        {/*        pwValidate === 3 && (*/}
+                        {/*            <p style={{color: 'red', fontSize: 12}}>영문, 숫자, 특수문자를 혼합하여 입력해주세요.</p>*/}
+                        {/*        )*/}
+                        {/*    )*/}
+                        {/*}*/}
+                        {/*<Form.Group>*/}
+                        {/*    <Form.Label>비밀번호 확인</Form.Label>*/}
+                        {/*    <Form.Control required type="password" placeholder="Confirm Password"*/}
+                        {/*                  name="password_confirm"*/}
+                        {/*                  ref={register({validate: (value) => value === password.current})}/>*/}
+                        {/*</Form.Group>*/}
+                        {/*{*/}
+                        {/*    errors.password_confirm &&*/}
+                        {/*    errors.password_confirm.type === "validate" && (*/}
+                        {/*        <p style={{color: 'red', fontSize: 12}}>비밀번호와 비밀번호 확인이 일치하지 않습니다.</p>*/}
+                        {/*    )}*/}
 
                         <Form.Row>
+                            {/*<Form.Group sm={9} as={Col}>*/}
+                            {/*    <Form.Label>이름</Form.Label>*/}
+                            {/*    <Form.Control required type="text" placeholder="ex) 홍길동"*/}
+                            {/*                  name="name" ref={register}/>*/}
+                            {/*</Form.Group>*/}
+
                             <Form.Group sm={9} as={Col}>
-                                <Form.Label>이름</Form.Label>
-                                <Form.Control required type="text" placeholder="ex) 홍길동"
-                                              name="name" ref={register}/>
+                                <Form.Label>전화번호</Form.Label>
+                                <Form.Control required type="text" placeholder="ex) 010-0000-0000"
+                                              name="phone_number"
+                                              ref={register({validate: (value) => checkPhoneNumber(value)})}/>
                             </Form.Group>
 
                             <Form.Group as={Col} style={{alignSelf: 'center'}}>
@@ -193,12 +200,6 @@ export default function Join() {
                             </Form.Group>
                         </Form.Row>
 
-                        <Form.Group>
-                            <Form.Label>전화번호</Form.Label>
-                            <Form.Control required type="text" placeholder="ex) 010-0000-0000"
-                                          name="phone_number"
-                                          ref={register({validate: (value) => checkPhoneNumber(value)})}/>
-                        </Form.Group>
                         {
                             errors.phone_number &&
                             errors.phone_number.type === "validate" && (

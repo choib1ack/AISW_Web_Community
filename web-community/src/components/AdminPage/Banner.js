@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import Container from "react-bootstrap/Container";
 import Title from "../Title";
 import Row from "react-bootstrap/Row";
@@ -9,7 +9,10 @@ import Table from "react-bootstrap/Table";
 import Switch from "react-switch";
 
 function Bannner() {
-    const [state, setState] = React.useState({checked: false});
+    const [state, setState] = useState({checked: false});
+    const [file, setFile] = useState(false);
+    const [previewURL, setPreviewURL] = useState('');
+
     const handleChange = (checked) => {
         setState({checked});
         console.log(state);
@@ -31,22 +34,33 @@ function Bannner() {
                     <Col>
                         <form>
                             <div className="form-group">
-                                <Button variant="secondary" style={{marginTop: '3rem', float: 'right', width: '50px', height: '30px'}}
-                                        size='sm'>
-                                    <label htmlFor="exampleFormControlFile1">변경</label>
+                                <Button variant="secondary" size='sm'
+                                        style={{marginTop: '3rem', float: 'right', width: '50px', height: '30px'}}>
+                                    <label htmlFor="exampleFormControlFile1"
+                                           style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                                        변경</label>
+                                    <input type="file" className="form-control-file" id="exampleFormControlFile1"
+                                           onChange={handleFileOnChange}
+                                           hidden/>
                                 </Button>
-                                <input type="file" className="form-control-file" id="exampleFormControlFile1" hidden/>
                             </div>
                         </form>
                     </Col>
                 </Row>
 
                 <Row style={{margin: "20px 0px"}}>
+
                     <div style={{
                         border: "1px solid #E3E3E3", width: "100%", height: "100px",
                         display: "flex", justifyContent: "center", alignItems: "center"
                     }}>
-                        <p style={{color: "#636363"}}>미리보기</p>
+                        {
+                            file === false ? (
+                                <p style={{color: "#636363"}}>미리보기</p>
+                            ) : (
+                                <img className='profile_preview' src={previewURL} alt='미리보기'/>
+                            )
+                        }
                     </div>
                     <Col className="p-3">
                         <div style={{float: 'right', color: "#636363"}}>

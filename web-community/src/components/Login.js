@@ -22,8 +22,6 @@ export default function Login(props) {
     const user = useSelector(state => state.user)
     const dispatch = useDispatch()
 
-    const {onLoginGoogle} = props;
-
     async function getLoginUser(data) {
         await axios.get("/user/login?email=" + data.email + "&password=" + data.password, {
                 headers: {
@@ -79,23 +77,6 @@ export default function Login(props) {
                 <button type="submit" className="Menu-button blue-button Login-form-control">
                     로그인
                 </button>
-
-                <GoogleLogin
-                    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
-                    render={renderProps => (
-                        <Button onClick={renderProps.onClick} disabled={renderProps.disabled}>Google Login</Button>
-                    )}
-                    onSuccess={result => {
-                        console.log("성공")
-                        onLoginGoogle(result)
-                    }}
-                    onFailure={result => {
-                        console.log("failure")
-                        console.log(result)
-                    }}
-                    cookiePolicy={'single_host_origin'}
-                />
-
             </Form>
 
             <div>
