@@ -15,8 +15,6 @@ function Bannner() {
 
     const handleChange = (checked) => {
         setState({checked});
-        console.log(state);
-        console.log("event")
     };
 
     const handleFileOnChange = (event) => {
@@ -34,15 +32,13 @@ function Bannner() {
                     <Col>
                         <form>
                             <div className="form-group">
-                                <Button variant="secondary" size='sm'
-                                        style={{marginTop: '3rem', float: 'right', width: '50px', height: '30px'}}>
-                                    <label htmlFor="exampleFormControlFile1"
-                                           style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-                                        변경</label>
-                                    <input type="file" className="form-control-file" id="exampleFormControlFile1"
-                                           onChange={handleFileOnChange}
-                                           hidden/>
-                                </Button>
+                                <label className=" btn-secondary rounded px-3 py-2 float-right" htmlFor="
+                                input-file" style={{fontSize: " small"}}>
+                                    변경
+                                </label>
+                                <input type=" file" id=" input-file" style={{display: " none"}}
+                                       accept='image/*'
+                                       onChange={handleFileOnChange}/>
                             </div>
                         </form>
                     </Col>
@@ -56,7 +52,8 @@ function Bannner() {
                     }}>
                         {
                             file === false ? (
-                                <p style={{color: "#636363"}}>미리보기</p>
+                                <p style={{color: "#636363"}}>미리보기
+                                </p>
                             ) : (
                                 <img className='profile_preview' src={previewURL} alt='미리보기'/>
                             )
@@ -144,7 +141,8 @@ function Bannner() {
 
             </Container>
         </div>
-    );
+    )
+        ;
 }
 
 export default Bannner;

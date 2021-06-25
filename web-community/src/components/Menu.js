@@ -40,7 +40,7 @@ export default function Menu() {
     const handleJoinSuccess = (result) => {
         console.log("회원가입 성공", result)
 
-        history.push('/join')
+        history.push({pathname: '/join', state: {google_data: result}})
     }
 
     // 구글 연동 실패시

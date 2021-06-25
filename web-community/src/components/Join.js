@@ -11,6 +11,7 @@ import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {join} from "../features/userSlice";
 import FinishModal from "./FinishModal";
+import {useLocation} from "react-router-dom";
 
 export default function Join() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
@@ -18,7 +19,7 @@ export default function Join() {
     const phone_number = useRef();
     password.current = watch("password");
     phone_number.current = watch("phone_number");
-    const [pwValidate, setPWValidate] = useState(0);
+    // const [pwValidate, setPWValidate] = useState(0);
     const [agree, setAgree] = useState(false);
 
     // redux toolkit
@@ -27,6 +28,15 @@ export default function Join() {
 
     // 회원가입 완료 모달
     const [modalShow, setModalShow] = useState(false);
+
+    const location = useLocation();
+
+    useEffect(() => {
+        console.log(location.state.google_data);
+        console.log(location.state.google_data.profileObj.email);
+        console.log(location.state.google_data.profileObj.familyName);
+        console.log(location.state.google_data.profileObj.imageUrl);
+    }, [location]);
 
     async function sendServer(data) {
         await axios.post("/user/signup",
@@ -43,6 +53,7 @@ export default function Join() {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log("에러 발생");
             console.log(errorObject);
+            console.log(data);
 
             alert("회원가입에 실패하였습니다.") // 실패 메시지
         })
@@ -52,17 +63,18 @@ export default function Join() {
         const userData = {
             college_name: data.college,
             department_name: data.department,
-            email: data.email,
+            email: location.state.google_data.profileObj.email,
             gender: data.gender,
             grade: data.grade,
             job: data.job,
             level: 'NOT_SUBSCRIBED',
-            name: data.name,
-            password: data.password,
+            name: location.state.google_data.profileObj.familyName,
+            // password: data.password,
             phone_number: data.phone_number,
             roles: 'NOT_PERMITTED',
             student_id: Number(data.student_id),
-            university: 'COMMON'
+            university: 'COMMON',
+            picture: location.state.google_data.profileObj.imageUrl
         }
 
         if (agree) {
@@ -73,25 +85,25 @@ export default function Join() {
     }
 
     // 비밀번호 유효성 검사
-    function checkPassword(password) {
-        const num = password.search(/[0-9]/g);
-        const eng = password.search(/[a-z]/ig);
-        const spe = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
-
-        if (password.length < 8 || password.length > 20) {
-            setPWValidate(1);
-            return false;
-        } else if (password.search(/\s/) !== -1) {
-            setPWValidate(2);
-            return false;
-        } else if (num < 0 || eng < 0 || spe < 0) {
-            setPWValidate(3);
-            return false;
-        } else {
-            setPWValidate(0);
-            return true;
-        }
-    }
+    // function checkPassword(password) {
+    //     const num = password.search(/[0-9]/g);
+    //     const eng = password.search(/[a-z]/ig);
+    //     const spe = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+    //
+    //     if (password.length < 8 || password.length > 20) {
+    //         setPWValidate(1);
+    //         return false;
+    //     } else if (password.search(/\s/) !== -1) {
+    //         setPWValidate(2);
+    //         return false;
+    //     } else if (num < 0 || eng < 0 || spe < 0) {
+    //         setPWValidate(3);
+    //         return false;
+    //     } else {
+    //         setPWValidate(0);
+    //         return true;
+    //     }
+    // }
 
     // 전화번호 유효성 검사
     function checkPhoneNumber(phone) {
