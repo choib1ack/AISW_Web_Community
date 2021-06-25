@@ -33,7 +33,6 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         Account account = Account.builder()
                 .name(accountApiRequest.getName())
                 .email(accountApiRequest.getEmail())
-                .password(accountApiRequest.getPassword())
                 .phoneNumber(accountApiRequest.getPhoneNumber())
                 .grade(accountApiRequest.getGrade())
                 .studentId(accountApiRequest.getStudentId())
@@ -81,7 +80,6 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
             response(user
                     .setName(accountApiRequest.getName())
                     .setEmail(accountApiRequest.getEmail())
-                    .setPassword(accountApiRequest.getPassword())
                     .setPhoneNumber(accountApiRequest.getPhoneNumber())
                     .setGrade(accountApiRequest.getGrade())
                     .setStudentId(accountApiRequest.getStudentId())
@@ -112,7 +110,6 @@ public class UserApiLogicService extends BaseService<AccountApiRequest, AccountA
         AccountApiResponse accountApiResponse = AccountApiResponse.builder()
                 .name(account.getName())
                 .email(account.getEmail())
-                .password(account.getPassword())
                 .phoneNumber(account.getPhoneNumber())
                 .grade(account.getGrade())
                 .studentId(account.getStudentId())

@@ -18,8 +18,6 @@ public class AccountApiRequest {
 
     private String email;
 
-    private String password;
-
     private String picture;
 
     private String phoneNumber;

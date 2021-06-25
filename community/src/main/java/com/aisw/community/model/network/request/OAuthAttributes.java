@@ -28,7 +28,7 @@ public class OAuthAttributes {
     // 처음 가입을 할때
     // 가입할때 기본권한을 GUEST 로 줌
     public Account toEntity() {
-        return Account.OauthBuilder().
+        return Account.builder().
                 name(name)
                 .email(email)
                 .picture(picture)
