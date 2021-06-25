@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 // Authentication 인증
 @Service
-public class AuthLogicService extends BaseService<AccountApiRequest, AccountApiResponse, Account> implements AuthService {
+public class AuthLogicService extends BaseService<AccountApiRequest, AccountApiResponse, Account> {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -156,40 +156,40 @@ public class AuthLogicService extends BaseService<AccountApiRequest, AccountApiR
         return accountApiResponse;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Account> optional = accountRepository.findByEmail(email);
-
-        if (optional.isPresent()) {
-            Account account = Account.builder()
-                    .id(optional.get().getId())
-                    .name(optional.get().getName())
-                    .email(optional.get().getEmail())
-                    .phoneNumber(optional.get().getPhoneNumber())
-                    .grade(optional.get().getGrade())
-                    .studentId(optional.get().getStudentId())
-                    .createdAt(optional.get().getCreatedAt())
-                    .createdBy(optional.get().getCreatedBy())
-                    .updatedAt(optional.get().getUpdatedAt())
-                    .updatedBy(optional.get().getUpdatedBy())
-                    .gender(optional.get().getGender())
-                    .university(optional.get().getUniversity())
-                    .collegeName(optional.get().getCollegeName())
-                    .departmentName(optional.get().getDepartmentName())
-                    .role(optional.get().getRole())
-                    .build();
-
-            List<GrantedAuthority> roles = new ArrayList<>();
-
-            roles.add(new SimpleGrantedAuthority(UserRole.NOT_PERMITTED.toString()));
-
-            AccountContext accountContext = new AccountContext(account, roles);
-
-            return accountContext;
-        } else {
-            throw new UsernameNotFoundException("Email Not Exists.");
-        }
-    }
+//    @Override
+//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+//        Optional<Account> optional = accountRepository.findByEmail(email);
+//
+//        if (optional.isPresent()) {
+//            Account account = Account.builder()
+//                    .id(optional.get().getId())
+//                    .name(optional.get().getName())
+//                    .email(optional.get().getEmail())
+//                    .phoneNumber(optional.get().getPhoneNumber())
+//                    .grade(optional.get().getGrade())
+//                    .studentId(optional.get().getStudentId())
+//                    .createdAt(optional.get().getCreatedAt())
+//                    .createdBy(optional.get().getCreatedBy())
+//                    .updatedAt(optional.get().getUpdatedAt())
+//                    .updatedBy(optional.get().getUpdatedBy())
+//                    .gender(optional.get().getGender())
+//                    .university(optional.get().getUniversity())
+//                    .collegeName(optional.get().getCollegeName())
+//                    .departmentName(optional.get().getDepartmentName())
+//                    .role(optional.get().getRole())
+//                    .build();
+//
+//            List<GrantedAuthority> roles = new ArrayList<>();
+//
+//            roles.add(new SimpleGrantedAuthority(UserRole.NOT_PERMITTED.toString()));
+//
+//            AccountContext accountContext = new AccountContext(account, roles);
+//
+//            return accountContext;
+//        } else {
+//            throw new UsernameNotFoundException("Email Not Exists.");
+//        }
+//    }
 
 
     @Override

@@ -5,7 +5,6 @@ import com.aisw.community.model.LoginParam;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.AccountApiRequest;
 import com.aisw.community.model.network.response.user.AccountApiResponse;
-import com.aisw.community.service.CustomOAuth2AccountService;
 import com.aisw.community.service.user.AuthLogicService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
