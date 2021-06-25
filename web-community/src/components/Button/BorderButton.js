@@ -11,10 +11,11 @@ function BorderButton(props) {
         boxShadow: 'none',
         backgroundColor: '#ffffff',
         color: '#B8B8B8',
-        padding:'10px'
+        padding:'10px',
+        cursor: 'pointer'
     }
     return (
-        <p style={btnStyle}>{props.content}</p>
+        <p style={btnStyle} onClick={props.onClick}>{props.content}</p>
     );
 }
 
