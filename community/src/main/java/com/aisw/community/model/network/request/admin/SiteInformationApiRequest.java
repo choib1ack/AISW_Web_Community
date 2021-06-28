@@ -21,5 +21,5 @@ public class SiteInformationApiRequest {
 
     private String linkUrl;
 
-    private InformationCategory informationCategory;
+    private InformationCategory category;
 }
