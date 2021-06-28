@@ -1,22 +1,29 @@
-package com.aisw.community.model.network.response.admin;
-
+package com.aisw.community.model.entity.admin;
 
 import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Builder
-public class CiteInformationApiResponse {
+@Accessors(chain = true)
+public class SiteInformation {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -27,13 +34,18 @@ public class CiteInformationApiResponse {
 
     private String linkUrl;
 
+    @Enumerated(EnumType.STRING)
     private InformationCategory informationCategory;
 
+    @CreatedDate
     private LocalDateTime createdAt;
 
+    @CreatedBy
     private String createdBy;
 
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
+    @LastModifiedBy
     private String updatedBy;
 }
