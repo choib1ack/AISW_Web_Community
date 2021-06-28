@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BannerApiRequest {
+public class CiteInformationApiRequest {
 
     private Long id;
 
@@ -17,11 +17,9 @@ public class BannerApiRequest {
 
     private String content;
 
-    private String startDate;
-
-    private String endDate;
-
     private Boolean publishStatus;
 
     private String linkUrl;
+
+    private InformationCategory informationCategory;
 }

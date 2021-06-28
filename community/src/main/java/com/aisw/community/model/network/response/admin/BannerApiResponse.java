@@ -1,8 +1,7 @@
 package com.aisw.community.model.network.response.admin;
 
 
-import com.aisw.community.model.enumclass.BannerCategory;
-import com.aisw.community.model.enumclass.BannerSubCategory;
+import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -32,7 +31,11 @@ public class BannerApiResponse {
 
     private String linkUrl;
 
-    private BannerCategory category;
+    private LocalDateTime createdAt;
 
-    private BannerSubCategory subCategory;
+    private String createdBy;
+
+    private LocalDateTime updatedAt;
+
+    private String updatedBy;
 }

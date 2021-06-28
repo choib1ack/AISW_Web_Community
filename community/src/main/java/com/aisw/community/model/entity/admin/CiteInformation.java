@@ -1,5 +1,6 @@
 package com.aisw.community.model.entity.admin;
 
+import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-public class Banner {
+public class CiteInformation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,13 +30,12 @@ public class Banner {
 
     private String content;
 
-    private LocalDateTime startDate;
-
-    private LocalDateTime endDate;
-
     private Boolean publishStatus;
 
     private String linkUrl;
+
+    @Enumerated(EnumType.STRING)
+    private InformationCategory informationCategory;
 
     @CreatedDate
     private LocalDateTime createdAt;
