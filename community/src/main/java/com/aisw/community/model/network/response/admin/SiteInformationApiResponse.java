@@ -27,7 +27,7 @@ public class SiteInformationApiResponse {
 
     private String linkUrl;
 
-    private InformationCategory informationCategory;
+    private InformationCategory category;
 
     private LocalDateTime createdAt;
 

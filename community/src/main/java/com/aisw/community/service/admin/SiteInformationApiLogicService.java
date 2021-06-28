@@ -29,7 +29,7 @@ public class SiteInformationApiLogicService extends BaseService<SiteInformationA
                 .content(siteInformationApiRequest.getContent())
                 .linkUrl(siteInformationApiRequest.getLinkUrl())
                 .publishStatus(siteInformationApiRequest.getPublishStatus())
-                .informationCategory(siteInformationApiRequest.getInformationCategory())
+                .category(siteInformationApiRequest.getCategory())
                 .build();
 
         SiteInformation newSiteInformation = baseRepository.save(siteInformation);
@@ -86,7 +86,7 @@ public class SiteInformationApiLogicService extends BaseService<SiteInformationA
                 .content(siteInformation.getContent())
                 .linkUrl(siteInformation.getLinkUrl())
                 .publishStatus(siteInformation.getPublishStatus())
-                .informationCategory(siteInformation.getInformationCategory())
+                .category(siteInformation.getCategory())
                 .createdAt(siteInformation.getCreatedAt())
                 .createdBy(siteInformation.getCreatedBy())
                 .updatedAt(siteInformation.getUpdatedAt())

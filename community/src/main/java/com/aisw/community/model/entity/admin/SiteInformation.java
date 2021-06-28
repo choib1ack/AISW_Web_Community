@@ -35,7 +35,7 @@ public class SiteInformation {
     private String linkUrl;
 
     @Enumerated(EnumType.STRING)
-    private InformationCategory informationCategory;
+    private InformationCategory category;
 
     @CreatedDate
     private LocalDateTime createdAt;
