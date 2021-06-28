@@ -2,7 +2,6 @@ package com.aisw.community.service.admin;
 
 import com.aisw.community.advice.exception.BannerNotFoundException;
 import com.aisw.community.model.entity.admin.Banner;
-import com.aisw.community.model.enumclass.BannerCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.admin.BannerApiRequest;
@@ -39,8 +38,6 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .linkUrl(bannerApiRequest.getLinkUrl())
                 .publishStatus(bannerApiRequest.getPublishStatus())
-                .category(bannerApiRequest.getCategory())
-                .subCategory(bannerApiRequest.getSubCategory())
                 .build();
 
         Banner newBanner = baseRepository.save(banner);
@@ -67,8 +64,6 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                 .setEndDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .setLinkUrl(bannerApiRequest.getLinkUrl())
-                .setCategory(bannerApiRequest.getCategory())
-                .setSubCategory(bannerApiRequest.getSubCategory())
                 .setPublishStatus(bannerApiRequest.getPublishStatus());
         baseRepository.save(banner);
 
@@ -86,18 +81,8 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
         return Header.OK();
     }
 
-    public Header<List<BannerApiResponse>> readInfo() {
-        List<Banner> bannerList = bannerRepository.findAllByCategoryAndPublishStatus(BannerCategory.INFORMATION, Boolean.TRUE);
-
-        List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
-                .map(this::response)
-                .collect(Collectors.toList());
-
-        return Header.OK(bannerApiResponseList);
-    }
-
     public Header<List<BannerApiResponse>> readBanner(Pageable pageable) {
-        Page<Banner> bannerList = bannerRepository.findAllByCategoryAndPublishStatus(BannerCategory.BANNER, Boolean.TRUE, pageable);
+        Page<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE, pageable);
 
         List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
                 .map(this::response)
@@ -122,8 +107,6 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                 .endDate(banner.getEndDate())
                 .linkUrl(banner.getLinkUrl())
                 .publishStatus(banner.getPublishStatus())
-                .category(banner.getCategory())
-                .subCategory(banner.getSubCategory())
                 .build();
 
         return bannerApiResponse;
