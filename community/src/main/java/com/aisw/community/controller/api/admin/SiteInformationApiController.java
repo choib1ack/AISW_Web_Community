@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/cite")
+@RequestMapping("/site")
 public class SiteInformationApiController extends CrudController<SiteInformationApiRequest, SiteInformationApiResponse, SiteInformation> {
 
     @Autowired
