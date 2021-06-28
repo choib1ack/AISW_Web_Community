@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CiteInformationApiRequest {
+public class SiteInformationApiRequest {
 
     private Long id;
 

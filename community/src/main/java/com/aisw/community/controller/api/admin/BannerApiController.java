@@ -28,7 +28,7 @@ public class BannerApiController extends CrudController<BannerApiRequest, Banner
         return bannerApiLogicService.delete(id);
     }
 
-    @GetMapping("")
+    @GetMapping("/")
     public Header<List<BannerApiResponse>> readBanner(@PageableDefault(sort = "startDate", direction = Sort.Direction.DESC) Pageable pageable) {
         return bannerApiLogicService.readBanner(pageable);
     }
