@@ -32,10 +32,10 @@ export default function Join() {
     const location = useLocation();
 
     useEffect(() => {
-        console.log(location.state.google_data);
-        console.log(location.state.google_data.profileObj.email);
-        console.log(location.state.google_data.profileObj.familyName);
-        console.log(location.state.google_data.profileObj.imageUrl);
+        // console.log(location.state.google_data);
+        // console.log(location.state.google_data.profileObj.email);
+        // console.log(location.state.google_data.profileObj.familyName);
+        // console.log(location.state.google_data.profileObj.imageUrl);
     }, [location]);
 
     async function sendServer(data) {
@@ -63,18 +63,18 @@ export default function Join() {
         const userData = {
             college_name: data.college,
             department_name: data.department,
-            email: location.state.google_data.profileObj.email,
+            email: 'hyj9829@naver.com',
             gender: data.gender,
             grade: data.grade,
-            job: data.job,
-            level: 'NOT_SUBSCRIBED',
-            name: location.state.google_data.profileObj.familyName,
+            // job: data.job,
+            // level: 'NOT_SUBSCRIBED',
+            name: '장하영',
             // password: data.password,
             phone_number: data.phone_number,
-            roles: 'NOT_PERMITTED',
+            role: 'NOT_PERMITTED',
             student_id: Number(data.student_id),
             university: 'COMMON',
-            picture: location.state.google_data.profileObj.imageUrl
+            picture: 'src'
         }
 
         if (agree) {

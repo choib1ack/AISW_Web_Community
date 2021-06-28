@@ -89,6 +89,11 @@ export default function Menu() {
                                 배너 관리
                             </button>
                         </Link>
+                        <Link to="/join">
+                            <button className="Menu-button font-weight-light">
+                                회원 관리
+                            </button>
+                        </Link>
                     </Col>
                     {
                         (user.isOnline && user.userData != null) ? (
