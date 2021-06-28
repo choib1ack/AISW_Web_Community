@@ -107,6 +107,10 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                 .endDate(banner.getEndDate())
                 .linkUrl(banner.getLinkUrl())
                 .publishStatus(banner.getPublishStatus())
+                .createdAt(banner.getCreatedAt())
+                .createdBy(banner.getCreatedBy())
+                .updatedAt(banner.getUpdatedAt())
+                .updatedBy(banner.getUpdatedBy())
                 .build();
 
         return bannerApiResponse;

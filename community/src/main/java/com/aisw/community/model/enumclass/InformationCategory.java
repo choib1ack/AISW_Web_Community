@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum BannerSubCategory {
+public enum InformationCategory {
     CODINGTEST(0, "코딩테스트", "코딩테스트 준비"),
     LECTURE(1, "강의", "온라인 강의"),
     RECRUITMENT(2, "채용", "채용 정보"),
