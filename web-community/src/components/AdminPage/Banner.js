@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Title from "../Title";
 import Row from "react-bootstrap/Row";
@@ -7,23 +7,47 @@ import Button from "react-bootstrap/Button";
 import MakeBoardList from "../Board/MakeBoardList";
 import Table from "react-bootstrap/Table";
 import Switch from "react-switch";
+import {useDispatch, useSelector} from "react-redux";
+import {setBanner} from "../../features/bannerSlice";
+import FinishModal from "../FinishModal";
 
 function Bannner() {
+    // redux toolkit
+    const storeSrc = useSelector(state => state.banner.src);
+    const dispatch = useDispatch();
+
     const [state, setState] = useState({checked: false});
     const [file, setFile] = useState(false);
-    const [previewURL, setPreviewURL] = useState('');
+    const [previewURL, setPreviewURL] = useState(storeSrc);
+    const [modalShow, setModalShow] = useState(false);
 
     const handleChange = (checked) => {
         setState({checked});
     };
 
     const handleFileOnChange = (event) => {
+        event.preventDefault();
+        let reader = new FileReader();
+        let file = event.target.files[0];
+        reader.onloadend = () => {
+            setFile(file)
+            setPreviewURL(reader.result)
+        }
+        reader.readAsDataURL(file);
+    }
 
+    const handleFileOnSubmit = () => {
+        // redux store에 저장
+        dispatch(setBanner(previewURL));
+        setModalShow(true);
     }
 
     return (
         <div>
             <Container>
+                <FinishModal show={modalShow} link={`/`}
+                             title="배너" body="배너 변경이 완료되었습니다 !"/>
+
                 <Title text='관리자' type='1'/>
                 <Row>
                     <Col>
@@ -31,34 +55,55 @@ function Bannner() {
                     </Col>
                     <Col>
                         <form>
-                            <div className="form-group">
-                                <label className=" btn-secondary rounded px-3 py-2 float-right" htmlFor="
-                                input-file" style={{fontSize: " small"}}>
-                                    변경
-                                </label>
-                                <input type=" file" id=" input-file" style={{display: " none"}}
-                                       accept='image/*'
-                                       onChange={handleFileOnChange}/>
+                            <div className="form-group mb-0" style={{float: 'right'}}>
+                                <Row>
+                                    <Col>
+                                        <label className="btn-secondary rounded px-3 " htmlFor="
+                                input-file" style={{
+                                            fontSize: ".875rem",
+                                            cursor: "pointer",
+                                            width: '50px',
+                                            height: '28px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            marginTop: '3rem'
+                                        }}
+                                        >
+                                            변경
+                                        </label>
+                                        <input type="file" id=" input-file" style={{display: "none"}}
+                                               accept='image/*'
+                                               onChange={handleFileOnChange}/>
+                                    </Col>
+                                    <Col>
+                                        <Button style={{
+                                            width: '50px', marginTop: '3rem'
+                                        }} size='sm' onClick={handleFileOnSubmit}>
+                                            확인
+                                        </Button>
+                                    </Col>
+                                </Row>
                             </div>
                         </form>
                     </Col>
                 </Row>
 
                 <Row style={{margin: "20px 0px"}}>
-
                     <div style={{
-                        border: "1px solid #E3E3E3", width: "100%", height: "100px",
+                        border: "1px solid #E3E3E3", width: "100%", height: "150px",
                         display: "flex", justifyContent: "center", alignItems: "center"
                     }}>
-                        {
-                            file === false ? (
-                                <p style={{color: "#636363"}}>미리보기
-                                </p>
-                            ) : (
-                                <img className='profile_preview' src={previewURL} alt='미리보기'/>
-                            )
-                        }
+                        {/*{*/}
+                        {/*    file === false ? (*/}
+                        {/*        <p style={{color: "#636363"}}>미리보기*/}
+                        {/*        </p>*/}
+                        {/*    ) : (*/}
+                                <img className='profile_preview' src={previewURL} alt='미리보기'
+                                     style={{width: "100%", height: "100%", objectFit: "cover"}}/>
+                            {/*)*/}
+                        {/*}*/}
                     </div>
+
                     <Col className="p-3">
                         <div style={{float: 'right', color: "#636363"}}>
                             <p className="d-inline-block mr-2">

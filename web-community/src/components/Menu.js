@@ -112,6 +112,8 @@ export default function Menu() {
                                     )}
                                     onSuccess={result => {handleLoginSuccess(result)}}
                                     onFailure={result => {handleLoginFailure(result)}}
+                                    // uxMode='redirect'
+                                    // redirectUri="http://localhost:3000/user/signup"
                                     cookiePolicy={'single_host_origin'}
                                 />
 
@@ -123,6 +125,8 @@ export default function Menu() {
                                     )}
                                     onSuccess={result => {handleJoinSuccess(result)}}
                                     onFailure={result => {handleJoinFailure(result)}}
+                                    // uxMode='redirect'
+                                    // redirectUri="http://localhost:3000/user/signup"
                                     cookiePolicy={'single_host_origin'}
                                 />
                             </Col>
