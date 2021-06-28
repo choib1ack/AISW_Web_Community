@@ -44,8 +44,10 @@ public class Bulletin {
 
     private Long views;
 
+    @Enumerated(EnumType.STRING)
     private FirstCategory firstCategory;
 
+    @Enumerated(EnumType.STRING)
     private SecondCategory secondCategory;
 
     @CreatedDate

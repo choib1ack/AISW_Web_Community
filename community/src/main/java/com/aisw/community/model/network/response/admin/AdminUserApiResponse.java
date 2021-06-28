@@ -1,4 +1,4 @@
-package com.aisw.community.model.network.response.user;
+package com.aisw.community.model.network.response.admin;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;

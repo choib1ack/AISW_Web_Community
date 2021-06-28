@@ -1,5 +1,7 @@
-package com.aisw.community.model.entity.user;
+package com.aisw.community.model.entity.admin;
 
+import com.aisw.community.model.enumclass.BannerCategory;
+import com.aisw.community.model.enumclass.BannerSubCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -19,7 +21,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-public class AdminUser {
+public class Banner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,24 +29,19 @@ public class AdminUser {
 
     private String name;
 
-    private String email;
+    private String content;
 
-    private String password;
+    private LocalDateTime startDate;
 
-    private String phoneNumber;
+    private LocalDateTime endDate;
 
-    @CreatedDate
-    private LocalDateTime createdAt;
+    private Boolean publishStatus;
 
-    @CreatedBy
-    private String createdBy;
+    private String linkUrl;
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    @Enumerated(EnumType.STRING)
+    private BannerCategory category;
 
-    @LastModifiedBy
-    private String updatedBy;
-
-
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private BannerSubCategory subCategory;
 }

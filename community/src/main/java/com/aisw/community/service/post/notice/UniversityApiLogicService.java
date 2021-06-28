@@ -1,5 +1,7 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.attachment.Attachment;
@@ -58,7 +60,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
-        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(universityApiRequest.getAccountId()));
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
                 .writer(account.getName())
@@ -83,7 +86,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .map(university -> baseRepository.save((University) university))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -91,29 +94,33 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     public Header<UniversityApiResponse> update(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
 
-        return baseRepository.findById(universityApiRequest.getId())
-                .map(university -> {
-                    university
-                            .setTitle(universityApiRequest.getTitle())
-                            .setContent(universityApiRequest.getContent())
-                            .setStatus(universityApiRequest.getStatus());
-                    university.setCampus(universityApiRequest.getCampus());
-                    return university;
-                })
-                .map(university -> baseRepository.save(university))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(universityApiRequest.getId()));
+
+        if(university.getAccount().getId() != universityApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(universityApiRequest.getAccountId());
+        }
+
+        university
+                .setTitle(universityApiRequest.getTitle())
+                .setContent(universityApiRequest.getContent())
+                .setStatus(universityApiRequest.getStatus());
+        university.setCampus(universityApiRequest.getCampus());
+        baseRepository.save(university);
+
+        return Header.OK(response(university));
     }
 
     @Override
-    public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(university -> {
-                    baseRepository.delete(university);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    public Header delete(Long id, Long userId) {
+        University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (university.getAccount().getId() != userId) {
+            throw new NotEqualAccountException(userId);
+        }
+
+        baseRepository.delete(university);
+        return Header.OK();
     }
 
     @Override
@@ -146,7 +153,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
         else
             univ = Campus.MEDICAL;
 
-        Account account = accountRepository.findById(1L).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(1L).orElseThrow(() -> new UserNotFoundException(1L));
         University university = University.builder()
                 .title(title)
                 .writer(writer)

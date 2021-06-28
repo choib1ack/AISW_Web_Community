@@ -1,9 +1,11 @@
 package com.aisw.community.service.post.board;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.user.Account;
-import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.post.board.Free;
+import com.aisw.community.model.entity.post.like.ContentLike;
+import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -15,9 +17,9 @@ import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.model.network.response.post.board.FreeApiResponse;
 import com.aisw.community.model.network.response.post.board.FreeDetailApiResponse;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
-import com.aisw.community.repository.user.AccountRepository;
-import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.post.board.FreeRepository;
+import com.aisw.community.repository.post.like.ContentLikeRepository;
+import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -47,7 +49,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(freeApiRequest.getAccountId()));
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
                 .writer(account.getName())
@@ -73,7 +76,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .map(free -> baseRepository.save((Free) free))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -81,29 +84,33 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
-        return baseRepository.findById(freeApiRequest.getId())
-                .map(free -> {
-                    free
-                            .setTitle(freeApiRequest.getTitle())
-                            .setContent(freeApiRequest.getContent())
-                            .setStatus(freeApiRequest.getStatus());
-                    free.setIsAnonymous(freeApiRequest.getIsAnonymous());
-                    return free;
-                })
-                .map(free -> baseRepository.save(free))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(freeApiRequest.getId()));
+
+        if (free.getAccount().getId() != freeApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(freeApiRequest.getAccountId());
+        }
+
+        free
+                .setTitle(freeApiRequest.getTitle())
+                .setContent(freeApiRequest.getContent())
+                .setStatus(freeApiRequest.getStatus());
+        free.setIsAnonymous(freeApiRequest.getIsAnonymous());
+        baseRepository.save(free);
+
+        return Header.OK(response(free));
     }
 
     @Override
-    public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(free -> {
-                    baseRepository.delete(free);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    public Header delete(Long id, Long userId) {
+        Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (free.getAccount().getId() != userId) {
+            throw new NotEqualAccountException(userId);
+        }
+
+        baseRepository.delete(free);
+        return Header.OK();
     }
 
     private FreeApiResponse response(Free free) {
@@ -134,7 +141,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .map(free -> (Free) free.setViews(free.getViews() + 1))
                 .map(this::responseWithComment)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private FreeDetailApiResponse responseWithComment(Free free) {
@@ -167,7 +174,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .map(free -> baseRepository.save((Free) free))
                 .map(free -> responseWithCommentAndLike(free, accountId))
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
     private FreeDetailApiResponse responseWithCommentAndLike(Free free, Long accountId) {

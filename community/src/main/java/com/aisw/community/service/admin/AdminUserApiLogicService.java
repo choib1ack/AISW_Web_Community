@@ -1,9 +1,10 @@
-package com.aisw.community.service.user;
+package com.aisw.community.service.admin;
 
-import com.aisw.community.model.entity.user.AdminUser;
+import com.aisw.community.advice.exception.AdminNotFoundException;
+import com.aisw.community.model.entity.admin.AdminUser;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.user.AdminUserApiRequest;
-import com.aisw.community.model.network.response.user.AdminUserApiResponse;
+import com.aisw.community.model.network.request.admin.AdminUserApiRequest;
+import com.aisw.community.model.network.response.admin.AdminUserApiResponse;
 import com.aisw.community.service.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,31 +49,28 @@ public class AdminUserApiLogicService extends BaseService<AdminUserApiRequest, A
     public Header<AdminUserApiResponse> update(Header<AdminUserApiRequest> request) {
         AdminUserApiRequest adminUserApiRequest = request.getData();
 
-        Optional<AdminUser> optional = baseRepository.findById(adminUserApiRequest.getId());
+        AdminUser adminUser = baseRepository.findById(adminUserApiRequest.getId()).orElseThrow(
+                () -> new AdminNotFoundException(adminUserApiRequest.getId()));
 
-        return optional.map(adminUser -> {
+        adminUser.setName(adminUserApiRequest.getName())
+                .setEmail(adminUserApiRequest.getEmail())
+                .setPassword(adminUserApiRequest.getPassword())
+                .setPhoneNumber(adminUserApiRequest.getPhoneNumber())
+                .setRole(adminUserApiRequest.getRole());
+        baseRepository.save(adminUser);
 
-            adminUser.setName(adminUserApiRequest.getName())
-                    .setEmail(adminUserApiRequest.getEmail())
-                    .setPassword(adminUserApiRequest.getPassword())
-                    .setPhoneNumber(adminUserApiRequest.getPhoneNumber())
-                    .setRole(adminUserApiRequest.getRole());
-
-            return adminUser;
-        }).map(adminUser -> baseRepository.save(adminUser))
-                .map(adminUser -> response(adminUser))
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("No Data"));
+        return Header.OK(response(adminUser));
     }
 
     @Override
-    public Header delete(Long id) {
-        Optional<AdminUser> optional = baseRepository.findById(id);
+    public Header delete(Long id, Long userId) {
+        return null;
+    }
 
-        return optional.map(adminUser -> {
-            baseRepository.delete(adminUser);
-            return Header.OK();
-        }).orElseGet(() -> Header.ERROR("No Data"));
+    public Header delete(Long id) {
+        AdminUser adminUser = baseRepository.findById(id).orElseThrow(() -> new AdminNotFoundException(id));
+        baseRepository.delete(adminUser);
+        return Header.OK();
     }
 
     public AdminUserApiResponse response(AdminUser adminUser){

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 @Component
 @CrossOrigin("*")
@@ -41,9 +42,9 @@ public abstract class NoticePostController<Req, ListRes, Res, Entity> implements
     }
 
     @Override
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return noticePostService.delete(id);
+    @DeleteMapping("{id}/{userId}")
+    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
+        return noticePostService.delete(id, userId);
     }
 
     @PostMapping("crawl")
