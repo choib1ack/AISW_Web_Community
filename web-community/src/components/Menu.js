@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -9,6 +9,8 @@ import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./MyPage";
 import Button from "react-bootstrap/Button";
 import GoogleLogin from "react-google-login";
+import googleLogo from '../image/google-logo.png';
+import {GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL, GITHUB_AUTH_URL} from '../constants';
 
 export default function Menu() {
     const history = useHistory();
@@ -18,6 +20,10 @@ export default function Menu() {
     const dispatch = useDispatch()
 
     const [modalShow, setModalShow] = useState(false);
+
+    useEffect(() => {
+        console.log(user);
+    }, [])
 
     // 이미 있는 회원인지 확인
     const isExistUser = () => {
@@ -104,31 +110,35 @@ export default function Menu() {
                             </>
                         ) : (
                             <Col xs={3}>
-                                <GoogleLogin
-                                    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
-                                    render={renderProps => (
-                                        <button className="Menu-button" onClick={renderProps.onClick}
-                                                disabled={renderProps.disabled}>로그인</button>
-                                    )}
-                                    onSuccess={result => {handleLoginSuccess(result)}}
-                                    onFailure={result => {handleLoginFailure(result)}}
-                                    // uxMode='redirect'
-                                    // redirectUri="http://localhost:3000/user/signup"
-                                    cookiePolicy={'single_host_origin'}
-                                />
+                                {/*<GoogleLogin*/}
+                                {/*    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'*/}
+                                {/*    render={renderProps => (*/}
+                                {/*        <button className="Menu-button" onClick={renderProps.onClick}*/}
+                                {/*                disabled={renderProps.disabled}>로그인</button>*/}
+                                {/*    )}*/}
+                                {/*    onSuccess={result => {handleLoginSuccess(result)}}*/}
+                                {/*    onFailure={result => {handleLoginFailure(result)}}*/}
+                                {/*    // uxMode='redirect'*/}
+                                {/*    // redirectUri="http://localhost:3000/user/signup"*/}
+                                {/*    cookiePolicy={'single_host_origin'}*/}
+                                {/*/>*/}
 
-                                <GoogleLogin
-                                    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
-                                    render={renderProps => (
-                                        <button className="Menu-button blue-button" onClick={renderProps.onClick}
-                                                disabled={renderProps.disabled}>회원가입</button>
-                                    )}
-                                    onSuccess={result => {handleJoinSuccess(result)}}
-                                    onFailure={result => {handleJoinFailure(result)}}
-                                    // uxMode='redirect'
-                                    // redirectUri="http://localhost:3000/user/signup"
-                                    cookiePolicy={'single_host_origin'}
-                                />
+                                {/*<GoogleLogin*/}
+                                {/*    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'*/}
+                                {/*    render={renderProps => (*/}
+                                {/*        <button className="Menu-button blue-button" onClick={renderProps.onClick}*/}
+                                {/*                disabled={renderProps.disabled}>회원가입</button>*/}
+                                {/*    )}*/}
+                                {/*    onSuccess={result => {handleJoinSuccess(result)}}*/}
+                                {/*    onFailure={result => {handleJoinFailure(result)}}*/}
+                                {/*    // uxMode='redirect'*/}
+                                {/*    // redirectUri="http://localhost:3000/user/signup"*/}
+                                {/*    cookiePolicy={'single_host_origin'}*/}
+                                {/*/>*/}
+                                <div className="social-signup">
+                                    <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
+                                        <img src={googleLogo} width="10px" alt="Google"/> Sign up with Google</a>
+                                </div>
                             </Col>
                         )
                     }
