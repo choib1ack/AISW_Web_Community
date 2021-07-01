@@ -13,9 +13,9 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import {useForm} from "react-hook-form";
+import SiteModal from "./SiteModal";
 
 function ManageGoodInfo({match}) {
-    const [show, setShow] = useState(false);
 
     const handleShow = () => setShow(true);
 
@@ -68,12 +68,6 @@ function ManageGoodInfo({match}) {
                     </Col>
                 </Row>
             </Container>
-
-            <AddSiteModal
-                show={show}
-                setShow={setShow}
-            />
-
         </div>
     );
 }
