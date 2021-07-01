@@ -15,6 +15,7 @@ import {Link, useHistory} from "react-router-dom";
 import axios from "axios";
 import fileImage from "../icon/file.svg";
 import Loading from "./Loading";
+import {useDispatch, useSelector} from "react-redux";
 
 export default function Home() {
     let history = useHistory();
@@ -22,12 +23,16 @@ export default function Home() {
         history.push(url);
     }
 
+    // redux toolkit
+    const storeSrc = useSelector(state => state.banner.src);
+    const dispatch = useDispatch();
+
     return (
         <div className="Home" >
             {/*<h1>Home</h1>*/}
             {/*<MyPage/>*/}
             <div className="Banner">
-                <img src={exampleBanner} style={{width: "100%"}}/>
+                <img src={storeSrc} style={{width: "100%", objectFit: "cover"}} alt="배너" height="220px"/>
             </div>
             <div style={{width: "70%", margin: "auto"}}>
                 <Row style={{margin: "30px 0px", textAlign: "center"}}>
