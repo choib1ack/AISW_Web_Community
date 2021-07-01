@@ -127,21 +127,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    public void crawling(Long boardNo) throws IOException {
-
-    }
-
-    @Override
-    public Header<DepartmentApiResponse> write(MultipartFile[] files) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Resource> download(Long id, String originFileName) {
-        return null;
-    }
-
-    @Override
     @Cacheable(value = "departmentSearch", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);

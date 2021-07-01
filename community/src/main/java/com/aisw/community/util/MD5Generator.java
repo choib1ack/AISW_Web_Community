@@ -1,11 +1,15 @@
 package com.aisw.community.util;
 
+import lombok.ToString;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+@ToString
 public class MD5Generator {
+
     private String fileName;
 
     public MD5Generator(String originFileName) throws UnsupportedEncodingException, NoSuchAlgorithmException{
@@ -21,7 +25,5 @@ public class MD5Generator {
         }
 
         fileName = hexMD5Hash.toString();
-
-//        return fileName;
     }
 }

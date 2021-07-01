@@ -1,92 +1,79 @@
 package com.aisw.community.service.post.attachment;
 
+import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.model.entity.post.Bulletin;
 import com.aisw.community.model.entity.post.attachment.Attachment;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.response.post.attachment.AttachmentApiResponseDTO;
-import com.aisw.community.repository.post.attachment.AttachmentRepository;
+import com.aisw.community.model.network.response.post.attachment.AttachmentApiResponse;
 import com.aisw.community.repository.post.BulletinRepository;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.RandomStringUtils;
+import com.aisw.community.repository.post.attachment.AttachmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AttachmentApiLogicService {
 
     @Autowired
+    private FileStorageService fileStorageService;
+
+    @Autowired
     private AttachmentRepository attachmentRepository;
 
     @Autowired
-    private AttachmentStorageService attachmentStorageService;
+    private BulletinRepository<Bulletin> bulletinRepository;
 
-    @Autowired
-    private BulletinRepository bulletinRepository;
+    @Transactional
+    public Header<List<AttachmentApiResponse>> uploadMultipleAttachment(MultipartFile[] files, Long id, String category) {
+        List<AttachmentApiResponse> attachmentApiResponseList = Arrays.asList(files)
+                .stream()
+                .map(file -> uploadAttachment(file, id, category))
+                .collect(Collectors.toList());
 
-    public ResponseEntity<?> uploadAttachment(@RequestParam("file") MultipartFile sourceFile) throws IOException {
-        String sourceFileName = sourceFile.getOriginalFilename();
-        String sourceFileNameExtension = FilenameUtils.getExtension(sourceFileName).toLowerCase();
-
-        File destinationFile;
-        String destinationFileName;
-        do {
-            destinationFileName = RandomStringUtils.randomAlphanumeric(32) + "." + sourceFileNameExtension;
-            destinationFile = new File("/Users/wonchang/desktop" + destinationFileName);
-        } while (destinationFile.exists());
-        destinationFile.getParentFile().mkdirs();
-        sourceFile.transferTo(destinationFile);
-
-        AttachmentApiResponseDTO response = new AttachmentApiResponseDTO();
-//        response.setFileName(sourceFile.getOriginalFilename());
-//        response.setFileSize(sourceFile.getSize());
-        response.setFileType(sourceFile.getContentType());
-//        response.setAttachmentUrl("http://localhost:8080/files/" + destinationFileName);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return Header.OK(attachmentApiResponseList);
     }
 
-    public Header<AttachmentApiResponseDTO> uploadFile(MultipartFile file){
-        String fileName = attachmentStorageService.storeFile(file);
-//        Bulletin bulletin = bulletinRepository.findById(1L).orElseThrow(PostNotFoundException::new);
+    @Transactional
+    public AttachmentApiResponse uploadAttachment(MultipartFile file, Long id, String category) {
+         Bulletin bulletin = bulletinRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        String fileName = fileStorageService.storeFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/post")
-                .path("/downloadFile")
+                .path("/" + category + "/")
                 .path(fileName)
                 .toUriString();
 
-        Attachment attachment = Attachment.builder()
+        Attachment attachment =  Attachment.builder()
                 .fileName(fileName)
-                .filePath(fileDownloadUri)
-                .fileType(file.getContentType())
+                .fileDownloadUri(fileDownloadUri)
                 .fileSize(file.getSize())
-                .bulletin(null)
+                .fileType(file.getContentType())
+                .bulletin(bulletin)
                 .build();
+        Attachment newAttachment = attachmentRepository.save(attachment);
 
-
-//        attachment.setBulletin();
-
-        attachmentRepository.save(attachment);
-
-        return Header.OK(response(attachment));
+        return response(newAttachment);
     }
 
-    private AttachmentApiResponseDTO response(Attachment attachment) {
-        AttachmentApiResponseDTO attachmentApiResponseDTO = AttachmentApiResponseDTO.builder()
+    private AttachmentApiResponse response(Attachment attachment) {
+        AttachmentApiResponse attachmentApiResponse = AttachmentApiResponse.builder()
+                .id(attachment.getId())
                 .fileName(attachment.getFileName())
-                .filePath(attachment.getFilePath())
+                .fileDownloadUri(attachment.getFileDownloadUri())
                 .fileType(attachment.getFileType())
                 .fileSize(attachment.getFileSize())
+                .createdAt(attachment.getCreatedAt())
+                .createdBy(attachment.getCreatedBy())
+                .updatedAt(attachment.getUpdatedAt())
+                .updatedBy(attachment.getUpdatedBy())
                 .build();
-
-        return attachmentApiResponseDTO;
+        return attachmentApiResponse;
     }
 }
-

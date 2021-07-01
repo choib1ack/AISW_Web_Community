@@ -1,7 +1,8 @@
 package com.aisw.community.service.post.attachment;
 
-import com.aisw.community.advice.exception.AttachmentStorageException;
+import com.aisw.community.advice.exception.FileStorageException;
 import com.aisw.community.advice.exception.MyFileNotFoundException;
+import com.aisw.community.config.FileStorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -17,15 +18,18 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
-public class AttachmentStorageService {
-    private final Path fileStorageLocation = Paths.get("/Users/wonchang/desktop/files/").toAbsolutePath().normalize();
+public class FileStorageService {
+
+    private final Path fileStorageLocation;
 
     @Autowired
-    public AttachmentStorageService(){
+    public FileStorageService(FileStorageProperties fileStorageProperties){
+        this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
+                .toAbsolutePath().normalize();
         try{
             Files.createDirectories(this.fileStorageLocation);
-        } catch(Exception e) {
-//            throws new AttachmentStorageException("No directories");
+        } catch(Exception ex) {
+            throw new FileStorageException("Could not create directory", ex);
         }
     }
 
@@ -34,15 +38,15 @@ public class AttachmentStorageService {
 
         try{
             if(fileName.contains("..")){
-                throw new AttachmentStorageException("Invalid File Name");
+                throw new FileStorageException("Invalid File Name: " + fileName);
             }
 
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
-        } catch (Exception e){
-            throw new AttachmentStorageException("Could not store file " + fileName);
+        } catch (IOException ex){
+            throw new FileStorageException("Could not store file: " + fileName, ex);
         }
     }
 
@@ -56,10 +60,10 @@ public class AttachmentStorageService {
                 return resource;
             }
             else{
-                throw new MyFileNotFoundException("File not found " + fileName);
+                throw new MyFileNotFoundException("File not found: " + fileName);
             }
-        } catch (MalformedURLException e){
-            throw new MyFileNotFoundException("File not found " + fileName);
+        } catch (MalformedURLException ex){
+            throw new MyFileNotFoundException("File not found: " + fileName, ex);
         }
     }
 }

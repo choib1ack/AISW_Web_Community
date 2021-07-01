@@ -16,7 +16,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -66,7 +68,7 @@ public class Bulletin {
     private Account account; // user id
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bulletin")
-    private List<Attachment> attachment = new ArrayList<>();
+    private Set<Attachment> attachment = new HashSet<>();
 
     public Bulletin(Long id, String title, String writer, String content, BulletinStatus status,
                     Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
