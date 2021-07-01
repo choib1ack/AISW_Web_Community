@@ -5,6 +5,7 @@ import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
+import com.aisw.community.model.network.response.admin.SiteInformationApiResponseDTO;
 import com.aisw.community.service.admin.SiteInformationApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class SiteInformationApiController extends CrudController<SiteInformation
     }
 
     @GetMapping("/")
-    public Header<List<SiteInformationApiResponse>> readSite() {
+    public Header<List<SiteInformationApiResponseDTO>> readSite() {
         return siteInformationApiLogicService.readCite();
     }
 }
