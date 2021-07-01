@@ -71,7 +71,7 @@ export default function Join() {
             name: location.state.google_data.profileObj.familyName,
             // password: data.password,
             phone_number: data.phone_number,
-            role: 'NOT_PERMITTED',
+            roles: 'NOT_PERMITTED',
             student_id: Number(data.student_id),
             university: 'COMMON',
             picture: location.state.google_data.profileObj.imageUrl

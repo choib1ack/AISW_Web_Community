@@ -10,6 +10,7 @@ import Switch from "react-switch";
 import {useDispatch, useSelector} from "react-redux";
 import {setBanner} from "../../features/bannerSlice";
 import FinishModal from "../FinishModal";
+import AddBannerModal from "./AddBannerModal";
 
 function Bannner() {
     // redux toolkit
@@ -20,6 +21,7 @@ function Bannner() {
     const [file, setFile] = useState(false);
     const [previewURL, setPreviewURL] = useState(storeSrc);
     const [modalShow, setModalShow] = useState(false);
+    const [newModalShow, setNewModalShow] = useState(false);
 
     const handleChange = (checked) => {
         setState({checked});
@@ -98,9 +100,9 @@ function Bannner() {
                         {/*        <p style={{color: "#636363"}}>미리보기*/}
                         {/*        </p>*/}
                         {/*    ) : (*/}
-                                <img className='profile_preview' src={previewURL} alt='미리보기'
-                                     style={{width: "100%", height: "100%", objectFit: "cover"}}/>
-                            {/*)*/}
+                        <img className='profile_preview' src={previewURL} alt='미리보기'
+                             style={{width: "100%", height: "100%", objectFit: "cover"}}/>
+                        {/*)*/}
                         {/*}*/}
                     </div>
 
@@ -128,7 +130,9 @@ function Bannner() {
                         </p>
                     </Col>
                     <Col>
-                        <Button style={{marginTop: '3rem', float: 'right', width: '50px'}} size='sm'>
+                        <AddBannerModal show={newModalShow} setShow={setNewModalShow}/>
+                        <Button style={{marginTop: '3rem', float: 'right', width: '50px'}} size='sm'
+                                onClick={() => setNewModalShow(true)}>
                             등록
                         </Button>
                     </Col>
