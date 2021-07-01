@@ -2,8 +2,10 @@ package com.aisw.community.model.enumclass;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 public enum InformationCategory {
     CODINGTEST(0, "코딩테스트", "코딩테스트 준비"),

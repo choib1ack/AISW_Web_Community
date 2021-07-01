@@ -5,12 +5,16 @@ import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
+import com.aisw.community.model.network.response.admin.SiteInformationApiResponseDTO;
 import com.aisw.community.repository.admin.SiteInformationRepository;
 import com.aisw.community.service.BaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,14 +73,36 @@ public class SiteInformationApiLogicService extends BaseService<SiteInformationA
         return Header.OK();
     }
 
-    public Header<List<SiteInformationApiResponse>> readCite() {
+    public Header<List<SiteInformationApiResponseDTO>> readCite() {
         List<SiteInformation> siteInformationList = siteInformationRepository.findAllByPublishStatus(Boolean.TRUE);
+        Collections.sort(siteInformationList, Comparator.comparing(siteInformation -> siteInformation.getCategory().getId()));
 
-        List<SiteInformationApiResponse> siteInformationApiResponseList = siteInformationList.stream()
-                .map(this::response)
-                .collect(Collectors.toList());
+        List<SiteInformationApiResponseDTO> siteInformationApiResponseDTOList = new ArrayList<>();
+        SiteInformationApiResponseDTO siteInformationApiResponseDTO = null;
+        String category = new String();
+        for(SiteInformation siteInformation : siteInformationList) {
+            if(!category.equals(siteInformation.getCategory().getTitle())) {
+                if(category.length() != 0) {
+                    siteInformationApiResponseDTOList.add(siteInformationApiResponseDTO);
+                }
+                siteInformationApiResponseDTO = new SiteInformationApiResponseDTO();
+                siteInformationApiResponseDTO.setCategory(siteInformation.getCategory());
+                siteInformationApiResponseDTO.getAttachmentApiResponseList().add(response(siteInformation));
+                category = siteInformation.getCategory().getTitle();
+            }
+            else {
+                siteInformationApiResponseDTO.getAttachmentApiResponseList().add(response(siteInformation));
+            }
+        }
+        siteInformationApiResponseDTOList.add(siteInformationApiResponseDTO);
 
-        return Header.OK(siteInformationApiResponseList);
+        return Header.OK(siteInformationApiResponseDTOList);
+
+//        List<SiteInformationApiResponse> siteInformationApiResponseList = siteInformationList.stream()
+//                .map(this::response)
+//                .collect(Collectors.toList());
+
+//        return Header.OK(siteInformationApiResponseList);
     }
 
     private SiteInformationApiResponse response(SiteInformation siteInformation) {
