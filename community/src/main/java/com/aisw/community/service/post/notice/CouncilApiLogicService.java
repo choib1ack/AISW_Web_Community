@@ -1,6 +1,9 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -8,6 +11,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
 import com.aisw.community.model.network.response.post.notice.CouncilApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -15,6 +19,7 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,7 +45,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-        Account account = accountRepository.findById(councilApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(councilApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(councilApiRequest.getAccountId()));
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
                 .writer(account.getName())
@@ -64,7 +70,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .map(council -> baseRepository.save((Council)council))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -72,28 +78,32 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     public Header<CouncilApiResponse> update(Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
 
-        return baseRepository.findById(councilApiRequest.getId())
-                .map(council -> {
-                    council
-                            .setTitle(councilApiRequest.getTitle())
-                            .setContent(councilApiRequest.getContent())
-                            .setStatus(councilApiRequest.getStatus());
-                    return council;
-                })
-                .map(council -> baseRepository.save(council))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(councilApiRequest.getId()));
+
+        if(council.getAccount().getId() != councilApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(councilApiRequest.getAccountId());
+        }
+
+        council
+                .setTitle(councilApiRequest.getTitle())
+                .setContent(councilApiRequest.getContent())
+                .setStatus(councilApiRequest.getStatus());
+        baseRepository.save(council);
+
+        return Header.OK(response(council));
     }
 
     @Override
-    public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(council -> {
-                    baseRepository.delete(council);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    public Header delete(Long id, Long userId) {
+        Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (council.getAccount().getId() != userId) {
+            throw new NotEqualAccountException(userId);
+        }
+
+        baseRepository.delete(council);
+        return Header.OK();
     }
 
     private CouncilApiResponse response(Council council) {
@@ -116,20 +126,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    public void crawling(Long boardNo) throws IOException {
-    }
-
-    @Override
-    public Header<CouncilApiResponse> write(MultipartFile[] files) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Resource> download(Long id, String originFileName) {
-        return null;
-    }
-
-    @Override
+    @Cacheable(value = "councilSearch", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -138,6 +135,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Cacheable(value = "councilSearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByWriterContaining(writer, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -146,6 +144,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Cacheable(value = "councilSearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByTitleContaining(title, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -154,6 +153,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Cacheable(value = "councilSearchByTitleOrContent",
+            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Council> councils = councilRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);

@@ -27,6 +27,7 @@ public class Board extends Bulletin {
 
     private Boolean isAnonymous;
 
+    @Enumerated(EnumType.STRING)
     private SecondCategory category;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board")

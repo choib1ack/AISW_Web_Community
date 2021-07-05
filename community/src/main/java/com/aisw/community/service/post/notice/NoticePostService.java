@@ -19,9 +19,9 @@ public abstract class NoticePostService<Req, ListRes, Res, Entity> implements Cr
     @Autowired(required = false)
     protected JpaRepository<Entity, Long> baseRepository;
 
-    public abstract void crawling(Long board_no) throws IOException;
-    public abstract Header<Res> write(MultipartFile[] files) throws IOException;
-    public abstract ResponseEntity<Resource> download(Long id, String originFileName) throws IOException;
+//    public abstract void crawling(Long board_no) throws IOException;
+//    public abstract Header<Res> write(MultipartFile[] files) throws IOException;
+//    public abstract ResponseEntity<Resource> download(Long id, String originFileName) throws IOException;
     public abstract Header<ListRes> search(Pageable pageable);
     public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
     public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);

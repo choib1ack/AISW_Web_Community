@@ -1,5 +1,6 @@
-package com.aisw.community.model.entity.user;
+package com.aisw.community.model.entity.admin;
 
+import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-public class AdminUser {
+public class SiteInformation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +28,14 @@ public class AdminUser {
 
     private String name;
 
-    private String email;
+    private String content;
 
-    private String password;
+    private Boolean publishStatus;
 
-    private String phoneNumber;
+    private String linkUrl;
+
+    @Enumerated(EnumType.STRING)
+    private InformationCategory category;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -44,7 +48,4 @@ public class AdminUser {
 
     @LastModifiedBy
     private String updatedBy;
-
-
-    private String role;
 }

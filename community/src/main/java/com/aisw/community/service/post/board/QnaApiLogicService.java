@@ -1,6 +1,9 @@
 package com.aisw.community.service.post.board;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.Account;
@@ -9,6 +12,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.board.FreeApiRequest;
 import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
@@ -48,7 +52,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(qnaApiRequest.getAccountId()));
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(account.getName())
@@ -75,7 +80,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .map(qna -> baseRepository.save((Qna) qna))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -83,31 +88,34 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     public Header<QnaApiResponse> update(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
 
-        return baseRepository.findById(qnaApiRequest.getId())
-                .map(qna -> {
-                    qna
-                            .setTitle(qnaApiRequest.getTitle())
-                            .setContent(qnaApiRequest.getContent())
-                            .setStatus(qnaApiRequest.getStatus());
-                    qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
-                    qna.setSubject(qnaApiRequest.getSubject());
+        Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(qnaApiRequest.getId()));
 
-                    return qna;
-                })
-                .map(qna -> baseRepository.save(qna))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        if(qna.getAccount().getId() != qnaApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(qnaApiRequest.getAccountId());
+        }
+
+        qna
+                .setTitle(qnaApiRequest.getTitle())
+                .setContent(qnaApiRequest.getContent())
+                .setStatus(qnaApiRequest.getStatus());
+        qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
+        qna.setSubject(qnaApiRequest.getSubject());
+        baseRepository.save(qna);
+
+        return Header.OK(response(qna));
     }
 
     @Override
-    public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(qna -> {
-                    baseRepository.delete(qna);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    public Header delete(Long id, Long userId) {
+        Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (qna.getAccount().getId() != userId) {
+            throw new NotEqualAccountException(userId);
+        }
+
+        baseRepository.delete(qna);
+        return Header.OK();
     }
 
     private QnaApiResponse response(Qna qna) {
@@ -136,10 +144,10 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     @Transactional
     public Header<QnaDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
-                .map(qna -> (Qna)qna.setViews(qna.getViews() + 1))
+                .map(qna -> (Qna) qna.setViews(qna.getViews() + 1))
                 .map(this::responseWithComment)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private QnaDetailApiResponse responseWithComment(Qna qna) {
@@ -173,7 +181,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .map(qna -> baseRepository.save((Qna) qna))
                 .map(qna -> responseWithCommentAndLike(qna, accountId))
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
     private QnaDetailApiResponse responseWithCommentAndLike(Qna qna, Long accountId) {
@@ -207,9 +215,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 for (CommentApiResponse commentApiResponse : commentApiResponseList) {
                     if (contentLike.getComment().getId() == commentApiResponse.getId()) {
                         commentApiResponse.setCheckLike(true);
-                    }
-                    else {
-                        for(CommentApiResponse subCommentApiResponse : commentApiResponse.getSubComment()) {
+                    } else {
+                        for (CommentApiResponse subCommentApiResponse : commentApiResponse.getSubComment()) {
                             if (contentLike.getComment().getId() == subCommentApiResponse.getId()) {
                                 subCommentApiResponse.setCheckLike(true);
                             }
@@ -224,7 +231,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
-    @Cacheable(value = "searchByStatus", key = "#pageable.")
+    @Cacheable(value = "qnaSearch", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -233,7 +240,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
-    @Cacheable(value = "searchByStatus", key = "#writer")
+    @Cacheable(value = "qnaSearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -242,7 +249,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
-    @Cacheable(value = "searchByTitle", key = "#title")
+    @Cacheable(value = "qnaSearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -251,7 +258,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
-    @Cacheable(value = "searchByTitleOrContent", key = "#title"+"content")
+    @Cacheable(value = "qnaSearchByTitleOrContent",
+            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
@@ -260,8 +268,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
         return getListHeader(qnas, qnasByStatus);
     }
 
-    @Cacheable(value = "searchBySubject", key = "#subject")
-    public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) throws InterruptedException {
+    @Cacheable(value = "qnaSearchBySubject", key = "#pageable.pageNumber.toString().concat(':').concat(#subject)")
+    public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
 
@@ -301,10 +309,9 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                     .views(board.getViews())
                     .writer(board.getWriter())
                     .build();
-            if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
+            if (boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);
-            }
-            else if(boardApiResponse.getStatus() == BulletinStatus.URGENT) {
+            } else if (boardApiResponse.getStatus() == BulletinStatus.URGENT) {
                 boardApiUrgentResponseList.add(boardApiResponse);
             }
         });

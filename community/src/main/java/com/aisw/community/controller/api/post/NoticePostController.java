@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 @Component
 @CrossOrigin("*")
@@ -41,25 +42,25 @@ public abstract class NoticePostController<Req, ListRes, Res, Entity> implements
     }
 
     @Override
-    @DeleteMapping("{id}")
-    public Header delete(@PathVariable Long id) {
-        return noticePostService.delete(id);
+    @DeleteMapping("{id}/{userId}")
+    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
+        return noticePostService.delete(id, userId);
     }
 
-    @PostMapping("crawl")
-    public void crawling(@RequestParam Long board_no) throws IOException{
-        noticePostService.crawling(board_no);
-    }
-
-    @PostMapping("write")
-    public Header<Res> write(@RequestPart MultipartFile[] files) throws IOException {
-        return noticePostService.write(files);
-    }
-
-    @GetMapping("download")
-    public ResponseEntity<Resource> download(@RequestParam Long id, @RequestParam String file_name) throws IOException{
-        return noticePostService.download(id, file_name);
-    }
+//    @PostMapping("crawl")
+//    public void crawling(@RequestParam Long board_no) throws IOException{
+//        noticePostService.crawling(board_no);
+//    }
+//
+//    @PostMapping("write")
+//    public Header<Res> write(@RequestPart MultipartFile[] files) throws IOException {
+//        return noticePostService.write(files);
+//    }
+//
+//    @GetMapping("download")
+//    public ResponseEntity<Resource> download(@RequestParam Long id, @RequestParam String file_name) throws IOException{
+//        return noticePostService.download(id, file_name);
+//    }
 
     @GetMapping("")
     public Header<ListRes> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
