@@ -111,6 +111,7 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                 .createdBy(banner.getCreatedBy())
                 .updatedAt(banner.getUpdatedAt())
                 .updatedBy(banner.getUpdatedBy())
+                .fileSet(banner.getFile())
                 .build();
 
         return bannerApiResponse;

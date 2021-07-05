@@ -1,5 +1,7 @@
-package com.aisw.community.model.entity.post.attachment;
+package com.aisw.community.model.entity.post.file;
 
+import com.aisw.community.model.entity.admin.Banner;
+import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.entity.post.Bulletin;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -21,7 +23,7 @@ import java.time.LocalDateTime;
 @Builder
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-public class Attachment {
+public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +38,13 @@ public class Attachment {
     private Long fileSize;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Bulletin bulletin; // bulletin id
+    private Bulletin bulletin;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Banner banner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private SiteInformation siteInformation;
 
     @CreatedDate
     private LocalDateTime createdAt;

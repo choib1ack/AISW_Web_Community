@@ -1,5 +1,6 @@
 package com.aisw.community.model.entity.admin;
 
+import com.aisw.community.model.entity.post.file.File;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -10,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -48,4 +51,7 @@ public class Banner {
 
     @LastModifiedBy
     private String updatedBy;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner")
+    private Set<File> file = new HashSet<>();
 }

@@ -45,8 +45,8 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(CiteInformationNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(CiteInformationNotFoundException ex) {
+    @ExceptionHandler(SiteInformationNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(SiteInformationNotFoundException ex) {
         ApiErrorResponse response =
                 new ApiErrorResponse("CiteInformationNotfound", "cite information is not found with ID: " + ex.getId());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);

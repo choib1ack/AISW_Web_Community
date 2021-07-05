@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CiteInformationNotFoundException extends RuntimeException {
+public class SiteInformationNotFoundException extends RuntimeException {
 
     private Long id;
 }

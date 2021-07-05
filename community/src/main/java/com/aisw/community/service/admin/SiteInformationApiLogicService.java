@@ -1,6 +1,6 @@
 package com.aisw.community.service.admin;
 
-import com.aisw.community.advice.exception.CiteInformationNotFoundException;
+import com.aisw.community.advice.exception.SiteInformationNotFoundException;
 import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SiteInformationApiLogicService extends BaseService<SiteInformationApiRequest, SiteInformationApiResponse, SiteInformation> {
@@ -51,7 +50,7 @@ public class SiteInformationApiLogicService extends BaseService<SiteInformationA
         SiteInformationApiRequest siteInformationApiRequest = request.getData();
 
         SiteInformation siteInformation = baseRepository.findById(siteInformationApiRequest.getId()).orElseThrow(
-                () -> new CiteInformationNotFoundException(siteInformationApiRequest.getId()));
+                () -> new SiteInformationNotFoundException(siteInformationApiRequest.getId()));
 
         siteInformation.setName(siteInformationApiRequest.getName())
                 .setContent(siteInformationApiRequest.getContent())
@@ -68,12 +67,12 @@ public class SiteInformationApiLogicService extends BaseService<SiteInformationA
     }
 
     public Header delete(Long id) {
-        SiteInformation siteInformation = baseRepository.findById(id).orElseThrow(() -> new CiteInformationNotFoundException(id));
+        SiteInformation siteInformation = baseRepository.findById(id).orElseThrow(() -> new SiteInformationNotFoundException(id));
         baseRepository.delete(siteInformation);
         return Header.OK();
     }
 
-    public Header<List<SiteInformationApiResponseDTO>> readCite() {
+    public Header<List<SiteInformationApiResponseDTO>> readSite() {
         List<SiteInformation> siteInformationList = siteInformationRepository.findAllByPublishStatus(Boolean.TRUE);
         Collections.sort(siteInformationList, Comparator.comparing(siteInformation -> siteInformation.getCategory().getId()));
 
@@ -87,22 +86,16 @@ public class SiteInformationApiLogicService extends BaseService<SiteInformationA
                 }
                 siteInformationApiResponseDTO = new SiteInformationApiResponseDTO();
                 siteInformationApiResponseDTO.setCategory(siteInformation.getCategory());
-                siteInformationApiResponseDTO.getAttachmentApiResponseList().add(response(siteInformation));
+                siteInformationApiResponseDTO.getSiteInformationApiResponseList().add(response(siteInformation));
                 category = siteInformation.getCategory().getTitle();
             }
             else {
-                siteInformationApiResponseDTO.getAttachmentApiResponseList().add(response(siteInformation));
+                siteInformationApiResponseDTO.getSiteInformationApiResponseList().add(response(siteInformation));
             }
         }
         siteInformationApiResponseDTOList.add(siteInformationApiResponseDTO);
 
         return Header.OK(siteInformationApiResponseDTOList);
-
-//        List<SiteInformationApiResponse> siteInformationApiResponseList = siteInformationList.stream()
-//                .map(this::response)
-//                .collect(Collectors.toList());
-
-//        return Header.OK(siteInformationApiResponseList);
     }
 
     private SiteInformationApiResponse response(SiteInformation siteInformation) {
@@ -117,6 +110,7 @@ public class SiteInformationApiLogicService extends BaseService<SiteInformationA
                 .createdBy(siteInformation.getCreatedBy())
                 .updatedAt(siteInformation.getUpdatedAt())
                 .updatedBy(siteInformation.getUpdatedBy())
+                .fileSet(siteInformation.getFile())
                 .build();
 
         return siteInformationApiResponse;
