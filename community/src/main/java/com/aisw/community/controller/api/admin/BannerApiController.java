@@ -1,7 +1,5 @@
 package com.aisw.community.controller.api.admin;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.model.entity.admin.Banner;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.BannerApiRequest;
 import com.aisw.community.model.network.response.admin.BannerApiResponse;
@@ -18,18 +16,28 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/banner")
-public class BannerApiController extends CrudController<BannerApiRequest, BannerApiResponse, Banner> {
+public class BannerApiController {
 
     @Autowired
     private BannerApiLogicService bannerApiLogicService;
 
+    @PostMapping("")
+    public Header<BannerApiResponse> create(@RequestBody Header<BannerApiRequest> request) {
+        return bannerApiLogicService.create(request);
+    }
+
+    @GetMapping("")
+    public Header<List<BannerApiResponse>> readAll(@PageableDefault(sort = "startDate", direction = Sort.Direction.DESC) Pageable pageable) {
+        return bannerApiLogicService.readAll(pageable);
+    }
+
+    @PutMapping("")
+    public Header<BannerApiResponse> update(@RequestBody Header<BannerApiRequest> request) {
+        return bannerApiLogicService.update(request);
+    }
+
     @DeleteMapping("{id}")
     public Header delete(@PathVariable Long id) {
         return bannerApiLogicService.delete(id);
-    }
-
-    @GetMapping("/")
-    public Header<List<BannerApiResponse>> readBanner(@PageableDefault(sort = "startDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        return bannerApiLogicService.readBanner(pageable);
     }
 }

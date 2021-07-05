@@ -23,7 +23,7 @@ public class FileApiController {
 
     @PostMapping("/upload/{id}")
     public Header<List<FileApiResponse>> upload(@RequestParam("file") MultipartFile[] files,
-                                                @PathVariable Long id, @RequestParam UploadCategory category) {
+                                                @PathVariable Long id, @RequestParam("category") UploadCategory category) {
         return fileApiLogicService.uploadFiles(files, id, category);
     }
 }

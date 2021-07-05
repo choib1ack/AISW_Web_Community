@@ -20,12 +20,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerApiResponse, Banner> {
+public class BannerApiLogicService {
 
     @Autowired
     private BannerRepository bannerRepository;
 
-    @Override
     public Header<BannerApiResponse> create(Header<BannerApiRequest> request) {
         BannerApiRequest bannerApiRequest = request.getData();
 
@@ -40,48 +39,12 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                 .publishStatus(bannerApiRequest.getPublishStatus())
                 .build();
 
-        Banner newBanner = baseRepository.save(banner);
+        Banner newBanner = bannerRepository.save(banner);
 
         return Header.OK(response(newBanner));
     }
 
-    @Override
-    public Header<BannerApiResponse> read(Long id) {
-        return null;
-    }
-
-    @Override
-    public Header<BannerApiResponse> update(Header<BannerApiRequest> request) {
-        BannerApiRequest bannerApiRequest = request.getData();
-
-        Banner banner = baseRepository.findById(bannerApiRequest.getId()).orElseThrow(
-                () -> new BannerNotFoundException(bannerApiRequest.getId()));
-
-        banner.setName(bannerApiRequest.getName())
-                .setContent(bannerApiRequest.getContent())
-                .setStartDate(LocalDateTime.parse(bannerApiRequest.getStartDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                .setEndDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                .setLinkUrl(bannerApiRequest.getLinkUrl())
-                .setPublishStatus(bannerApiRequest.getPublishStatus());
-        baseRepository.save(banner);
-
-        return Header.OK(response(banner));
-    }
-
-    @Override
-    public Header delete(Long id, Long userId) {
-        return null;
-    }
-
-    public Header delete(Long id) {
-        Banner banner = baseRepository.findById(id).orElseThrow(() -> new BannerNotFoundException(id));
-        baseRepository.delete(banner);
-        return Header.OK();
-    }
-
-    public Header<List<BannerApiResponse>> readBanner(Pageable pageable) {
+    public Header<List<BannerApiResponse>> readAll(Pageable pageable) {
         Page<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE, pageable);
 
         List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
@@ -96,6 +59,45 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                 .build();
 
         return Header.OK(bannerApiResponseList, pagination);
+    }
+
+    public Header<BannerApiResponse> update(Header<BannerApiRequest> request) {
+        BannerApiRequest bannerApiRequest = request.getData();
+
+        Banner banner = bannerRepository.findById(bannerApiRequest.getId()).orElseThrow(
+                () -> new BannerNotFoundException(bannerApiRequest.getId()));
+
+        banner.setName(bannerApiRequest.getName())
+                .setContent(bannerApiRequest.getContent())
+                .setStartDate(LocalDateTime.parse(bannerApiRequest.getStartDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .setEndDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .setLinkUrl(bannerApiRequest.getLinkUrl())
+                .setPublishStatus(bannerApiRequest.getPublishStatus());
+        bannerRepository.save(banner);
+
+        return Header.OK(response(banner));
+    }
+
+    public Header delete(Long id) {
+        Banner banner = bannerRepository.findById(id).orElseThrow(() -> new BannerNotFoundException(id));
+        bannerRepository.delete(banner);
+        return Header.OK();
+    }
+
+    @Scheduled(cron = "0 0 4 * * *")
+    private void checkEndDate() {
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE);
+
+        bannerList.stream().forEach(banner -> {
+            if(now.isBefore(banner.getStartDate())) {
+                banner.setPublishStatus(Boolean.FALSE);
+                bannerRepository.save(banner);
+            }
+        });
     }
 
     private BannerApiResponse response(Banner banner){
@@ -115,24 +117,5 @@ public class BannerApiLogicService extends BaseService<BannerApiRequest, BannerA
                 .build();
 
         return bannerApiResponse;
-    }
-
-    @Scheduled(cron = "0 0 4 * * *")
-    private void checkEndDate() {
-        LocalDateTime now = LocalDateTime.now();
-
-        List<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE);
-
-        bannerList.stream().forEach(banner -> {
-            if(now.isBefore(banner.getStartDate())) {
-                banner.setPublishStatus(Boolean.FALSE);
-                baseRepository.save(banner);
-            }
-        });
-    }
-
-    @Override
-    public Header<List<BannerApiResponse>> search(Pageable pageable) {
-        return null;
     }
 }

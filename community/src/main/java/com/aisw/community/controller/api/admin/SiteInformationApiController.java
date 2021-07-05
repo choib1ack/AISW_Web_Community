@@ -1,7 +1,5 @@
 package com.aisw.community.controller.api.admin;
 
-import com.aisw.community.controller.CrudController;
-import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
@@ -16,18 +14,28 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/site")
-public class SiteInformationApiController extends CrudController<SiteInformationApiRequest, SiteInformationApiResponse, SiteInformation> {
+public class SiteInformationApiController {
 
     @Autowired
     private SiteInformationApiLogicService siteInformationApiLogicService;
 
+    @PostMapping("")
+    public Header<SiteInformationApiResponse> create(@RequestBody Header<SiteInformationApiRequest> request) {
+        return siteInformationApiLogicService.create(request);
+    }
+
+    @GetMapping("")
+    public Header<List<SiteInformationApiResponseDTO>> readAll() {
+        return siteInformationApiLogicService.readAll();
+    }
+
+    @PutMapping("")
+    public Header<SiteInformationApiResponse> update(@RequestBody Header<SiteInformationApiRequest> request) {
+        return siteInformationApiLogicService.update(request);
+    }
+
     @DeleteMapping("{id}")
     public Header delete(@PathVariable Long id) {
         return siteInformationApiLogicService.delete(id);
-    }
-
-    @GetMapping("/")
-    public Header<List<SiteInformationApiResponseDTO>> readSite() {
-        return siteInformationApiLogicService.readSite();
     }
 }
