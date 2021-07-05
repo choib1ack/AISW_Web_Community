@@ -16,6 +16,7 @@ import axios from "axios";
 import fileImage from "../icon/file.svg";
 import Loading from "./Loading";
 import {useDispatch, useSelector} from "react-redux";
+import IntegratedSearch from "./IntegratedSearch";
 
 export default function Home() {
     let history = useHistory();
@@ -34,6 +35,10 @@ export default function Home() {
             <div className="Banner">
                 <img src={storeSrc} style={{width: "100%", objectFit: "cover"}} alt="배너" height="220px"/>
             </div>
+            {/* 통합검색 - 일단 보류 */}
+            {/*<div className="IntegratedSearch" style={{width: "70%", marginLeft: "auto", marginRight: "auto", marginTop: "30px"}}>*/}
+            {/*    <IntegratedSearch/>*/}
+            {/*</div>*/}
             <div style={{width: "70%", margin: "auto"}}>
                 <Row style={{margin: "30px 0px", textAlign: "center"}}>
                     <Col lg={4} md={4} sm={4}>
