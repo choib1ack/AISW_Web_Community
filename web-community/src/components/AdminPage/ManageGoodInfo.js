@@ -1,14 +1,14 @@
 import Container from "react-bootstrap/Container";
-import Title from "./Title";
+import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import React, {useEffect, useState} from "react";
-import programmersImage from "../siteImages/programmers.png";
-import addWebPageImage from "../image/add_webpage_btn.svg";
-import BorderButton from "./Button/BorderButton";
+import programmersImage from "../../siteImages/programmers.png";
+import addWebPageImage from "../../image/add_webpage_btn.svg";
+import BorderButton from "../Button/BorderButton";
 import axios from "axios";
-import SiteModal from "./SiteModal";
-import Loading from "./Loading";
+import SiteModal from "../SiteModal";
+import Loading from "../Loading";
 
 function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState([]);
@@ -46,6 +46,7 @@ function ManageGoodInfo({match}) {
 
                 <MakeSiteList
                     categories={siteData}
+                    setSiteData={setSiteData}
                 />
 
                 <Row style={{marginTop: '3rem'}}>
@@ -60,13 +61,14 @@ function ManageGoodInfo({match}) {
 
 export default ManageGoodInfo;
 
-function MakeSiteList({categories}) {
+function MakeSiteList({categories,setSiteData}) {
     return (
         <>
             {categories.map((data, index) => (
                 <CategoryBox
                     key={index}
                     category_info={data}
+                    setSiteData={setSiteData}
                 />
             ))}
 
@@ -74,7 +76,7 @@ function MakeSiteList({categories}) {
     )
 }
 
-function CategoryBox({category_info}) {
+function CategoryBox({category_info,setSiteData}) {
     const [show, setShow] = useState(false);
 
     let add_btn_style = {
@@ -93,6 +95,7 @@ function CategoryBox({category_info}) {
                     <SiteBox
                         key={index}
                         site_info={data}
+                        setSiteData={setSiteData}
                     />
                 ))}
                 <Col lg={2} md={2} sm={2}>
@@ -108,7 +111,7 @@ function CategoryBox({category_info}) {
     )
 }
 
-function SiteBox({site_info}) {
+function SiteBox({site_info,setSiteData}) {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     let style = {
@@ -130,6 +133,7 @@ function SiteBox({site_info}) {
                 show={showUpdateModal}
                 setShow={setShowUpdateModal}
                 info={site_info}
+                setSiteData={setSiteData}
             />
         </>
     )
