@@ -35,6 +35,31 @@ const IntroduceContent = styled.div`
   margin: 0 auto 4rem;
 `;
 
+function uploadImageCallBack(file) {
+    return new Promise(
+        (resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://api.imgur.com/3/image');
+            xhr.setRequestHeader('Authorization', 'Client-ID XXXXX');
+            const data = new FormData();
+            data.append('image', file);
+            xhr.send(data);
+            xhr.addEventListener('load', () => {
+                const response = JSON.parse(xhr.responseText);
+                console.log(response)
+
+                resolve(response);
+            });
+            xhr.addEventListener('error', () => {
+                const error = JSON.parse(xhr.responseText);
+                console.log(error)
+
+                reject(error);
+            });
+        }
+    );
+}
+
 const WriteEditor = ({ editorState, onChange }) => {
     // editorState의 현재 contentState 값을 원시 JS 구조로 변환시킨뒤, HTML 태그로 변환시켜준다.
     const editorToHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
@@ -59,6 +84,7 @@ const WriteEditor = ({ editorState, onChange }) => {
                         textAlign: { inDropdown: true },
                         link: { inDropdown: true },
                         history: { inDropdown: true },
+                        image: { uploadCallback: uploadImageCallBack, alt: { present: true, mandatory: true },previewImage: true },
                     }}
                 />
             </WriteEditorWrapper>
