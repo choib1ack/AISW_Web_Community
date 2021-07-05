@@ -1,14 +1,14 @@
 import Container from "react-bootstrap/Container";
-import Title from "./Title";
+import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import React, {useEffect, useState} from "react";
-import programmersImage from "../siteImages/programmers.png";
-import addWebPageImage from "../image/add_webpage_btn.svg";
-import BorderButton from "./Button/BorderButton";
+import programmersImage from "../../siteImages/programmers.png";
+import addWebPageImage from "../../image/add_webpage_btn.svg";
+import BorderButton from "../Button/BorderButton";
 import axios from "axios";
-import SiteModal from "./SiteModal";
-import Loading from "./Loading";
+import SiteModal from "../SiteModal";
+import Loading from "../Loading";
 
 function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState([]);

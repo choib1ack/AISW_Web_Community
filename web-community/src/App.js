@@ -15,7 +15,7 @@ import Booklet from "./components/Booklet";
 import Join from "./components/Join";
 import Banner from "./components/AdminPage/Banner";
 import GoodInfo from "./components/GoodInfo";
-import ManagerRouter from "./components/ManagerRouter";
+import ManagerRouter from "./components/AdminPage/ManagerRouter";
 
 function App() {
     return (
