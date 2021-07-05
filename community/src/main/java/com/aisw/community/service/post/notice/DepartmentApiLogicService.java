@@ -1,5 +1,7 @@
 package com.aisw.community.service.post.notice;
 
+import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.Department;
@@ -40,7 +42,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
-        Account account = accountRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        Account account = accountRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(departmentApiRequest.getAccountId()));
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(account.getName())
@@ -64,7 +67,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .map(department -> baseRepository.save((Department)department))
                 .map(this::response)
                 .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     @Override
@@ -72,28 +75,33 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     public Header<DepartmentApiResponse> update(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
 
-        return baseRepository.findById(departmentApiRequest.getId())
-                .map(department -> {
-                    department
-                            .setTitle(departmentApiRequest.getTitle())
-                            .setContent(departmentApiRequest.getContent())
-                            .setStatus(departmentApiRequest.getStatus());
-                    return department;
-                })
-                .map(department -> baseRepository.save(department))
-                .map(this::response)
-                .map(Header::OK)
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(departmentApiRequest.getId()));
+
+
+        if(department.getAccount().getId() != departmentApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(departmentApiRequest.getAccountId());
+        }
+
+        department
+                .setTitle(departmentApiRequest.getTitle())
+                .setContent(departmentApiRequest.getContent())
+                .setStatus(departmentApiRequest.getStatus());
+        baseRepository.save(department);
+
+        return Header.OK(response(department));
     }
 
     @Override
-    public Header delete(Long id) {
-        return baseRepository.findById(id)
-                .map(department -> {
-                    baseRepository.delete(department);
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    public Header delete(Long id, Long userId) {
+        Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
+        if (department.getAccount().getId() != userId) {
+            throw new NotEqualAccountException(userId);
+        }
+
+        baseRepository.delete(department);
+        return Header.OK();
     }
 
     private DepartmentApiResponse response(Department department) {
@@ -116,21 +124,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    public void crawling(Long boardNo) throws IOException {
-
-    }
-
-    @Override
-    public Header<DepartmentApiResponse> write(MultipartFile[] files) {
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<Resource> download(Long id, String originFileName) {
-        return null;
-    }
-
-    @Override
+    @Cacheable(value = "departmentSearch", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);

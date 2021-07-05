@@ -16,6 +16,4 @@ public abstract class BaseService<Req, Res, Entity> implements CrudInterface<Req
     protected JpaRepository<Entity, Long> baseRepository;
 
     public abstract Header<List<Res>> search(Pageable pageable);
-
-
 }

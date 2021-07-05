@@ -38,11 +38,11 @@ public class ContentLikeApiLogicService {
     public Header<ContentLikeApiResponse> pressLike(Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
         Account account = accountRepository.findById(contentLikeApiRequest.getAccountId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException(contentLikeApiRequest.getAccountId()));
         ContentLike newContentLike = null;
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
-                    .orElseThrow(CommentNotFoundException::new);
+                    .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
             contentLikeRepository.findContentLikeByAccountIdAndCommentId(account.getId(), comment.getId())
                     .ifPresent(contentLike -> {throw new RuntimeException();});
 
@@ -57,7 +57,7 @@ public class ContentLikeApiLogicService {
         }
         else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
-                    .orElseThrow(PostNotFoundException::new);
+                    .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
             contentLikeRepository.findContentLikeByAccountIdAndBoardId(account.getId(), board.getId())
                     .ifPresent(contentLike -> {throw new RuntimeException();});
 
@@ -77,11 +77,11 @@ public class ContentLikeApiLogicService {
     public Header removeLike(Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
         Account account = accountRepository.findById(contentLikeApiRequest.getAccountId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new UserNotFoundException(contentLikeApiRequest.getAccountId()));
 
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
-                    .orElseThrow(CommentNotFoundException::new);
+                    .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
             return contentLikeRepository
                     .findContentLikeByAccountIdAndCommentId(account.getId(), comment.getId())
                     .map(contentLike -> {
@@ -94,7 +94,7 @@ public class ContentLikeApiLogicService {
         }
         else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
-                    .orElseThrow(PostNotFoundException::new);
+                    .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
             return contentLikeRepository
                     .findContentLikeByAccountIdAndBoardId(account.getId(), board.getId())
                     .map(contentLike -> {

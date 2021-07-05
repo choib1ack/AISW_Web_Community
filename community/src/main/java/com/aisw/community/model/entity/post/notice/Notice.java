@@ -20,6 +20,7 @@ import javax.persistence.*;
 @DiscriminatorValue("notice")
 public class Notice extends Bulletin {
 
+    @Enumerated(EnumType.STRING)
     private SecondCategory category;
 
     public Notice(Long id, String title, String writer, String content, BulletinStatus status, Long views,

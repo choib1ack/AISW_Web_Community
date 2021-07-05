@@ -1,15 +1,13 @@
 package com.aisw.community.advice.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommentNotFoundException extends RuntimeException {
 
-    public CommentNotFoundException() {
-    }
-
-    public CommentNotFoundException(String message) {
-        super(message);
-    }
-
-    public CommentNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    private Long id;
 }

@@ -1,8 +1,10 @@
 package com.aisw.community.service.post.comment;
 
 import com.aisw.community.advice.exception.CommentNotFoundException;
+import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
@@ -36,8 +38,11 @@ public class CommentApiLogicService {
     @Transactional
     public Header<CommentApiResponse> create(Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
-        Account account = accountRepository.findById(commentApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
-        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
+        Account account = accountRepository.findById(commentApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(commentApiRequest.getAccountId()));
+        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
+                () -> new PostNotFoundException(commentApiRequest.getBoardId()));
+
         Comment superComment = commentApiRequest.getSuperCommentId() != null ?
                 getRootComment(commentApiRequest.getSuperCommentId()) : null;
         Comment comment = Comment.builder()
@@ -58,17 +63,20 @@ public class CommentApiLogicService {
     }
 
     @Transactional
-    public Header delete(Long id) {
-        return commentRepository.findCommentByIdWithSuperComment(id)
-                .map(comment -> {
-                    if(comment.getSubComment().size() != 0) {
-                        comment.setIsDeleted(true);
-                    } else {
-                        commentRepository.delete(getDeletableAncestorComment(comment));
-                    }
-                    return Header.OK();
-                })
-                .orElseGet(() -> Header.ERROR("데이터 없음"));
+    public Header delete(Long id, Long userId) {
+        Comment comment = commentRepository.findCommentByIdWithSuperComment(id).orElseThrow(
+                () -> new CommentNotFoundException(id));
+
+        if (comment.getAccount().getId() != userId) {
+            throw new NotEqualAccountException(userId);
+        }
+
+        if(comment.getSubComment().size() != 0) {
+            comment.setIsDeleted(true);
+        } else {
+            commentRepository.delete(getDeletableAncestorComment(comment));
+        }
+        return Header.OK();
     }
 
     private Comment getDeletableAncestorComment(Comment comment) {
@@ -79,7 +87,7 @@ public class CommentApiLogicService {
     }
 
     private Comment getRootComment(Long id) {
-        Comment comment = commentRepository.findById(id).orElseThrow(CommentNotFoundException::new);
+        Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
         return findRootComment(comment);
     }
 
