@@ -123,20 +123,9 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    public void crawling(Long boardNo) throws IOException {
-    }
 
-    @Override
-    public Header<CouncilApiResponse> write(MultipartFile[] files) {
-        return null;
-    }
+    @Cacheable(value = "councilSearch", key = "#pageable.pageNumber")
 
-    @Override
-    public ResponseEntity<Resource> download(Long id, String originFileName) {
-        return null;
-    }
-
-    @Override
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
