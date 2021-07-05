@@ -12,6 +12,7 @@ import FinishModal from "../FinishModal";
 import {useDispatch, useSelector} from "react-redux";
 import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
+import FileUpload from "../FileUpload";
 
 function NewBoard() {
     const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
@@ -117,6 +118,9 @@ function NewBoard() {
                             <WriteEditorContainer type="new"/>
                         </Col>
                     </Row>
+
+                    <FileUpload/>
+
                     <Row>
                         <Col>
                             <Button variant="primary" type="submit" style={{float: 'right'}}

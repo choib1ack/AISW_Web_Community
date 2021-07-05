@@ -13,6 +13,7 @@ import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
 import Booklet from "./components/Booklet";
 import Join from "./components/Join";
+import Banner from "./components/AdminPage/Banner";
 import GoodInfo from "./components/GoodInfo";
 import ManagerRouter from "./components/ManagerRouter";
 
@@ -35,6 +36,7 @@ function App() {
                             <Route path="/goodInfo" component={GoodInfo}/>
                             <Route path="/Booklet" component={Booklet}/>
                             <Route path="/join" component={Join}/>
+                            <Route path="/banner" component={Banner}/>
                             <Route path="/manager" component={ManagerRouter}/>
                         </Switch>
                     </main>
