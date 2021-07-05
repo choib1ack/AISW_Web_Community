@@ -1,5 +1,6 @@
 package com.aisw.community.controller.api.post.attachment;
 
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.post.attachment.AttachmentApiResponse;
 import com.aisw.community.service.post.attachment.AttachmentApiLogicService;
@@ -21,8 +22,8 @@ public class AttachmentApiController {
     private AttachmentApiLogicService attachmentApiLogicService;
 
     @PostMapping("/upload/{id}")
-    public Header<List<AttachmentApiResponse>> uploadMultipleAttachment(@RequestParam("file") MultipartFile[] files,
-                                                                     @PathVariable Long id, @RequestParam String category) {
-        return attachmentApiLogicService.uploadMultipleAttachment(files, id, category);
+    public Header<List<AttachmentApiResponse>> upload(@RequestParam("file") MultipartFile[] files,
+                                                      @PathVariable Long id, @RequestParam String category) {
+        return attachmentApiLogicService.uploadFiles(files, id, category);
     }
 }

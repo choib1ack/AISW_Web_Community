@@ -3,6 +3,7 @@ package com.aisw.community.service.post.attachment;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.model.entity.post.Bulletin;
 import com.aisw.community.model.entity.post.attachment.Attachment;
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.post.attachment.AttachmentApiResponse;
 import com.aisw.community.repository.post.BulletinRepository;
@@ -30,7 +31,7 @@ public class AttachmentApiLogicService {
     private BulletinRepository<Bulletin> bulletinRepository;
 
     @Transactional
-    public Header<List<AttachmentApiResponse>> uploadMultipleAttachment(MultipartFile[] files, Long id, String category) {
+    public Header<List<AttachmentApiResponse>> uploadFiles(MultipartFile[] files, Long id, String category) {
         List<AttachmentApiResponse> attachmentApiResponseList = Arrays.asList(files)
                 .stream()
                 .map(file -> uploadAttachment(file, id, category))
