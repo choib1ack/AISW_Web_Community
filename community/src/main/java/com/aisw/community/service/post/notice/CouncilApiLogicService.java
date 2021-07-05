@@ -3,7 +3,6 @@ package com.aisw.community.service.post.notice;
 import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -11,7 +10,6 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
 import com.aisw.community.model.network.response.post.notice.CouncilApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -19,7 +17,6 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -135,7 +132,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    @Cacheable(value = "councilSearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByWriterContaining(writer, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -144,7 +140,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    @Cacheable(value = "councilSearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByTitleContaining(title, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -153,8 +148,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    @Cacheable(value = "councilSearchByTitleOrContent",
-            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Council> councils = councilRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);

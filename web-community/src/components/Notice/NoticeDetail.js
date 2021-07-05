@@ -8,6 +8,7 @@ import Loading from "../Loading";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
+import {useSelector} from "react-redux";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -16,8 +17,8 @@ export default function NoticeDetail({match}) {
     const [htmlContent, setHtmlContent] = useState(null);
     let history = useHistory();
 
-    const { notice_category } = match.params;
-    const { id } = match.params;
+    const user = useSelector(state => state.user.userData)
+    const { notice_category, id} = match.params;
     const url = match.url;
 
     const [show, setShow] = useState(false);

@@ -15,21 +15,6 @@ export default function MakeReCommentList({Refresh, boardReCommentData}) {
         return result;
     }
 
-    // const handleLikeClick = async (comment_id) => {
-    //     await axios.get("/board/comment/likes/" +comment_id)
-    //         .then((res) => {
-    //             alert("대댓글에 좋아요를 눌렀습니다");
-    //             // setIsLatest(false);
-    //             Refresh();
-    //             console.log(res);
-    //
-    //         }).catch(error => {
-    //             alert("에러!");
-    //             console.log(error);
-    //         })
-    // }
-
-    // 댓글 좋아요랑 같은 에러남
     const handleLikeClick = async (comment_id) => {
         // account_id는 나중에 바꿔야함
         const data = {
@@ -51,6 +36,31 @@ export default function MakeReCommentList({Refresh, boardReCommentData}) {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
             alert("에러!"+errorObject);
+        })
+    }
+
+    const handleLikeRemoveClick = async (comment_id) => {
+        // account_id는 나중에 바꿔야함
+        console.log(comment_id);
+        const data = {
+            "account_id": 1,
+            // "board_id": id
+            "comment_id": comment_id
+        }
+        await axios.post('/like/remove/',
+            {
+                headers: {
+                    "Content-Type": `application/json`
+                },
+                data
+            }
+        ).then((res) => {
+            alert("댓글에 좋아요를 취소했습니다");
+            // setIsLatest(false);
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log(errorObject);
+            alert("좋아요 클릭 에러!"+errorObject);
         })
     }
 
@@ -83,10 +93,10 @@ export default function MakeReCommentList({Refresh, boardReCommentData}) {
 
                         <Card.Body>
                             {data.check_like?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                                <img src={likeImage} onClick={()=>handleLikeClick(data.comment_id)}
+                                <img src={likeImage} onClick={()=>handleLikeRemoveClick(data.id)}
                                      style={{cursor: "pointer"}}/> {data.likes}</span>:
                                 <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
-                                <img src={likeGrayImage} onClick={()=>handleLikeClick(data.comment_id)}
+                                <img src={likeGrayImage} onClick={()=>handleLikeClick(data.id)}
                                      style={{cursor: "pointer"}}/> {data.likes}</span>}
 
                             <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
