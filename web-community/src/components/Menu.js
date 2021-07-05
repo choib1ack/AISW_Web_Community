@@ -95,31 +95,41 @@ export default function Menu() {
                                 유용한사이트
                             </button>
                         </Link>
-                        <Link to="/banner">
-                            <button className="Menu-button font-weight-light">
-                                배너 관리
+                    </Col>
+
+                    <Col xs={3}>
+                        <button className="Menu-button" onClick={() => setModalShow(true)}>
+                            {user.userData.name}
+                        </button>
+                        <Link to="/manager">
+                            <button className="Menu-button">
+                                관리자페이지
                             </button>
                         </Link>
                     </Col>
-                    {
-                        (user.isOnline && user.userData != null) ? (
-                            <>
-                                <Col xs={3}>
-                                    <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                        {user.userData.name}
-                                    </button>
-                                    <Link to="/manager">
-                                        <button className="Menu-button">
-                                            관리자페이지
-                                        </button>
-                                    </Link>
-                                </Col>
 
-                                <MyPage show={modalShow} onHide={() => setModalShow(false)}/>
+                    <MyPage show={modalShow} onHide={() => setModalShow(false)}/>
 
-                            </>
-                        ) : (
-                            <Col xs={3}>
+                    {/*{*/}
+                    {/*    (user.isOnline && user.userData != null) ? */}
+                    {/*        (*/}
+                    {/*        <>*/}
+                    {/*            <Col xs={3}>*/}
+                    {/*                <button className="Menu-button" onClick={() => setModalShow(true)}>*/}
+                    {/*                    {user.userData.name}*/}
+                    {/*                </button>*/}
+                    {/*                <Link to="/manager">*/}
+                    {/*                    <button className="Menu-button">*/}
+                    {/*                        관리자페이지*/}
+                    {/*                    </button>*/}
+                    {/*                </Link>*/}
+                    {/*            </Col>*/}
+
+                    {/*            <MyPage show={modalShow} onHide={() => setModalShow(false)}/>*/}
+
+                    {/*        </>*/}
+                    {/*    ) : (*/}
+                    {/*        <Col xs={3}>*/}
                                 {/*<GoogleLogin*/}
                                 {/*    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'*/}
                                 {/*    render={renderProps => (*/}
@@ -145,13 +155,13 @@ export default function Menu() {
                                 {/*    // redirectUri="http://localhost:3000/user/signup"*/}
                                 {/*    cookiePolicy={'single_host_origin'}*/}
                                 {/*/>*/}
-                                <div className="social-signup">
-                                    <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
-                                        <img src={googleLogo} width="10px" alt="Google"/> Sign up with Google</a>
-                                </div>
-                            </Col>
-                        )
-                    }
+                    {/*            <div className="social-signup">*/}
+                    {/*                <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>*/}
+                    {/*                    <img src={googleLogo} width="10px" alt="Google"/> Sign up with Google</a>*/}
+                    {/*            </div>*/}
+                    {/*        </Col>*/}
+                    {/*    )*/}
+                    {/*}*/}
                 </Row>
             </Grid>
 
