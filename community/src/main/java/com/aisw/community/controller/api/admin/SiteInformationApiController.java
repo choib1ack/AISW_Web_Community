@@ -28,6 +28,6 @@ public class SiteInformationApiController extends CrudController<SiteInformation
 
     @GetMapping("/")
     public Header<List<SiteInformationApiResponseDTO>> readSite() {
-        return siteInformationApiLogicService.readCite();
+        return siteInformationApiLogicService.readSite();
     }
 }

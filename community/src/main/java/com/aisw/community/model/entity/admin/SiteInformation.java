@@ -1,5 +1,6 @@
 package com.aisw.community.model.entity.admin;
 
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -11,6 +12,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -48,4 +51,7 @@ public class SiteInformation {
 
     @LastModifiedBy
     private String updatedBy;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "siteInformation")
+    private Set<File> file = new HashSet<>();
 }

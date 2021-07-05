@@ -4,10 +4,8 @@ import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.user.Account;
-import com.aisw.community.model.entity.post.attachment.Attachment;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
-import com.aisw.community.model.enumclass.Campus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.Header;
@@ -17,33 +15,16 @@ import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
 import com.aisw.community.repository.user.AccountRepository;
-import com.aisw.community.repository.post.attachment.AttachmentRepository;
+import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +37,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     private UniversityRepository universityRepository;
 
     @Autowired
-    private AttachmentRepository attachmentRepository;
+    private FileRepository fileRepository;
 
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {

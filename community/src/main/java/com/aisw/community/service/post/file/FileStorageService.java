@@ -1,4 +1,4 @@
-package com.aisw.community.service.post.attachment;
+package com.aisw.community.service.post.file;
 
 import com.aisw.community.advice.exception.FileStorageException;
 import com.aisw.community.advice.exception.MyFileNotFoundException;

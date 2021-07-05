@@ -1,10 +1,6 @@
-package com.aisw.community.model.network.response.post.attachment;
+package com.aisw.community.model.network.response.post.file;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-public class AttachmentApiResponse {
+public class FileApiResponse {
 
      private Long id;
 
