@@ -30,6 +30,20 @@ function SiteModal(props){
         props.setShow(false);
     }
 
+    const handleDelete = async () => {
+        await axios.delete("/site/"+props.info.id)
+        .then((res) => {
+            console.log(res);
+            props.setShow(false);
+            alert("사이트 정보가 삭제되었습니다") // 성공 메시지
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러 발생 (사이트 삭제)");
+            console.log(errorObject);
+            alert("사이트 삭제에 실패하였습니다."); // 실패 메시지
+        })
+    }
+
     const handleChangeFile = (event) => {
         let reader = new FileReader();
 
@@ -64,7 +78,7 @@ function SiteModal(props){
         console.log(siteInfo);
         let site_info = {
             "content": siteInfo.site_detail,
-            "information_category": "CODINGTEST",
+            "category": "CODINGTEST",
             "link_url": siteInfo.site_url,
             "name": siteInfo.site_name,
             "publish_status": true
@@ -146,9 +160,10 @@ function SiteModal(props){
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={modalClose}>
-                        닫기
-                    </Button>
+                    {mode!="add"?
+                    <Button variant="secondary" onClick={handleDelete}>
+                        삭제
+                    </Button>:null}
                     <Button variant="primary" type="submit" onClick={handleSubmit}>
                         추가
                     </Button>
