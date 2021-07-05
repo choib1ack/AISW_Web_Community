@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.2",
-    "@react-pdf-viewer/core": "^2.4.1",
+    "@react-pdf-viewer/core": "^2.4.2",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -13,9 +13,11 @@
     "classnames": "^2.2.6",
     "draft-js": "0.11.7",
     "draftjs-to-html": "0.9.1",
+    "faker": "^5.5.3",
     "html-to-draftjs": "1.5.0",
     "html-to-react": "1.4.5",
     "http-proxy-middleware": "^1.0.6",
+    "lodash": "^4.17.21",
     "multiselect-react-dropdown": "^1.6.7",
     "pdfjs-dist": "^2.6.347",
     "react": "17.0.1",
@@ -59,6 +61,7 @@
     ]
   },
   "devDependencies": {
+    "@react-pdf-viewer/default-layout": "^2.4.2",
     "@reduxjs/toolkit": "1.5.0",
     "html-react-parser": "1.2.4",
     "prop-types": "15.7.2",

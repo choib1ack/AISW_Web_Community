@@ -11,8 +11,12 @@ import PDF2017 from "./booklet/2017_sw.pdf";
 import PDF2016 from "./booklet/2016_sw.pdf";
 import PDF2015 from "./booklet/2015_sw.pdf";
 import { Worker } from '@react-pdf-viewer/core';
-import { Viewer, SpecialZoomLevel} from '@react-pdf-viewer/core';
+import { Viewer, SpecialZoomLevel, } from '@react-pdf-viewer/core';
+// Plugins
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+// Import styles
 import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 export default function Booklet() {
     const [selectedYear, setSelectedYear] = useState("2020");
@@ -36,11 +40,12 @@ export default function Booklet() {
 
                 <PDFView
                     selectedYear={selectedYear}/>
-
+                <Row style={{marginBottom: '3rem'}}/>
             </Container>
         </div>
     );
 }
+
 function PDFView(props){
     let file;
     switch (props.selectedYear) {
@@ -51,7 +56,7 @@ function PDFView(props){
         case "2016": file = PDF2016; break;
         case "2015": file = PDF2015; break;
     }
-
+    const defaultLayoutPluginInstance = defaultLayoutPlugin();
     return (
         <div
             style={{
@@ -59,10 +64,16 @@ function PDFView(props){
                 height: '750px',
             }}
         >
-            <Viewer fileUrl={file}
-                    defaultScale={SpecialZoomLevel.PageFit}
+            {/*<Viewer fileUrl={file}*/}
+            {/*        defaultScale={SpecialZoomLevel.PageFit}*/}
+            {/*/>*/}
+            <Viewer
+                fileUrl={file}
+                plugins={[
+                    // Register plugins
+                    defaultLayoutPluginInstance
+                ]}
             />
-
         </div>
     );
 

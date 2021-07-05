@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useReducer} from "react";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import userImage from "../../icon/user.svg";
@@ -25,6 +25,8 @@ export default function BoardDetail({match}) {
     const [error, setError] = useState(null);
     const [refresh, setRefresh] = useState(0);
     const [htmlContent, setHtmlContent] = useState(null);
+    const [likeState, dispatch] = useReducer(reducer, { "press":false, "num":0 });
+	
     let history = useHistory();
 
     // redux toolkit
@@ -39,6 +41,29 @@ export default function BoardDetail({match}) {
     const {board_category} = match.params;
     const {id} = match.params;
     const url = match.url.substring(0,11)+"/comment&like/"+id+"/"+1;
+
+    function reducer(state, action) {
+        switch (action.type) {
+            case 'INITIALIZE':
+                console.log("초기화!");
+                return {
+                    "num": action.value_likes,
+                    "press": action.value_press,
+                };
+            case 'PRESS':
+                return {
+                    num : state.num+1,
+                    press: true
+                };
+            case 'REMOVE':
+                return {
+                    num : state.num-1,
+                    press: false
+                };
+            default:
+                return state;
+        }
+    }
 
     const Category = (c) => {
         switch (c) {
@@ -65,13 +90,14 @@ export default function BoardDetail({match}) {
             }
         ).then((res) => {
             alert("게시글에 좋아요를 눌렀습니다");
-            // setIsLatest(false);
+            dispatch({ type: 'PRESS' });
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             alert("좋아요 누름 에러!" + errorObject);
         })
     }
-    const handleLikeCancleClick = async () => {
+
+    const handleLikeCancelClick = async () => {
         // account_id는 나중에 바꿔야함
         const data = {
             "account_id": 1,
@@ -87,7 +113,7 @@ export default function BoardDetail({match}) {
             }
         ).then((res) => {
             alert("게시글에 좋아요를 취소했습니다");
-            // setIsLatest(false);
+            dispatch({ type: 'REMOVE' });
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             alert("좋아요 취소 에러!" + errorObject);
@@ -118,6 +144,7 @@ export default function BoardDetail({match}) {
 
                 const response = await axios.get(url);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
+                dispatch({ type: 'INITIALIZE', value_likes:response.data.data.likes, value_press:response.data.data.check_like });
                 console.log(response.data.data);
 
                 setHtmlContent(response.data.data.content);
@@ -188,8 +215,14 @@ export default function BoardDetail({match}) {
 
                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
                     <div style={{backgroundColor: "#e7f1ff"}} className="p-4">
-                        <p style={{color: "#0472FD", fontSize: '12px'}}
-                        className="mb-1">{Category(board_category)}</p>
+                        <div>
+                            <p style={{color: "#0472FD", fontSize: '12px'}}
+                               className="d-inline-block mb-1 mr-2">{Category(board_category)}</p>
+                            <p style={{color: "#0472FD", fontSize: '12px'}}
+                               className="d-inline-block mb-1 mr-2"> > </p>
+                            <p style={{color: "#0472FD", fontSize: '12px'}}
+                               className="d-inline-block mb-1">{boardDetailData.subject}</p>
+                        </div>
 
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
                         {boardDetailData.attachment_file == null ? "" :
@@ -207,15 +240,17 @@ export default function BoardDetail({match}) {
 
                     <div className="p-4" style={{minHeight: "100px"}}>
                         {/*좋아요*/}
-                        {boardDetailData.check_like ?
-                            <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
-                                <img src={likeImage} onClick={handleLikeCancleClick}
-                                     style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>:
+
+                        {likeState.press?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
+                                <img src={likeImage} onClick={handleLikeCancelClick}
+                                     style={{cursor: "pointer"}}/> {likeState.num}</span>:
                             <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
                                 <img src={likeGrayImage} onClick={handleLikeClick}
-                                     style={{cursor: "pointer"}}/> {boardDetailData.likes}</span>}
+                                     style={{cursor: "pointer"}}/> {likeState.num}</span>}
+                        {/*{LikeComponent(boardDetailData.check_like, boardDetailData.likes)}*/}
 
-                        <div className="p-3" style={{minHeight: "100px"}}
+
+                        <div style={{minHeight: "100px"}}
                              dangerouslySetInnerHTML={{__html: htmlContent}}/>
                     </div>
                     {AttachmentFile(boardDetailData.attachment_file)}

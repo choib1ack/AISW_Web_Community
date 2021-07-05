@@ -22,7 +22,6 @@ import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -208,8 +207,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 for (CommentApiResponse commentApiResponse : commentApiResponseList) {
                     if (contentLike.getComment().getId() == commentApiResponse.getId()) {
                         commentApiResponse.setCheckLike(true);
-                    } else {
-                        for (CommentApiResponse subCommentApiResponse : commentApiResponse.getSubComment()) {
+                    }
+                    else {
+                        for(CommentApiResponse subCommentApiResponse : commentApiResponse.getSubComment()) {
                             if (contentLike.getComment().getId() == subCommentApiResponse.getId()) {
                                 subCommentApiResponse.setCheckLike(true);
                             }
@@ -223,8 +223,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
         return freeDetailApiResponse;
     }
 
+
     @Override
-    @Cacheable(value = "freeSearch", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> search(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -233,7 +233,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     @Override
-    @Cacheable(value = "freeSearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -242,7 +241,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     @Override
-    @Cacheable(value = "freeSearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -251,8 +249,6 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     @Override
-    @Cacheable(value = "freeSearchByTitleOrContent",
-            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);

@@ -9,7 +9,6 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.post.notice.NoticeRepository;
 import com.aisw.community.service.post.BulletinService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     @Autowired
     private NoticeRepository noticeRepository;
 
-    @Cacheable(value = "noticeSearch", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> searchList(Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAll(pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
@@ -33,7 +31,6 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     }
 
     @Override
-    @Cacheable(value = "noticeSearchByWriter", key = "#writer.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByWriterContaining(writer, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
@@ -42,7 +39,6 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     }
 
     @Override
-    @Cacheable(value = "noticeSearchByTitle", key = "#title.concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContaining(title, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
@@ -51,8 +47,6 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     }
 
     @Override
-    @Cacheable(value = "noticeSearchByTitleOrContent",
-            key = "#title.concat(':').concat(#content).concat(':').concat(#pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
