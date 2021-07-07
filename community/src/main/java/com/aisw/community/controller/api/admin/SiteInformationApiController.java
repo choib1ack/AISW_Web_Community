@@ -1,7 +1,7 @@
 package com.aisw.community.controller.api.admin;
 
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
+import com.aisw.community.model.network.request.admin.FileUploadToSiteInformationDTO;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponseDTO;
 import com.aisw.community.service.admin.SiteInformationApiLogicService;
@@ -20,7 +20,7 @@ public class SiteInformationApiController {
     private SiteInformationApiLogicService siteInformationApiLogicService;
 
     @PostMapping("")
-    public Header<SiteInformationApiResponse> create(@RequestBody Header<SiteInformationApiRequest> request) {
+    public Header<SiteInformationApiResponse> create(@ModelAttribute FileUploadToSiteInformationDTO request) {
         return siteInformationApiLogicService.create(request);
     }
 
@@ -30,7 +30,7 @@ public class SiteInformationApiController {
     }
 
     @PutMapping("")
-    public Header<SiteInformationApiResponse> update(@RequestBody Header<SiteInformationApiRequest> request) {
+    public Header<SiteInformationApiResponse> update(@ModelAttribute FileUploadToSiteInformationDTO request) {
         return siteInformationApiLogicService.update(request);
     }
 

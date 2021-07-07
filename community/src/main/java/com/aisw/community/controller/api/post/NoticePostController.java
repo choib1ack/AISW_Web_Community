@@ -18,7 +18,7 @@ import java.nio.file.Path;
 
 @Component
 @CrossOrigin("*")
-public abstract class NoticePostController<Req, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
+public abstract class NoticePostController<Req, FileReq, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
 
     @Autowired(required = false)
     protected NoticePostService<Req, ListRes, Res, Entity> noticePostService;
@@ -26,6 +26,11 @@ public abstract class NoticePostController<Req, ListRes, Res, Entity> implements
     @Override
     @PostMapping("")
     public Header<Res> create(@RequestBody Header<Req> request) {
+        return noticePostService.create(request);
+    }
+
+    @PostMapping("/upload")
+    public Header<Res> create(@ModelAttribute FileReq request) {
         return noticePostService.create(request);
     }
 
@@ -38,6 +43,11 @@ public abstract class NoticePostController<Req, ListRes, Res, Entity> implements
     @Override
     @PutMapping("")
     public Header<Res> update(@RequestBody Header<Req> request) {
+        return noticePostService.update(request);
+    }
+
+    @PutMapping("/upload")
+    public Header<Res> update(@ModelAttribute FileReq request) {
         return noticePostService.update(request);
     }
 

@@ -9,30 +9,37 @@ import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.board.FileUploadToFreeDTO;
 import com.aisw.community.model.network.request.post.board.FreeApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.model.network.response.post.board.FreeApiResponse;
 import com.aisw.community.model.network.response.post.board.FreeDetailApiResponse;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.FreeRepository;
+import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
+import com.aisw.community.service.post.file.FileApiLogicService;
+import org.apache.catalina.webresources.FileResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
+public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUploadToFreeDTO, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -44,7 +51,13 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     private ContentLikeRepository contentLikeRepository;
 
     @Autowired
+    private FileRepository fileRepository;
+
+    @Autowired
     private CommentApiLogicService commentApiLogicService;
+
+    @Autowired
+    private FileApiLogicService fileApiLogicService;
 
     @Override
     public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
@@ -66,6 +79,34 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
 
         Free newFree = baseRepository.save(free);
         return Header.OK(response(newFree));
+    }
+
+    @Override
+    @Transactional
+    public Header<FreeApiResponse> create(FileUploadToFreeDTO request) {
+        FreeApiRequest freeApiRequest = request.getFreeApiRequest();
+
+        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(freeApiRequest.getAccountId()));
+        Free free = Free.builder()
+                .title(freeApiRequest.getTitle())
+                .writer(account.getName())
+                .content(freeApiRequest.getContent())
+                .status(freeApiRequest.getStatus())
+                .views(0L)
+                .likes(0L)
+                .isAnonymous(freeApiRequest.getIsAnonymous())
+                .firstCategory(FirstCategory.BOARD)
+                .secondCategory(SecondCategory.FREE)
+                .account(account)
+                .build();
+
+        Free newFree = baseRepository.save(free);
+
+        MultipartFile[] files = request.getFiles();
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, newFree.getId(), UploadCategory.POST);
+
+        return Header.OK(response(newFree, fileApiResponseList));
     }
 
     @Override
@@ -102,6 +143,31 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
     }
 
     @Override
+    @Transactional
+    public Header<FreeApiResponse> update(FileUploadToFreeDTO request) {
+        FreeApiRequest freeApiRequest = request.getFreeApiRequest();
+        MultipartFile[] files = request.getFiles();
+
+        Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(freeApiRequest.getId()));
+
+        if (free.getAccount().getId() != freeApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(freeApiRequest.getAccountId());
+        }
+
+        free.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, free.getId(), UploadCategory.POST);
+        free
+                .setTitle(freeApiRequest.getTitle())
+                .setContent(freeApiRequest.getContent())
+                .setStatus(freeApiRequest.getStatus());
+        free.setIsAnonymous(freeApiRequest.getIsAnonymous());
+        baseRepository.save(free);
+
+        return Header.OK(response(free, fileApiResponseList));
+    }
+
+    @Override
     public Header delete(Long id, Long userId) {
         Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -129,6 +195,30 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, BoardR
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .accountId(free.getAccount().getId())
+                .fileApiResponseList(free.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .build();
+
+        return freeApiResponse;
+    }
+
+    private FreeApiResponse response(Free free, List<FileApiResponse> fileApiResponseList) {
+        FreeApiResponse freeApiResponse = FreeApiResponse.builder()
+                .id(free.getId())
+                .title(free.getTitle())
+                .writer(free.getWriter())
+                .content(free.getContent())
+                .status(free.getStatus())
+                .createdAt(free.getCreatedAt())
+                .createdBy(free.getCreatedBy())
+                .updatedAt(free.getUpdatedAt())
+                .updatedBy(free.getUpdatedBy())
+                .views(free.getViews())
+                .likes(free.getLikes())
+                .isAnonymous(free.getIsAnonymous())
+                .category(free.getCategory())
+                .accountId(free.getAccount().getId())
+                .fileApiResponseList(fileApiResponseList)
                 .build();
 
         return freeApiResponse;

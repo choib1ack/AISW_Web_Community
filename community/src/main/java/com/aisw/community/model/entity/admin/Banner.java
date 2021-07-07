@@ -11,7 +11,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -52,6 +54,6 @@ public class Banner {
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner")
-    private Set<File> file = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true)
+    private List<File> fileList;
 }

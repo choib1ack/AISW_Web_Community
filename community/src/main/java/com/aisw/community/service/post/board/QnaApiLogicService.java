@@ -9,31 +9,37 @@ import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.board.FileUploadToQnaDTO;
 import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.model.network.response.post.board.QnaApiResponse;
 import com.aisw.community.model.network.response.post.board.QnaDetailApiResponse;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.QnaRepository;
+import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
+import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUploadToQnaDTO, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -45,7 +51,13 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     private ContentLikeRepository contentLikeRepository;
 
     @Autowired
+    private FileRepository fileRepository;
+
+    @Autowired
     private CommentApiLogicService commentApiLogicService;
+
+    @Autowired
+    private FileApiLogicService fileApiLogicService;
 
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
@@ -68,6 +80,34 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
 
         Qna newQna = baseRepository.save(qna);
         return Header.OK(response(newQna));
+    }
+
+    @Override
+    @Transactional
+    public Header<QnaApiResponse> create(FileUploadToQnaDTO request) {
+        QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
+
+        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(qnaApiRequest.getAccountId()));
+        Qna qna = Qna.builder()
+                .title(qnaApiRequest.getTitle())
+                .writer(account.getName())
+                .content(qnaApiRequest.getContent())
+                .status(qnaApiRequest.getStatus())
+                .views(0L)
+                .likes(0L)
+                .subject(qnaApiRequest.getSubject())
+                .isAnonymous(qnaApiRequest.getIsAnonymous())
+                .firstCategory(FirstCategory.BOARD)
+                .secondCategory(SecondCategory.QNA)
+                .account(account)
+                .build();
+        Qna newQna = baseRepository.save(qna);
+
+        MultipartFile[] files = request.getFiles();
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, newQna.getId(), UploadCategory.POST);
+
+        return Header.OK(response(newQna, fileApiResponseList));
     }
 
     @Override
@@ -105,6 +145,33 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
     }
 
     @Override
+    @Transactional
+    public Header<QnaApiResponse> update(FileUploadToQnaDTO request) {
+        QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
+        MultipartFile[] files = request.getFiles();
+
+        Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(qnaApiRequest.getId()));
+
+        if(qna.getAccount().getId() != qnaApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(qnaApiRequest.getAccountId());
+        }
+
+        qna.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, qna.getId(), UploadCategory.POST);
+
+        qna
+                .setTitle(qnaApiRequest.getTitle())
+                .setContent(qnaApiRequest.getContent())
+                .setStatus(qnaApiRequest.getStatus());
+        qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
+        qna.setSubject(qnaApiRequest.getSubject());
+        baseRepository.save(qna);
+
+        return Header.OK(response(qna, fileApiResponseList));
+    }
+
+    @Override
     public Header delete(Long id, Long userId) {
         Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -133,6 +200,31 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, BoardRes
                 .subject(qna.getSubject())
                 .accountId(qna.getAccount().getId())
                 .category(qna.getCategory())
+                .fileApiResponseList(qna.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .build();
+
+        return qnaApiResponse;
+    }
+
+    private QnaApiResponse response(Qna qna, List<FileApiResponse> fileApiResponseList) {
+        QnaApiResponse qnaApiResponse = QnaApiResponse.builder()
+                .id(qna.getId())
+                .title(qna.getTitle())
+                .writer(qna.getWriter())
+                .content(qna.getContent())
+                .status(qna.getStatus())
+                .createdAt(qna.getCreatedAt())
+                .createdBy(qna.getCreatedBy())
+                .updatedAt(qna.getUpdatedAt())
+                .updatedBy(qna.getUpdatedBy())
+                .views(qna.getViews())
+                .likes(qna.getLikes())
+                .isAnonymous(qna.getIsAnonymous())
+                .subject(qna.getSubject())
+                .accountId(qna.getAccount().getId())
+                .category(qna.getCategory())
+                .fileApiResponseList(fileApiResponseList)
                 .build();
 
         return qnaApiResponse;

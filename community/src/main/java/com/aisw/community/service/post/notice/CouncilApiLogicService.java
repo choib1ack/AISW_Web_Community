@@ -8,14 +8,19 @@ import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
+import com.aisw.community.model.network.request.post.notice.FileUploadToCouncilDTO;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.CouncilApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
+import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
+import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
@@ -32,13 +37,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest, NoticeResponseDTO, CouncilApiResponse, Council> {
+public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest, FileUploadToCouncilDTO, NoticeResponseDTO, CouncilApiResponse, Council> {
 
     @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
     private CouncilRepository councilRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
+
+    @Autowired
+    private FileApiLogicService fileApiLogicService;
 
     @Override
     public Header<CouncilApiResponse> create(Header<CouncilApiRequest> request) {
@@ -58,6 +69,31 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
         Council newCouncil = baseRepository.save(council);
         return Header.OK(response(newCouncil));
+    }
+
+    @Override
+    @Transactional
+    public Header<CouncilApiResponse> create(FileUploadToCouncilDTO request) {
+        CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
+
+        Account account = accountRepository.findById(councilApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(councilApiRequest.getAccountId()));
+        Council council = Council.builder()
+                .title(councilApiRequest.getTitle())
+                .writer(account.getName())
+                .content(councilApiRequest.getContent())
+                .status(councilApiRequest.getStatus())
+                .views(0L)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.COUNCIL)
+                .account(account)
+                .build();
+        Council newCouncil = baseRepository.save(council);
+
+        MultipartFile[] files = request.getFiles();
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, newCouncil.getId(), UploadCategory.POST);
+
+        return Header.OK(response(newCouncil, fileApiResponseList));
     }
 
     @Override
@@ -93,6 +129,31 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Transactional
+    public Header<CouncilApiResponse> update(FileUploadToCouncilDTO request) {
+        CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
+        MultipartFile[] files = request.getFiles();
+
+        Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(councilApiRequest.getId()));
+
+        if(council.getAccount().getId() != councilApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(councilApiRequest.getAccountId());
+        }
+
+        council.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, council.getId(), UploadCategory.POST);
+
+        council
+                .setTitle(councilApiRequest.getTitle())
+                .setContent(councilApiRequest.getContent())
+                .setStatus(councilApiRequest.getStatus());
+        baseRepository.save(council);
+
+        return Header.OK(response(council, fileApiResponseList));
+    }
+
+    @Override
     public Header delete(Long id, Long userId) {
         Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -118,6 +179,28 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
                 .accountId(council.getAccount().getId())
+                .fileApiResponseList(council.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .build();
+
+        return councilApiResponse;
+    }
+
+    private CouncilApiResponse response(Council council, List<FileApiResponse> fileApiResponseList) {
+        CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
+                .id(council.getId())
+                .title(council.getTitle())
+                .writer(council.getWriter())
+                .content(council.getContent())
+                .status(council.getStatus())
+                .views(council.getViews())
+                .category(council.getCategory())
+                .createdAt(council.getCreatedAt())
+                .createdBy(council.getCreatedBy())
+                .updatedAt(council.getUpdatedAt())
+                .updatedBy(council.getUpdatedBy())
+                .accountId(council.getAccount().getId())
+                .fileApiResponseList(fileApiResponseList)
                 .build();
 
         return councilApiResponse;

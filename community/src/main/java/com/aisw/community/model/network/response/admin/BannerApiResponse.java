@@ -2,10 +2,13 @@ package com.aisw.community.model.network.response.admin;
 
 
 import com.aisw.community.model.entity.post.file.File;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -37,5 +40,5 @@ public class BannerApiResponse {
 
     private String updatedBy;
 
-    private Set<File> fileSet = new HashSet<>();
+    private List<FileApiResponse> fileApiResponseList;
 }

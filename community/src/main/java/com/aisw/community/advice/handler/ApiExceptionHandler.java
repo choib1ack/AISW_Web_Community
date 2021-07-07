@@ -52,6 +52,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(FileNotFoundException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("FileNotFound", "file is not found with ID: " + ex.getId());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(NotEqualAccountException.class)
     public ResponseEntity<ApiErrorResponse> handleException(NotEqualAccountException ex) {
         ApiErrorResponse response =

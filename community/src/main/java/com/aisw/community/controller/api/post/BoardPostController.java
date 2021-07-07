@@ -12,14 +12,19 @@ import org.springframework.web.bind.annotation.*;
 
 @Component
 @CrossOrigin("*")
-public abstract class BoardPostController<Req, ListRes, DetailRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
+public abstract class BoardPostController<Req, FileReq, ListRes, DetailRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
 
     @Autowired(required = false)
-    protected BoardPostService<Req, ListRes, DetailRes, BaseRes, Entity> boardPostService;
+    protected BoardPostService<Req, FileReq, ListRes, DetailRes, BaseRes, Entity> boardPostService;
 
     @Override
     @PostMapping("")
     public Header<BaseRes> create(@RequestBody Header<Req> request) {
+        return boardPostService.create(request);
+    }
+
+    @PostMapping("/upload")
+    public Header<BaseRes> create(@ModelAttribute FileReq request) {
         return boardPostService.create(request);
     }
 
@@ -32,6 +37,11 @@ public abstract class BoardPostController<Req, ListRes, DetailRes, BaseRes, Enti
     @Override
     @PutMapping("")
     public Header<BaseRes> update(@RequestBody Header<Req> request) {
+        return boardPostService.update(request);
+    }
+
+    @PutMapping("/upload")
+    public Header<BaseRes> update(@ModelAttribute FileReq request) {
         return boardPostService.update(request);
     }
 

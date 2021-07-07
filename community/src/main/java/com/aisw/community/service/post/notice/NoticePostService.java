@@ -14,14 +14,13 @@ import java.io.IOException;
 import java.util.List;
 
 @Component
-public abstract class NoticePostService<Req, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
+public abstract class NoticePostService<Req, FileReq, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
 
     @Autowired(required = false)
     protected JpaRepository<Entity, Long> baseRepository;
 
-//    public abstract void crawling(Long board_no) throws IOException;
-//    public abstract Header<Res> write(MultipartFile[] files) throws IOException;
-//    public abstract ResponseEntity<Resource> download(Long id, String originFileName) throws IOException;
+    public abstract Header<Res> create(FileReq request);
+    public abstract Header<Res> update(FileReq request);
     public abstract Header<ListRes> search(Pageable pageable);
     public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
     public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);

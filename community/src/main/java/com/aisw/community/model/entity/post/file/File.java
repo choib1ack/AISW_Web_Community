@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"bulletin"})
+@ToString(exclude = {"bulletin", "banner", "siteInformation"})
 @Getter
 @Setter
 @Builder
