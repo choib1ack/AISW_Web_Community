@@ -8,14 +8,19 @@ import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
+import com.aisw.community.model.network.request.post.notice.FileUploadToDepartmentDTO;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.DepartmentApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
+import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.repository.post.notice.DepartmentRepository;
+import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
@@ -32,13 +37,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRequest, NoticeResponseDTO, DepartmentApiResponse, Department> {
+public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRequest, FileUploadToDepartmentDTO, NoticeResponseDTO, DepartmentApiResponse, Department> {
 
     @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
     private DepartmentRepository departmentRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
+
+    @Autowired
+    private FileApiLogicService fileApiLogicService;
 
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
@@ -58,6 +69,31 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
         Department newDepartment = baseRepository.save(department);
         return Header.OK(response(newDepartment));
+    }
+
+    @Override
+    @Transactional
+    public Header<DepartmentApiResponse> create(FileUploadToDepartmentDTO request) {
+        DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
+
+        Account account = accountRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(departmentApiRequest.getAccountId()));
+        Department department = Department.builder()
+                .title(departmentApiRequest.getTitle())
+                .writer(account.getName())
+                .content(departmentApiRequest.getContent())
+                .status(departmentApiRequest.getStatus())
+                .views(0L)
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.DEPARTMENT)
+                .account(account)
+                .build();
+        Department newDepartment = baseRepository.save(department);
+
+        MultipartFile[] files = request.getFiles();
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, newDepartment.getId(), UploadCategory.POST);
+
+        return Header.OK(response(newDepartment, fileApiResponseList));
     }
 
     @Override
@@ -94,6 +130,32 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
+    @Transactional
+    public Header<DepartmentApiResponse> update(FileUploadToDepartmentDTO request) {
+        DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
+        MultipartFile[] files = request.getFiles();
+
+        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(departmentApiRequest.getId()));
+
+
+        if(department.getAccount().getId() != departmentApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(departmentApiRequest.getAccountId());
+        }
+
+        department.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, department.getId(), UploadCategory.POST);
+
+        department
+                .setTitle(departmentApiRequest.getTitle())
+                .setContent(departmentApiRequest.getContent())
+                .setStatus(departmentApiRequest.getStatus());
+        baseRepository.save(department);
+
+        return Header.OK(response(department, fileApiResponseList));
+    }
+
+    @Override
     public Header delete(Long id, Long userId) {
         Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -119,6 +181,28 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
                 .accountId(department.getAccount().getId())
+                .fileApiResponseList(department.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .build();
+
+        return departmentApiResponse;
+    }
+
+    private DepartmentApiResponse response(Department department, List<FileApiResponse> fileApiResponseList) {
+        DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
+                .id(department.getId())
+                .title(department.getTitle())
+                .writer(department.getWriter())
+                .content(department.getContent())
+                .status(department.getStatus())
+                .views(department.getViews())
+                .category(department.getCategory())
+                .createdAt(department.getCreatedAt())
+                .createdBy(department.getCreatedBy())
+                .updatedAt(department.getUpdatedAt())
+                .updatedBy(department.getUpdatedBy())
+                .accountId(department.getAccount().getId())
+                .fileApiResponseList(fileApiResponseList)
                 .build();
 
         return departmentApiResponse;

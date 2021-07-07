@@ -6,7 +6,7 @@ import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.admin.BannerApiRequest;
-import com.aisw.community.model.network.request.admin.BannerApiRequestDTO;
+import com.aisw.community.model.network.request.admin.FileUploadToBannerDTO;
 import com.aisw.community.model.network.response.admin.BannerApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.admin.BannerRepository;
@@ -38,7 +38,7 @@ public class BannerApiLogicService {
     private FileApiLogicService fileApiLogicService;
 
     @Transactional
-    public Header<BannerApiResponse> create(BannerApiRequestDTO request) {
+    public Header<BannerApiResponse> create(FileUploadToBannerDTO request) {
         BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
 
         Banner banner = Banner.builder()
@@ -78,7 +78,7 @@ public class BannerApiLogicService {
     }
 
     @Transactional
-    public Header<BannerApiResponse> update(BannerApiRequestDTO request) {
+    public Header<BannerApiResponse> update(FileUploadToBannerDTO request) {
         BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
         MultipartFile[] files = request.getFiles();
 

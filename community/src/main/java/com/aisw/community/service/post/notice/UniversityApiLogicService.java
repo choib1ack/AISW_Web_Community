@@ -8,27 +8,32 @@ import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
+import com.aisw.community.model.network.request.post.notice.FileUploadToUniversityDTO;
 import com.aisw.community.model.network.request.post.notice.UniversityApiRequest;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
+import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, NoticeResponseDTO, UniversityApiResponse, University> {
+public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, FileUploadToUniversityDTO, NoticeResponseDTO, UniversityApiResponse, University> {
 
     @Autowired
     private AccountRepository accountRepository;
@@ -38,6 +43,9 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private FileApiLogicService fileApiLogicService;
 
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
@@ -58,6 +66,32 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
         University newUniversity = baseRepository.save(university);
         return Header.OK(response(newUniversity));
+    }
+
+    @Override
+    @Transactional
+    public Header<UniversityApiResponse> create(FileUploadToUniversityDTO request) {
+        UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
+
+        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(
+                () -> new UserNotFoundException(universityApiRequest.getAccountId()));
+        University university = University.builder()
+                .title(universityApiRequest.getTitle())
+                .writer(account.getName())
+                .content(universityApiRequest.getContent())
+                .status(universityApiRequest.getStatus())
+                .views(0L)
+                .campus(universityApiRequest.getCampus())
+                .firstCategory(FirstCategory.NOTICE)
+                .secondCategory(SecondCategory.UNIVERSITY)
+                .account(account)
+                .build();
+        University newUniversity = baseRepository.save(university);
+
+        MultipartFile[] files = request.getFiles();
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, newUniversity.getId(), UploadCategory.POST);
+
+        return Header.OK(response(newUniversity, fileApiResponseList));
     }
 
     @Override
@@ -94,6 +128,32 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Transactional
+    public Header<UniversityApiResponse> update(FileUploadToUniversityDTO request) {
+        UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
+        MultipartFile[] files = request.getFiles();
+
+        University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
+                () -> new PostNotFoundException(universityApiRequest.getId()));
+
+        if(university.getAccount().getId() != universityApiRequest.getAccountId()) {
+            throw new NotEqualAccountException(universityApiRequest.getAccountId());
+        }
+
+        university.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, university.getId(), UploadCategory.POST);
+
+        university
+                .setTitle(universityApiRequest.getTitle())
+                .setContent(universityApiRequest.getContent())
+                .setStatus(universityApiRequest.getStatus());
+        university.setCampus(universityApiRequest.getCampus());
+        baseRepository.save(university);
+
+        return Header.OK(response(university, fileApiResponseList));
+    }
+
+    @Override
     public Header delete(Long id, Long userId) {
         University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -104,7 +164,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
         baseRepository.delete(university);
         return Header.OK();
     }
-
 //    @Override
 //    public void crawling(Long boardNo) throws IOException{
 //        Document doc = Jsoup.connect("https://www.gachon.ac.kr/community/opencampus/03.jsp?mode=view&boardType_seq=358&board_no=" + boardNo.toString()).get();
@@ -115,8 +174,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 //        String createdAt = elements.get(2).select("td").text();
 //        String campus = elements.get(3).select("td").text();
 //        Elements files = elements.get(4).select("td a");
-//        String contentHtml = elements.get(elements.size() - 1).toString();
 
+//        String contentHtml = elements.get(elements.size() - 1).toString();
 //        System.out.println(title);
 //        System.out.println(writer);
 //        System.out.println(createdAt);
@@ -164,8 +223,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 //            attachmentList.add(attachment);
 //            attachmentRepository.save(attachment);
 //        }
-//    }
 
+//    }
 //    @Override
 //    public Header<UniversityApiResponse> write(MultipartFile[] files) throws IOException{
 //        Account account = accountRepository.findById(1L).orElseThrow(UserNotFoundException::new);
@@ -218,8 +277,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 //        file.transferTo(destinationFile);
 //
 //        return Header.OK(response(newUniversity));
-//    }
 
+//    }
 //    @Override
 //    public ResponseEntity<Resource> download(Long id, String originFileName) throws IOException{
 //        University university = universityRepository.findById(id).orElseThrow(UserNotFoundException::new);
@@ -245,6 +304,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 //            }
 //        }
 //
+
 //        return null;
 //    }
 
@@ -263,6 +323,29 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
                 .accountId(university.getAccount().getId())
+                .fileApiResponseList(university.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .build();
+
+        return universityApiResponse;
+    }
+
+    private UniversityApiResponse response(University university, List<FileApiResponse> fileApiResponseList) {
+        UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
+                .id(university.getId())
+                .title(university.getTitle())
+                .writer(university.getWriter())
+                .content(university.getContent())
+                .status(university.getStatus())
+                .views(university.getViews())
+                .campus(university.getCampus())
+                .category(university.getCategory())
+                .createdAt(university.getCreatedAt())
+                .createdBy(university.getCreatedBy())
+                .updatedAt(university.getUpdatedAt())
+                .updatedBy(university.getUpdatedBy())
+                .accountId(university.getAccount().getId())
+                .fileApiResponseList(fileApiResponseList)
                 .build();
 
         return universityApiResponse;

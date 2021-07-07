@@ -2,9 +2,11 @@ package com.aisw.community.model.network.response.post.notice;
 
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.SecondCategory;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,4 +39,6 @@ public class CouncilApiResponse {
     private String updatedBy;
 
     private Long accountId;
+
+    private List<FileApiResponse> fileApiResponseList;
 }

@@ -2,12 +2,11 @@ package com.aisw.community.service.admin;
 
 import com.aisw.community.advice.exception.SiteInformationNotFoundException;
 import com.aisw.community.model.entity.admin.SiteInformation;
-import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.enumclass.InformationCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
-import com.aisw.community.model.network.request.admin.SiteInformationApiRequestDTO;
+import com.aisw.community.model.network.request.admin.FileUploadToSiteInformationDTO;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponseDTO;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
@@ -38,7 +37,7 @@ public class SiteInformationApiLogicService {
     private FileApiLogicService fileApiLogicService;
 
     @Transactional
-    public Header<SiteInformationApiResponse> create(SiteInformationApiRequestDTO request) {
+    public Header<SiteInformationApiResponse> create(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
 
         SiteInformation siteInformation = SiteInformation.builder()
@@ -96,7 +95,7 @@ public class SiteInformationApiLogicService {
     }
 
     @Transactional
-    public Header<SiteInformationApiResponse> update(SiteInformationApiRequestDTO request) {
+    public Header<SiteInformationApiResponse> update(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
         MultipartFile[] files = request.getFiles();
 

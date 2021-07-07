@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SiteInformationApiRequestDTO {
+public class FileUploadToSiteInformationDTO {
 
     private SiteInformationApiRequest siteInformationApiRequest;
 

@@ -55,5 +55,5 @@ public class Banner {
     private String updatedBy;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true)
-    private List<File> fileList = new ArrayList<>();
+    private List<File> fileList;
 }
