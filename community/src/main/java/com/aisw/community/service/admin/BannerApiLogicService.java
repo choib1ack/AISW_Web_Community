@@ -2,17 +2,23 @@ package com.aisw.community.service.admin;
 
 import com.aisw.community.advice.exception.BannerNotFoundException;
 import com.aisw.community.model.entity.admin.Banner;
+import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.admin.BannerApiRequest;
+import com.aisw.community.model.network.request.admin.BannerApiRequestDTO;
 import com.aisw.community.model.network.response.admin.BannerApiResponse;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.admin.BannerRepository;
-import com.aisw.community.service.BaseService;
+import com.aisw.community.repository.post.file.FileRepository;
+import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -25,8 +31,15 @@ public class BannerApiLogicService {
     @Autowired
     private BannerRepository bannerRepository;
 
-    public Header<BannerApiResponse> create(Header<BannerApiRequest> request) {
-        BannerApiRequest bannerApiRequest = request.getData();
+    @Autowired
+    private FileRepository fileRepository;
+
+    @Autowired
+    private FileApiLogicService fileApiLogicService;
+
+    @Transactional
+    public Header<BannerApiResponse> create(BannerApiRequestDTO request) {
+        BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
 
         Banner banner = Banner.builder()
                 .name(bannerApiRequest.getName())
@@ -41,7 +54,10 @@ public class BannerApiLogicService {
 
         Banner newBanner = bannerRepository.save(banner);
 
-        return Header.OK(response(newBanner));
+        MultipartFile[] files = request.getFiles();
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, newBanner.getId(), UploadCategory.BANNER);
+
+        return Header.OK(response(newBanner, fileApiResponseList));
     }
 
     public Header<List<BannerApiResponse>> readAll(Pageable pageable) {
@@ -61,12 +77,16 @@ public class BannerApiLogicService {
         return Header.OK(bannerApiResponseList, pagination);
     }
 
-    public Header<BannerApiResponse> update(Header<BannerApiRequest> request) {
-        BannerApiRequest bannerApiRequest = request.getData();
+    @Transactional
+    public Header<BannerApiResponse> update(BannerApiRequestDTO request) {
+        BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
+        MultipartFile[] files = request.getFiles();
 
         Banner banner = bannerRepository.findById(bannerApiRequest.getId()).orElseThrow(
                 () -> new BannerNotFoundException(bannerApiRequest.getId()));
 
+        banner.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, banner.getId(), UploadCategory.BANNER);
         banner.setName(bannerApiRequest.getName())
                 .setContent(bannerApiRequest.getContent())
                 .setStartDate(LocalDateTime.parse(bannerApiRequest.getStartDate(),
@@ -77,7 +97,7 @@ public class BannerApiLogicService {
                 .setPublishStatus(bannerApiRequest.getPublishStatus());
         bannerRepository.save(banner);
 
-        return Header.OK(response(banner));
+        return Header.OK(response(banner, fileApiResponseList));
     }
 
     public Header delete(Long id) {
@@ -113,7 +133,27 @@ public class BannerApiLogicService {
                 .createdBy(banner.getCreatedBy())
                 .updatedAt(banner.getUpdatedAt())
                 .updatedBy(banner.getUpdatedBy())
-                .fileSet(banner.getFile())
+                .fileApiResponseList(banner.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .build();
+
+        return bannerApiResponse;
+    }
+
+    private BannerApiResponse response(Banner banner, List<FileApiResponse> fileApiResponseList){
+        BannerApiResponse bannerApiResponse = BannerApiResponse.builder()
+                .id(banner.getId())
+                .name(banner.getName())
+                .content(banner.getContent())
+                .startDate(banner.getStartDate())
+                .endDate(banner.getEndDate())
+                .linkUrl(banner.getLinkUrl())
+                .publishStatus(banner.getPublishStatus())
+                .createdAt(banner.getCreatedAt())
+                .createdBy(banner.getCreatedBy())
+                .updatedAt(banner.getUpdatedAt())
+                .updatedBy(banner.getUpdatedBy())
+                .fileApiResponseList(fileApiResponseList)
                 .build();
 
         return bannerApiResponse;

@@ -2,6 +2,8 @@ package com.aisw.community.controller.api.admin;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.BannerApiRequest;
+import com.aisw.community.model.network.request.admin.BannerApiRequestDTO;
+import com.aisw.community.model.network.request.admin.SiteInformationApiRequestDTO;
 import com.aisw.community.model.network.response.admin.BannerApiResponse;
 import com.aisw.community.service.admin.BannerApiLogicService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ public class BannerApiController {
     private BannerApiLogicService bannerApiLogicService;
 
     @PostMapping("")
-    public Header<BannerApiResponse> create(@RequestBody Header<BannerApiRequest> request) {
+    public Header<BannerApiResponse> create(@ModelAttribute BannerApiRequestDTO request) {
         return bannerApiLogicService.create(request);
     }
 
@@ -32,7 +34,7 @@ public class BannerApiController {
     }
 
     @PutMapping("")
-    public Header<BannerApiResponse> update(@RequestBody Header<BannerApiRequest> request) {
+    public Header<BannerApiResponse> update(@ModelAttribute BannerApiRequestDTO request) {
         return bannerApiLogicService.update(request);
     }
 

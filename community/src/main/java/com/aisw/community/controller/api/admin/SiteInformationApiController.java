@@ -2,12 +2,14 @@ package com.aisw.community.controller.api.admin;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
+import com.aisw.community.model.network.request.admin.SiteInformationApiRequestDTO;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponseDTO;
 import com.aisw.community.service.admin.SiteInformationApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class SiteInformationApiController {
     private SiteInformationApiLogicService siteInformationApiLogicService;
 
     @PostMapping("")
-    public Header<SiteInformationApiResponse> create(@RequestBody Header<SiteInformationApiRequest> request) {
+    public Header<SiteInformationApiResponse> create(@ModelAttribute SiteInformationApiRequestDTO request) {
         return siteInformationApiLogicService.create(request);
     }
 
@@ -30,7 +32,7 @@ public class SiteInformationApiController {
     }
 
     @PutMapping("")
-    public Header<SiteInformationApiResponse> update(@RequestBody Header<SiteInformationApiRequest> request) {
+    public Header<SiteInformationApiResponse> update(@ModelAttribute SiteInformationApiRequestDTO request) {
         return siteInformationApiLogicService.update(request);
     }
 
