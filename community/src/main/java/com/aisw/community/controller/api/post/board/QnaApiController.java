@@ -3,6 +3,7 @@ package com.aisw.community.controller.api.post.board;
 import com.aisw.community.controller.api.post.BoardPostController;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.post.board.FileUploadToQnaDTO;
 import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.model.network.response.post.board.QnaApiResponse;
@@ -20,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/board/qna")
-public class QnaApiController extends BoardPostController<QnaApiRequest, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
+public class QnaApiController extends BoardPostController<QnaApiRequest, FileUploadToQnaDTO, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
     private QnaApiLogicService qnaApiLogicService;

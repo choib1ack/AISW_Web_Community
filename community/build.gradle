@@ -1,7 +1,8 @@
 plugins {
     id 'org.springframework.boot' version '2.4.1'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+//    id "com.github.node-gradle.node" version "2.2.3"
+//    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
     id 'java'
 }
 
@@ -32,7 +33,10 @@ dependencies {
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
     implementation "io.swagger:swagger-annotations:1.5.21"
     implementation "io.swagger:swagger-models:1.5.21"
+
     implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
+
     implementation "org.mariadb.jdbc:mariadb-java-client"
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
@@ -46,27 +50,49 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
 }
 
-def querydslDir = "$buildDir/generated/querydsl"
+configure("community") {
+    apply plugin: "io.spring.dependency-management"
 
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
+    dependencies {
+        compile("com.querydsl:querydsl-core")
+        compile("com.querydsl:querydsl-jpa")
 
-sourceSets {
-    main.java.srcDir querydslDir
-}
+        annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa") // querydsl JPAAnnotationProcessor 사용 지정
+        annotationProcessor("jakarta.persistence:jakarta.persistence-api") // java.lang.NoClassDefFoundError(javax.annotation.Entity) 발생 대응
+        annotationProcessor("jakarta.annotation:jakarta.annotation-api") // java.lang.NoClassDefFoundError (javax.annotation.Generated) 발생 대응
+    }
 
-configurations {
-    querydsl.extendsFrom compileClasspath
+    // clean 태스크와 cleanGeneatedDir 태스크 중 취향에 따라서 선택하세요.
+    /** clean 태스크 실행시 QClass 삭제 */
+    clean {
+        delete file('src/main/generated') // 인텔리제이 Annotation processor 생성물 생성위치
+    }
 }
-
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
-}
+//def querydslDir = "$buildDir/generated/querydsl"
+//def queryDslOutput = file(querydslDir)
+//
+//querydsl {
+//    jpa = true
+//    querydslSourcesDir = querydslDir
+//}
+//
+//sourceSets {
+//    main.java.srcDir querydslDir
+//}
+//
+//configurations {
+//    complieOnly {
+//        extendsFrom annotationProcessor
+//    }
+//    querydsl.extendsFrom compileClasspath
+//}
+//
+//compileQuerydsl {
+//    options.annotationProcessorPath = configurations.querydsl
+//}
+//
 
 //def webappDir = "$projectDir/src/main/web-community"
 //
