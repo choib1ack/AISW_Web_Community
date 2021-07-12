@@ -11,6 +11,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {setBanner} from "../../features/bannerSlice";
 import FinishModal from "../FinishModal";
 import AddBannerModal from "./AddBannerModal";
+import exampleBanner from "../../image/banner_example1.svg"
+import {Carousel} from "react-bootstrap";
 
 function Bannner() {
     // redux toolkit
@@ -55,67 +57,68 @@ function Bannner() {
                     <Col>
                         <Title text='배너 관리' type='2'/>
                     </Col>
-                    <Col>
-                        <form>
-                            <div className="form-group mb-0" style={{float: 'right'}}>
-                                <Row>
-                                    <Col>
-                                        <label className="btn-secondary rounded px-3 " htmlFor="
-                                input-file" style={{
-                                            fontSize: ".875rem",
-                                            cursor: "pointer",
-                                            width: '50px',
-                                            height: '28px',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            marginTop: '3rem'
-                                        }}
-                                        >
-                                            변경
-                                        </label>
-                                        <input type="file" id=" input-file" style={{display: "none"}}
-                                               accept='image/*'
-                                               onChange={handleFileOnChange}/>
-                                    </Col>
-                                    <Col>
-                                        <Button style={{
-                                            width: '50px', marginTop: '3rem'
-                                        }} size='sm' onClick={handleFileOnSubmit}>
-                                            확인
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </div>
-                        </form>
-                    </Col>
+                    {/*<Col>*/}
+                    {/*    <form>*/}
+                    {/*        <div className="form-group mb-0" style={{float: 'right'}}>*/}
+                    {/*            <Row>*/}
+                    {/*                <Col>*/}
+                    {/*                    <label className="btn-secondary rounded px-3 " htmlFor="*/}
+                    {/*            input-file" style={{*/}
+                    {/*                        fontSize: ".875rem",*/}
+                    {/*                        cursor: "pointer",*/}
+                    {/*                        width: '50px',*/}
+                    {/*                        height: '28px',*/}
+                    {/*                        display: 'flex',*/}
+                    {/*                        alignItems: 'center',*/}
+                    {/*                        marginTop: '3rem'*/}
+                    {/*                    }}*/}
+                    {/*                    >*/}
+                    {/*                        변경*/}
+                    {/*                    </label>*/}
+                    {/*                    <input type="file" id="input-file" style={{display: "none"}}*/}
+                    {/*                           accept='image/*'*/}
+                    {/*                           onChange={handleFileOnChange}/>*/}
+                    {/*                </Col>*/}
+                    {/*                <Col>*/}
+                    {/*                    <Button style={{*/}
+                    {/*                        width: '50px', marginTop: '3rem'*/}
+                    {/*                    }} size='sm' onClick={handleFileOnSubmit}>*/}
+                    {/*                        확인*/}
+                    {/*                    </Button>*/}
+                    {/*                </Col>*/}
+                    {/*            </Row>*/}
+                    {/*        </div>*/}
+                    {/*    </form>*/}
+                    {/*</Col>*/}
                 </Row>
 
                 <Row style={{margin: "20px 0px"}}>
-                    <div style={{
-                        border: "1px solid #E3E3E3", width: "100%", height: "150px",
-                        display: "flex", justifyContent: "center", alignItems: "center"
+                    <Carousel style={{
+                        border: "1px solid #E3E3E3", width: "100%", height: "160px",
+                        padding: "2px", display: "flex", justifyContent: "center", alignItems: "center"
                     }}>
-                        {/*{*/}
-                        {/*    file === false ? (*/}
-                        {/*        <p style={{color: "#636363"}}>미리보기*/}
-                        {/*        </p>*/}
-                        {/*    ) : (*/}
-                        <img className='profile_preview' src={previewURL} alt='미리보기'
-                             style={{width: "100%", height: "100%", objectFit: "cover"}}/>
-                        {/*)*/}
-                        {/*}*/}
-                    </div>
+                        <Carousel.Item interval={1000}>
+                            <img className="d-block" src={storeSrc} alt="First slide"
+                                 height={150}
+                                 style={{width: "100%", objectFit: "cover"}}/>
+                        </Carousel.Item>
+                        <Carousel.Item interval={1000}>
+                            <img className="d-block" src={exampleBanner} alt="Second slide"
+                                 height={150}
+                                 style={{width: "100%", objectFit: "cover"}}/>
+                        </Carousel.Item>
+                    </Carousel>
 
-                    <Col className="p-3">
-                        <div style={{float: 'right', color: "#636363"}}>
-                            <p className="d-inline-block mr-2">
-                                최종 수정일:
-                            </p>
-                            <p className="d-inline-block">
-                                2016-10-31 23:59:59
-                            </p>
-                        </div>
-                    </Col>
+                    {/*<Col className="p-3">*/}
+                    {/*    <div style={{float: 'right', color: "#636363"}}>*/}
+                    {/*        <p className="d-inline-block mr-2">*/}
+                    {/*            최종 수정일:*/}
+                    {/*        </p>*/}
+                    {/*        <p className="d-inline-block">*/}
+                    {/*            2016-10-31 23:59:59*/}
+                    {/*        </p>*/}
+                    {/*    </div>*/}
+                    {/*</Col>*/}
                 </Row>
 
                 <Row>
@@ -142,7 +145,7 @@ function Bannner() {
                     <Table>
                         <thead>
                         <tr>
-                            <th style={{width: "20%"}}>게시 날짜</th>
+                            <th style={{width: "20%"}}>등록 날짜</th>
                             <th style={{width: "20%"}}>배너명</th>
                             <th style={{width: "40%"}}>게시 기간</th>
                             <th style={{width: "10%"}}>게시 여부</th>
@@ -152,7 +155,7 @@ function Bannner() {
 
                         <tbody>
                         <tr>
-                            <td class="middle">
+                            <td className="middle">
                                 2021-05-21
                             </td>
                             <td className="middle">

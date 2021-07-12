@@ -73,21 +73,8 @@ function BoardList({match}) {
         <div className="Board">
             <Container>
                 <Title text='게시판' type='1'/>
-                <Row>
-                    <Col>
-                        <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
-                        <input type="text" value={nowSearchText} onChange={handleSearchTextChange}
-                               onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
-                        <select className={"search-type"} value={searchType} onChange={handleSearchTypeChange}>
-                            <option selected value="select_title">제목</option>
-                            <option value="select_title_content">제목+내용</option>
-                            <option value="select_writer">작성자</option>
-                        </select>
-                    </Col>
-                </Row>
-
-                <Row style={{marginTop: '2rem'}}>
-                    <Col lg={12} md={12} sm={12}>
+                <Row style={{marginBottom: '1rem', marginTop: '2rem', alignItems: 'center'}}>
+                    <Col lg={6} md={6} sm={12}>
                         <SelectButton
                             id={0} title='전체' active={category}
                             onClick={() => handleCategoryChange(0)}
@@ -100,18 +87,28 @@ function BoardList({match}) {
                             id={2} title='과목별게시판' active={category}
                             onClick={() => handleCategoryChange(2)}
                         />
-                        {/*<DropdownButton/>*/}
+                    </Col>
+                    <Col lg={6} md={6} sm={12}>
+                        <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
+                        <input type="text" value={nowSearchText} onChange={handleSearchTextChange}
+                               onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
+                        <select className={"search-type"} value={searchType} onChange={handleSearchTypeChange}>
+                            <option selected value="select_title">제목</option>
+                            <option value="select_title_content">제목+내용</option>
+                            <option value="select_writer">작성자</option>
+                        </select>
                     </Col>
                 </Row>
 
                 <Row style={{marginBottom: '1rem'}}>
                     <Col lg={12} md={12} sm={12}>
-                        {category==2? <SubjectList
-                            handleSelectSubject={handleSelectSubject}
-                            handleRemoveSubject={handleRemoveSubject}
-                        />:null}
+                        {category == 2 ?
+                            <SubjectList
+                                handleSelectSubject={handleSelectSubject}
+                                handleRemoveSubject={handleRemoveSubject}
+                            />
+                            : null}
                     </Col>
-
                 </Row>
                 <Table>
                     <thead>

@@ -17,6 +17,7 @@ import fileImage from "../icon/file.svg";
 import Loading from "./Loading";
 import {useDispatch, useSelector} from "react-redux";
 import IntegratedSearch from "./IntegratedSearch";
+import {Carousel} from "react-bootstrap";
 
 export default function Home() {
     let history = useHistory();
@@ -32,9 +33,20 @@ export default function Home() {
         <div className="Home" >
             {/*<h1>Home</h1>*/}
             {/*<MyPage/>*/}
-            <div className="Banner">
-                <img src={storeSrc} style={{width: "100%", objectFit: "cover"}} alt="배너" height="220px"/>
-            </div>
+
+            <Carousel>
+                <Carousel.Item interval={1000}>
+                    <img className="d-block" src={storeSrc} alt="First slide"
+                         height={220}
+                         style={{width: "100%", objectFit: "cover"}}/>
+                </Carousel.Item>
+                <Carousel.Item interval={1000}>
+                    <img className="d-block" src={exampleBanner} alt="Second slide"
+                         height={220}
+                         style={{width: "100%", objectFit: "cover"}}/>
+                </Carousel.Item>
+            </Carousel>
+
             {/* 통합검색 - 일단 보류 */}
             {/*<div className="IntegratedSearch" style={{width: "70%", marginLeft: "auto", marginRight: "auto", marginTop: "30px"}}>*/}
             {/*    <IntegratedSearch/>*/}
