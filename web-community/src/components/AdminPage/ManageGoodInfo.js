@@ -54,6 +54,8 @@ function ManageGoodInfo({match}) {
                         <BorderButton content='+ 새 카테고리 추가하기'/>
                     </Col>
                 </Row>
+                <AddCategoryButton/>
+
             </Container>
         </div>
     );
@@ -62,6 +64,31 @@ function ManageGoodInfo({match}) {
 export default ManageGoodInfo;
 
 function MakeSiteList({categories,setSiteData}) {
+function AddCategoryButton(){
+    const [showAddCategoryModal, setAddCategoryModal] = useState(false);
+
+    const handleAddCategoryModalShow = () =>{
+        setAddCategoryModal(true);
+    }
+
+    return(
+        <>
+            <Row style={{marginTop: '3rem'}} >
+                <Col>
+                    <BorderButton content='+ 새 카테고리 추가하기' onClick={handleAddCategoryModalShow}/>
+                </Col>
+            </Row>
+
+            <AddCategoryModal
+                showAddCategoryModal={showAddCategoryModal}
+                setAddCategoryModal={setAddCategoryModal}
+            />
+        </>
+    )
+}
+
+function MakeSiteList({categories, setSiteData}) {
+
     return (
         <>
             {categories.map((data, index) => (
