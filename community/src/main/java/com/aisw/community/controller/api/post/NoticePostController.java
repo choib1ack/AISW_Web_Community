@@ -21,7 +21,7 @@ import java.nio.file.Path;
 public abstract class NoticePostController<Req, FileReq, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
 
     @Autowired(required = false)
-    protected NoticePostService<Req, ListRes, Res, Entity> noticePostService;
+    protected NoticePostService<Req, FileReq, ListRes, Res, Entity> noticePostService;
 
     @Override
     @PostMapping("")
