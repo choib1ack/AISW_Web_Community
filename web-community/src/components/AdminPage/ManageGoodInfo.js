@@ -7,8 +7,9 @@ import programmersImage from "../../siteImages/programmers.png";
 import addWebPageImage from "../../image/add_webpage_btn.svg";
 import BorderButton from "../Button/BorderButton";
 import axios from "axios";
-import SiteModal from "../SiteModal";
+import SiteModal from "./SiteModal";
 import Loading from "../Loading";
+import AddCategoryModal from "./AddCategoryModal";
 
 function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState([]);
@@ -49,11 +50,6 @@ function ManageGoodInfo({match}) {
                     setSiteData={setSiteData}
                 />
 
-                <Row style={{marginTop: '3rem'}}>
-                    <Col>
-                        <BorderButton content='+ 새 카테고리 추가하기'/>
-                    </Col>
-                </Row>
                 <AddCategoryButton/>
 
             </Container>
@@ -63,7 +59,6 @@ function ManageGoodInfo({match}) {
 
 export default ManageGoodInfo;
 
-function MakeSiteList({categories,setSiteData}) {
 function AddCategoryButton(){
     const [showAddCategoryModal, setAddCategoryModal] = useState(false);
 
@@ -113,18 +108,21 @@ function CategoryBox({category_info,setSiteData}) {
     }
 
     const handleAddModalShow = () => setShow(true);
+    // console.log("카테고리-");
+    // console.log(category_info);
+    if (!category_info) return null;
 
     return (
         <>
             <Title text={category_info.category} type='3'/>
             <Row>
-                {category_info.attachment_api_response_list.map((data, index) => (
+                {category_info.site_information_api_response_list.length>0?category_info.site_information_api_response_list.map((data, index) => (
                     <SiteBox
                         key={index}
                         site_info={data}
                         setSiteData={setSiteData}
                     />
-                ))}
+                )):null}
                 <Col lg={2} md={2} sm={2}>
                     <img src={addWebPageImage} style={add_btn_style} onClick={handleAddModalShow}/>
                 </Col>

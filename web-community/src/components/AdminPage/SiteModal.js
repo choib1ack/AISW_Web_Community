@@ -3,6 +3,7 @@ import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Switch from "react-switch";
 
 function SiteModal(props){
 
@@ -13,16 +14,18 @@ function SiteModal(props){
         {
             name:"",
             detail:"",
-            url:""
+            url:"",
+            checked : true
         }:
         {
             name: props.info.name,
             detail: props.info.content,
-            url: props.info.link_url
+            url: props.info.link_url,
+            checked : props.info.publish_status //맞나?
         }
     const [imgBase64, setImgBase64] = useState(""); // 파일 base64
     const [imgFile, setImgFile] = useState(null);	//파일
-    const [siteInfo, setSiteInfo] = useState({site_name:default_info.name, site_detail:default_info.detail, site_url:default_info.url});	//파일
+    const [siteInfo, setSiteInfo] = useState({site_name:default_info.name, site_detail:default_info.detail, site_url:default_info.url, checked:default_info.checked});	//파일
 
     const modalClose = () => {
         setImgBase64("");
@@ -36,6 +39,7 @@ function SiteModal(props){
             console.log(res);
             props.setShow(false);
             alert("사이트 정보가 삭제되었습니다") // 성공 메시지
+            props.setSiteData([]);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log("에러 발생 (사이트 삭제)");
@@ -62,16 +66,24 @@ function SiteModal(props){
 
     const handleInputChange = (event) =>{
         const target = event.target;
-        const value = target.value;
         const name = target.name;
+        const value = target.value;
         if(name=="site_image"){
             handleChangeFile(event);
+            return;
         }
         setSiteInfo({
             ...siteInfo,
             [name]: value
         });
         console.log(siteInfo);
+    }
+
+    const handleSwitchChange = (event) =>{
+        setSiteInfo({
+            ...siteInfo,
+            checked: !siteInfo.checked
+        });
     }
 
     const handleSubmit = (event) => {
@@ -81,13 +93,57 @@ function SiteModal(props){
             "category": "CODINGTEST",
             "link_url": siteInfo.site_url,
             "name": siteInfo.site_name,
-            "publish_status": true
+            "publish_status": siteInfo.checked
         }
+        console.log("입력된 정보---------");
         console.log(site_info);
-        sendData(site_info);
+        sendDataWithFile(site_info);
     }
 
+    // const handleSubmit = (event) => {
+    //     const formData = new FormData();
+    //     formData.append('file', imgFile);
+    //     formData.append('content', siteInfo.site_detail);
+    //     formData.append('category', "CODINGTEST");
+    //     formData.append('link_url', siteInfo.site_url);
+    //     formData.append('name', siteInfo.site_name);
+    //     formData.append('publish_status', siteInfo.checked);
+    //
+    //     console.log(formData);
+    //     sendDataWithFile(formData);
+    // }
+
+    function sendDataWithFile(data) {
+
+        console.log("입력된 정보2---------");
+        console.log(data);
+
+        const formData = new FormData();
+        formData.append('files', imgFile);
+
+        formData.append('siteInformationApiRequest.name', data.name);
+        formData.append('siteInformationApiRequest.content', data.content);
+        formData.append('siteInformationApiRequest.publishStatus', data.publish_status);
+        formData.append('siteInformationApiRequest.linkUrl', data.link_url);
+        formData.append('siteInformationApiRequest.category', data.category);
+
+        // print log
+        console.log("FormData Log-----------");
+        for (let value of formData.values()) {
+            console.log(value);
+        }
+
+        axios.post("/site", formData).then(res => {
+            console.log(res);
+            alert('성공')
+        }).catch(err => {
+            alert('실패')
+        })
+    }
+
+
     async function sendData(data) {
+
         if(mode=="add"){
             await axios.post("/site",
                 {
@@ -97,7 +153,8 @@ function SiteModal(props){
                     data,
                 },
             ).then((res) => {
-                console.log(res);
+                console.log(res.data.data);
+                sendDataWithFile(res.data.data.id, data);
                 props.setShow(false);
                 alert("새 사이트 등록완료!") // 실패 메시지
             }).catch(error => {
@@ -142,7 +199,7 @@ function SiteModal(props){
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>사이트 상세(선택)</Form.Label>
-                            <Form.Control type="text" placeholder="" defaultValue={siteInfo.site_detail}  name="site_detail"/>
+                            <Form.Control type="text" placeholder="" defaultValue={siteInfo.site_detail}  name="site_detail" onChange={handleInputChange}/>
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>URL<span style={{color:"#FF0000"}}> *</span></Form.Label>
@@ -156,6 +213,26 @@ function SiteModal(props){
                             }
                             <input type="file" id="imgFile" name="site_image" onChange={handleInputChange} />
                             {/*<Form.Control type="file" size="sm" onChange={handleChangeFile}/>*/}
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>
+                                <Switch
+                                    // 이거 변수명 맞나?
+                                    checked={siteInfo.checked}
+                                    onChange={handleSwitchChange}
+                                    onColor="#E7F1FF"
+                                    onHandleColor="#0472fd"
+                                    handleDiameter={23}
+                                    uncheckedIcon={false}
+                                    checkedIcon={false}
+                                    boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                    activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                    height={20}
+                                    width={40}
+                                    className="react-switch"
+                                    id="material-switch"
+                                />
+                            </Form.Label>
                         </Form.Group>
                     </Form>
                 </Modal.Body>
