@@ -11,7 +11,7 @@ import styled from "styled-components";
 function AddBannerModal(props) {
     const [imgBase64, setImgBase64] = useState(""); // 파일 base64
     const [imgFile, setImgFile] = useState(null);   //파일
-    const [siteInfo, setSiteInfo] = useState({site_name: "", site_detail: "", site_url: ""});   //파일
+    const [bannerInfo, setBannerInfo] = useState({banner_name: "", posting_period: "", banner_url: ""});   //배너
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
@@ -48,32 +48,26 @@ function AddBannerModal(props) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        if (name == "site_image") {
+        if (name == "banner_image") {
             handleChangeFile(event);
         }
-        setSiteInfo({
-            ...siteInfo,
+        setBannerInfo({
+            ...bannerInfo,
             [name]: value
         });
-        console.log(siteInfo);
+        console.log(bannerInfo);
     }
 
     const handleSubmit = (event) => {
-        console.log(siteInfo);
-        let site_info = {
-            "content": siteInfo.site_detail,
-            "information_category": "CODINGTEST",
-            "link_url": siteInfo.site_url,
-            "name": siteInfo.site_name,
-            "publish_status": true
+        let banner_info = {
+
         }
-        console.log(site_info);
-        sendData(site_info);
+        sendData(banner_info);
         resetDate();
     }
 
     async function sendData(data) {
-        await axios.post("/site",
+        await axios.post("/banner",
             {
                 headers: {
                     "Content-Type": `application/json`
@@ -99,7 +93,7 @@ function AddBannerModal(props) {
     }
 
     return (
-        <div className="AddSiteModal">
+        <div className="AddBannerModal">
             <Modal show={props.show} onHide={modalClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>새 배너 추가</Modal.Title>
@@ -108,7 +102,7 @@ function AddBannerModal(props) {
                     <Form>
                         <Form.Group className="mb-3">
                             <Form.Label>배너 명<span style={{color: "#FF0000"}}> *</span></Form.Label>
-                            <Form.Control type="text" placeholder="" name="site_name" onChange={handleInputChange}/>
+                            <Form.Control type="text" placeholder="" name="banner_name" onChange={handleInputChange}/>
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>게시 기간<span
@@ -148,7 +142,7 @@ function AddBannerModal(props) {
                             {imgBase64 == "" ? null :
                                 <div><img src={imgBase64} style={{width: "100%", objectFit: "cover"}} /></div>
                             }
-                            <input type="file" id="imgFile" name="site_image" accept='image/*'
+                            <input type="file" id="imgFile" name="banner_image" accept='image/*'
                                    onChange={handleInputChange}/>
                             {/*<Form.Control type="file" size="sm" onChange={handleChangeFile}/>*/}
                         </Form.Group>

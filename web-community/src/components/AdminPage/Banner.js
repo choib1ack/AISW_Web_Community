@@ -145,7 +145,7 @@ function Bannner() {
                     <Table>
                         <thead>
                         <tr>
-                            <th style={{width: "20%"}}>게시 날짜</th>
+                            <th style={{width: "20%"}}>등록 날짜</th>
                             <th style={{width: "20%"}}>배너명</th>
                             <th style={{width: "40%"}}>게시 기간</th>
                             <th style={{width: "10%"}}>게시 여부</th>
