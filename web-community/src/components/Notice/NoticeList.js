@@ -64,8 +64,8 @@ export default function NoticeList({match}) {
         <div className="Notice">
             <Container>
                 <Title text='공지사항' type='1'/>
-                <Row style={{marginBottom: '1rem', marginTop: '2rem'}}>
-                    <Col lg={6} md={8} sm={12}>
+                <Row style={{marginBottom: '1rem', marginTop: '2rem', alignItems: 'center'}}>
+                    <Col lg={6} md={6} sm={12}>
                         <SelectButton id={0} title='전체' active={category}
                                       onClick={() => handleCategoryChange(0)}/>
                         <SelectButton id={1} title='학교 홈페이지' active={category}
@@ -75,7 +75,7 @@ export default function NoticeList({match}) {
                         <SelectButton id={3} title='학생회' active={category}
                                       onClick={() => handleCategoryChange(3)}/>
                     </Col>
-                    <Col lg={6} md={4} sm={12}>
+                    <Col lg={6} md={6} sm={12}>
                         <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
                         <input type="text" value={nowSearchText} onChange={handleSearchTextChange}
                                onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
