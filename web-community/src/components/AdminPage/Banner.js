@@ -155,7 +155,7 @@ function Bannner() {
 
                         <tbody>
                         <tr>
-                            <td class="middle">
+                            <td className="middle">
                                 2021-05-21
                             </td>
                             <td className="middle">

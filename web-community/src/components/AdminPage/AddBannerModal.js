@@ -59,9 +59,7 @@ function AddBannerModal(props) {
     }
 
     const handleSubmit = (event) => {
-        let banner_info = {
-
-        }
+        let banner_info = {}
         sendData(banner_info);
         resetDate();
     }
@@ -87,9 +85,16 @@ function AddBannerModal(props) {
     }
 
     const handleDatePicker = (dates) => {
-        const [start, end] = dates;
+        let [start, end] = dates;
         setStartDate(start);
         setEndDate(end);
+        if (start != null && end != null) {
+            start = start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate();
+            end = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
+
+            // 기간 설정 posting_period
+            
+        }
     }
 
     return (
@@ -140,7 +145,8 @@ function AddBannerModal(props) {
                                 배너 이미지 (500x500)<span style={{color: "#FF0000"}}> *</span>
                             </Form.Label></div>
                             {imgBase64 == "" ? null :
-                                <div><img src={imgBase64} style={{width: "100%", objectFit: "cover"}} /></div>
+                                <div><img src={imgBase64} style={{width: "100%", objectFit: "cover"}} height={150}/>
+                                </div>
                             }
                             <input type="file" id="imgFile" name="banner_image" accept='image/*'
                                    onChange={handleInputChange}/>
