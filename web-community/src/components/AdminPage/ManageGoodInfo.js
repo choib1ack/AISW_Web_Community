@@ -21,19 +21,26 @@ function ManageGoodInfo({match}) {
         const fetchSiteData = async () => {
             try {
                 setError(null);
-                setSiteData(null);
+                //setSiteData(null);
                 setLoading(true);
+                console.log(siteData);
+                if(siteData.length!=0) {
+                    setLoading(false);
+                    return;
+                }
+
                 const response = await axios.get("/site/");
                 console.log(response);
                 setSiteData(Object.values(response.data.data));
+                setLoading(false);
             } catch (e) {
                 setError(e);
             }
-            setLoading(false);
+
         };
 
         fetchSiteData();
-    }, []);
+    }, [siteData]);
 
     if (loading) return <Loading/>;
     if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
@@ -121,6 +128,7 @@ function CategoryBox({category_info,setSiteData}) {
                         key={index}
                         site_info={data}
                         setSiteData={setSiteData}
+                        category_name={category_info.category}
                     />
                 )):null}
                 <Col lg={2} md={2} sm={2}>
@@ -131,12 +139,14 @@ function CategoryBox({category_info,setSiteData}) {
             <SiteModal
                 show={show}
                 setShow={setShow}
+                setSiteData={setSiteData}
+                category_name={category_info.category}
             />
         </>
     )
 }
 
-function SiteBox({site_info,setSiteData}) {
+function SiteBox({site_info,setSiteData, category_name}) {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     let style = {
@@ -159,6 +169,7 @@ function SiteBox({site_info,setSiteData}) {
                 setShow={setShowUpdateModal}
                 info={site_info}
                 setSiteData={setSiteData}
+                category_name={category_name}
             />
         </>
     )
