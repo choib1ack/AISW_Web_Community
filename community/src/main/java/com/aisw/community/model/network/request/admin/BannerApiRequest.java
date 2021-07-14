@@ -1,7 +1,6 @@
 package com.aisw.community.model.network.request.admin;
 
 
-import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
 
 @Getter

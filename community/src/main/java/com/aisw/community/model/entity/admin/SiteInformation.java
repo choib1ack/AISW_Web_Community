@@ -1,7 +1,6 @@
 package com.aisw.community.model.entity.admin;
 
 import com.aisw.community.model.entity.post.file.File;
-import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -12,10 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -39,8 +35,8 @@ public class SiteInformation {
 
     private String linkUrl;
 
-    @Enumerated(EnumType.STRING)
-    private InformationCategory category;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private SiteCategory siteCategory;
 
     @CreatedDate
     private LocalDateTime createdAt;
