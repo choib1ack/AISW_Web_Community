@@ -52,6 +52,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(SiteCategoryNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(SiteCategoryNotFoundException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("SiteCategoryNotFound", "category is not found with ID: " + ex.getId());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(FileNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleException(FileNotFoundException ex) {
         ApiErrorResponse response =
