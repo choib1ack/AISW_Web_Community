@@ -162,7 +162,7 @@ public class FileApiLogicService {
         String fileName = fileStorageService.storeFile(multipartFile);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/" + category.getTitle() + "/")
+                .path("/file/download/")
                 .path(fileName)
                 .toUriString();
 
