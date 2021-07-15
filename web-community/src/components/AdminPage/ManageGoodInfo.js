@@ -7,8 +7,9 @@ import programmersImage from "../../siteImages/programmers.png";
 import addWebPageImage from "../../image/add_webpage_btn.svg";
 import BorderButton from "../Button/BorderButton";
 import axios from "axios";
-import SiteModal from "../SiteModal";
+import SiteModal from "./SiteModal";
 import Loading from "../Loading";
+import AddCategoryModal from "./AddCategoryModal";
 
 function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState([]);
@@ -20,19 +21,26 @@ function ManageGoodInfo({match}) {
         const fetchSiteData = async () => {
             try {
                 setError(null);
-                setSiteData(null);
+                //setSiteData(null);
                 setLoading(true);
+                console.log(siteData);
+                if(siteData.length!=0) {
+                    setLoading(false);
+                    return;
+                }
+
                 const response = await axios.get("/site/");
                 console.log(response);
                 setSiteData(Object.values(response.data.data));
+                setLoading(false);
             } catch (e) {
                 setError(e);
             }
-            setLoading(false);
+
         };
 
         fetchSiteData();
-    }, []);
+    }, [siteData]);
 
     if (loading) return <Loading/>;
     if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
@@ -49,11 +57,8 @@ function ManageGoodInfo({match}) {
                     setSiteData={setSiteData}
                 />
 
-                <Row style={{marginTop: '3rem'}}>
-                    <Col>
-                        <BorderButton content='+ 새 카테고리 추가하기'/>
-                    </Col>
-                </Row>
+                <AddCategoryButton/>
+
             </Container>
         </div>
     );
@@ -61,7 +66,31 @@ function ManageGoodInfo({match}) {
 
 export default ManageGoodInfo;
 
-function MakeSiteList({categories,setSiteData}) {
+function AddCategoryButton(){
+    const [showAddCategoryModal, setAddCategoryModal] = useState(false);
+
+    const handleAddCategoryModalShow = () =>{
+        setAddCategoryModal(true);
+    }
+
+    return(
+        <>
+            <Row style={{marginTop: '3rem'}} >
+                <Col>
+                    <BorderButton content='+ 새 카테고리 추가하기' onClick={handleAddCategoryModalShow}/>
+                </Col>
+            </Row>
+
+            <AddCategoryModal
+                showAddCategoryModal={showAddCategoryModal}
+                setAddCategoryModal={setAddCategoryModal}
+            />
+        </>
+    )
+}
+
+function MakeSiteList({categories, setSiteData}) {
+
     return (
         <>
             {categories.map((data, index) => (
@@ -86,18 +115,22 @@ function CategoryBox({category_info,setSiteData}) {
     }
 
     const handleAddModalShow = () => setShow(true);
+    // console.log("카테고리-");
+    // console.log(category_info);
+    if (!category_info) return null;
 
     return (
         <>
             <Title text={category_info.category} type='3'/>
             <Row>
-                {category_info.attachment_api_response_list.map((data, index) => (
+                {category_info.site_information_api_response_list.length>0?category_info.site_information_api_response_list.map((data, index) => (
                     <SiteBox
                         key={index}
                         site_info={data}
                         setSiteData={setSiteData}
+                        category_name={category_info.category}
                     />
-                ))}
+                )):null}
                 <Col lg={2} md={2} sm={2}>
                     <img src={addWebPageImage} style={add_btn_style} onClick={handleAddModalShow}/>
                 </Col>
@@ -106,12 +139,14 @@ function CategoryBox({category_info,setSiteData}) {
             <SiteModal
                 show={show}
                 setShow={setShow}
+                setSiteData={setSiteData}
+                category_name={category_info.category}
             />
         </>
     )
 }
 
-function SiteBox({site_info,setSiteData}) {
+function SiteBox({site_info,setSiteData, category_name}) {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     let style = {
@@ -134,6 +169,7 @@ function SiteBox({site_info,setSiteData}) {
                 setShow={setShowUpdateModal}
                 info={site_info}
                 setSiteData={setSiteData}
+                category_name={category_name}
             />
         </>
     )

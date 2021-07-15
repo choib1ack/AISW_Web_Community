@@ -1,7 +1,6 @@
 package com.aisw.community.model.network.request.admin;
 
 
-import com.aisw.community.model.enumclass.InformationCategory;
 import lombok.*;
 
 @Getter
@@ -22,5 +21,5 @@ public class SiteInformationApiRequest {
 
     private String linkUrl;
 
-    private InformationCategory category;
+    private String category;
 }
