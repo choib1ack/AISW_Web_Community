@@ -3,13 +3,13 @@ import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import React, {useEffect, useState} from "react";
-import programmersImage from "../../siteImages/programmers.png";
+import edit_icon from "../../icon/edit_icon.png";
 import addWebPageImage from "../../image/add_webpage_btn.svg";
 import BorderButton from "../Button/BorderButton";
 import axios from "axios";
 import SiteModal from "./SiteModal";
 import Loading from "../Loading";
-import AddCategoryModal from "./AddCategoryModal";
+import CategoryModal from "./CategoryModal";
 
 function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState(null);
@@ -69,10 +69,10 @@ function ManageGoodInfo({match}) {
 export default ManageGoodInfo;
 
 function AddCategoryButton({setSiteData}){
-    const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
 
     const handleAddCategoryModalShow = () =>{
-        setShowAddCategoryModal(true);
+        setShowCategoryModal(true);
     }
 
     return(
@@ -83,9 +83,10 @@ function AddCategoryButton({setSiteData}){
                 </Col>
             </Row>
 
-            <AddCategoryModal
-                showAddCategoryModal={showAddCategoryModal}
-                setShowAddCategoryModal={setShowAddCategoryModal}
+            <CategoryModal
+                mode="add"
+                showCategoryModal={showCategoryModal}
+                setShowCategoryModal={setShowCategoryModal}
                 setSiteData={setSiteData}
             />
         </>
@@ -109,7 +110,8 @@ function MakeSiteList({categories, setSiteData}) {
 }
 
 function CategoryBox({category_info,setSiteData}) {
-    const [show, setShow] = useState(false);
+    const [showSiteModal, setShowSiteModal] = useState(false);
+    const [showCategoryEditModal, setShowCategoryEditModal] = useState(false);
 
     let add_btn_style = {
         border: '1px solid #E8E8E8',
@@ -117,14 +119,26 @@ function CategoryBox({category_info,setSiteData}) {
         cursor: 'pointer'
     }
 
-    const handleAddModalShow = () => setShow(true);
-    // console.log("카테고리-");
-    // console.log(category_info);
+    let style = {
+        fontSize: '14px',
+        textAlign: 'left',
+        marginTop: '3rem',
+        fontWeight: 'bold',
+        color: '#1c1c1c'
+    }
+
+    const handleSiteAddModalShow = () => setShowSiteModal(true);
+    const handleCategoryEditModalShow = () => setShowCategoryEditModal(true);
+
     if (!category_info) return null;
 
     return (
         <>
-            <Title text={category_info.name} type='3'/>
+            <p style={style}>{category_info.name}
+                <img src={edit_icon} height="12px" style={{paddingLeft:'10px', cursor:'pointer'}} onClick={handleCategoryEditModalShow}/>
+            </p>
+
+
             <Row>
                 {category_info.site_information_api_response_list.length>0?category_info.site_information_api_response_list.map((data, index) => (
                     <SiteBox
@@ -135,16 +149,26 @@ function CategoryBox({category_info,setSiteData}) {
                     />
                 )):null}
                 <Col lg={2} md={2} sm={2}>
-                    <img src={addWebPageImage} style={add_btn_style} onClick={handleAddModalShow}/>
+                    <img src={addWebPageImage} style={add_btn_style} onClick={handleSiteAddModalShow}/>
                 </Col>
             </Row>
 
             <SiteModal
-                show={show}
-                setShow={setShow}
+                show={showSiteModal}
+                setShow={setShowSiteModal}
                 setSiteData={setSiteData}
                 category_name={category_info.name}
             />
+
+            <CategoryModal
+                mode="update"
+                id={category_info.id}
+                name={category_info.name}
+                showCategoryModal={showCategoryEditModal}
+                setShowCategoryModal={setShowCategoryEditModal}
+                setSiteData={setSiteData} // 새로고침용
+            />
+
         </>
     )
 }
