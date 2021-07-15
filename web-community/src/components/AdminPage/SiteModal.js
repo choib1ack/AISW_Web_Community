@@ -45,7 +45,7 @@ function SiteModal(props) {
                 //console.log(res);
                 props.setShow(false);
                 alert("사이트 정보가 삭제되었습니다");
-                props.setSiteData([]);
+                props.setSiteData(null);
             }).catch(error => {
                 // let errorObject = JSON.parse(JSON.stringify(error));
                 // console.log(errorObject);
@@ -125,7 +125,7 @@ function SiteModal(props) {
             // console.log(res);
             props.setShow(false);
             alert('새 사이트가 등록되었습니다.')
-            props.setSiteData([]);
+            props.setSiteData(null);
         }).catch(err => {
             alert('새 사이트 등록에 실패했습니다.')
             console.log(err);
