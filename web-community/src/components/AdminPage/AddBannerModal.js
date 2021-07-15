@@ -79,8 +79,10 @@ function AddBannerModal(props) {
             alert("시작날짜를 선택해주세요.");
         } else if (bannerInfo.end_date === "") {
             alert("종료날짜를 선택해주세요.");
-        } else if (bannerInfo.banner_url === "") {
+        } else if (imgFile == null) {
             alert("이미지를 선택해주세요.");
+        } else if (bannerInfo.banner_url === "") {
+            alert("배너 링크를 입력해주세요.");
         } else {
             return true;
         }
@@ -88,14 +90,14 @@ function AddBannerModal(props) {
 
     async function sendData(formData) {
         await axios.post("/banner", formData).then((res) => {
-            console.log(res)
             alert("새 배너 등록완료!") // 실패 메시지
             // setModalShow(true)   // 완료 모달 띄우기
+            modalClose();
+            window.location.reload();
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
             alert("새 배너 등록에 실패하였습니다."); // 실패 메시지
-            console.log(formData)
         })
     }
 
