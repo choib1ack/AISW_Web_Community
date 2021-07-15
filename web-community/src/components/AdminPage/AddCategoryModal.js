@@ -6,11 +6,11 @@ import Button from "react-bootstrap/Button";
 
 function AddCategoryModal(props){
 
-    const [newCategoryName, setNewCategoryName] = useState("");
+    const [newCategoryName, setNewCategoryName] = useState(null);
 
 
     const modalClose = () => {
-        props.setAddCategoryModal(false);
+        props.setShowAddCategoryModal(false);
     }
 
     const handleInputChange = (event) =>{
@@ -20,6 +20,20 @@ function AddCategoryModal(props){
 
     const handleSubmit = () =>{
         // 서버로 새 카테고리 정보 전송
+        sendData(newCategoryName);
+    }
+
+    function sendData(new_category_name) {
+        axios.post("/site/category?name="+new_category_name).then(res => {
+            // console.log(res);
+            props.setShowAddCategoryModal(false);
+            alert('새 카테고리가 등록되었습니다.')
+            props.setSiteData(null);
+            setNewCategoryName(null);
+        }).catch(err => {
+            alert('새 카테고리 등록에 실패했습니다.')
+            console.log(err);
+        })
     }
 
     return (
@@ -32,12 +46,13 @@ function AddCategoryModal(props){
                     <Form>
                         <Form.Group className="mb-3">
                             <Form.Label>새 카테고리 명<span style={{color:"#FF0000"}}> *</span></Form.Label>
-                            <Form.Control type="text" placeholder="" defaultValue={newCategoryName} name="category_name" onChange={handleInputChange} />
+                            <Form.Control type="text" placeholder="" defaultValue={newCategoryName} name="category_name"
+                                          onChange={handleInputChange}/>
                         </Form.Group>
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" type="submit" onClick={handleSubmit}>
+                    <Button variant="primary" type="button" onClick={handleSubmit} >
                         추가
                     </Button>
                 </Modal.Footer>

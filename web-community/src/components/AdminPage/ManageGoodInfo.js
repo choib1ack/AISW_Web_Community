@@ -57,7 +57,9 @@ function ManageGoodInfo({match}) {
                     setSiteData={setSiteData}
                 />
 
-                <AddCategoryButton/>
+                <AddCategoryButton
+                    setSiteData={setSiteData}
+                />
 
             </Container>
         </div>
@@ -66,11 +68,11 @@ function ManageGoodInfo({match}) {
 
 export default ManageGoodInfo;
 
-function AddCategoryButton(){
-    const [showAddCategoryModal, setAddCategoryModal] = useState(false);
+function AddCategoryButton({setSiteData}){
+    const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
 
     const handleAddCategoryModalShow = () =>{
-        setAddCategoryModal(true);
+        setShowAddCategoryModal(true);
     }
 
     return(
@@ -83,7 +85,8 @@ function AddCategoryButton(){
 
             <AddCategoryModal
                 showAddCategoryModal={showAddCategoryModal}
-                setAddCategoryModal={setAddCategoryModal}
+                setShowAddCategoryModal={setShowAddCategoryModal}
+                setSiteData={setSiteData}
             />
         </>
     )
