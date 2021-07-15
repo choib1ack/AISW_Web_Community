@@ -12,7 +12,7 @@ import Loading from "../Loading";
 import AddCategoryModal from "./AddCategoryModal";
 
 function ManageGoodInfo({match}) {
-    const [siteData, setSiteData] = useState([]);
+    const [siteData, setSiteData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -24,7 +24,7 @@ function ManageGoodInfo({match}) {
                 //setSiteData(null);
                 setLoading(true);
                 console.log(siteData);
-                if(siteData.length!=0) {
+                if(siteData) {
                     setLoading(false);
                     return;
                 }
@@ -124,14 +124,14 @@ function CategoryBox({category_info,setSiteData}) {
 
     return (
         <>
-            <Title text={category_info.category} type='3'/>
+            <Title text={category_info.name} type='3'/>
             <Row>
                 {category_info.site_information_api_response_list.length>0?category_info.site_information_api_response_list.map((data, index) => (
                     <SiteBox
                         key={index}
                         site_info={data}
                         setSiteData={setSiteData}
-                        category_name={category_info.category}
+                        category_name={category_info.name}
                     />
                 )):null}
                 <Col lg={2} md={2} sm={2}>
@@ -143,7 +143,7 @@ function CategoryBox({category_info,setSiteData}) {
                 show={show}
                 setShow={setShow}
                 setSiteData={setSiteData}
-                category_name={category_info.category}
+                category_name={category_info.name}
             />
         </>
     )
@@ -177,4 +177,3 @@ function SiteBox({site_info,setSiteData, category_name}) {
         </>
     )
 }
-
