@@ -55,16 +55,16 @@ function AddBannerModal(props) {
             ...bannerInfo,
             [name]: value
         });
-        console.log(bannerInfo);
     }
 
     const handleSubmit = (event) => {
         let formData = new FormData();
-        formData.append('name', bannerInfo.banner_name);
-        formData.append('startDate', bannerInfo.start_date);
-        formData.append('endDate', bannerInfo.end_date);
-        formData.append('linkUrl', bannerInfo.banner_url);
-        formData.append('publishStatus', true);
+        formData.append('files', imgFile);
+        formData.append('bannerApiRequest.name', bannerInfo.banner_name);
+        formData.append('bannerApiRequest.startDate', bannerInfo.start_date);
+        formData.append('bannerApiRequest.endDate', bannerInfo.end_date);
+        formData.append('bannerApiRequest.linkUrl', bannerInfo.banner_url);
+        formData.append('bannerApiRequest.publishStatus', true);
 
         if (checkNull()) {
             sendData(formData);
@@ -87,22 +87,15 @@ function AddBannerModal(props) {
     }
 
     async function sendData(formData) {
-        await axios.post("/banner",
-            {
-                headers: {
-                    "Content-Type": `multipart/form-data`
-                },
-                formData,
-            },
-        ).then((res) => {
+        await axios.post("/banner", formData).then((res) => {
             console.log(res)
             alert("새 배너 등록완료!") // 실패 메시지
             // setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생 (새 사이트 등록)");
             console.log(errorObject);
             alert("새 배너 등록에 실패하였습니다."); // 실패 메시지
+            console.log(formData)
         })
     }
 
@@ -199,7 +192,6 @@ function AddBannerModal(props) {
                             />
                         </Form.Group>
 
-
                         <Form.Group className="mb-3">
                             <div><Form.Label>
                                 배너 이미지 (500x500)<span style={{color: "#FF0000"}}> *</span>
@@ -211,6 +203,11 @@ function AddBannerModal(props) {
                             <input type="file" id="imgFile" name="banner_image" accept='image/*'
                                    onChange={handleInputChange}/>
                             {/*<Form.Control type="file" size="sm" onChange={handleChangeFile}/>*/}
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>배너 링크<span style={{color: "#FF0000"}}> *</span></Form.Label>
+                            <Form.Control type="text" placeholder="http://" defaultValue={bannerInfo.banner_url}
+                                          name="banner_url" onChange={handleInputChange}/>
                         </Form.Group>
                     </Form>
                 </Modal.Body>
