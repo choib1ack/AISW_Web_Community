@@ -27,7 +27,7 @@ public class BannerApiController {
     }
 
     @GetMapping("")
-    public Header<List<BannerApiResponse>> readAll(@PageableDefault(sort = "startDate", direction = Sort.Direction.DESC) Pageable pageable) {
+    public Header<List<BannerApiResponse>> readAll(@PageableDefault(sort = {"startDate", "endDate"}, direction = Sort.Direction.ASC) Pageable pageable) {
         return bannerApiLogicService.readAll(pageable);
     }
 
