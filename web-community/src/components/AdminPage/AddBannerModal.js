@@ -1,4 +1,4 @@
-import React, {forwardRef, useEffect, useState} from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -11,7 +11,7 @@ import styled from "styled-components";
 function AddBannerModal(props) {
     const [imgBase64, setImgBase64] = useState(""); // 파일 base64
     const [imgFile, setImgFile] = useState(null);   //파일
-    const [bannerInfo, setBannerInfo] = useState({banner_name: "", posting_period: "", banner_url: ""});   //배너
+    const [bannerInfo, setBannerInfo] = useState({banner_name: "", start_date: "", end_date: "", banner_url: ""});   //배너
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
@@ -59,18 +59,40 @@ function AddBannerModal(props) {
     }
 
     const handleSubmit = (event) => {
-        let banner_info = {}
-        sendData(banner_info);
-        resetDate();
+        let formData = new FormData();
+        formData.append('name', bannerInfo.banner_name);
+        formData.append('startDate', bannerInfo.start_date);
+        formData.append('endDate', bannerInfo.end_date);
+        formData.append('linkUrl', bannerInfo.banner_url);
+        formData.append('publishStatus', true);
+
+        if (checkNull()) {
+            sendData(formData);
+            resetDate();
+        }
     }
 
-    async function sendData(data) {
+    function checkNull() {
+        if (bannerInfo.banner_name === "") {
+            alert("배너명을 입력해주세요.");
+        } else if (bannerInfo.start_date === "") {
+            alert("시작날짜를 선택해주세요.");
+        } else if (bannerInfo.end_date === "") {
+            alert("종료날짜를 선택해주세요.");
+        } else if (bannerInfo.banner_url === "") {
+            alert("이미지를 선택해주세요.");
+        } else {
+            return true;
+        }
+    }
+
+    async function sendData(formData) {
         await axios.post("/banner",
             {
                 headers: {
-                    "Content-Type": `application/json`
+                    "Content-Type": `multipart/form-data`
                 },
-                data,
+                formData,
             },
         ).then((res) => {
             console.log(res)
@@ -84,16 +106,54 @@ function AddBannerModal(props) {
         })
     }
 
+    const getYyyyMmDdSsToString = (date) => {
+        let dd = date.getDate();
+        let mm = date.getMonth() + 1; //January is 0!
+
+        let yyyy = date.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+
+        yyyy = yyyy.toString();
+        mm = mm.toString();
+        dd = dd.toString();
+
+        let m = date.getHours();
+        let s = date.getMinutes();
+
+        if (m < 10) {
+            m = '0' + m
+        }
+        if (s < 10) {
+            s = '0' + s
+        }
+        m = m.toString();
+        s = s.toString();
+
+        return yyyy + '-' + mm + '-' + dd + '-' + m + '-' + s;
+    }
+
     const handleDatePicker = (dates) => {
         let [start, end] = dates;
         setStartDate(start);
         setEndDate(end);
-        if (start != null && end != null) {
-            start = start.getFullYear() + '-' + (start.getMonth() + 1) + '-' + start.getDate();
-            end = end.getFullYear() + '-' + (end.getMonth() + 1) + '-' + end.getDate();
 
-            // 기간 설정 posting_period
-            
+        if (start != null && end != null) {
+            start = getYyyyMmDdSsToString(start);
+            end = getYyyyMmDdSsToString(end);
+
+            // 기간 설정
+            setBannerInfo(
+                {
+                    ...bannerInfo,
+                    start_date: start,
+                    end_date: end
+                }
+            );
         }
     }
 
