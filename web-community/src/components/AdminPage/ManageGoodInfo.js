@@ -165,7 +165,7 @@ function SiteBox({site_info,setSiteData, category_name}) {
     return (
         <>
             <Col lg={2} md={2} sm={2} id={site_info.id}>
-                <img src={programmersImage} style={style} onClick={handleUpdateModalShow}/>
+                <img src={site_info.file_api_response_list[0].file_download_uri} style={style} onClick={handleUpdateModalShow} />
             </Col>
             <SiteModal
                 show={showUpdateModal}
