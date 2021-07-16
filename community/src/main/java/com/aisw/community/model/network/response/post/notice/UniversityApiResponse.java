@@ -1,5 +1,6 @@
 package com.aisw.community.model.network.response.post.notice;
 
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.Campus;
 import com.aisw.community.model.enumclass.SecondCategory;

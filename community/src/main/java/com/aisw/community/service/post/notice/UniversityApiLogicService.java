@@ -3,6 +3,7 @@ package com.aisw.community.service.post.notice;
 import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -141,6 +142,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
         }
 
         university.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        university.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, university.getId(), UploadCategory.POST);
 
         university
@@ -323,8 +325,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
                 .accountId(university.getAccount().getId())
-                .fileApiResponseList(university.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileApiLogicService.searchByPost(university.getId()))
                 .build();
 
         return universityApiResponse;

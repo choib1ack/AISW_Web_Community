@@ -1,6 +1,7 @@
 package com.aisw.community.model.network.response.admin;
 
 
+import com.aisw.community.model.entity.admin.SiteInformation;
 import lombok.*;
 
 import java.util.List;
@@ -16,5 +17,5 @@ public class SiteCategoryApiResponse {
 
     private String name;
 
-    private List<SiteInformationApiResponse> siteInformationApiResponseList;
+    private List<SiteInformationApiResponse> siteInformationList;
 }

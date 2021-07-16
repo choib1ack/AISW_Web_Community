@@ -8,7 +8,6 @@ import com.aisw.community.repository.admin.SiteCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,9 +61,8 @@ public class SiteCategoryApiLogicService {
     private SiteCategoryApiResponse responseWithInfo(SiteCategory category) {
         SiteCategoryApiResponse siteCategoryApiResponse = SiteCategoryApiResponse.builder()
                 .id(category.getId()).name(category.getName())
-                .siteInformationApiResponseList(category.getSiteInformationList().stream()
-                        .map(siteInformation -> siteInformationApiLogicService.response(siteInformation))
-                        .collect(Collectors.toList())).build();
+                .siteInformationList(siteInformationApiLogicService.searchByCategory(category.getId())).build();
+
         return siteCategoryApiResponse;
     }
 }

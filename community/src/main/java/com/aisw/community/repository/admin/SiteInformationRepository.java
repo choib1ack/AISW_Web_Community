@@ -9,4 +9,6 @@ import java.util.List;
 
 @Repository
 public interface SiteInformationRepository extends JpaRepository<SiteInformation, Long> {
+
+    List<SiteInformation> findAllBySiteCategoryId(Long id);
 }
