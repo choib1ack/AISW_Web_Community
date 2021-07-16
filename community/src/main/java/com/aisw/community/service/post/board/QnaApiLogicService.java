@@ -4,6 +4,7 @@ import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Qna;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -27,7 +28,6 @@ import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -158,6 +158,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
         }
 
         qna.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        qna.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, qna.getId(), UploadCategory.POST);
 
         qna
@@ -200,8 +201,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .subject(qna.getSubject())
                 .accountId(qna.getAccount().getId())
                 .category(qna.getCategory())
-                .fileApiResponseList(qna.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileApiLogicService.searchByPost(qna.getId()))
                 .build();
 
         return qnaApiResponse;
@@ -257,6 +257,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .accountId(qna.getAccount().getId())
+                .checkLike(false)
                 .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()))
                 .build();
 
@@ -293,6 +294,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .isAnonymous(qna.getIsAnonymous())
                 .category(qna.getCategory())
                 .accountId(qna.getAccount().getId())
+                .checkLike(false)
                 .build();
 
         List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
@@ -315,8 +317,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                     }
                 }
             }
-            qnaDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
         });
+        qnaDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
 
         return qnaDetailApiResponse;
     }

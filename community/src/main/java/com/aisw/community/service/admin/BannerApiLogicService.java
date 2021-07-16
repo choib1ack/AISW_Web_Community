@@ -2,6 +2,7 @@ package com.aisw.community.service.admin;
 
 import com.aisw.community.advice.exception.BannerNotFoundException;
 import com.aisw.community.model.entity.admin.Banner;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
@@ -12,6 +13,7 @@ import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.admin.BannerRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
+import org.apache.catalina.webresources.FileResourceSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,7 +88,9 @@ public class BannerApiLogicService {
                 () -> new BannerNotFoundException(bannerApiRequest.getId()));
 
         banner.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        banner.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, banner.getId(), UploadCategory.BANNER);
+
         banner.setName(bannerApiRequest.getName())
                 .setContent(bannerApiRequest.getContent())
                 .setStartDate(LocalDateTime.parse(bannerApiRequest.getStartDate(),
@@ -133,8 +137,7 @@ public class BannerApiLogicService {
                 .createdBy(banner.getCreatedBy())
                 .updatedAt(banner.getUpdatedAt())
                 .updatedBy(banner.getUpdatedBy())
-                .fileApiResponseList(banner.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileApiLogicService.searchByBanner(banner.getId()))
                 .build();
 
         return bannerApiResponse;

@@ -4,6 +4,7 @@ import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Free;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -26,7 +27,6 @@ import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import com.aisw.community.service.post.file.FileApiLogicService;
-import org.apache.catalina.webresources.FileResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -156,7 +156,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
         }
 
         free.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        free.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, free.getId(), UploadCategory.POST);
+
         free
                 .setTitle(freeApiRequest.getTitle())
                 .setContent(freeApiRequest.getContent())
@@ -195,8 +197,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .accountId(free.getAccount().getId())
-                .fileApiResponseList(free.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileApiLogicService.searchByPost(free.getId()))
                 .build();
 
         return freeApiResponse;
@@ -250,6 +251,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .accountId(free.getAccount().getId())
+                .checkLike(false)
                 .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()))
                 .build();
 
@@ -284,6 +286,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
+                .checkLike(false)
                 .accountId(free.getAccount().getId())
                 .build();
 
@@ -307,8 +310,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                     }
                 }
             }
-            freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
         });
+        freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
 
         return freeDetailApiResponse;
     }
