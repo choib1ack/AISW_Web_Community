@@ -13,6 +13,7 @@ import com.aisw.community.model.network.request.post.comment.CommentApiRequest;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
+import com.aisw.community.repository.post.comment.CustomCommentRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,9 @@ public class CommentApiLogicService {
 
     @Autowired
     private CommentRepository commentRepository;
+
+    @Autowired
+    private CustomCommentRepository customCommentRepository;
 
     @Transactional
     public Header<CommentApiResponse> create(Header<CommentApiRequest> request) {
@@ -116,7 +120,7 @@ public class CommentApiLogicService {
     }
 
     public List<CommentApiResponse> searchByPost(Long id) {
-        List<Comment> comments = commentRepository.findCommentByBoardId(id);
+        List<Comment> comments = customCommentRepository.findCommentByBoardId(id);
 
         List<CommentApiResponse> commentApiResponseList = new ArrayList<>();
         Map<Long, CommentApiResponse> map = new HashMap<>();
