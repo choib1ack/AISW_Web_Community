@@ -6,8 +6,8 @@ import Button from "react-bootstrap/Button";
 import Switch from "react-switch";
 
 function SiteModal(props) {
-    const mode = (props.info == null) ? "add" : "update";
-    //console.log(mode);
+    const mode = (!props.info) ? "add" : "update";
+    console.log(mode);
 
     const default_info = mode == "add" ?
         {
@@ -22,8 +22,8 @@ function SiteModal(props) {
             url: props.info.link_url,
             checked: props.info.publish_status
         }
-    const [imgBase64, setImgBase64] = useState(""); // 파일 base64 (미리보기)
-    const [imgFile, setImgFile] = useState(null);	// 파일
+    const [imgBase64, setImgBase64] = useState(""); // 파일 base64 (미리보기 전용)
+    const [imgFile, setImgFile] = useState(null);	// 파일 (업로드 전용)
     const [siteInfo, setSiteInfo] = useState(
         {
             site_name: default_info.name,
@@ -32,6 +32,38 @@ function SiteModal(props) {
             checked: default_info.checked,
             category: props.category_name
         });	//파일
+
+
+    //---------------------------------------------------
+
+    function encodeBase64ImageTagviaFileReader (file_name) {
+        console.log(file_name);
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest()
+            xhr.onload = () => {
+                let reader = new FileReader()
+                reader.onloadend = function () {
+                    resolve(reader.result)
+                }
+                reader.readAsDataURL(xhr.response)
+            }
+            xhr.open('GET', "/file/download/"+file_name)
+            xhr.responseType = 'blob'
+            xhr.send()
+        })
+    }
+
+    if(mode=="update" && props.file_info != null){
+        console.log(imgFile);
+        if(imgBase64 == "") {
+            encodeBase64ImageTagviaFileReader(props.file_info.file_name)
+                .then(data => {
+                    // console.log(data);
+                    setImgBase64(data);
+                    setImgFile(new File([data], props.file_info.file_name, {type: props.file_info.file_type}));
+                })
+        }
+    }
 
     const modalClose = () => {
         setImgBase64("");
@@ -66,6 +98,7 @@ function SiteModal(props) {
         if (event.target.files[0]) {
             reader.readAsDataURL(event.target.files[0]); // 1. 파일을 읽어 버퍼에 저장합니다.
             setImgFile(event.target.files[0]); // 파일 상태 업데이트
+            // console.log(event.target.files[0]);
         }
     }
 
@@ -108,12 +141,15 @@ function SiteModal(props) {
 
         const formData = new FormData();
         formData.append('files', imgFile);
-
         formData.append('siteInformationApiRequest.name', data.name);
         formData.append('siteInformationApiRequest.content', data.content);
         formData.append('siteInformationApiRequest.publishStatus', data.publish_status);
         formData.append('siteInformationApiRequest.linkUrl', data.link_url);
         formData.append('siteInformationApiRequest.category', data.category);
+
+        if(mode=="update"){
+            formData.append('siteInformationApiRequest.id', props.info.id);
+        }
 
         // print log
         // console.log("FormData Log-----------");
@@ -121,15 +157,28 @@ function SiteModal(props) {
         //     console.log(value);
         // }
 
-        axios.post("/site", formData).then(res => {
-            // console.log(res);
-            props.setShow(false);
-            alert('새 사이트가 등록되었습니다.')
-            props.setSiteData(null);
-        }).catch(err => {
-            alert('새 사이트 등록에 실패했습니다.')
-            console.log(err);
-        })
+        if(mode=="add"){
+            axios.post("/site", formData).then(res => {
+                // console.log(res);
+                props.setShow(false);
+                alert('새 사이트가 등록되었습니다.')
+                props.setSiteData(null);
+            }).catch(err => {
+                alert('새 사이트 등록에 실패했습니다.')
+                console.log(err);
+            })
+        }else{
+            axios.put("/site", formData).then(res => {
+                // console.log(res);
+                props.setShow(false);
+                alert('사이트 정보가 변경되었습니다.')
+                props.setSiteData(null);
+            }).catch(err => {
+                alert('사이트 정보 변경에 실패했습니다.')
+                console.log(err);
+            })
+        }
+
     }
 
     return (
@@ -194,7 +243,7 @@ function SiteModal(props) {
                                 삭제
                             </Button> : null}
                         <Button variant="primary" type="submit" onClick={handleSubmit}>
-                            추가
+                            {mode == "add"?"추가":"수정"}
                         </Button>
                     </Modal.Footer>
                 </Modal>
