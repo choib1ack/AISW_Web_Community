@@ -15,9 +15,8 @@ import {Link, useHistory} from "react-router-dom";
 import axios from "axios";
 import fileImage from "../icon/file.svg";
 import Loading from "./Loading";
-import {useDispatch, useSelector} from "react-redux";
 import IntegratedSearch from "./IntegratedSearch";
-import {Carousel} from "react-bootstrap";
+import {MakeCarouselList} from "./AdminPage/Banner";
 
 export default function Home() {
     let history = useHistory();
@@ -25,27 +24,41 @@ export default function Home() {
         history.push(url);
     }
 
-    // redux toolkit
-    const storeSrc = useSelector(state => state.banner.src);
-    const dispatch = useDispatch();
+    const [bannerData, setBannerData] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchBannerData = async () => {
+            try {
+                setError(null);
+                setLoading(true);
+
+                if (bannerData) {
+                    setLoading(false);
+                    return;
+                }
+
+                const response = await axios.get("/banner/");
+                setBannerData(Object.values(response.data.data));
+                setLoading(false);
+            } catch (e) {
+                setError(e);
+            }
+        };
+
+        fetchBannerData();
+    }, [bannerData]);
 
     return (
-        <div className="Home" >
+        <div className="Home">
             {/*<h1>Home</h1>*/}
             {/*<MyPage/>*/}
 
-            <Carousel>
-                <Carousel.Item interval={1000}>
-                    <img className="d-block" src={storeSrc} alt="First slide"
-                         height={220}
-                         style={{width: "100%", objectFit: "cover"}}/>
-                </Carousel.Item>
-                <Carousel.Item interval={1000}>
-                    <img className="d-block" src={exampleBanner} alt="Second slide"
-                         height={220}
-                         style={{width: "100%", objectFit: "cover"}}/>
-                </Carousel.Item>
-            </Carousel>
+            <MakeCarouselList
+                banners={bannerData}
+                page="Home"
+            />
 
             {/* 통합검색 - 일단 보류 */}
             {/*<div className="IntegratedSearch" style={{width: "70%", marginLeft: "auto", marginRight: "auto", marginTop: "30px"}}>*/}

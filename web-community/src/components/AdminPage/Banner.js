@@ -17,34 +17,18 @@ import Loading from "../Loading";
 
 function Bannner() {
     // redux toolkit
-    const storeSrc = useSelector(state => state.banner.src);
-    const dispatch = useDispatch();
+    // const storeSrc = useSelector(state => state.banner.src);
+    // const dispatch = useDispatch();
 
     // const [file, setFile] = useState(false);
     // const [previewURL, setPreviewURL] = useState(storeSrc);
     const [modalShow, setModalShow] = useState(false);
     const [newModalShow, setNewModalShow] = useState(false);
 
-    const [bannerData, setBannerData] = useState([]);
+    const [bannerData, setBannerData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    // const handleFileOnChange = (event) => {
-    //     event.preventDefault();
-    //     let reader = new FileReader();
-    //     let file = event.target.files[0];
-    //     reader.onloadend = () => {
-    //         setFile(file)
-    //         setPreviewURL(reader.result)
-    //     }
-    //     reader.readAsDataURL(file);
-    // }
-    //
-    // const handleFileOnSubmit = () => {
-    //     // redux store에 저장
-    //     dispatch(setBanner(previewURL));
-    //     setModalShow(true);
-    // }
 
     useEffect(() => {
         const fetchBannerData = async () => {
@@ -52,13 +36,12 @@ function Bannner() {
                 setError(null);
                 setLoading(true);
 
-                if (bannerData.length !== 0) {
+                if (bannerData) {
                     setLoading(false);
                     return;
                 }
 
                 const response = await axios.get("/banner/");
-                console.log(response);
                 setBannerData(Object.values(response.data.data));
                 setLoading(false);
             } catch (e) {
@@ -85,23 +68,12 @@ function Bannner() {
                     </Col>
                 </Row>
 
-                {/*<Row style={{margin: "20px 0px"}}>*/}
-                {/*    <Carousel style={{*/}
-                {/*        border: "1px solid #E3E3E3", width: "100%", height: "160px",*/}
-                {/*        padding: "2px", display: "flex", justifyContent: "center", alignItems: "center"*/}
-                {/*    }}>*/}
-                {/*        <Carousel.Item interval={1000}>*/}
-                {/*            <img className="d-block" src={bannerData[0].file_api_response_list[0].file_download_uri} alt="First slide"*/}
-                {/*                 height={150}*/}
-                {/*                 style={{width: "100%", objectFit: "cover"}}/>*/}
-                {/*        </Carousel.Item>*/}
-                {/*        <Carousel.Item interval={1000}>*/}
-                {/*            <img className="d-block" src={bannerData[1].file_api_response_list[0].file_download_uri} alt="Second slide"*/}
-                {/*                 height={150}*/}
-                {/*                 style={{width: "100%", objectFit: "cover"}}/>*/}
-                {/*        </Carousel.Item>*/}
-                {/*    </Carousel>*/}
-                {/*</Row>*/}
+                <Row style={{margin: "20px 0px"}}>
+                    <MakeCarouselList
+                        banners={bannerData}
+                        page="Admin"
+                    />
+                </Row>
 
                 <Row>
                     <Col>
@@ -151,6 +123,36 @@ function Bannner() {
 }
 
 export default Bannner;
+
+export function MakeCarouselList({banners, page}) {
+    let height = 0
+    if (page === "Admin") {
+        height = window.innerHeight * 0.2
+    } else if (page === "Home") {
+        height = window.innerHeight * 0.3
+    }
+
+    return (
+        <>
+            <Carousel style={{
+                border: "1px solid #E3E3E3", width: "100%", height: height + 1,
+                padding: "2px", display: "flex", justifyContent: "center", alignItems: "center"
+            }}
+            >
+                {banners && banners.map((data, index) => (
+                    <Carousel.Item interval={1000} key={index}>
+                        <a href={data.link_url}>
+                            <img className="d-block" src={data.file_api_response_list[0].file_download_uri}
+                                 alt={index}
+                                 height={height}
+                                 style={{width: "100%", objectFit: "cover"}}/>
+                        </a>
+                    </Carousel.Item>
+                ))}
+            </Carousel>
+        </>
+    )
+}
 
 function MakeBannerList({banners, setBannerData}) {
     return (
