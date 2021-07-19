@@ -3,6 +3,7 @@ package com.aisw.community.service.post.notice;
 import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -23,15 +24,12 @@ import com.aisw.community.repository.post.notice.DepartmentRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -144,6 +142,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
         }
 
         department.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        department.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, department.getId(), UploadCategory.POST);
 
         department
@@ -181,8 +180,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
                 .accountId(department.getAccount().getId())
-                .fileApiResponseList(department.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileApiLogicService.searchByPost(department.getId()))
                 .build();
 
         return departmentApiResponse;

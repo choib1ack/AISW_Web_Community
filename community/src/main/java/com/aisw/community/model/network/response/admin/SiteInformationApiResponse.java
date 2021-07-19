@@ -1,6 +1,7 @@
 package com.aisw.community.model.network.response.admin;
 
 
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import lombok.*;
 

@@ -8,5 +8,8 @@ import java.util.List;
 
 @Repository
 public interface FileRepository extends JpaRepository<File, Long> {
+
     List<File> findAllByBulletinId(Long id);
+    List<File> findAllBySiteInformationId(Long id);
+    List<File> findAllByBannerId(Long id);
 }

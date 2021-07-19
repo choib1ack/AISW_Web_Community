@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,5 +25,5 @@ public class SiteCategory {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "siteCategory", cascade = CascadeType.ALL)
-    private List<SiteInformation> siteInformationList;
+    private List<SiteInformation> siteInformationList = new ArrayList<>();
 }

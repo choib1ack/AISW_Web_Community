@@ -4,6 +4,7 @@ import com.aisw.community.advice.exception.SiteCategoryNameNotFoundException;
 import com.aisw.community.advice.exception.SiteInformationNotFoundException;
 import com.aisw.community.model.entity.admin.SiteCategory;
 import com.aisw.community.model.entity.admin.SiteInformation;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.FileUploadToSiteInformationDTO;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +35,6 @@ public class SiteInformationApiLogicService {
 
     @Autowired
     private FileRepository fileRepository;
-
 
     @Autowired
     private FileApiLogicService fileApiLogicService;
@@ -52,7 +53,6 @@ public class SiteInformationApiLogicService {
                 .publishStatus(siteInformationApiRequest.getPublishStatus())
                 .siteCategory(siteCategory)
                 .build();
-
         SiteInformation newSiteInformation = siteInformationRepository.save(siteInformation);
 
         MultipartFile[] files = request.getFiles();
@@ -72,7 +72,9 @@ public class SiteInformationApiLogicService {
                 .orElseThrow(() -> new SiteCategoryNameNotFoundException(siteInformationApiRequest.getCategory()));
 
         siteInformation.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        siteInformation.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, siteInformation.getId(), UploadCategory.SITE);
+
         siteInformation.setName(siteInformationApiRequest.getName())
                 .setContent(siteInformationApiRequest.getContent())
                 .setLinkUrl(siteInformationApiRequest.getLinkUrl())
@@ -108,7 +110,7 @@ public class SiteInformationApiLogicService {
         return siteInformationApiResponse;
     }
 
-    private SiteInformationApiResponse response(SiteInformation siteInformation, List<FileApiResponse> fileList) {
+    private SiteInformationApiResponse response(SiteInformation siteInformation, List<FileApiResponse> fileApiResponseList) {
         SiteInformationApiResponse siteInformationApiResponse = SiteInformationApiResponse.builder()
                 .id(siteInformation.getId())
                 .name(siteInformation.getName())
@@ -120,7 +122,7 @@ public class SiteInformationApiLogicService {
                 .createdBy(siteInformation.getCreatedBy())
                 .updatedAt(siteInformation.getUpdatedAt())
                 .updatedBy(siteInformation.getUpdatedBy())
-                .fileApiResponseList(fileList)
+                .fileApiResponseList(fileApiResponseList)
                 .build();
 
         return siteInformationApiResponse;

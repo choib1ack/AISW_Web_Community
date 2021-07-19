@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -51,5 +52,5 @@ public class SiteInformation {
     private String updatedBy;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "siteInformation", orphanRemoval = true)
-    private List<File> fileList;
+    private List<File> fileList = new ArrayList<>();
 }
