@@ -17,5 +17,5 @@ public class SiteCategoryApiResponse {
 
     private String name;
 
-    private List<SiteInformationApiResponse> siteInformationList;
+    private List<SiteInformationApiResponse> siteInformationApiResponseList;
 }
