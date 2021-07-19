@@ -23,7 +23,7 @@ function ManageGoodInfo({match}) {
                 setError(null);
                 //setSiteData(null);
                 setLoading(true);
-                console.log(siteData);
+                //console.log(siteData);
                 if(siteData) {
                     setLoading(false);
                     return;
@@ -197,6 +197,7 @@ function SiteBox({site_info,setSiteData, category_name}) {
                 info={site_info}
                 setSiteData={setSiteData}
                 category_name={category_name}
+                file_info={site_info.file_api_response_list[0]}
             />
         </>
     )

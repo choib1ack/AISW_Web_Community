@@ -7,7 +7,7 @@ import Switch from "react-switch";
 
 function SiteModal(props) {
     const mode = (!props.info) ? "add" : "update";
-    console.log(mode);
+    //console.log(mode);
 
     const default_info = mode == "add" ?
         {
@@ -34,10 +34,8 @@ function SiteModal(props) {
         });	//파일
 
 
-    //---------------------------------------------------
-
     function encodeBase64ImageTagviaFileReader (file_name) {
-        console.log(file_name);
+        //console.log(file_name);
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest()
             xhr.onload = () => {
@@ -54,7 +52,7 @@ function SiteModal(props) {
     }
 
     if(mode=="update" && props.file_info != null){
-        console.log(imgFile);
+        //console.log(imgFile);
         if(imgBase64 == "") {
             encodeBase64ImageTagviaFileReader(props.file_info.file_name)
                 .then(data => {
