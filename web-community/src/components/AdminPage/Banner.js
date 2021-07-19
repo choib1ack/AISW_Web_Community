@@ -51,7 +51,6 @@ function Bannner() {
             try {
                 setError(null);
                 setLoading(true);
-                console.log(bannerData[0].file_api_response_list[0].file_download_uri);
 
                 if (bannerData.length !== 0) {
                     setLoading(false);
@@ -86,23 +85,23 @@ function Bannner() {
                     </Col>
                 </Row>
 
-                <Row style={{margin: "20px 0px"}}>
-                    <Carousel style={{
-                        border: "1px solid #E3E3E3", width: "100%", height: "160px",
-                        padding: "2px", display: "flex", justifyContent: "center", alignItems: "center"
-                    }}>
-                        <Carousel.Item interval={1000}>
-                            <img className="d-block" src={bannerData[0].file_api_response_list[0].file_download_uri} alt="First slide"
-                                 height={150}
-                                 style={{width: "100%", objectFit: "cover"}}/>
-                        </Carousel.Item>
-                        <Carousel.Item interval={1000}>
-                            <img className="d-block" src={bannerData[1].file_api_response_list[0].file_download_uri} alt="Second slide"
-                                 height={150}
-                                 style={{width: "100%", objectFit: "cover"}}/>
-                        </Carousel.Item>
-                    </Carousel>
-                </Row>
+                {/*<Row style={{margin: "20px 0px"}}>*/}
+                {/*    <Carousel style={{*/}
+                {/*        border: "1px solid #E3E3E3", width: "100%", height: "160px",*/}
+                {/*        padding: "2px", display: "flex", justifyContent: "center", alignItems: "center"*/}
+                {/*    }}>*/}
+                {/*        <Carousel.Item interval={1000}>*/}
+                {/*            <img className="d-block" src={bannerData[0].file_api_response_list[0].file_download_uri} alt="First slide"*/}
+                {/*                 height={150}*/}
+                {/*                 style={{width: "100%", objectFit: "cover"}}/>*/}
+                {/*        </Carousel.Item>*/}
+                {/*        <Carousel.Item interval={1000}>*/}
+                {/*            <img className="d-block" src={bannerData[1].file_api_response_list[0].file_download_uri} alt="Second slide"*/}
+                {/*                 height={150}*/}
+                {/*                 style={{width: "100%", objectFit: "cover"}}/>*/}
+                {/*        </Carousel.Item>*/}
+                {/*    </Carousel>*/}
+                {/*</Row>*/}
 
                 <Row>
                     <Col>
