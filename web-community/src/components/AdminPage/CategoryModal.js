@@ -32,7 +32,7 @@ function CategoryModal(props){
             setNewCategoryName(null);
         }).catch(err => {
             alert('카테고리 삭제에 실패했습니다.')
-            console.log(err);
+            //console.log(err);
         })
     }
 
@@ -46,7 +46,7 @@ function CategoryModal(props){
                 setNewCategoryName(null);
             }).catch(err => {
                 alert('새 카테고리 등록에 실패했습니다.')
-                console.log(err);
+                //console.log(err);
             })
         }else{ // update
             axios.put("/site/category/"+props.id+"?name="+category_name).then(res => {
@@ -57,7 +57,7 @@ function CategoryModal(props){
                 setNewCategoryName(null);
             }).catch(err => {
                 alert('카테고리 수정에 실패했습니다.')
-                console.log(err);
+                //console.log(err);
             })
         }
 
