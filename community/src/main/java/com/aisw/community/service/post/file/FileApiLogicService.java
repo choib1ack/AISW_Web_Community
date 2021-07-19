@@ -111,24 +111,6 @@ public class FileApiLogicService {
                 .body(resource);
     }
 
-    public List<FileApiResponse> searchByBanner(Long id) {
-        List<File> fileList = fileRepository.findAllByBannerId(id);
-
-        List<FileApiResponse> fileApiResponseList = new ArrayList<>();
-        fileList.stream().forEach(file -> fileApiResponseList.add(response(file)));
-
-        return fileApiResponseList;
-    }
-
-    public List<FileApiResponse> searchBySite(Long id) {
-        List<File> fileList = fileRepository.findAllBySiteInformationId(id);
-
-        List<FileApiResponse> fileApiResponseList = new ArrayList<>();
-        fileList.stream().forEach(file -> fileApiResponseList.add(response(file)));
-
-        return fileApiResponseList;
-    }
-
     public List<FileApiResponse> searchByPost(Long id) {
         List<File> fileList = fileRepository.findAllByBulletinId(id);
 

@@ -13,7 +13,6 @@ import java.util.Optional;
 public interface SiteCategoryRepository extends JpaRepository<SiteCategory, Long> {
     Optional<SiteCategory> findByName(String name);
 
-    @Query("select category from SiteCategory category left join fetch SiteInformation site " +
-            "on site.siteCategory.id = category.id and site.publishStatus = false")
+    @Query("select category from SiteCategory category order by category.id asc")
     List<SiteCategory> findAll();
 }

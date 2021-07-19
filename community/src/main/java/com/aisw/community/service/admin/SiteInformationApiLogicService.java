@@ -4,12 +4,12 @@ import com.aisw.community.advice.exception.SiteCategoryNameNotFoundException;
 import com.aisw.community.advice.exception.SiteInformationNotFoundException;
 import com.aisw.community.model.entity.admin.SiteCategory;
 import com.aisw.community.model.entity.admin.SiteInformation;
-import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.FileUploadToSiteInformationDTO;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
+import com.aisw.community.model.network.response.admin.SiteInformationWithFileApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.admin.SiteCategoryRepository;
 import com.aisw.community.repository.admin.SiteInformationRepository;
@@ -59,6 +59,25 @@ public class SiteInformationApiLogicService {
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, newSiteInformation.getId(), UploadCategory.SITE);
 
         return Header.OK(response(newSiteInformation, fileApiResponseList));
+    }
+
+    public Header<List<SiteInformationWithFileApiResponse>> read() {
+        List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
+        List<SiteCategory> siteCategoryList = siteCategoryRepository.findAll();
+        siteCategoryList.stream().forEach(category -> {
+            SiteInformationWithFileApiResponse siteInformationWithFileApiResponse =
+                    new SiteInformationWithFileApiResponse(category.getId(), category.getName());
+            siteInformationWithFileApiResponseList.add(siteInformationWithFileApiResponse);
+        });
+
+        List<SiteInformation> siteInformationList = siteInformationRepository.findAllFetchJoinWithFile();
+        siteInformationList.stream().forEach(siteInformation -> siteInformationWithFileApiResponseList.stream()
+                .forEach(siteInformationWithFileApiResponse -> {
+                    if (siteInformation.getSiteCategory().getId().equals(siteInformationWithFileApiResponse.getId())) {
+                        siteInformationWithFileApiResponse.getSiteInformationApiResponseList().add(response(siteInformation));
+                    }
+                }));
+        return Header.OK(siteInformationWithFileApiResponseList);
     }
 
     @Transactional
