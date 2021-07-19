@@ -4,7 +4,6 @@ import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Free;
-import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -197,7 +196,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .accountId(free.getAccount().getId())
-                .fileApiResponseList(fileApiLogicService.searchByPost(free.getId()))
+                .fileApiResponseList(free.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
 
         return freeApiResponse;

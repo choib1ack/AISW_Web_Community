@@ -4,7 +4,6 @@ import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Qna;
-import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -201,7 +200,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .subject(qna.getSubject())
                 .accountId(qna.getAccount().getId())
                 .category(qna.getCategory())
-                .fileApiResponseList(fileApiLogicService.searchByPost(qna.getId()))
+                .fileApiResponseList(qna.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
 
         return qnaApiResponse;

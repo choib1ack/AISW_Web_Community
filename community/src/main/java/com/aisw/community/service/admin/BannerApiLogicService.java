@@ -2,7 +2,6 @@ package com.aisw.community.service.admin;
 
 import com.aisw.community.advice.exception.BannerNotFoundException;
 import com.aisw.community.model.entity.admin.Banner;
-import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
@@ -11,9 +10,10 @@ import com.aisw.community.model.network.request.admin.FileUploadToBannerDTO;
 import com.aisw.community.model.network.response.admin.BannerApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.admin.BannerRepository;
+import com.aisw.community.repository.admin.CustomBannerRepository;
+import com.aisw.community.repository.post.comment.CustomCommentRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
-import org.apache.catalina.webresources.FileResourceSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +32,9 @@ public class BannerApiLogicService {
 
     @Autowired
     private BannerRepository bannerRepository;
+
+    @Autowired
+    private CustomBannerRepository customBannerRepository;
 
     @Autowired
     private FileRepository fileRepository;
@@ -63,7 +66,7 @@ public class BannerApiLogicService {
     }
 
     public Header<List<BannerApiResponse>> readAll(Pageable pageable) {
-        Page<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE, pageable);
+        Page<Banner> bannerList = customBannerRepository.findAllByPublishStatusFetchJoinWithFile(Boolean.TRUE, pageable);
 
         List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
                 .map(this::response)
@@ -137,7 +140,8 @@ public class BannerApiLogicService {
                 .createdBy(banner.getCreatedBy())
                 .updatedAt(banner.getUpdatedAt())
                 .updatedBy(banner.getUpdatedBy())
-                .fileApiResponseList(fileApiLogicService.searchByBanner(banner.getId()))
+                .fileApiResponseList(banner.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
 
         return bannerApiResponse;

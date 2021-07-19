@@ -4,6 +4,7 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.FileUploadToSiteInformationDTO;
 import com.aisw.community.model.network.response.admin.SiteCategoryApiResponse;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
+import com.aisw.community.model.network.response.admin.SiteInformationWithFileApiResponse;
 import com.aisw.community.service.admin.SiteCategoryApiLogicService;
 import com.aisw.community.service.admin.SiteInformationApiLogicService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,17 +21,14 @@ public class SiteInformationApiController {
     @Autowired
     private SiteInformationApiLogicService siteInformationApiLogicService;
 
-    @Autowired
-    private SiteCategoryApiLogicService siteCategoryApiLogicService;
-
     @PostMapping("")
     public Header<SiteInformationApiResponse> create(@ModelAttribute FileUploadToSiteInformationDTO request) {
         return siteInformationApiLogicService.create(request);
     }
 
     @GetMapping("")
-    public Header<List<SiteCategoryApiResponse>> readAll() {
-        return siteCategoryApiLogicService.readAll();
+    public Header<List<SiteInformationWithFileApiResponse>> read() {
+        return siteInformationApiLogicService.read();
     }
 
     @PutMapping("")

@@ -9,4 +9,7 @@ import java.util.List;
 
 @Repository
 public interface SiteInformationRepository extends JpaRepository<SiteInformation, Long> {
+
+    @Query("select site from SiteInformation site left join fetch site.fileList")
+    List<SiteInformation> findAllFetchJoinWithFile();
 }
