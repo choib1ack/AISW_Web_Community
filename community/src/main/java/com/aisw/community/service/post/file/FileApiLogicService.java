@@ -2,7 +2,6 @@ package com.aisw.community.service.post.file;
 
 import com.aisw.community.advice.exception.*;
 import com.aisw.community.model.entity.admin.Banner;
-import com.aisw.community.model.entity.admin.SiteCategory;
 import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.entity.post.Bulletin;
 import com.aisw.community.model.entity.post.file.File;
@@ -24,7 +23,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,15 +107,6 @@ public class FileApiLogicService {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment: filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-    }
-
-    public List<FileApiResponse> searchByPost(Long id) {
-        List<File> fileList = fileRepository.findAllByBulletinId(id);
-
-        List<FileApiResponse> fileApiResponseList = new ArrayList<>();
-        fileList.stream().forEach(file -> fileApiResponseList.add(response(file)));
-
-        return fileApiResponseList;
     }
 
     public FileApiResponse response(File file) {

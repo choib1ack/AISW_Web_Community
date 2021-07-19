@@ -3,9 +3,8 @@ package com.aisw.community.service.post.notice;
 import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.post.file.File;
-import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.entity.post.notice.University;
+import com.aisw.community.model.entity.user.Account;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -18,9 +17,9 @@ import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
-import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
+import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -325,7 +324,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
                 .accountId(university.getAccount().getId())
-                .fileApiResponseList(fileApiLogicService.searchByPost(university.getId()))
+                .fileApiResponseList(university.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
 
         return universityApiResponse;
