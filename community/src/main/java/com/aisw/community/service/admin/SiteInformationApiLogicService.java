@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SiteInformationApiLogicService {
@@ -90,16 +91,6 @@ public class SiteInformationApiLogicService {
         return Header.OK();
     }
 
-    public List<SiteInformationApiResponse> searchByCategory(Long id) {
-        List<SiteInformation> siteInformationList = siteInformationRepository.findAllBySiteCategoryId(id);
-
-        List<SiteInformationApiResponse> siteInformationApiResponseList = new ArrayList<>();
-        siteInformationList.stream()
-                .forEach(siteInformation -> siteInformationApiResponseList.add(response(siteInformation)));
-
-        return siteInformationApiResponseList;
-    }
-
     public SiteInformationApiResponse response(SiteInformation siteInformation) {
         SiteInformationApiResponse siteInformationApiResponse = SiteInformationApiResponse.builder()
                 .id(siteInformation.getId())
@@ -112,7 +103,8 @@ public class SiteInformationApiLogicService {
                 .createdBy(siteInformation.getCreatedBy())
                 .updatedAt(siteInformation.getUpdatedAt())
                 .updatedBy(siteInformation.getUpdatedBy())
-                .fileApiResponseList(fileApiLogicService.searchBySite(siteInformation.getId()))
+                .fileApiResponseList(siteInformation.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
 
         return siteInformationApiResponse;
