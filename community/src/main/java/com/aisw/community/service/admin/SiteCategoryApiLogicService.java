@@ -59,10 +59,12 @@ public class SiteCategoryApiLogicService {
     }
 
     private SiteCategoryApiResponse responseWithInfo(SiteCategory category) {
-        SiteCategoryApiResponse siteCategoryApiResponse = SiteCategoryApiResponse.builder()
-                .id(category.getId()).name(category.getName())
-                .siteInformationList(siteInformationApiLogicService.searchByCategory(category.getId())).build();
-
-        return siteCategoryApiResponse;
+        return SiteCategoryApiResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .siteInformationApiResponseList(category.getSiteInformationList().stream()
+                        .map(siteInformation -> siteInformationApiLogicService.response(siteInformation))
+                        .collect(Collectors.toList()))
+                .build();
     }
 }
