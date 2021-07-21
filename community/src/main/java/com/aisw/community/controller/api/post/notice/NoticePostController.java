@@ -1,70 +1,65 @@
-package com.aisw.community.controller.api.post;
+package com.aisw.community.controller.api.post.notice;
 
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.service.post.board.BoardPostService;
+import com.aisw.community.service.post.notice.NoticePostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Path;
 
 @Component
 @CrossOrigin("*")
-public abstract class BoardPostController<Req, FileReq, ListRes, DetailRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
+public abstract class NoticePostController<Req, FileReq, ListRes, Res, Entity> implements CrudInterface<Req, Res> {
 
     @Autowired(required = false)
-    protected BoardPostService<Req, FileReq, ListRes, DetailRes, BaseRes, Entity> boardPostService;
+    protected NoticePostService<Req, FileReq, ListRes, Res, Entity> noticePostService;
 
     @Override
     @PostMapping("")
-    public Header<BaseRes> create(@RequestBody Header<Req> request) {
-        return boardPostService.create(request);
+    public Header<Res> create(@RequestBody Header<Req> request) {
+        return noticePostService.create(request);
     }
 
     @PostMapping("/upload")
-    public Header<BaseRes> create(@ModelAttribute FileReq request) {
-        return boardPostService.create(request);
+    public Header<Res> create(@ModelAttribute FileReq request) {
+        return noticePostService.create(request);
     }
 
     @Override
     @GetMapping("{id}")
-    public Header<BaseRes> read(@PathVariable Long id) {
-        return boardPostService.read(id);
+    public Header<Res> read(@PathVariable Long id) {
+        return noticePostService.read(id);
     }
 
     @Override
     @PutMapping("")
-    public Header<BaseRes> update(@RequestBody Header<Req> request) {
-        return boardPostService.update(request);
+    public Header<Res> update(@RequestBody Header<Req> request) {
+        return noticePostService.update(request);
     }
 
     @PutMapping("/upload")
-    public Header<BaseRes> update(@ModelAttribute FileReq request) {
-        return boardPostService.update(request);
+    public Header<Res> update(@ModelAttribute FileReq request) {
+        return noticePostService.update(request);
     }
 
     @Override
     @DeleteMapping("{id}/{userId}")
     public Header delete(@PathVariable Long id, @PathVariable Long userId) {
-        return boardPostService.delete(id, userId);
-    }
-
-    @GetMapping("/comment/{id}")
-    public Header<DetailRes> readWithComment(@PathVariable Long id) {
-        return boardPostService.readWithComment(id);
-    }
-
-    @GetMapping("/comment&like/{postId}/{accountId}")
-    public Header<DetailRes> readWithCommentAndLike(
-            @PathVariable Long postId, @PathVariable Long accountId) {
-        return boardPostService.readWithCommentAndLike(postId, accountId);
+        return noticePostService.delete(id, userId);
     }
 
     @GetMapping("")
     public Header<ListRes> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardPostService.search(pageable);
+        return noticePostService.search(pageable);
     }
 
     @GetMapping("/search/writer")
@@ -72,7 +67,7 @@ public abstract class BoardPostController<Req, FileReq, ListRes, DetailRes, Base
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return boardPostService.searchByWriter(writer, pageable);
+        return noticePostService.searchByWriter(writer, pageable);
     }
 
     @GetMapping("/search/title")
@@ -80,7 +75,7 @@ public abstract class BoardPostController<Req, FileReq, ListRes, DetailRes, Base
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return boardPostService.searchByTitle(title, pageable);
+        return noticePostService.searchByTitle(title, pageable);
     }
 
     @GetMapping("/search/title&content")
@@ -88,6 +83,6 @@ public abstract class BoardPostController<Req, FileReq, ListRes, DetailRes, Base
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return boardPostService.searchByTitleOrContent(title, content, pageable);
+        return noticePostService.searchByTitleOrContent(title, content, pageable);
     }
 }
