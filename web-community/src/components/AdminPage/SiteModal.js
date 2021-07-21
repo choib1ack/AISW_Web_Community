@@ -226,7 +226,7 @@ function SiteModal(props) {
                                 <div><Form.Label>
                                     대표 이미지 (500x500)<span style={{color: "#FF0000"}}> *</span>
                                 </Form.Label></div>
-                                {imgBase64 == "" ? <Loading/>:
+                                {imgBase64 == "" ? (mode == "update"?<Loading/>:null):
                                     <div><img src={imgBase64} style={{width: "50%", height: "50%"}}/></div>
                                 }
                                 <input type="file" id="imgFile" name="site_image" onChange={handleInputChange}/>
