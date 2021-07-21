@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
-    @Query("select department from Department department left join fetch department.fileList")
+    @Query("select department from Department department left join fetch department.fileList where department.id = :id")
     Optional<Department> findById(Long id);
 
     Page<Department> findAllByWriterContaining(String writer, Pageable pageable);

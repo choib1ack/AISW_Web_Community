@@ -1,6 +1,5 @@
 package com.aisw.community.controller.api.post.board;
 
-import com.aisw.community.controller.api.post.BoardPostController;
 import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.network.request.post.board.FileUploadToFreeDTO;
 import com.aisw.community.model.network.request.post.board.FreeApiRequest;

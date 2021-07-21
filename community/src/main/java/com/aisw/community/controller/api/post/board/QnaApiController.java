@@ -1,6 +1,5 @@
 package com.aisw.community.controller.api.post.board;
 
-import com.aisw.community.controller.api.post.BoardPostController;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.board.FileUploadToQnaDTO;
