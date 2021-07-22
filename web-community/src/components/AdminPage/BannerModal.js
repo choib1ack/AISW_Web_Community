@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
@@ -8,24 +8,55 @@ import "react-datepicker/dist/react-datepicker.css"
 import {ko} from "date-fns/esm/locale";
 import styled from "styled-components";
 
-function AddBannerModal(props) {
+function BannerModal(props) {
+    const mode = (props.info == null) ? "add" : "update";
+
+    const default_info = mode === "add" ?
+        {
+            name: "",
+            start: null,
+            end: null,
+            url: ""
+        } :
+        {
+            name: props.info.name,
+            start: props.info.start_date.substring(0, 10),
+            end: props.info.end_date.substring(0, 10),
+            url: props.info.link_url
+        }
+
     const [imgBase64, setImgBase64] = useState(""); // 파일 base64
     const [imgFile, setImgFile] = useState(null);   //파일
-    const [bannerInfo, setBannerInfo] = useState({banner_name: "", start_date: "", end_date: "", banner_url: ""});   //배너
+    const [bannerInfo, setBannerInfo] = useState(
+        {
+            banner_name: default_info.name,
+            start_date: default_info.start,
+            end_date: default_info.end,
+            banner_url: default_info.url
+        });   //배너
+
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
+    useEffect(() => {
+        resetDate()
+    }, [props.show])
+
     // datepicker 리셋
     const resetDate = () => {
-        setStartDate(null);
-        setEndDate(null);
+        if (mode === "update") {
+            setStartDate(new Date(default_info.start));
+            setEndDate(new Date(default_info.end));
+        } else {
+            setStartDate(null);
+            setEndDate(null);
+        }
     }
 
     const modalClose = () => {
         setImgBase64("");
         setImgFile(null);
         props.setShow(false);
-        resetDate();
     }
 
     const handleChangeFile = (event) => {
@@ -46,8 +77,8 @@ function AddBannerModal(props) {
 
     const handleInputChange = (event) => {
         const target = event.target;
-        const value = target.value;
         const name = target.name;
+        const value = target.value;
         if (name == "banner_image") {
             handleChangeFile(event);
         }
@@ -68,7 +99,7 @@ function AddBannerModal(props) {
 
         if (checkNull()) {
             sendData(formData);
-            resetDate();
+            // resetDate();
         }
     }
 
@@ -90,9 +121,7 @@ function AddBannerModal(props) {
 
     async function sendData(formData) {
         await axios.post("/banner", formData).then((res) => {
-            alert("새 배너 등록완료!") // 실패 메시지
-            // setModalShow(true)   // 완료 모달 띄우기
-            modalClose();
+            alert("새 배너 등록완료!")
             window.location.reload();
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
@@ -101,36 +130,16 @@ function AddBannerModal(props) {
         })
     }
 
-    const getYyyyMmDdSsToString = (date) => {
-        let dd = date.getDate();
-        let mm = date.getMonth() + 1; //January is 0!
+    // Date to String
+    Date.prototype.yyyy_mm_dd = function () {
+        const mm = this.getMonth() + 1; // getMonth() is zero-based
+        const dd = this.getDate();
 
-        let yyyy = date.getFullYear();
-        if (dd < 10) {
-            dd = '0' + dd
-        }
-        if (mm < 10) {
-            mm = '0' + mm
-        }
-
-        yyyy = yyyy.toString();
-        mm = mm.toString();
-        dd = dd.toString();
-
-        let m = date.getHours();
-        let s = date.getMinutes();
-
-        if (m < 10) {
-            m = '0' + m
-        }
-        if (s < 10) {
-            s = '0' + s
-        }
-        m = m.toString();
-        s = s.toString();
-
-        return yyyy + '-' + mm + '-' + dd + '-' + m + '-' + s;
-    }
+        return [this.getFullYear(),
+            (mm > 9 ? '' : '0') + mm,
+            (dd > 9 ? '' : '0') + dd
+        ].join('-');
+    };
 
     const handleDatePicker = (dates) => {
         let [start, end] = dates;
@@ -138,8 +147,8 @@ function AddBannerModal(props) {
         setEndDate(end);
 
         if (start != null && end != null) {
-            start = getYyyyMmDdSsToString(start);
-            end = getYyyyMmDdSsToString(end);
+            start = start.yyyy_mm_dd();
+            end = end.yyyy_mm_dd();
 
             // 기간 설정
             setBannerInfo(
@@ -156,13 +165,14 @@ function AddBannerModal(props) {
         <div className="AddBannerModal">
             <Modal show={props.show} onHide={modalClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>새 배너 추가</Modal.Title>
+                    <Modal.Title>{mode === "add" ? "새 배너 추가" : "배너 수정"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
                         <Form.Group className="mb-3">
                             <Form.Label>배너 명<span style={{color: "#FF0000"}}> *</span></Form.Label>
-                            <Form.Control type="text" placeholder="" name="banner_name" onChange={handleInputChange}/>
+                            <Form.Control type="text" placeholder="" defaultValue={bannerInfo.banner_name}
+                                          name="banner_name" onChange={handleInputChange}/>
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>게시 기간<span
@@ -171,7 +181,7 @@ function AddBannerModal(props) {
                                 selected={startDate}
                                 onChange={(date) => setStartDate(date)}
                                 disabled
-                                placeholderText="시작 날짜"
+                                // placeholderText={mode === "add" ? "시작 날짜" : bannerInfo.start_date.substring(0,10)}
                                 dateFormat="yyyy-MM-dd"
                             />
                             ~
@@ -179,7 +189,7 @@ function AddBannerModal(props) {
                                 selected={endDate}
                                 onChange={(date) => setEndDate(date)}
                                 disabled
-                                placeholderText="종료 날짜"
+                                // placeholderText={mode === "add" ? "종료 날짜" : bannerInfo.end_date.substring(0,10)}
                                 dateFormat="yyyy-MM-dd"
                             />
                             <DatePicker
@@ -215,19 +225,27 @@ function AddBannerModal(props) {
                     </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={modalClose}>
-                        닫기
-                    </Button>
-                    <Button variant="primary" type="submit" onClick={handleSubmit}>
-                        추가
-                    </Button>
+                    {mode === "update" ?
+                        <>
+                            <Button variant="secondary">
+                                삭제
+                            </Button>
+                            <Button variant="primary" type="submit" onClick={handleSubmit}>
+                                수정
+                            </Button>
+                        </>
+                        :
+                        <Button variant="primary" type="submit" onClick={handleSubmit}>
+                            추가
+                        </Button>
+                    }
                 </Modal.Footer>
             </Modal>
         </div>
     );
 }
 
-export default AddBannerModal;
+export default BannerModal;
 
 const SelectDate = styled(DatePicker)`
   width: 80px;

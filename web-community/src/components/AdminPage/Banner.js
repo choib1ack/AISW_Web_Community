@@ -9,7 +9,7 @@ import Switch from "react-switch";
 import {useDispatch, useSelector} from "react-redux";
 import {setBanner} from "../../features/bannerSlice";
 import FinishModal from "../FinishModal";
-import AddBannerModal from "./AddBannerModal";
+import BannerModal from "./BannerModal";
 import exampleBanner from "../../image/banner_example1.svg"
 import {Carousel} from "react-bootstrap";
 import axios from "axios";
@@ -22,8 +22,7 @@ function Bannner() {
 
     // const [file, setFile] = useState(false);
     // const [previewURL, setPreviewURL] = useState(storeSrc);
-    const [modalShow, setModalShow] = useState(false);
-    const [newModalShow, setNewModalShow] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
 
     const [bannerData, setBannerData] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -58,9 +57,6 @@ function Bannner() {
     return (
         <div>
             <Container>
-                <FinishModal show={modalShow} link={`/`}
-                             title="배너" body="배너 변경이 완료되었습니다 !"/>
-
                 <Title text='관리자' type='1'/>
                 <Row>
                     <Col>
@@ -87,9 +83,9 @@ function Bannner() {
                         </p>
                     </Col>
                     <Col>
-                        <AddBannerModal show={newModalShow} setShow={setNewModalShow}/>
+                        <BannerModal show={showAddModal} setShow={setShowAddModal}/>
                         <Button style={{marginTop: '3rem', float: 'right', width: '50px'}} size='sm'
-                                onClick={() => setNewModalShow(true)}>
+                                onClick={() => setShowAddModal(true)}>
                             등록
                         </Button>
                     </Col>
@@ -140,14 +136,17 @@ export function MakeCarouselList({banners, page}) {
             }}
             >
                 {banners && banners.map((data, index) => (
-                    <Carousel.Item interval={1000} key={index}>
-                        <a href={data.link_url}>
-                            <img className="d-block" src={data.file_api_response_list[0].file_download_uri}
-                                 alt={index}
-                                 height={height}
-                                 style={{width: "100%", objectFit: "cover"}}/>
-                        </a>
-                    </Carousel.Item>
+                    data.publish_status &&
+                    (
+                        <Carousel.Item interval={1000} key={index}>
+                            <a href={data.link_url}>
+                                <img className="d-block" src={data.file_api_response_list[0].file_download_uri}
+                                     alt={index}
+                                     height={height}
+                                     style={{width: "100%", objectFit: "cover"}}/>
+                            </a>
+                        </Carousel.Item>
+                    )
                 ))}
             </Carousel>
         </>
@@ -169,6 +168,8 @@ function MakeBannerList({banners, setBannerData}) {
 }
 
 function BannerBox({banner_info, setBannerData}) {
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+
     return (
         <tr>
             <td className="middle">
@@ -198,7 +199,9 @@ function BannerBox({banner_info, setBannerData}) {
                 />
             </td>
             <td className="middle">
-                <Button size='sm'>
+                <BannerModal show={showUpdateModal} setShow={setShowUpdateModal}
+                             info={banner_info} setBannerData={setBannerData} mode="update"/>
+                <Button size='sm' onClick={() => setShowUpdateModal(true)}>
                     수정
                 </Button>
             </td>
