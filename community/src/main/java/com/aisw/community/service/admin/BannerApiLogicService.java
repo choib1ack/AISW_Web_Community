@@ -55,7 +55,6 @@ public class BannerApiLogicService {
                 .endDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
                 .linkUrl(bannerApiRequest.getLinkUrl())
-                .publishStatus(bannerApiRequest.getPublishStatus())
                 .build();
 
         Banner newBanner = bannerRepository.save(banner);
@@ -101,8 +100,7 @@ public class BannerApiLogicService {
                         DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
                 .setEndDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
-                .setLinkUrl(bannerApiRequest.getLinkUrl())
-                .setPublishStatus(bannerApiRequest.getPublishStatus());
+                .setLinkUrl(bannerApiRequest.getLinkUrl());
         bannerRepository.save(banner);
 
         return Header.OK(response(banner, fileApiResponseList));
@@ -121,10 +119,10 @@ public class BannerApiLogicService {
         List<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE);
 
         bannerList.stream().forEach(banner -> {
-            if(now.isBefore(banner.getStartDate())) {
+            if(!(now.isAfter(banner.getStartDate()) && now.isBefore(banner.getEndDate()))) {
                 banner.setPublishStatus(Boolean.FALSE);
-                bannerRepository.save(banner);
             }
+            bannerRepository.save(banner);
         });
     }
 

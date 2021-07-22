@@ -8,6 +8,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ import java.util.List;
 @DiscriminatorValue("board")
 public class Board extends Bulletin {
 
+    @ColumnDefault("0")
     private Long likes;
 
     private Boolean isAnonymous;
@@ -40,5 +42,10 @@ public class Board extends Bulletin {
         this.likes = likes;
         this.isAnonymous = isAnonymous;
         this.category = secondCategory;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        likes = likes == null ? 0L : likes;
     }
 }
