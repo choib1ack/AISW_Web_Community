@@ -18,11 +18,10 @@ public class CustomBannerRepositoryImpl implements CustomBannerRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Page<Banner> findAllByPublishStatusFetchJoinWithFile(Boolean publishStatus, Pageable pageable) {
+    public Page<Banner> findAllFetchJoinWithFile(Pageable pageable) {
         QueryResults<Banner> bannerQueryResults = jpaQueryFactory.selectFrom(banner)
                 .leftJoin(banner.fileList)
                 .fetchJoin()
-                .where(banner.publishStatus.eq(publishStatus))
                 .orderBy(banner.startDate.asc(), banner.endDate.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

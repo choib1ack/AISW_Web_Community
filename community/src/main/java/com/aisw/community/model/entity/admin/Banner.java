@@ -58,17 +58,8 @@ public class Banner {
     private List<File> fileList;
 
     @PrePersist
-    public void prePersist() {
-        LocalDateTime now = LocalDateTime.now();
-        if(now.isAfter(startDate) && now.isBefore(endDate)) {
-            publishStatus = Boolean.TRUE;
-        } else {
-            publishStatus = Boolean.FALSE;
-        }
-    }
-
     @PreUpdate
-    public void preUpdate() {
+    public void checkPublish() {
         LocalDateTime now = LocalDateTime.now();
         if(now.isAfter(startDate) && now.isBefore(endDate)) {
             publishStatus = Boolean.TRUE;
