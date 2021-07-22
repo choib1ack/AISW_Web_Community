@@ -20,7 +20,5 @@ public class BannerApiRequest {
 
     private String endDate;
 
-    private Boolean publishStatus;
-
     private String linkUrl;
 }

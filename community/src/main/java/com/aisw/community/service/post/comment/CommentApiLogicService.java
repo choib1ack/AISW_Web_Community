@@ -52,7 +52,6 @@ public class CommentApiLogicService {
         Comment comment = Comment.builder()
                 .writer(account.getName())
                 .content(commentApiRequest.getContent())
-                .likes(0L)
                 .isAnonymous(commentApiRequest.getIsAnonymous())
                 .isDeleted(false)
                 .board(board)
