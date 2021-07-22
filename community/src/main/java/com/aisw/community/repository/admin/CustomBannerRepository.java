@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CustomBannerRepository {
 
-    Page<Banner> findAllByPublishStatusFetchJoinWithFile(Boolean publishStatus, Pageable pageable);
+    Page<Banner> findAllFetchJoinWithFile(Pageable pageable);
 }
