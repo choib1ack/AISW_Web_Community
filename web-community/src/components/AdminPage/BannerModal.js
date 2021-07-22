@@ -121,6 +121,18 @@ function BannerModal(props) {
         });
     }
 
+    const handleDelete = async () => {
+        await axios.delete("/banner/" + props.info.id)
+            .then((res) => {
+                alert("사이트 정보가 삭제되었습니다");
+                window.location.reload();
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log(errorObject);
+                alert("배너 삭제에 실패하였습니다.");
+            })
+    }
+
     const handleSubmit = (event) => {
         let formData = new FormData();
         formData.append('files', imgFile);
@@ -227,7 +239,7 @@ function BannerModal(props) {
                                 selected={startDate}
                                 onChange={(date) => setStartDate(date)}
                                 disabled
-                                // placeholderText={mode === "add" ? "시작 날짜" : bannerInfo.start_date.substring(0,10)}
+                                placeholderText={mode === "add" ? "시작 날짜" : null}
                                 dateFormat="yyyy-MM-dd"
                             />
                             ~
@@ -235,7 +247,7 @@ function BannerModal(props) {
                                 selected={endDate}
                                 onChange={(date) => setEndDate(date)}
                                 disabled
-                                // placeholderText={mode === "add" ? "종료 날짜" : bannerInfo.end_date.substring(0,10)}
+                                placeholderText={mode === "add" ? "종료 날짜" : null}
                                 dateFormat="yyyy-MM-dd"
                             />
                             <DatePicker
@@ -247,7 +259,6 @@ function BannerModal(props) {
                                 inline
                                 locale={ko}
                                 dateFormat="yyyy년 MM월 dd일"
-                                minDate={new Date()}
                             />
                         </Form.Group>
 
@@ -272,7 +283,7 @@ function BannerModal(props) {
                 </Modal.Body>
                 <Modal.Footer>
                     {mode === "update" ?
-                        <Button variant="secondary">
+                        <Button variant="secondary" onClick={handleDelete}>
                             삭제
                         </Button> : null}
                     <Button variant="primary" type="submit" onClick={handleSubmit}>
