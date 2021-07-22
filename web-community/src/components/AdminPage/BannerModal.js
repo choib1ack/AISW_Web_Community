@@ -38,6 +38,33 @@ function BannerModal(props) {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
+    function encodeBase64ImageTagviaFileReader(file_name) {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest()
+            xhr.onload = () => {
+                let reader = new FileReader()
+                reader.onloadend = function () {
+                    resolve(reader.result)
+                }
+                reader.readAsDataURL(xhr.response); // 얘가 base64로 바꿔주는애
+                setImgFile(new File([xhr.response], props.file_info.file_name, {type: props.file_info.file_type}));
+                // xhr.response는 실제 데이터. base64로 바꾸기 전! 이거를 업로드 해줘야함. base64로 바꾼거 올리면 엑박ㅠ
+            }
+            xhr.open('GET', "/file/download/" + file_name)
+            xhr.responseType = 'blob'
+            xhr.send()
+        })
+    }
+
+    if (mode == "update" && props.file_info != null) {
+        if (imgBase64 == "") {
+            encodeBase64ImageTagviaFileReader(props.file_info.file_name)
+                .then(data => {
+                    setImgBase64(data);
+                })
+        }
+    }
+
     useEffect(() => {
         resetDate()
     }, [props.show])
@@ -56,6 +83,12 @@ function BannerModal(props) {
     const modalClose = () => {
         setImgBase64("");
         setImgFile(null);
+        setBannerInfo({
+            banner_name: default_info.name,
+            start_date: default_info.start,
+            end_date: default_info.end,
+            banner_url: default_info.url
+        });
         props.setShow(false);
     }
 
@@ -95,11 +128,13 @@ function BannerModal(props) {
         formData.append('bannerApiRequest.startDate', bannerInfo.start_date);
         formData.append('bannerApiRequest.endDate', bannerInfo.end_date);
         formData.append('bannerApiRequest.linkUrl', bannerInfo.banner_url);
-        formData.append('bannerApiRequest.publishStatus', true);
+
+        if (mode === "update") {
+            formData.append('siteInformationApiRequest.id', props.info.id);
+        }
 
         if (checkNull()) {
             sendData(formData);
-            // resetDate();
         }
     }
 
@@ -120,14 +155,25 @@ function BannerModal(props) {
     }
 
     async function sendData(formData) {
-        await axios.post("/banner", formData).then((res) => {
-            alert("새 배너 등록완료!")
-            window.location.reload();
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-            alert("새 배너 등록에 실패하였습니다."); // 실패 메시지
-        })
+        if (mode === "add") {
+            await axios.post("/banner", formData).then((res) => {
+                alert("새 배너 등록 완료!")
+                window.location.reload();
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log(errorObject);
+                alert("새 배너 등록에 실패하였습니다."); // 실패 메시지
+            })
+        } else {
+            await axios.put("/banner", formData).then((res) => {
+                alert("배너 수정 완료!")
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log(errorObject);
+                alert("배너 수정에 실패하였습니다."); // 실패 메시지
+            })
+        }
+
     }
 
     // Date to String
@@ -147,8 +193,8 @@ function BannerModal(props) {
         setEndDate(end);
 
         if (start != null && end != null) {
-            start = start.yyyy_mm_dd();
-            end = end.yyyy_mm_dd();
+            start = start.yyyy_mm_dd() + '-00-00';
+            end = end.yyyy_mm_dd() + '-00-00';
 
             // 기간 설정
             setBannerInfo(
@@ -226,19 +272,12 @@ function BannerModal(props) {
                 </Modal.Body>
                 <Modal.Footer>
                     {mode === "update" ?
-                        <>
-                            <Button variant="secondary">
-                                삭제
-                            </Button>
-                            <Button variant="primary" type="submit" onClick={handleSubmit}>
-                                수정
-                            </Button>
-                        </>
-                        :
-                        <Button variant="primary" type="submit" onClick={handleSubmit}>
-                            추가
-                        </Button>
-                    }
+                        <Button variant="secondary">
+                            삭제
+                        </Button> : null}
+                    <Button variant="primary" type="submit" onClick={handleSubmit}>
+                        {mode === "update" ? "수정" : "추가"}
+                    </Button>
                 </Modal.Footer>
             </Modal>
         </div>

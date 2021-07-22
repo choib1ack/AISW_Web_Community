@@ -60,7 +60,7 @@ function Bannner() {
                 <Title text='관리자' type='1'/>
                 <Row>
                     <Col>
-                        <Title text='배너 관리' type='2'/>
+                        <Title text='배너 미리 보기' type='2'/>
                     </Col>
                 </Row>
 
@@ -91,7 +91,7 @@ function Bannner() {
                     </Col>
                 </Row>
 
-                <div id="banner" className="pt-3">
+                <div id="banner" className="pt-3 pb-5">
                     <Table>
                         <thead>
                         <tr>
@@ -199,8 +199,11 @@ function BannerBox({banner_info, setBannerData}) {
                 />
             </td>
             <td className="middle">
-                <BannerModal show={showUpdateModal} setShow={setShowUpdateModal}
-                             info={banner_info} setBannerData={setBannerData} mode="update"/>
+                {showUpdateModal ? <BannerModal show={showUpdateModal} setShow={setShowUpdateModal}
+                                                info={banner_info} setBannerData={setBannerData} mode="update"
+                                                file_info={banner_info.file_api_response_list[0]}
+                /> : null}
+
                 <Button size='sm' onClick={() => setShowUpdateModal(true)}>
                     수정
                 </Button>
