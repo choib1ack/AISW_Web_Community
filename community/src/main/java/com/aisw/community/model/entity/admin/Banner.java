@@ -56,4 +56,24 @@ public class Banner {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true)
     private List<File> fileList;
+
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        if(now.isAfter(startDate) && now.isBefore(endDate)) {
+            publishStatus = Boolean.TRUE;
+        } else {
+            publishStatus = Boolean.FALSE;
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        LocalDateTime now = LocalDateTime.now();
+        if(now.isAfter(startDate) && now.isBefore(endDate)) {
+            publishStatus = Boolean.TRUE;
+        } else {
+            publishStatus = Boolean.FALSE;
+        }
+    }
 }
