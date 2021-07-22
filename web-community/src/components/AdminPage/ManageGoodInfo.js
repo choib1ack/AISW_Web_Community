@@ -110,7 +110,7 @@ function MakeSiteList({categories, setSiteData}) {
 }
 
 function CategoryBox({category_info,setSiteData}) {
-    const [showSiteModal, setShowSiteModal] = useState(false);
+    const [showSiteAddModal, setShowSiteAddModal] = useState(false);
     const [showCategoryEditModal, setShowCategoryEditModal] = useState(false);
 
     let add_btn_style = {
@@ -127,7 +127,7 @@ function CategoryBox({category_info,setSiteData}) {
         color: '#1c1c1c'
     }
 
-    const handleSiteAddModalShow = () => setShowSiteModal(true);
+    const handleSiteAddModalShow = () => setShowSiteAddModal(true);
     const handleCategoryEditModalShow = () => setShowCategoryEditModal(true);
 
     if (!category_info) return null;
@@ -153,21 +153,21 @@ function CategoryBox({category_info,setSiteData}) {
                 </Col>
             </Row>
 
-            <SiteModal
-                show={showSiteModal}
-                setShow={setShowSiteModal}
+            {showSiteAddModal?<SiteModal
+                show={showSiteAddModal}
+                setShow={setShowSiteAddModal}
                 setSiteData={setSiteData}
                 category_name={category_info.name}
-            />
+            />:null}
 
-            <CategoryModal
+            {showCategoryEditModal?<CategoryModal
                 mode="update"
                 id={category_info.id}
                 name={category_info.name}
                 showCategoryModal={showCategoryEditModal}
                 setShowCategoryModal={setShowCategoryEditModal}
                 setSiteData={setSiteData} // 새로고침용
-            />
+            />:null}
 
         </>
     )
@@ -191,14 +191,14 @@ function SiteBox({site_info,setSiteData, category_name}) {
             <Col lg={2} md={2} sm={2} id={site_info.id}>
                 <img src={site_info.file_api_response_list[0].file_download_uri} style={style} onClick={handleUpdateModalShow} />
             </Col>
-            <SiteModal
+            {showUpdateModal?<SiteModal
                 show={showUpdateModal}
                 setShow={setShowUpdateModal}
                 info={site_info}
                 setSiteData={setSiteData}
                 category_name={category_name}
                 file_info={site_info.file_api_response_list[0]}
-            />
+            />:null}
         </>
     )
 }

@@ -4,10 +4,11 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Switch from "react-switch";
+import Loading from "../Loading";
 
 function SiteModal(props) {
     const mode = (!props.info) ? "add" : "update";
-    //console.log(mode);
+    // console.log(mode);
 
     const default_info = mode == "add" ?
         {
@@ -33,9 +34,8 @@ function SiteModal(props) {
             category: props.category_name
         });	//파일
 
-
     function encodeBase64ImageTagviaFileReader (file_name) {
-        //console.log(file_name);
+        // console.log(file_name);
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest()
             xhr.onload = () => {
@@ -43,7 +43,9 @@ function SiteModal(props) {
                 reader.onloadend = function () {
                     resolve(reader.result)
                 }
-                reader.readAsDataURL(xhr.response)
+                reader.readAsDataURL(xhr.response); // 얘가 base64로 바꿔주는애
+                setImgFile(new File([xhr.response], props.file_info.file_name, {type: props.file_info.file_type}));
+                // xhr.response는 실제 데이터. base64로 바꾸기 전! 이거를 업로드 해줘야함. base64로 바꾼거 올리면 엑박ㅠ
             }
             xhr.open('GET', "/file/download/"+file_name)
             xhr.responseType = 'blob'
@@ -52,13 +54,10 @@ function SiteModal(props) {
     }
 
     if(mode=="update" && props.file_info != null){
-        //console.log(imgFile);
         if(imgBase64 == "") {
             encodeBase64ImageTagviaFileReader(props.file_info.file_name)
                 .then(data => {
-                    // console.log(data);
                     setImgBase64(data);
-                    setImgFile(new File([data], props.file_info.file_name, {type: props.file_info.file_type}));
                 })
         }
     }
@@ -96,7 +95,6 @@ function SiteModal(props) {
         if (event.target.files[0]) {
             reader.readAsDataURL(event.target.files[0]); // 1. 파일을 읽어 버퍼에 저장합니다.
             setImgFile(event.target.files[0]); // 파일 상태 업데이트
-            // console.log(event.target.files[0]);
         }
     }
 
@@ -149,7 +147,7 @@ function SiteModal(props) {
             formData.append('siteInformationApiRequest.id', props.info.id);
         }
 
-        // print log
+        // print form data log
         // console.log("FormData Log-----------");
         // for (let value of formData.values()) {
         //     console.log(value);
@@ -228,7 +226,7 @@ function SiteModal(props) {
                                 <div><Form.Label>
                                     대표 이미지 (500x500)<span style={{color: "#FF0000"}}> *</span>
                                 </Form.Label></div>
-                                {imgBase64 == "" ? null :
+                                {imgBase64 == "" ? <Loading/>:
                                     <div><img src={imgBase64} style={{width: "50%", height: "50%"}}/></div>
                                 }
                                 <input type="file" id="imgFile" name="site_image" onChange={handleInputChange}/>
