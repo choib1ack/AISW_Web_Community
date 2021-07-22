@@ -206,8 +206,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
 
-    @Cacheable(value = "councilSearch", key = "#pageable.pageNumber")
-
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);

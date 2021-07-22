@@ -1,6 +1,5 @@
 package com.aisw.community.controller.api.post.notice;
 
-import com.aisw.community.controller.api.post.NoticePostController;
 import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
 import com.aisw.community.model.network.request.post.notice.FileUploadToDepartmentDTO;
