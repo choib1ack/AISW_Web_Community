@@ -35,7 +35,7 @@ export default function Menu() {
     const handleLoginSuccess = (result) => {
         console.log("로그인 성공", result)
 
-        history.push('/')
+        // history.push('/')
     }
 
     // 구글 연동 실패시
@@ -137,25 +137,26 @@ export default function Menu() {
                                 </>
                             ) : (
                                 <Col xs={3}>
-                                    <button className="Menu-button" onClick={handleLogin}>
-                                        로그인
-                                    </button>
-                                    {/*<GoogleLogin*/}
-                                    {/*    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'*/}
-                                    {/*    render={renderProps => (*/}
-                                    {/*        <button className="Menu-button" onClick={handleLogin}*/}
-                                    {/*                disabled={renderProps.disabled}>로그인</button>*/}
-                                    {/*    )}*/}
-                                    {/*    onSuccess={result => {*/}
-                                    {/*        handleLoginSuccess(result)*/}
-                                    {/*    }}*/}
-                                    {/*    onFailure={result => {*/}
-                                    {/*        handleLoginFailure(result)*/}
-                                    {/*    }}*/}
-                                    {/*    // uxMode='redirect'*/}
-                                    {/*    // redirectUri="http://localhost:3000/user/signup"*/}
-                                    {/*    cookiePolicy={'single_host_origin'}*/}
-                                    {/*/>*/}
+                                    {/*<button className="Menu-button" onClick={handleLogin}>*/}
+                                    {/*    로그인*/}
+                                    {/*</button>*/}
+                                    <GoogleLogin
+                                        clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                        render={renderProps => (
+                                            <button className="Menu-button" onClick={renderProps.onClick}
+                                                    disabled={renderProps.disabled}>로그인</button>
+                                        )}
+                                        onSuccess={result => {
+                                            handleLoginSuccess(result)
+                                        }}
+                                        onFailure={result => {
+                                            handleLoginFailure(result)
+                                        }}
+                                        // uxMode='redirect'
+                                        redirectUri="http://localhost:3000/auth/google/callback"
+                                        cookiePolicy={'single_host_origin'}
+                                        responseType='code'
+                                    />
                                     <button className="Menu-button blue-button" onClick={handleJoin}>
                                         회원가입
                                     </button>
