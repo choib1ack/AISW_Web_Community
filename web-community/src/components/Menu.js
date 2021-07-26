@@ -34,9 +34,9 @@ export default function Menu() {
 
     // 구글 연동 성공시
     async function handleLoginSuccess(result) {
-        console.log("구글 로그인 성공", result.code)
+        console.log("구글 로그인 성공", result.accessToken)
 
-        await axios.get("/auth/google/callback?code=" + result.code, {
+        await axios.get("/auth/signup?token=" + result.accessToken, {
                 headers: {
                     "Content-Type": `application/json`
                 },
@@ -166,9 +166,9 @@ export default function Menu() {
                                             handleLoginFailure(result)
                                         }}
                                         // uxMode='redirect'
-                                        redirectUri="http://localhost:3000/auth/google/callback"
+                                        redirectUri="http://localhost:8080/auth/google/callback"
                                         cookiePolicy={'single_host_origin'}
-                                        responseType='code'
+                                        // responseType='code'
                                     />
                                     <button className="Menu-button blue-button" onClick={handleJoin}>
                                         회원가입
