@@ -2,14 +2,14 @@ import Pagination from "react-bootstrap/Pagination";
 import React from "react";
 
 function PaginationCustom(props){
-    let active = props.current_page+1;
+    let active = props.pageInfo.current+1;
     let items = [];
 
     const handlePageClick = (number) => {
-        props.setCurrentPage(number);
+        props.setPageInfo({...props.pageInfo, current:number});
     }
 
-    for (let number = 1; number <= props.total_pages; number++) {
+    for (let number = 1; number <= props.pageInfo.total; number++) {
         items.push(
             <Pagination.Item
                 key={number}
