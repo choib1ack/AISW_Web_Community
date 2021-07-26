@@ -10,49 +10,45 @@ import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
 import {BlueButton} from "../Button/BlueButton";
 import SubjectList from "./SubjectList";
+import MakeNoticeList from "../Notice/MakeNoticeList";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);
-    const [isSearch, setIsSearch] = useState(false);
-    const [searchType, setSearchType] = useState("select_title");
-    const [nowSearchText, setNowSearchText] = useState(null);
-    const [searchText, setSearchText] = useState(null);
-    // const [page, setPage] = useState(1);
-    const [totalPage, setTotalPage] = useState(1);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [selectedSubject, setSelectedSubject] = useState([]);
 
+    const [searchData, setSearchData] = useState({is_search:false, search_type:"select_title", keyword:""});
+
+    const [pageInfo, setPageInfo] = useState({current:0, total:1});
+
+    const [selectedSubject, setSelectedSubject] = useState([]); // 과목별 게시판
+
+    console.log("BoardList");
 
     window.scrollTo(0, 0);
 
     const handleSearchTextChange = (event) => {
-        setNowSearchText(event.target.value);
-        if (event.target.value == "") {
-            setIsSearch(false);
+        setSearchData({...searchData, keyword:event.target.value});
+        if (event.target.value === "") {
+            setSearchData({...searchData, keyword:"", is_search:false});
         }
     }
 
     const handleSearchTypeChange = (event) => {
-        setSearchType(event.target.value)
+        setSearchData({...searchData, search_type:event.target.value})
     }
 
     const handleCategoryChange = (category_num) => {
         setCategory(category_num);
+
         // 검색 초기화
-        setSearchType("select_title");
-        setNowSearchText("");
-        setSearchText("");
-        setIsSearch(false);
+        setSearchData({is_search:false, search_type:"select_title", keyword:""});
+
         // 페이징 초기화
-        setCurrentPage(0);
-        // 과목별게시판 카테고리 초기화
-        setSelectedSubject([]);
+        setPageInfo({...pageInfo, current: 0});
     }
 
     const searchContents = () => {
-        // 검색 시 실행
-        setSearchText(nowSearchText);
-        setIsSearch(true);
+        setSearchData({...searchData, is_search:true})
+        // console.log("서치 활성화");
     }
 
     const searchEnterPress = (e) => {
@@ -90,9 +86,9 @@ function BoardList({match}) {
                     </Col>
                     <Col lg={6} md={6} sm={12}>
                         <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
-                        <input type="text" value={nowSearchText} onChange={handleSearchTextChange}
+                        <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
                                onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
-                        <select className={"search-type"} value={searchType} onChange={handleSearchTypeChange}>
+                        <select className={"search-type"} value={searchData.search_type} onChange={handleSearchTypeChange}>
                             <option selected value="select_title">제목</option>
                             <option value="select_title_content">제목+내용</option>
                             <option value="select_writer">작성자</option>
@@ -124,13 +120,10 @@ function BoardList({match}) {
                     <MakeBoardList
                         category={category}
                         match={match}
-                        search_type={searchType}
-                        search_text={searchText}
-                        is_search={isSearch}
-                        setIsSearch={setIsSearch}
-                        setNowSearchText={setNowSearchText}
-                        setTotalPage={setTotalPage}
-                        current_page={currentPage}
+                        searchData={searchData}
+                        setSearchData={setSearchData}
+                        pageInfo={pageInfo}
+                        setPageInfo={setPageInfo}
                         selected_subject_list={selectedSubject}
                     />
 
@@ -140,10 +133,8 @@ function BoardList({match}) {
                 <BlueButton match={match} type={'newBoard'} title="글쓰기"/>
 
                 <Pagination
-                    total_pages={totalPage}
-                    current_page={currentPage}
-                    setCurrentPage={setCurrentPage}
-                />
+                    pageInfo={pageInfo}
+                    setPageInfo={setPageInfo}/>
             </Container>
         </div>
     );
