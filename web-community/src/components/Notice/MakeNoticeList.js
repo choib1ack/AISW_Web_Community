@@ -46,13 +46,13 @@ export default function MakeNoticeList(props) {
             }
             switch (search_data.search_type) {
                 case "select_title":
-                    url += "/search/title?title="+search_data.search_text;
+                    url += "/search/title?title="+search_data.keyword;
                     break;
                 case "select_title_content":
-                    url += "/search/title&content?title="+search_data.search_text+"&content="+search_data.search_text;
+                    url += "/search/title&content?title="+search_data.keyword+"&content="+search_data.keyword;
                     break;
                 case "select_writer":
-                    url += "/search/writer?writer="+search_data.search_text;
+                    url += "/search/writer?writer="+search_data.keyword;
                     break;
             }
         }
@@ -114,13 +114,13 @@ export default function MakeNoticeList(props) {
         const fetchNoticeData = async () => {
             try {
 
-                if(noticeData != null) return;
+                if(noticeData.normal.data != null) return;
 
                 setError(null);
                 setNoticeData(null);
                 setLoading(true);
                 const response = await axios.get(url(props.category));
-                if(props.current_page==0){ // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                if(props.pageInfo.current==0){ // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
 
                     setNoticeData({
                         ...noticeData,
@@ -156,11 +156,12 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.search_text, props.current_page]);
+    }, [props.category, props.searchData, props.pageInfo]);
 
     if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
-    if (!noticeData.normal.data)  return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
+    //console.log(noticeData.normal.data);
+    if (!noticeData.normal.data || noticeData.normal.data.length==0)  return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
     return (
         <>
             {noticeData.fix_urgent!=null? noticeData.fix_urgent.map(data => (
