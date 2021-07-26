@@ -11,7 +11,8 @@ import Button from "react-bootstrap/Button";
 import GoogleLogin from "react-google-login";
 import googleLogo from '../image/google-logo.png';
 import {GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL, GITHUB_AUTH_URL} from '../constants';
-import {setOnline, logout} from "../features/userSlice";
+import {setOnline, logout, login} from "../features/userSlice";
+import axios from "axios";
 
 export default function Menu() {
     const history = useHistory();
@@ -32,9 +33,21 @@ export default function Menu() {
     }
 
     // 구글 연동 성공시
-    const handleLoginSuccess = (result) => {
-        console.log("로그인 성공", result)
+    async function handleLoginSuccess(result) {
+        console.log("구글 로그인 성공", result.code)
 
+        await axios.get("/auth/google/callback?code=" + result.code, {
+                headers: {
+                    "Content-Type": `application/json`
+                },
+            },
+        ).then((res) => {
+            console.log(res)
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러 발생");
+            console.log(errorObject);
+        })
         // history.push('/')
     }
 
