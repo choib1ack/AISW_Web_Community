@@ -57,7 +57,7 @@ function ContestInfo() {
                                          host='과학기술정보통신부' date='2020-12-14(월) ~ 2021-01-07(목)'/>
                     </Col>
                 </Row>
-                <Pagination active={1}/>
+                {/*<Pagination active={1}/>*/}
             </Container>
 
         </div>
