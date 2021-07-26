@@ -11,7 +11,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("http://localhost:3000")
 @RequiredArgsConstructor
 @RequestMapping(value = "/auth")
 @Slf4j
@@ -30,6 +30,7 @@ public class OauthController {
     public ResponseEntity<String> callback(@RequestParam(name = "code") String code) {
         log.info(">> 소셜 로그인 API 서버로부터 받은 code :: {}", code);
         OAuthToken oAuthToken = oauthService.requestAccessToken(code);
+        System.out.println("hello");
         Cookie cookie = new Cookie("token", oAuthToken.getIdToken());
         cookie.setPath("/");
         cookie.setMaxAge(60);
@@ -42,8 +43,7 @@ public class OauthController {
     }
 
     @GetMapping(value = "/signup")
-    public ResponseEntity<String> signup(@CookieValue(name = "token") Cookie token) {
-        System.out.println(token.getValue());
-        return oauthService.getUserInfo(token.getValue());
+    public ResponseEntity<String> signup(@RequestParam(name = "token") String token) {
+        return oauthService.getUserInfo(token);
     }
 }

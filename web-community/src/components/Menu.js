@@ -34,7 +34,7 @@ export default function Menu() {
 
     // 구글 연동 성공시
     async function handleLoginSuccess(result) {
-        console.log("구글 로그인 성공", result.accessToken)
+        console.log("구글 로그인 성공", result)
 
         await axios.get("/auth/signup?token=" + result.accessToken, {
                 headers: {
