@@ -33,9 +33,12 @@ public class OauthController {
         Cookie cookie = new Cookie("token", oAuthToken.getIdToken());
         cookie.setPath("/");
         cookie.setMaxAge(60);
+        System.out.println(code);
 
         response.addCookie(cookie);
-        return oauthService.getUserInfo(oAuthToken.getAccessToken());
+        ResponseEntity<String> result =oauthService.getUserInfo(oAuthToken.getAccessToken());
+        System.out.println(result.getBody());
+        return result;
     }
 
     @GetMapping(value = "/signup")
