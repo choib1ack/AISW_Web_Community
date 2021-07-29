@@ -1,13 +1,15 @@
 import React, {useState} from "react";
 import Button from "react-bootstrap/Button";
 
-export default function YearList({selectedYear, setSelectedYear}) {
+export default function YearList({yearList, selectedYear, setSelectedYear}) {
     // const [selectedYear, setSelectedYear] = useState(null);
 
-    const year_list = [
-        "2020", "2019", "2018", "2017", "2016", "2015"
-        // "2021", "2020", "2019", "2018", "2017", "2016", "2015"
-    ]
+    // const year_list = [
+    //     "2020", "2019", "2018", "2017", "2016", "2015"
+    //     // "2021", "2020", "2019", "2018", "2017", "2016", "2015"
+    // ]
+
+    const year_list = yearList;
 
     const handleClickYear = (year) =>{
         setSelectedYear(year);

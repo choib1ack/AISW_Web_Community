@@ -16,6 +16,8 @@ import Join from "./components/Join";
 import Banner from "./components/AdminPage/Banner";
 import GoodInfo from "./components/GoodInfo";
 import ManagerRouter from "./components/AdminPage/ManagerRouter";
+import EssentialElective from "./components/EssentialElective";
+import FAQ from "./components/FAQ";
 
 function App() {
     return (
@@ -35,6 +37,9 @@ function App() {
                             <Route path="/contestInfo" component={ContestInfo}/>
                             <Route path="/goodInfo" component={GoodInfo}/>
                             <Route path="/Booklet" component={Booklet}/>
+                            <Route path="/GraduateCondition" component={DeptInfo}/>
+                            <Route path="/EssentialElective" component={EssentialElective}/>
+                            <Route path="/faq" component={FAQ}/>
                             <Route path="/join" component={Join}/>
                             <Route path="/banner" component={Banner}/>
                             <Route path="/manager" component={ManagerRouter}/>

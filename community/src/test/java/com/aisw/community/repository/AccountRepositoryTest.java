@@ -13,8 +13,8 @@ import javax.transaction.Transactional;
 import java.util.Optional;
 
 public class AccountRepositoryTest extends CommunityApplicationTests{
-    @Autowired
-    PasswordEncoder passwordEncoder;
+//    @Autowired
+//    PasswordEncoder passwordEncoder;
 
 
     @Autowired
@@ -36,7 +36,7 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
         Account account = Account.builder()
                 .name(name)
                 .email(email)
-                .password(password)
+//                .password(password)
                 .phoneNumber(phoneNumber)
                 .grade(grade)
                 .studentId(studentId)
@@ -84,12 +84,12 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
 
         Optional<Account> user = accountRepository.findByEmail("test02@gmail.com");
 
-        user.ifPresent(selectUser ->{
-            selectUser.setPassword(passwordEncoder.encode("pppp1111"));
+//        user.ifPresent(selectUser ->{
+//            selectUser.setPassword(passwordEncoder.encode("pppp1111"));
 
-            Account newUser = accountRepository.save(selectUser);
-            System.out.println("user : " + newUser);
-        });
+//            Account newUser = accountRepository.save(selectUser);
+//            System.out.println("user : " + newUser);
+//        });
 
     }
 

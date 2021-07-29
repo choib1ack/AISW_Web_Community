@@ -11,7 +11,8 @@ import Button from "react-bootstrap/Button";
 import GoogleLogin from "react-google-login";
 import googleLogo from '../image/google-logo.png';
 import {GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL, GITHUB_AUTH_URL} from '../constants';
-import {setOnline, logout} from "../features/userSlice";
+import {setOnline, logout, login} from "../features/userSlice";
+import axios from "axios";
 
 export default function Menu() {
     const history = useHistory();
@@ -32,10 +33,22 @@ export default function Menu() {
     }
 
     // 구글 연동 성공시
-    const handleLoginSuccess = (result) => {
-        console.log("로그인 성공", result)
+    async function handleLoginSuccess(result) {
+        console.log("구글 로그인 성공", result)
 
-        history.push('/')
+        await axios.get("/auth/signup?token=" + result.accessToken, {
+                headers: {
+                    "Content-Type": `application/json`
+                },
+            },
+        ).then((res) => {
+            console.log(res)
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러 발생");
+            console.log(errorObject);
+        })
+        // history.push('/')
     }
 
     // 구글 연동 실패시
@@ -104,6 +117,12 @@ export default function Menu() {
                                 유용한사이트
                             </button>
                         </Link>
+
+                        <Link to="/faq">
+                            <button className="Menu-button">
+                                FAQ
+                            </button>
+                        </Link>
                     </Col>
 
                     {/*<Col xs={3}>*/}
@@ -137,25 +156,26 @@ export default function Menu() {
                                 </>
                             ) : (
                                 <Col xs={3}>
-                                    <button className="Menu-button" onClick={handleLogin}>
-                                        로그인
-                                    </button>
-                                    {/*<GoogleLogin*/}
-                                    {/*    clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'*/}
-                                    {/*    render={renderProps => (*/}
-                                    {/*        <button className="Menu-button" onClick={handleLogin}*/}
-                                    {/*                disabled={renderProps.disabled}>로그인</button>*/}
-                                    {/*    )}*/}
-                                    {/*    onSuccess={result => {*/}
-                                    {/*        handleLoginSuccess(result)*/}
-                                    {/*    }}*/}
-                                    {/*    onFailure={result => {*/}
-                                    {/*        handleLoginFailure(result)*/}
-                                    {/*    }}*/}
-                                    {/*    // uxMode='redirect'*/}
-                                    {/*    // redirectUri="http://localhost:3000/user/signup"*/}
-                                    {/*    cookiePolicy={'single_host_origin'}*/}
-                                    {/*/>*/}
+                                    {/*<button className="Menu-button" onClick={handleLogin}>*/}
+                                    {/*    로그인*/}
+                                    {/*</button>*/}
+                                    <GoogleLogin
+                                        clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                        render={renderProps => (
+                                            <button className="Menu-button" onClick={renderProps.onClick}
+                                                    disabled={renderProps.disabled}>로그인</button>
+                                        )}
+                                        onSuccess={result => {
+                                            handleLoginSuccess(result)
+                                        }}
+                                        onFailure={result => {
+                                            handleLoginFailure(result)
+                                        }}
+                                        // uxMode='redirect'
+                                        redirectUri="http://localhost:8080/auth/google/callback"
+                                        cookiePolicy={'single_host_origin'}
+                                        // responseType='code'
+                                    />
                                     <button className="Menu-button blue-button" onClick={handleJoin}>
                                         회원가입
                                     </button>

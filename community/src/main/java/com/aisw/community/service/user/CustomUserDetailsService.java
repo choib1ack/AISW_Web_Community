@@ -44,7 +44,7 @@ public class CustomUserDetailsService implements UserDetailsService{
                     .id(optional.get().getId())
                     .name(optional.get().getName())
                     .email(optional.get().getEmail())
-                    .password(optional.get().getPassword())
+//                    .password(optional.get().getPassword())
                     .phoneNumber(optional.get().getPhoneNumber())
                     .grade(optional.get().getGrade())
                     .studentId(optional.get().getStudentId())

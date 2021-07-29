@@ -142,7 +142,7 @@ function BannerModal(props) {
         formData.append('bannerApiRequest.linkUrl', bannerInfo.banner_url);
 
         if (mode === "update") {
-            formData.append('siteInformationApiRequest.id', props.info.id);
+            formData.append('bannerApiRequest.id', props.info.id);
         }
 
         if (checkNull()) {
@@ -179,6 +179,7 @@ function BannerModal(props) {
         } else {
             await axios.put("/banner", formData).then((res) => {
                 alert("배너 수정 완료!")
+                window.location.reload();
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
                 console.log(errorObject);
