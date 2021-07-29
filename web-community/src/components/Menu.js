@@ -117,6 +117,12 @@ export default function Menu() {
                                 유용한사이트
                             </button>
                         </Link>
+
+                        <Link to="/faq">
+                            <button className="Menu-button">
+                                FAQ
+                            </button>
+                        </Link>
                     </Col>
 
                     {/*<Col xs={3}>*/}
