@@ -5,6 +5,7 @@ import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.user.Account;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -44,6 +45,7 @@ public class Comment {
 
     private Boolean isDeleted;
 
+    @ColumnDefault("0")
     private Long likes;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -61,4 +63,9 @@ public class Comment {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
     private Set<ContentLike> contentLikeList;
+
+    @PrePersist
+    public void prePersist() {
+        likes = likes == null ? 0L : likes;
+    }
 }

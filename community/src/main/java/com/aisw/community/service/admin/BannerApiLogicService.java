@@ -11,11 +11,9 @@ import com.aisw.community.model.network.response.admin.BannerApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.admin.BannerRepository;
 import com.aisw.community.repository.admin.CustomBannerRepository;
-import com.aisw.community.repository.post.comment.CustomCommentRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -55,7 +53,6 @@ public class BannerApiLogicService {
                 .endDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
                 .linkUrl(bannerApiRequest.getLinkUrl())
-                .publishStatus(bannerApiRequest.getPublishStatus())
                 .build();
 
         Banner newBanner = bannerRepository.save(banner);
@@ -67,7 +64,7 @@ public class BannerApiLogicService {
     }
 
     public Header<List<BannerApiResponse>> read(Pageable pageable) {
-        Page<Banner> bannerList = customBannerRepository.findAllByPublishStatusFetchJoinWithFile(Boolean.TRUE, pageable);
+        Page<Banner> bannerList = customBannerRepository.findAllFetchJoinWithFile(pageable);
 
         List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
                 .map(this::response)
@@ -101,11 +98,10 @@ public class BannerApiLogicService {
                         DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
                 .setEndDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
-                .setLinkUrl(bannerApiRequest.getLinkUrl())
-                .setPublishStatus(bannerApiRequest.getPublishStatus());
-        bannerRepository.save(banner);
+                .setLinkUrl(bannerApiRequest.getLinkUrl());
+        Banner updateBanner = bannerRepository.save(banner);
 
-        return Header.OK(response(banner, fileApiResponseList));
+        return Header.OK(response(updateBanner, fileApiResponseList));
     }
 
     public Header delete(Long id) {
@@ -121,10 +117,10 @@ public class BannerApiLogicService {
         List<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE);
 
         bannerList.stream().forEach(banner -> {
-            if(now.isBefore(banner.getStartDate())) {
+            if(!(now.isAfter(banner.getStartDate()) && now.isBefore(banner.getEndDate()))) {
                 banner.setPublishStatus(Boolean.FALSE);
-                bannerRepository.save(banner);
             }
+            bannerRepository.save(banner);
         });
     }
 

@@ -9,5 +9,5 @@ import lombok.*;
 public class LoginApiResponse {
     private String email;
 
-    private String password;
+//    private String password;
 }

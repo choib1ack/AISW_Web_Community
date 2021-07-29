@@ -7,6 +7,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -44,6 +45,7 @@ public class Bulletin {
     @Enumerated(EnumType.STRING)
     private BulletinStatus status;
 
+    @ColumnDefault("0")
     private Long views;
 
     @Enumerated(EnumType.STRING)
@@ -81,5 +83,10 @@ public class Bulletin {
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
         this.account= account;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        views = views == null ? 0L : views;
     }
 }

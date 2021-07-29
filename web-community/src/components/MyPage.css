@@ -2,7 +2,7 @@
     position: fixed;
     top: 30px;
     right: 0;
-    /*z-index: $zindex-modal;*/
+    z-index: 1000;
     display: none;
     width: 50%;
     height: 100%;

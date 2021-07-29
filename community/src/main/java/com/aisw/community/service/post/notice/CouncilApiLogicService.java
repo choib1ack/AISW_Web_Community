@@ -22,7 +22,6 @@ import com.aisw.community.repository.post.notice.CouncilRepository;
 import com.aisw.community.repository.user.AccountRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -58,7 +57,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .writer(account.getName())
                 .content(councilApiRequest.getContent())
                 .status(councilApiRequest.getStatus())
-                .views(0L)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
                 .account(account)
@@ -80,7 +78,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .writer(account.getName())
                 .content(councilApiRequest.getContent())
                 .status(councilApiRequest.getStatus())
-                .views(0L)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
                 .account(account)
@@ -205,7 +202,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-
     public Header<NoticeResponseDTO> search(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
