@@ -9,7 +9,7 @@ import image_18_19 from "./image/교필_18_19.png"
 import YearList from "./components/YearList";
 
 export default function EssentialElective() {
-    const [selectedYear, setSelectedYear] = useState("2020");
+    const [selectedYear, setSelectedYear] = useState("2018~2019");
 
     const year_list = ["2014~2015", "2016~2017", "2018~2019"];
 
