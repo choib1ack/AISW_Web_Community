@@ -17,7 +17,7 @@ public class GetController {
     @RequestMapping("/getLoginParam")
     public String getLoginInfo(LoginParam loginParam){
         System.out.println(loginParam.getEmail());
-        System.out.println(loginParam.getPassword());
+//        System.out.println(loginParam.getPassword());
 
 
         return "OK";

@@ -23,15 +23,21 @@ export default function Booklet() {
 
     //https://github.com/react-pdf-viewer/examples
 
+    const year_list = [
+        "2020", "2019", "2018", "2017", "2016", "2015"
+        // "2021", "2020", "2019", "2018", "2017", "2016", "2015"
+    ]
+
     return (
         <div className="Booklet">
             <Container className="mb-5">
                 <Row style={{marginBottom: '1rem'}}>
                     <Col>
-                        <Title text='학사요람' type='1'/>
+                        <Title text='학번별 학사요람' type='1'/>
                     </Col>
                 </Row>
                 <YearList
+                    yearList={year_list}
                     selectedYear={selectedYear}
                     setSelectedYear={setSelectedYear}
                 />

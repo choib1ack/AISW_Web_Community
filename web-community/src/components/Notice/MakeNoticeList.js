@@ -5,18 +5,26 @@ import fileImage from "../../icon/file.svg";
 import Loading from "../Loading";
 
 export default function MakeNoticeList(props) {
-    const [noticeData, setNoticeData] = useState(null);
-    const [noticeFixData, setNoticeFixData] = useState(null);
-    const [urgentFixData, setUrgentFixData] = useState(null);
+
+    const [noticeData, setNoticeData] = useState(
+        {
+            fix_notice: null,
+            fix_urgent: null,
+            normal:{
+                page_info: null,
+                data: null
+            }
+        }
+    );
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [pageInfo, setPageInfo] = useState(null);
 
-    let is_search = props.is_search;
-    let search_type = props.search_type;
-    let search_text = props.search_text;
+    let search_data = props.searchData;
 
-    const url = (category) => {
+    //console.log("MakeNoticeList")
+
+   const url = (category) => {
         let url = "/notice"
         switch (category) {
             case 0:
@@ -32,25 +40,25 @@ export default function MakeNoticeList(props) {
                 url += "/council";
                 break;
         }
-        if(is_search){
+        if(search_data.is_search){
             if(category==0){
                 url = url.substring(0, url.length - 5);
             }
-            switch (search_type) {
+            switch (search_data.search_type) {
                 case "select_title":
-                    url += "/search/title?title="+search_text;
+                    url += "/search/title?title="+search_data.keyword;
                     break;
                 case "select_title_content":
-                    url += "/search/title&content?title="+search_text+"&content="+search_text;
+                    url += "/search/title&content?title="+search_data.keyword+"&content="+search_data.keyword;
                     break;
                 case "select_writer":
-                    url += "/search/writer?writer="+search_text;
+                    url += "/search/writer?writer="+search_data.keyword;
                     break;
             }
         }
-        url += is_search ? "" : "?page="+(props.current_page);
+        url += search_data.is_search ? "" : "?page="+(props.pageInfo.current);
         // url+="page="+(props.current_page);
-        // console.log(url);
+        console.log(url);
         return url;
     }
 
@@ -79,7 +87,7 @@ export default function MakeNoticeList(props) {
     }
 
     const indexing = (index) =>{
-        let current_max = pageInfo.total_elements-(pageInfo.current_page*10);
+        let current_max = noticeData.normal.page_info.total-(noticeData.normal.page_info.current*10);
         return current_max-index.toString();
     }
 
@@ -105,18 +113,42 @@ export default function MakeNoticeList(props) {
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
+
+                if(noticeData.normal.data != null) return;
+
                 setError(null);
                 setNoticeData(null);
                 setLoading(true);
                 const response = await axios.get(url(props.category));
-                if(props.current_page==0){ // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
-                    setNoticeFixData(response.data.data.notice_api_notice_response_list)
-                    setUrgentFixData(response.data.data.notice_api_urgent_response_list)
+                if(props.pageInfo.current==0){ // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+
+                    setNoticeData({
+                        ...noticeData,
+                        fix_notice: response.data.data.notice_api_notice_response_list,
+                        fix_urgent: response.data.data.notice_api_urgent_response_list
+                    })
+
                 }
-                setNoticeData(response.data.data.notice_api_response_list); // 데이터는 response.data 안에 있음
-                setPageInfo(response.data.pagination);
-                props.setTotalPage(response.data.pagination.total_pages);
-                props.setNowSearchText("");
+                setNoticeData({
+                    ...noticeData,
+                    normal: {
+                        page_info: response.data.pagination,
+                        data: response.data.data.notice_api_response_list
+                    }
+                })
+
+                props.setPageInfo(
+                    {...props.pageInfo,
+                    total: response.data.pagination.total_pages
+                    }
+                )
+
+                props.setSearchData(
+                    {...props.searchData,
+                        keyword:""
+                    }
+                )
+
             } catch (e) {
                 setError(e);
             }
@@ -124,15 +156,15 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.search_text, props.current_page]);
+    }, [props.category, props.searchData, props.pageInfo]);
 
     if (loading) return <Loading/>;
     if (error) return <tr><td colSpan={5}>에러가 발생했습니다{error.toString()}</td></tr>;
-    if (!noticeData) return null;
-    if (Object.keys(noticeData).length==0) return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
+    //console.log(noticeData.normal.data);
+    if (!noticeData.normal.data || noticeData.normal.data.length==0)  return <tr><td colSpan={5}>데이터가 없습니다.</td></tr>;
     return (
         <>
-            {urgentFixData.map(data => (
+            {noticeData.fix_urgent!=null? noticeData.fix_urgent.map(data => (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
@@ -146,8 +178,9 @@ export default function MakeNoticeList(props) {
                     <td>{data.views}</td>
                 </tr>
 
-            ))}
-            {noticeFixData.map(data => (
+            )):null}
+
+            {noticeData.fix_notice!=null? noticeData.fix_notice.map(data => (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
@@ -161,9 +194,9 @@ export default function MakeNoticeList(props) {
                     <td>{data.views}</td>
                 </tr>
 
-            ))}
+            )):null}
 
-            {noticeData.map((data, index) => (
+            {noticeData.normal.data.map((data, index) => (
                 <tr key={data.notice_id}
                     onClick={()=>ToLink(`${props.match.url}/${categoryName(props.category) == 0 ? 
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>

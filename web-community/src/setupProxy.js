@@ -23,5 +23,10 @@ module.exports = function (app) {
             target: 'http://localhost:8080',
             changeOrigin: true,
         })
+        ,
+        createProxyMiddleware('/file/download', {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+        })
     )
 };

@@ -12,6 +12,10 @@ tbody tr>td:nth-child(2) {
     text-align: left;
     padding-left: 40px !important;
 }
+tbody.english_table>tr>td:nth-child(2) {
+    text-align: center;
+    padding-left: 0px !important;;
+}
 tbody tr td{
     padding: 15px 0px !important;
     border-top: 0px !important;
