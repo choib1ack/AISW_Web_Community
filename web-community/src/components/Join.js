@@ -33,9 +33,9 @@ export default function Join() {
 
     useEffect(() => {
         console.log(location.state.google_data);
-        console.log(location.state.google_data.profileObj.email);
-        console.log(location.state.google_data.profileObj.familyName);
-        console.log(location.state.google_data.profileObj.imageUrl);
+        console.log(location.state.google_data.email);
+        console.log(location.state.google_data.family_name);
+        console.log(location.state.google_data.picture);
     }, [location]);
 
     async function sendServer(data) {
@@ -63,18 +63,18 @@ export default function Join() {
         const userData = {
             college_name: data.college,
             department_name: data.department,
-            email: location.state.google_data.profileObj.email,
+            email: location.state.google_data.email,
             gender: data.gender,
             grade: data.grade,
             job: data.job,
             level: 'NOT_SUBSCRIBED',
-            name: location.state.google_data.profileObj.familyName,
+            name: location.state.google_data.family_name,
             // password: data.password,
             phone_number: data.phone_number,
             role: 'NOT_PERMITTED',
             student_id: data.student_id,
             university: 'COMMON',
-            picture: location.state.google_data.profileObj.imageUrl
+            picture: location.state.google_data.picture
         }
 
         if (agree) {
@@ -83,27 +83,6 @@ export default function Join() {
             console.log("동의해주세요.");
         }
     }
-
-    // 비밀번호 유효성 검사
-    // function checkPassword(password) {
-    //     const num = password.search(/[0-9]/g);
-    //     const eng = password.search(/[a-z]/ig);
-    //     const spe = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
-    //
-    //     if (password.length < 8 || password.length > 20) {
-    //         setPWValidate(1);
-    //         return false;
-    //     } else if (password.search(/\s/) !== -1) {
-    //         setPWValidate(2);
-    //         return false;
-    //     } else if (num < 0 || eng < 0 || spe < 0) {
-    //         setPWValidate(3);
-    //         return false;
-    //     } else {
-    //         setPWValidate(0);
-    //         return true;
-    //     }
-    // }
 
     // 전화번호 유효성 검사
     function checkPhoneNumber(phone) {
