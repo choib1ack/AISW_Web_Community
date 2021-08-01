@@ -12,27 +12,15 @@ import java.time.LocalDateTime;
 @Builder
 public class AccountApiRequest {
 
-    private Long id;
-
     private String name;
 
     private String email;
-
-    private String password;
 
     private String phoneNumber;
 
     private Grade grade;
 
     private Integer studentId;
-
-    private LocalDateTime createdAt;
-
-    private String createdBy;
-
-    private LocalDateTime updatedAt;
-
-    private String updatedBy;
 
     private Gender gender;
 
@@ -43,4 +31,8 @@ public class AccountApiRequest {
     private DepartmentName departmentName;
 
     private UserRole role;
+
+    private String provider;
+
+    private String providerId;
 }

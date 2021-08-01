@@ -1,6 +1,6 @@
 package com.aisw.community.config;
 
-import com.aisw.community.provider.CustomAuthenticationProvider;
+//import com.aisw.community.provider.CustomAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,18 +22,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+//    @Autowired
+//    private UserDetailsService userDetailsService;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.authenticationProvider(authenticationProvider());
-    }
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
+//        auth.authenticationProvider(authenticationProvider());
+//    }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider(){
-        return new CustomAuthenticationProvider();
-    }
+//    @Bean
+//    public AuthenticationProvider authenticationProvider(){
+//        return new CustomAuthenticationProvider();
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
