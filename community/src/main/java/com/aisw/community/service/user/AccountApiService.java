@@ -22,6 +22,7 @@ public class AccountApiService {
         AccountApiRequest accountApiRequest = request.getData();
 
         Account account = Account.builder()
+                .username(accountApiRequest.getProvider()+"_"+accountApiRequest.getProviderId())
                 .name(accountApiRequest.getName())
                 .email(accountApiRequest.getEmail())
                 .password("1234")
@@ -43,6 +44,8 @@ public class AccountApiService {
 
     private AccountApiResponse response(Account account) {
         AccountApiResponse accountApiResponse = AccountApiResponse.builder()
+                .id(account.getId())
+                .username(account.getUsername())
                 .name(account.getName())
                 .email(account.getEmail())
                 .phoneNumber(account.getPhoneNumber())
