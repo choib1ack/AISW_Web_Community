@@ -31,4 +31,8 @@ public class AccountApiRequest {
     private DepartmentName departmentName;
 
     private UserRole role;
+
+    private String provider;
+
+    private String providerId;
 }
