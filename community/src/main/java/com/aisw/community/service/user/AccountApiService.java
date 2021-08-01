@@ -20,24 +20,26 @@ public class AccountApiService {
 
     public Header<AccountApiResponse> signup(Header<AccountApiRequest> request) {
         AccountApiRequest accountApiRequest = request.getData();
+        if(accountApiRequest.getProvider() != null && accountApiRequest.getProviderId() != null) {
+            Account account = Account.builder()
+                    .username(accountApiRequest.getProvider()+"_"+accountApiRequest.getProviderId())
+                    .name(accountApiRequest.getName())
+                    .email(accountApiRequest.getEmail())
+                    .password("1234")
+                    .phoneNumber(accountApiRequest.getPhoneNumber())
+                    .grade(accountApiRequest.getGrade())
+                    .studentId(accountApiRequest.getStudentId())
+                    .gender(accountApiRequest.getGender())
+                    .university(accountApiRequest.getUniversity())
+                    .collegeName(accountApiRequest.getCollegeName())
+                    .departmentName(accountApiRequest.getDepartmentName())
+                    .role(accountApiRequest.getRole())
+                    .build();
 
-        Account account = Account.builder()
-                .username(accountApiRequest.getProvider()+"_"+accountApiRequest.getProviderId())
-                .name(accountApiRequest.getName())
-                .email(accountApiRequest.getEmail())
-                .password("1234")
-                .phoneNumber(accountApiRequest.getPhoneNumber())
-                .grade(accountApiRequest.getGrade())
-                .studentId(accountApiRequest.getStudentId())
-                .gender(accountApiRequest.getGender())
-                .university(accountApiRequest.getUniversity())
-                .collegeName(accountApiRequest.getCollegeName())
-                .departmentName(accountApiRequest.getDepartmentName())
-                .role(accountApiRequest.getRole())
-                .build();
-
-        Account newAccount = accountRepository.save(account);
-        return Header.OK(response(newAccount));
+            Account newAccount = accountRepository.save(account);
+            return Header.OK(response(newAccount));
+        }
+        return Header.ERROR("request is wrong");
 
         // Token 보내기
     }
