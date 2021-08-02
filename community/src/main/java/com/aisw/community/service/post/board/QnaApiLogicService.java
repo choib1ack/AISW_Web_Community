@@ -61,8 +61,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-        User user = userRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
-                () -> new UserNotFoundException(qnaApiRequest.getAccountId()));
+        User user = userRepository.findById(qnaApiRequest.getUserId()).orElseThrow(
+                () -> new UserNotFoundException(qnaApiRequest.getUserId()));
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(user.getName())
@@ -72,6 +72,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
+                .likes(0L)
                 .user(user)
                 .build();
 
@@ -84,8 +85,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     public Header<QnaApiResponse> create(FileUploadToQnaDTO request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
 
-        User user = userRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
-                () -> new UserNotFoundException(qnaApiRequest.getAccountId()));
+        User user = userRepository.findById(qnaApiRequest.getUserId()).orElseThrow(
+                () -> new UserNotFoundException(qnaApiRequest.getUserId()));
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(user.getName())
@@ -95,6 +96,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
+                .likes(0L)
                 .user(user)
                 .build();
         Qna newQna = baseRepository.save(qna);
@@ -124,8 +126,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
-        if(qna.getUser().getId() != qnaApiRequest.getAccountId()) {
-            throw new NotEqualAccountException(qnaApiRequest.getAccountId());
+        if(qna.getUser().getId() != qnaApiRequest.getUserId()) {
+            throw new NotEqualAccountException(qnaApiRequest.getUserId());
         }
 
         qna
@@ -148,8 +150,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
-        if(qna.getUser().getId() != qnaApiRequest.getAccountId()) {
-            throw new NotEqualAccountException(qnaApiRequest.getAccountId());
+        if(qna.getUser().getId() != qnaApiRequest.getUserId()) {
+            throw new NotEqualAccountException(qnaApiRequest.getUserId());
         }
 
         qna.getFileList().stream().forEach(file -> fileRepository.delete(file));

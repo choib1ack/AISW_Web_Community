@@ -15,8 +15,6 @@ public class UniversityApiRequest {
 
     private String title;
 
-    private String writer;
-
     private String content;
 
     // 긴급0, 상단고정1, 일반2
@@ -24,5 +22,5 @@ public class UniversityApiRequest {
 
     private Campus campus;
 
-    private Long accountId;
+    private Long userId;
 }

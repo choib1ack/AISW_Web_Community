@@ -51,8 +51,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Override
     public Header<DepartmentApiResponse> create(Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
-        User user = userRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(
-                () -> new UserNotFoundException(departmentApiRequest.getAccountId()));
+        User user = userRepository.findById(departmentApiRequest.getUserId()).orElseThrow(
+                () -> new UserNotFoundException(departmentApiRequest.getUserId()));
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(user.getName())
@@ -72,8 +72,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     public Header<DepartmentApiResponse> create(FileUploadToDepartmentDTO request) {
         DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
 
-        User user = userRepository.findById(departmentApiRequest.getAccountId()).orElseThrow(
-                () -> new UserNotFoundException(departmentApiRequest.getAccountId()));
+        User user = userRepository.findById(departmentApiRequest.getUserId()).orElseThrow(
+                () -> new UserNotFoundException(departmentApiRequest.getUserId()));
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(user.getName())
@@ -111,8 +111,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
 
 
-        if(department.getUser().getId() != departmentApiRequest.getAccountId()) {
-            throw new NotEqualAccountException(departmentApiRequest.getAccountId());
+        if(department.getUser().getId() != departmentApiRequest.getUserId()) {
+            throw new NotEqualAccountException(departmentApiRequest.getUserId());
         }
 
         department
@@ -134,8 +134,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
 
 
-        if(department.getUser().getId() != departmentApiRequest.getAccountId()) {
-            throw new NotEqualAccountException(departmentApiRequest.getAccountId());
+        if(department.getUser().getId() != departmentApiRequest.getUserId()) {
+            throw new NotEqualAccountException(departmentApiRequest.getUserId());
         }
 
         department.getFileList().stream().forEach(file -> fileRepository.delete(file));

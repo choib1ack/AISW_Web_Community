@@ -24,5 +24,5 @@ public class FreeApiRequest {
     // 익명 true, 비익명 false
     private Boolean isAnonymous;
 
-    private Long accountId;
+    private Long userId;
 }
