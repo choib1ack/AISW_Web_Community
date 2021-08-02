@@ -19,5 +19,5 @@ public class CouncilApiRequest {
     // 긴급0, 상단고정1, 일반2
     private BulletinStatus status;
 
-    private Long accountId;
+    private Long userId;
 }

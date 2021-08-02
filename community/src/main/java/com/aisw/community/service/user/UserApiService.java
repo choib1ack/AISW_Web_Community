@@ -21,8 +21,6 @@ public class UserApiService {
 
     public Header<UserApiResponse> signup(Header<UserApiRequest> request) {
         UserApiRequest userApiRequest = request.getData();
-        System.out.println(userApiRequest.getProvider());
-        System.out.println(userApiRequest.getProviderId());
 
         if (userApiRequest.getProvider() != null && userApiRequest.getProviderId() != null) {
             User user = User.builder()
