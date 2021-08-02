@@ -5,6 +5,7 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.UserApiRequest;
 import com.aisw.community.model.network.request.user.VerificationApiRequest;
 import com.aisw.community.model.network.response.user.UserApiResponse;
+import com.aisw.community.model.network.response.user.VerificationApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,24 +44,24 @@ public class UserApiService {
             return Header.OK(response(newUser));
         }
         return Header.ERROR("request is wrong");
-
-        // Token 보내기
     }
 
-    public String verification(Header<VerificationApiRequest> request) {
+    public Header<VerificationApiResponse> verification(Header<VerificationApiRequest> request) {
         VerificationApiRequest verificationApiRequest = request.getData();
-        // 이미 가입 된 유저
         User user = userRepository.findByUsername(verificationApiRequest.getUsername());
-        if (user != null) return "MEMBER";
+        VerificationApiResponse response = new VerificationApiResponse();
+        if(user!=null) {
+            response.setValidation(true);
+        } else {
+            response.setValidation(false);
+            String email = verificationApiRequest.getEmail();
+            email = email.replace(email.substring(0, email.indexOf('@') + 1), "");
+            if(email.equals("gachon.ac.kr")) {
+                response.setAccount("gachon");
+            } else response.setAccount("general");
+        }
 
-        // 가입해야 되는 유저
-        // 가천대학교 계정으로 로그인 하는 경우
-        String email = verificationApiRequest.getEmail()
-                .replace(verificationApiRequest.getEmail().substring(0, verificationApiRequest.getEmail().indexOf("@") + 1), "");
-        if(email.equals("gachon.ac.kr")) return "GACHON";
-
-        // 구글 계정으로 로그인 하는 경우
-        return "GOOGLE";
+        return Header.OK(response);
     }
 
     private UserApiResponse response(User user) {

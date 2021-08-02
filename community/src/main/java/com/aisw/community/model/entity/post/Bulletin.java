@@ -22,7 +22,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@ToString(exclude = {"account"})
+@ToString(exclude = {"user"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)

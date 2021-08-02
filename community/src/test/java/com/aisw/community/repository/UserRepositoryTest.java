@@ -28,9 +28,9 @@ public class UserRepositoryTest extends CommunityApplicationTests{
         Grade grade = Grade.FRESHMAN;
         Integer studentId = 202066666;
         Gender gender = Gender.MALE;
-        Campus university = Campus.GLOBAL;
-        CollegeName collegeName = CollegeName.IT_CONVERGENCE;
-        DepartmentName departmentName = DepartmentName.SOFTWARE;
+//        Campus university = Campus.GLOBAL;
+//        CollegeName collegeName = CollegeName.IT_CONVERGENCE;
+//        DepartmentName departmentName = DepartmentName.SOFTWARE;
 
         User user = User.builder()
                 .name(name)
@@ -40,9 +40,9 @@ public class UserRepositoryTest extends CommunityApplicationTests{
                 .grade(grade)
                 .studentId(studentId)
                 .gender(gender)
-                .university(university)
-                .collegeName(collegeName)
-                .departmentName(departmentName)
+//                .university(university)
+//                .collegeName(collegeName)
+//                .departmentName(departmentName)
                 .build();
 
         User newUser = userRepository.save(user);
