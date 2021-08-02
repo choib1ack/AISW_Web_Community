@@ -24,13 +24,13 @@ public class UserApiRequest {
 
     private Gender gender;
 
-    private Campus university;
+    private String university;
 
-    private CollegeName collegeName;
+    private String collegeName;
 
-    private DepartmentName departmentName;
+    private String departmentName;
 
-    private String roles;
+    private String role;
 
     private String provider;
 
