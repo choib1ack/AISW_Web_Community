@@ -64,16 +64,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    private Campus university;
+    private String university;
 
-    @Enumerated(EnumType.STRING)
-    private CollegeName collegeName;
+    private String collegeName;
 
-    @Enumerated(EnumType.STRING)
-    private DepartmentName departmentName;
+    private String departmentName;
 
-    private String roles;
+    private String role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Bulletin> bulletinList;
@@ -83,11 +80,4 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<ContentLike> contentLikeList;
-
-    public List<String> getRoleList() {
-        if(this.roles.length() > 0) {
-            return Arrays.asList(this.roles.split(","));
-        }
-        return new ArrayList<>();
-    }
 }
