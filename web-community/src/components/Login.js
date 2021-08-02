@@ -23,12 +23,7 @@ export default function Login(props) {
     const dispatch = useDispatch()
 
     async function getLoginUser(data) {
-        await axios.get("/user/login?email=" + data.email + "&password=" + data.password, {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-            },
-        ).then((res) => {
+        await axios.get(`/user/login?email=${data.email}&password=${data.password}`).then((res) => {
             if (res.data.data == null) {
                 alert("회원이 존재하지 않습니다.")
             } else {

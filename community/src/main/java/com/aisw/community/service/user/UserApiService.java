@@ -4,6 +4,7 @@ import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.SignupApiRequest;
 import com.aisw.community.model.network.request.user.UserApiRequest;
+import com.aisw.community.model.network.request.user.VerificationApiRequest;
 import com.aisw.community.model.network.response.user.UserApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,12 @@ public class UserApiService {
 
     public Header<UserApiResponse> signup(Header<UserApiRequest> request) {
         UserApiRequest userApiRequest = request.getData();
-        if(userApiRequest.getProvider() != null && userApiRequest.getProviderId() != null) {
+        System.out.println(userApiRequest.getProvider());
+        System.out.println(userApiRequest.getProviderId());
+
+        if (userApiRequest.getProvider() != null && userApiRequest.getProviderId() != null) {
             User user = User.builder()
-                    .username(userApiRequest.getProvider()+"_"+ userApiRequest.getProviderId())
+                    .username(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId())
                     .name(userApiRequest.getName())
                     .email(userApiRequest.getEmail())
                     .password(bCryptPasswordEncoder.encode("AISW"))
