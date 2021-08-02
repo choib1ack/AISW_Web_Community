@@ -2,11 +2,11 @@ package com.aisw.community.service.user;
 
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.user.SignupApiRequest;
 import com.aisw.community.model.network.request.user.UserApiRequest;
 import com.aisw.community.model.network.response.user.UserApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,21 +33,25 @@ public class UserApiService {
                     .university(userApiRequest.getUniversity())
                     .collegeName(userApiRequest.getCollegeName())
                     .departmentName(userApiRequest.getDepartmentName())
-                    .roles(userApiRequest.getRoles())
+                    .role(userApiRequest.getRole())
                     .build();
 
             User newUser = userRepository.save(user);
             return Header.OK(response(newUser));
         }
         return Header.ERROR("request is wrong");
-
-        // Token 보내기
     }
 
-    public String verification(String username) {
-        User user = userRepository.findByUsername(username);
-        if(user!=null) return "valid";
-        return "invalid";
+    public String verification(Header<SignupApiRequest> request) {
+        SignupApiRequest signupApiRequest = request.getData();
+        User user = userRepository.findByUsername(signupApiRequest.getUsername());
+        if(user!=null) return "MEMBER";
+
+        String email = signupApiRequest.getEmail();
+        email = email.replace(email.substring(0, email.indexOf('@') + 1), "");
+        if(email.equals("gachon.ac.kr")) return "GACHON";
+
+        return "GENERAL";
     }
 
     private UserApiResponse response(User user) {
@@ -63,7 +67,7 @@ public class UserApiService {
                 .university(user.getUniversity())
                 .collegeName(user.getCollegeName())
                 .departmentName(user.getDepartmentName())
-                .roles(user.getRoles())
+                .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .createdBy(user.getCreatedBy())
                 .updatedAt(user.getUpdatedAt())

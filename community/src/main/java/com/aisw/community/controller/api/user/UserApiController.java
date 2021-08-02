@@ -1,6 +1,7 @@
 package com.aisw.community.controller.api.user;
 
 import com.aisw.community.model.network.Header;
+import com.aisw.community.model.network.request.user.SignupApiRequest;
 import com.aisw.community.model.network.request.user.UserApiRequest;
 import com.aisw.community.model.network.response.user.UserApiResponse;
 import com.aisw.community.service.user.UserApiService;
@@ -19,8 +20,8 @@ class UserApiController {
         return userApiService.signup(request);
     }
 
-    @GetMapping("/verification")
-    public String verification(@RequestParam String username) {
-        return userApiService.verification(username);
+    @PostMapping("/verification")
+    public String verification(@RequestBody Header<SignupApiRequest> request) {
+        return userApiService.verification(request);
     }
 }
