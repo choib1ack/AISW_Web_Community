@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Builder
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@ToString(exclude = {"account", "board", "comment"})
+@ToString(exclude = {"user", "board", "comment"})
 public class ContentLike {
 
     @Id
