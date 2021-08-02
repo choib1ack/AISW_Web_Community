@@ -15,27 +15,27 @@ import axios from "axios";
 export default function Menu() {
     const history = useHistory();
 
-    // redux toolkit
-    const user = useSelector(state => state.user)
-    const dispatch = useDispatch()
-
     const [modalShow, setModalShow] = useState(false);
-
-    useEffect(() => {
-        console.log(user);
-    }, [])
+    const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("user_name")) || null);
 
     // 이미 있는 회원인지 확인
-    async function isExistUser(idpId, googleId) {
-        let result = null;
+    async function isExistUser(username, email) {
+        let result = {validation: null, account: null};
 
-        await axios.get(`/user/verification?username=${idpId}_${googleId}`
-        ).then((res) => {
-            result = res === 'valid';
+        await axios.post(`/user/verification`, {
+            headers: {
+                "Content-Type": `application/json`
+            },
+            data: {
+                username: username,
+                email: email
+            }
+        }).then((res) => {
+            result.validation = res.data.data.validation === true;
+            result.account = res.data.data.account;
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
-            console.log(errorObject);
+            console.log("에러 발생", errorObject);
         })
 
         return result;
@@ -43,34 +43,50 @@ export default function Menu() {
 
     // 구글 연동 성공시
     async function handleLoginSuccess(result) {
-        console.log("구글 로그인 성공", result)
+        const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
 
-        // history.push('/')
+        await axios.post(`/login`, {
+            username: username,
+            password: 'AISW',
+        }).then((res) => {
+            console.log(res);
+            window.localStorage.setItem("auth", JSON.stringify(res.headers.authorization)); // 토큰 저장
+            window.localStorage.setItem("user_name", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
+
+            history.push('/')   // 홈으로 가기
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러 발생", errorObject);
+        })
     }
 
     // 구글 연동 실패시
     const handleLoginFailure = (result) => {
-        console.log("구글 로그인 실패", result)
+        console.log("구글 연동 실패", result)
     }
 
-    // 구글 연동 성공시
+    // 구글 연동 회원가입 성공시
     async function handleJoinSuccess(result) {
-        console.log("구글 로그인 성공", result)
+        const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
+        const email = result.profileObj.email;
+        const isExist = await isExistUser(username, email);
 
-        const idpId = result.tokenObj.idpId;
-        const googleId = result.profileObj.googleId;
-        const isExist = isExistUser(idpId, googleId)
-
-        if (isExist) {
+        if (isExist.validation === true) {
             alert("이미 가입된 회원입니다.")
         } else {
-            history.push({pathname: '/join', state: {google_data: result}})
+            let roll = null;
+            if (isExist[1] === 'gachon') {
+                roll = 'STUDENT';
+            } else {
+                roll = 'GENERAL';
+            }
+            history.push({pathname: '/join', state: {google_data: result, account_role: roll}})
         }
     }
 
-    // 구글 연동 실패시
+    // 구글 연동 회원가입 실패시
     const handleJoinFailure = (result) => {
-        console.log("회원가입 실패", result)
+        console.log("구글 연동 실패", result)
     }
 
     return (
@@ -123,12 +139,12 @@ export default function Menu() {
                     </Col>
 
                     {
-                        (user.isOnline) ?
+                        (userName != null) ?
                             (
                                 <>
                                     <Col xs={3}>
                                         <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {user.userData.name}
+                                            {userName}
                                         </button>
                                         <Link to="/manager">
                                             <button className="Menu-button">

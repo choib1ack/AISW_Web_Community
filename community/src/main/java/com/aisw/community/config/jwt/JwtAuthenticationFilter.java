@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        System.out.println(loginApiRequest.getUsername());
         System.out.println("JwtAuthenticationFilter : " + loginApiRequest);
 
         // 유저네임패스워드 토큰 생성

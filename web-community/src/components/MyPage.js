@@ -24,6 +24,8 @@ export default function MyPage(props) {
     const handleLogout = () => {
         setShow(false);
 
+        window.localStorage.removeItem("user_name");
+
         dispatch(logout())
         history.push('/')   // 홈으로 가기
     }
