@@ -2,10 +2,10 @@ package com.aisw.community.service.user;
 
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.user.SignupApiRequest;
 import com.aisw.community.model.network.request.user.UserApiRequest;
 import com.aisw.community.model.network.request.user.VerificationApiRequest;
 import com.aisw.community.model.network.response.user.UserApiResponse;
+import com.aisw.community.model.network.response.user.VerificationApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -46,16 +46,22 @@ public class UserApiService {
         return Header.ERROR("request is wrong");
     }
 
-    public String verification(Header<SignupApiRequest> request) {
-        SignupApiRequest signupApiRequest = request.getData();
-        User user = userRepository.findByUsername(signupApiRequest.getUsername());
-        if(user!=null) return "MEMBER";
+    public Header<VerificationApiResponse> verification(Header<VerificationApiRequest> request) {
+        VerificationApiRequest verificationApiRequest = request.getData();
+        User user = userRepository.findByUsername(verificationApiRequest.getUsername());
+        VerificationApiResponse response = new VerificationApiResponse();
+        if(user!=null) {
+            response.setValidation(true);
+        } else {
+            response.setValidation(false);
+            String email = verificationApiRequest.getEmail();
+            email = email.replace(email.substring(0, email.indexOf('@') + 1), "");
+            if(email.equals("gachon.ac.kr")) {
+                response.setAccount("gachon");
+            } else response.setAccount("general");
+        }
 
-        String email = signupApiRequest.getEmail();
-        email = email.replace(email.substring(0, email.indexOf('@') + 1), "");
-        if(email.equals("gachon.ac.kr")) return "GACHON";
-
-        return "GENERAL";
+        return Header.OK(response);
     }
 
     private UserApiResponse response(User user) {

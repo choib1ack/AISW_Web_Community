@@ -22,7 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board", "account", "superComment", "subComment", "contentLikeList"})
+@ToString(exclude = {"board", "user", "superComment", "subComment", "contentLikeList"})
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
