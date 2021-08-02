@@ -1,24 +1,23 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.*;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-public class AccountRepositoryTest extends CommunityApplicationTests{
+public class UserRepositoryTest extends CommunityApplicationTests{
 //    @Autowired
 //    PasswordEncoder passwordEncoder;
 
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Test
     public void create(){
@@ -33,7 +32,7 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
         CollegeName collegeName = CollegeName.IT_CONVERGENCE;
         DepartmentName departmentName = DepartmentName.SOFTWARE;
 
-        Account account = Account.builder()
+        User user = User.builder()
                 .name(name)
                 .email(email)
 //                .password(password)
@@ -46,14 +45,14 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
                 .departmentName(departmentName)
                 .build();
 
-        Account newUser = accountRepository.save(account);
+        User newUser = userRepository.save(user);
         Assertions.assertNotNull(newUser);
     }
 
     @Test
     @Transactional
     public void read(){
-        Optional<Account> user = accountRepository.findById(1L);
+        Optional<User> user = userRepository.findById(1L);
 
 //        user.ifPresent(selectUser ->{
 ////            selectUser.getNoticeList().stream().forEach(notice -> {
@@ -82,7 +81,7 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
     @Transactional
     public void update(){
 
-        Optional<Account> user = accountRepository.findByEmail("test02@gmail.com");
+//        Optional<User> user = userRepository.findByEmail("test02@gmail.com");
 
 //        user.ifPresent(selectUser ->{
 //            selectUser.setPassword(passwordEncoder.encode("pppp1111"));
@@ -95,15 +94,15 @@ public class AccountRepositoryTest extends CommunityApplicationTests{
 
     @Test
     public void delete(){
-        Optional<Account> user = accountRepository.findById(1L);
+        Optional<User> user = userRepository.findById(1L);
 
         Assertions.assertTrue(user.isPresent());
         user.ifPresent(selectUser ->{
-            accountRepository.delete(selectUser);
+            userRepository.delete(selectUser);
         });
 
 
-        Optional<Account> deleteUser = accountRepository.findById(1L);
+        Optional<User> deleteUser = userRepository.findById(1L);
 
         if(deleteUser.isPresent()){
             System.out.println("Data Exists : " + deleteUser);

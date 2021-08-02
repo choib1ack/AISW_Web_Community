@@ -1,4 +1,4 @@
-package com.aisw.community.config;
+package com.aisw.community.config.storage;
 
 import lombok.Getter;
 import lombok.Setter;

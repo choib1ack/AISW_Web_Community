@@ -2,7 +2,7 @@ package com.aisw.community.model.entity.post.board;
 
 import com.aisw.community.model.entity.post.Bulletin;
 import com.aisw.community.model.entity.post.comment.Comment;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -36,9 +36,9 @@ public class Board extends Bulletin {
     private List<Comment> commentList;
 
     public Board(Long id, String title, String writer, String content, BulletinStatus status, Long views,
-                 FirstCategory firstCategory, SecondCategory secondCategory, Account account, Long likes,
+                 FirstCategory firstCategory, SecondCategory secondCategory, User user, Long likes,
                  Boolean isAnonymous) {
-        super(id, title, writer, content, status, views, firstCategory, secondCategory, account);
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, user);
         this.likes = likes;
         this.isAnonymous = isAnonymous;
         this.category = secondCategory;

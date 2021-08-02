@@ -3,14 +3,14 @@ package com.aisw.community.service.post.like;
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;
 import com.aisw.community.model.network.response.post.like.ContentLikeApiResponse;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
@@ -32,22 +32,22 @@ public class ContentLikeApiLogicService {
     private CommentRepository commentRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Transactional
     public Header<ContentLikeApiResponse> pressLike(Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
-        Account account = accountRepository.findById(contentLikeApiRequest.getAccountId())
+        User user = userRepository.findById(contentLikeApiRequest.getAccountId())
                 .orElseThrow(() -> new UserNotFoundException(contentLikeApiRequest.getAccountId()));
         ContentLike newContentLike = null;
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
-            contentLikeRepository.findContentLikeByAccountIdAndCommentId(account.getId(), comment.getId())
+            contentLikeRepository.findContentLikeByUserIdAndCommentId(user.getId(), comment.getId())
                     .ifPresent(contentLike -> {throw new RuntimeException();});
 
             ContentLike contentLike = ContentLike.builder()
-                    .account(account)
+                    .user(user)
                     .comment(comment)
                     .build();
 
@@ -58,11 +58,11 @@ public class ContentLikeApiLogicService {
         else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
-            contentLikeRepository.findContentLikeByAccountIdAndBoardId(account.getId(), board.getId())
+            contentLikeRepository.findContentLikeByUserIdAndBoardId(user.getId(), board.getId())
                     .ifPresent(contentLike -> {throw new RuntimeException();});
 
             ContentLike contentLike = ContentLike.builder()
-                    .account(account)
+                    .user(user)
                     .board(board)
                     .build();
 
@@ -76,14 +76,14 @@ public class ContentLikeApiLogicService {
     @Transactional
     public Header removeLike(Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
-        Account account = accountRepository.findById(contentLikeApiRequest.getAccountId())
+        User user = userRepository.findById(contentLikeApiRequest.getAccountId())
                 .orElseThrow(() -> new UserNotFoundException(contentLikeApiRequest.getAccountId()));
 
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
             return contentLikeRepository
-                    .findContentLikeByAccountIdAndCommentId(account.getId(), comment.getId())
+                    .findContentLikeByUserIdAndCommentId(user.getId(), comment.getId())
                     .map(contentLike -> {
                         comment.setLikes(comment.getLikes() - 1);
                         commentRepository.save(comment);
@@ -96,7 +96,7 @@ public class ContentLikeApiLogicService {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
             return contentLikeRepository
-                    .findContentLikeByAccountIdAndBoardId(account.getId(), board.getId())
+                    .findContentLikeByUserIdAndBoardId(user.getId(), board.getId())
                     .map(contentLike -> {
                         board.setLikes(board.getLikes() - 1);
                         boardRepository.save(board);
@@ -111,7 +111,7 @@ public class ContentLikeApiLogicService {
     private ContentLikeApiResponse response(ContentLike contentLike) {
         ContentLikeApiResponse contentLikeApiResponse = ContentLikeApiResponse.builder()
                 .id(contentLike.getId())
-                .accountId(contentLike.getAccount().getId())
+                .accountId(contentLike.getUser().getId())
                 .build();
         if(contentLike.getBoard() != null) {
             contentLikeApiResponse.setBoardId(contentLike.getBoard().getId());

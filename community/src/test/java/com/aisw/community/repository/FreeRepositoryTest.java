@@ -1,13 +1,13 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.repository.post.board.FreeRepository;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
     private FreeRepository freeRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Test
     public void create() {
@@ -35,7 +35,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
         Long views = 0L;
         Long likes = 0L;
         Boolean isAnonymous = true;
-        Account userId = accountRepository.getOne(1L);
+        User userId = userRepository.getOne(1L);
 
         Free free = Free.builder()
                 .title(title)

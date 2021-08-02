@@ -52,6 +52,6 @@ public class CommentApiResponse {
                         null, null, null, null) :
                 new CommentApiResponse(comment.getId(), comment.getWriter(), comment.getContent(),
                         comment.getCreatedAt(), comment.getIsAnonymous(), comment.getLikes(),
-                        comment.getBoard().getId(), comment.getAccount().getId());
+                        comment.getBoard().getId(), comment.getUser().getId());
     }
 }
