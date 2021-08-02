@@ -1,6 +1,6 @@
 package com.aisw.community;
 
-import com.aisw.community.config.FileStorageProperties;
+import com.aisw.community.config.storage.FileStorageProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

@@ -3,12 +3,12 @@ package com.aisw.community.service;
 import com.aisw.community.CommunityApplicationTests;
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
@@ -21,7 +21,7 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
     private ContentLikeRepository contentLikeRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private BoardRepository<Board> boardRepository;
@@ -37,17 +37,17 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
                 .commentId(7L)
                 .build();
 
-        Account account = accountRepository.findById(contentLikeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(contentLikeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
 //        Board board = boardRepository.findById(contentLikeApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
         Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId()).orElseThrow(CommentNotFoundException::new);
 
 //        contentLikeRepository.findContentLikeByAccountIdAndBoardId(1L, 3L)
 //                .ifPresent(contentLike -> {throw new RuntimeException();});
-        contentLikeRepository.findContentLikeByAccountIdAndCommentId(1L, 7L)
+        contentLikeRepository.findContentLikeByUserIdAndCommentId(1L, 7L)
                 .ifPresent(contentLike -> {throw new RuntimeException();});
 
         ContentLike contentLike = ContentLike.builder()
-                .account(account)
+                .user(user)
 //                .board(board)
                 .comment(comment)
                 .build();
@@ -64,12 +64,12 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
                 .commentId(7L)
                 .build();
 
-        Account account = accountRepository.findById(contentLikeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(contentLikeApiRequest.getAccountId()).orElseThrow(UserNotFoundException::new);
 //        Board board = boardRepository.findById(contentLikeApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
         Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId()).orElseThrow(CommentNotFoundException::new);
 
 //        contentLikeRepository.findContentLikeByAccountIdAndBoardId(1L, 3L).orElseThrow(RuntimeException::new);
-        ContentLike deleteContentLike = contentLikeRepository.findContentLikeByAccountIdAndCommentId(1L, 7L).orElseThrow(RuntimeException::new);
+        ContentLike deleteContentLike = contentLikeRepository.findContentLikeByUserIdAndCommentId(1L, 7L).orElseThrow(RuntimeException::new);
         contentLikeRepository.delete(deleteContentLike);
     }
 }

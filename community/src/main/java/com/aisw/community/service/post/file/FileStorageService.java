@@ -2,7 +2,7 @@ package com.aisw.community.service.post.file;
 
 import com.aisw.community.advice.exception.FileStorageException;
 import com.aisw.community.advice.exception.MyFileNotFoundException;
-import com.aisw.community.config.FileStorageProperties;
+import com.aisw.community.config.storage.FileStorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

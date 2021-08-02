@@ -5,7 +5,7 @@ import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.post.like.ContentLike;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -23,7 +23,7 @@ import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.QnaRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUploadToQnaDTO, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private QnaRepository qnaRepository;
@@ -61,18 +61,18 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Override
     public Header<QnaApiResponse> create(Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
+        User user = userRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
                 () -> new UserNotFoundException(qnaApiRequest.getAccountId()));
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
-                .writer(account.getName())
+                .writer(user.getName())
                 .content(qnaApiRequest.getContent())
                 .status(qnaApiRequest.getStatus())
                 .subject(qnaApiRequest.getSubject())
                 .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .account(account)
+                .user(user)
                 .build();
 
         Qna newQna = baseRepository.save(qna);
@@ -84,18 +84,18 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     public Header<QnaApiResponse> create(FileUploadToQnaDTO request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
 
-        Account account = accountRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
+        User user = userRepository.findById(qnaApiRequest.getAccountId()).orElseThrow(
                 () -> new UserNotFoundException(qnaApiRequest.getAccountId()));
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
-                .writer(account.getName())
+                .writer(user.getName())
                 .content(qnaApiRequest.getContent())
                 .status(qnaApiRequest.getStatus())
                 .subject(qnaApiRequest.getSubject())
                 .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .account(account)
+                .user(user)
                 .build();
         Qna newQna = baseRepository.save(qna);
 
@@ -124,7 +124,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
-        if(qna.getAccount().getId() != qnaApiRequest.getAccountId()) {
+        if(qna.getUser().getId() != qnaApiRequest.getAccountId()) {
             throw new NotEqualAccountException(qnaApiRequest.getAccountId());
         }
 
@@ -148,7 +148,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
-        if(qna.getAccount().getId() != qnaApiRequest.getAccountId()) {
+        if(qna.getUser().getId() != qnaApiRequest.getAccountId()) {
             throw new NotEqualAccountException(qnaApiRequest.getAccountId());
         }
 
@@ -171,7 +171,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     public Header delete(Long id, Long userId) {
         Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (qna.getAccount().getId() != userId) {
+        if (qna.getUser().getId() != userId) {
             throw new NotEqualAccountException(userId);
         }
 
@@ -194,7 +194,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
-                .accountId(qna.getAccount().getId())
+                .accountId(qna.getUser().getId())
                 .category(qna.getCategory())
                 .fileApiResponseList(qna.getFileList().stream()
                         .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
@@ -218,7 +218,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .likes(qna.getLikes())
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
-                .accountId(qna.getAccount().getId())
+                .accountId(qna.getUser().getId())
                 .category(qna.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
@@ -252,7 +252,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
-                .accountId(qna.getAccount().getId())
+                .accountId(qna.getUser().getId())
                 .checkLike(false)
                 .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()))
                 .build();
@@ -289,11 +289,11 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .subject(qna.getSubject())
                 .isAnonymous(qna.getIsAnonymous())
                 .category(qna.getCategory())
-                .accountId(qna.getAccount().getId())
+                .accountId(qna.getUser().getId())
                 .checkLike(false)
                 .build();
 
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
+        List<ContentLike> contentLikeList = contentLikeRepository.findAllByUserId(accountId);
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {
                 if (contentLike.getBoard().getId() == qna.getId()) {

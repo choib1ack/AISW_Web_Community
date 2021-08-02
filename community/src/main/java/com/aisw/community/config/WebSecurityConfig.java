@@ -1,6 +1,10 @@
 package com.aisw.community.config;
 
 //import com.aisw.community.provider.CustomAuthenticationProvider;
+
+import com.aisw.community.config.jwt.JwtAuthenticationFilter;
+import com.aisw.community.config.jwt.JwtAuthorizationFilter;
+import com.aisw.community.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,8 +22,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CorsConfig corsConfig;
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -36,13 +48,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception{
-        http.csrf().disable()
-                .authorizeRequests()
-                .anyRequest().permitAll()
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .addFilter(corsConfig.corsFilter())
+                .csrf().disable()
+                // 세션 사용 안 함
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .formLogin()
-                .disable();
+                .formLogin().disable()
+                // Basic: Authorization에 id, pw 넣어서 보냄
+                // Bearer: Authorization에 token 넣어서 보냄
+                .httpBasic().disable()
+
+                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .authorizeRequests()
+//                .antMatchers("/board/**")
+//                .access("hasRole('ROLE_STUDENT') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+//                .antMatchers("/notice/**")
+//                .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+//                .antMatchers("/admin/**")
+//                .access("hasRole('ROLE_ADMIN')")
+                .anyRequest().permitAll();
     }
 
     @Override

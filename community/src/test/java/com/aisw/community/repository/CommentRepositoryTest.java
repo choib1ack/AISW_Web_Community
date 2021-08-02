@@ -1,12 +1,12 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +22,14 @@ class CommentRepositoryTest extends CommunityApplicationTests  {
     private BoardRepository<Board> boardRepository;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Test
     public void create() {
         String writer = "writer";
         String content = "test Content";
         Boolean isAnonymous = true;
-        Account userId = accountRepository.getOne(1L);
+        User userId = userRepository.getOne(1L);
         Board boardId = boardRepository.getOne(1L);
 
         Comment comment = Comment.builder()
@@ -39,7 +39,7 @@ class CommentRepositoryTest extends CommunityApplicationTests  {
                 .isDeleted(false)
                 .likes(0L)
                 .board(boardId)
-                .account(userId)
+                .user(userId)
                 .build();
 
         Comment newComment = commentRepository.save(comment);
