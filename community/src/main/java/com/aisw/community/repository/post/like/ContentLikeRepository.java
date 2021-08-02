@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ContentLikeRepository extends JpaRepository<ContentLike, Long> {
-    List<ContentLike> findAllByAccountId(Long accountId);
-    Optional<ContentLike> findContentLikeByAccountIdAndBoardId(Long accountId, Long boardId);
-    Optional<ContentLike> findContentLikeByAccountIdAndCommentId(Long accountId, Long commentId);
+    List<ContentLike> findAllByUserId(Long userId);
+    Optional<ContentLike> findContentLikeByUserIdAndBoardId(Long userId, Long boardId);
+    Optional<ContentLike> findContentLikeByUserIdAndCommentId(Long userId, Long commentId);
 }

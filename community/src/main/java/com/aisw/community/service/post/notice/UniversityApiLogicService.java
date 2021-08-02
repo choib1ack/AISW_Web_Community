@@ -4,7 +4,7 @@ import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.model.entity.post.notice.University;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -19,7 +19,7 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, FileUploadToUniversityDTO, NoticeResponseDTO, UniversityApiResponse, University> {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private UniversityRepository universityRepository;
@@ -50,17 +50,17 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Override
     public Header<UniversityApiResponse> create(Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
-        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(
+        User user = userRepository.findById(universityApiRequest.getAccountId()).orElseThrow(
                 () -> new UserNotFoundException(universityApiRequest.getAccountId()));
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
-                .writer(account.getName())
+                .writer(user.getName())
                 .content(universityApiRequest.getContent())
                 .status(universityApiRequest.getStatus())
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .account(account)
+                .user(user)
                 .build();
 
         University newUniversity = baseRepository.save(university);
@@ -72,17 +72,17 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     public Header<UniversityApiResponse> create(FileUploadToUniversityDTO request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
 
-        Account account = accountRepository.findById(universityApiRequest.getAccountId()).orElseThrow(
+        User user = userRepository.findById(universityApiRequest.getAccountId()).orElseThrow(
                 () -> new UserNotFoundException(universityApiRequest.getAccountId()));
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
-                .writer(account.getName())
+                .writer(user.getName())
                 .content(universityApiRequest.getContent())
                 .status(universityApiRequest.getStatus())
                 .campus(universityApiRequest.getCampus())
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .account(account)
+                .user(user)
                 .build();
         University newUniversity = baseRepository.save(university);
 
@@ -111,7 +111,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
 
-        if(university.getAccount().getId() != universityApiRequest.getAccountId()) {
+        if(university.getUser().getId() != universityApiRequest.getAccountId()) {
             throw new NotEqualAccountException(universityApiRequest.getAccountId());
         }
 
@@ -134,7 +134,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
 
-        if(university.getAccount().getId() != universityApiRequest.getAccountId()) {
+        if(university.getUser().getId() != universityApiRequest.getAccountId()) {
             throw new NotEqualAccountException(universityApiRequest.getAccountId());
         }
 
@@ -156,7 +156,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     public Header delete(Long id, Long userId) {
         University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        if (university.getAccount().getId() != userId) {
+        if (university.getUser().getId() != userId) {
             throw new NotEqualAccountException(userId);
         }
 
@@ -178,7 +178,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .accountId(university.getAccount().getId())
+                .accountId(university.getUser().getId())
                 .fileApiResponseList(university.getFileList().stream()
                         .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
@@ -200,7 +200,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .accountId(university.getAccount().getId())
+                .accountId(university.getUser().getId())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
 

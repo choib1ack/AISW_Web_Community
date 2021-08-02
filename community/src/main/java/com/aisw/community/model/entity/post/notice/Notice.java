@@ -1,6 +1,6 @@
 package com.aisw.community.model.entity.post.notice;
 
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.entity.post.Bulletin;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -24,8 +24,8 @@ public class Notice extends Bulletin {
     private SecondCategory category;
 
     public Notice(Long id, String title, String writer, String content, BulletinStatus status, Long views,
-                  FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
-        super(id, title, writer, content, status, views, firstCategory, secondCategory, account);
+                  FirstCategory firstCategory, SecondCategory secondCategory, User user) {
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, user);
         this.category = secondCategory;
     }
 }

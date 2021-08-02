@@ -2,7 +2,7 @@ package com.aisw.community.model.entity.post.comment;
 
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.post.board.Board;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.ColumnDefault;
@@ -52,7 +52,7 @@ public class Comment {
     private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Account account;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "super_comment_id")

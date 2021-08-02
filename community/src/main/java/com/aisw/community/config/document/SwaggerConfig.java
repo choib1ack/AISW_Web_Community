@@ -1,4 +1,4 @@
-package com.aisw.community.config;
+package com.aisw.community.config.document;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
