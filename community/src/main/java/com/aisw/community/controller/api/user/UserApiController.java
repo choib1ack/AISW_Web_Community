@@ -7,6 +7,7 @@ import com.aisw.community.model.network.response.user.UserApiResponse;
 import com.aisw.community.model.network.response.user.VerificationApiResponse;
 import com.aisw.community.service.user.UserApiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,5 +27,13 @@ class UserApiController {
         return userApiService.verification(request);
     }
 
+    @PutMapping("/auth/user")
+    public Header<UserApiResponse> update(Authentication authentication, @RequestBody Header<UserApiRequest> request) {
+        return userApiService.update(authentication, request);
+    }
 
+    @DeleteMapping("/auth/user")
+    public Header delete(Authentication authentication) {
+        return userApiService.delete(authentication);
+    }
 }
