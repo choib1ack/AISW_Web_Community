@@ -1,4 +1,4 @@
-package com.aisw.community.model.network.request.post.board;
+package com.aisw.community.model.network.request.post.notice;
 
 
 import lombok.*;
@@ -9,9 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileUploadToQnaDTO {
+public class FileUploadToUniversityApiRequest {
 
-    private QnaApiRequest qnaApiRequest;
+    private UniversityApiRequest universityApiRequest;
 
     private MultipartFile[] files;
 }

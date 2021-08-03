@@ -1,5 +1,7 @@
 package com.aisw.community.service.user;
 
+import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.UserApiRequest;
@@ -8,6 +10,7 @@ import com.aisw.community.model.network.response.user.UserApiResponse;
 import com.aisw.community.model.network.response.user.VerificationApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,18 +51,45 @@ public class UserApiService {
         VerificationApiRequest verificationApiRequest = request.getData();
         User user = userRepository.findByUsername(verificationApiRequest.getUsername());
         VerificationApiResponse response = new VerificationApiResponse();
-        if(user!=null) {
+        if (user != null) {
             response.setValidation(true);
         } else {
             response.setValidation(false);
             String email = verificationApiRequest.getEmail();
             email = email.replace(email.substring(0, email.indexOf('@') + 1), "");
-            if(email.equals("gachon.ac.kr")) {
+            if (email.equals("gachon.ac.kr")) {
                 response.setAccount("gachon");
             } else response.setAccount("general");
         }
 
         return Header.OK(response);
+    }
+
+    public Header<UserApiResponse> update(Authentication authentication, Header<UserApiRequest> request) {
+        UserApiRequest userApiRequest = request.getData();
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
+
+        user
+                .setName(userApiRequest.getName())
+                .setEmail(userApiRequest.getEmail())
+                .setPhoneNumber(userApiRequest.getPhoneNumber())
+                .setGrade(userApiRequest.getGrade())
+                .setStudentId(userApiRequest.getStudentId())
+                .setGender(userApiRequest.getGender())
+                .setUniversity(userApiRequest.getUniversity())
+                .setCollegeName(userApiRequest.getCollegeName())
+                .setDepartmentName(userApiRequest.getDepartmentName());
+        User newUser = userRepository.save(user);
+
+        return Header.OK(response(newUser));
+    }
+
+    public Header delete(Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
+        userRepository.delete(user);
+        return Header.OK();
     }
 
     private UserApiResponse response(User user) {

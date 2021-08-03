@@ -12,7 +12,7 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.board.FileUploadToFreeDTO;
+import com.aisw.community.model.network.request.post.board.FileUploadToFreeApiRequest;
 import com.aisw.community.model.network.request.post.board.FreeApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUploadToFreeDTO, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
+public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUploadToFreeApiRequest, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
 
     @Autowired
     private UserRepository userRepository;
@@ -81,7 +81,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    public Header<FreeApiResponse> create(FileUploadToFreeDTO request) {
+    public Header<FreeApiResponse> create(FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
 
         User user = userRepository.findById(freeApiRequest.getUserId()).orElseThrow(
@@ -141,7 +141,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    public Header<FreeApiResponse> update(FileUploadToFreeDTO request) {
+    public Header<FreeApiResponse> update(FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
         MultipartFile[] files = request.getFiles();
 
@@ -250,6 +250,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .category(free.getCategory())
                 .accountId(free.getUser().getId())
                 .checkLike(false)
+                .fileApiResponseList(free.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()))
                 .build();
 
@@ -286,6 +288,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .category(free.getCategory())
                 .checkLike(false)
                 .accountId(free.getUser().getId())
+                .fileApiResponseList(free.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()))
                 .build();
 
         List<ContentLike> contentLikeList = contentLikeRepository.findAllByUserId(accountId);

@@ -12,7 +12,7 @@ import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
-import com.aisw.community.model.network.request.post.notice.FileUploadToDepartmentDTO;
+import com.aisw.community.model.network.request.post.notice.FileUploadToDepartmentApiRequest;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.DepartmentApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRequest, FileUploadToDepartmentDTO, NoticeResponseDTO, DepartmentApiResponse, Department> {
+public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRequest, FileUploadToDepartmentApiRequest, NoticeResponseDTO, DepartmentApiResponse, Department> {
 
     @Autowired
     private UserRepository userRepository;
@@ -69,7 +69,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     @Transactional
-    public Header<DepartmentApiResponse> create(FileUploadToDepartmentDTO request) {
+    public Header<DepartmentApiResponse> create(FileUploadToDepartmentApiRequest request) {
         DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
 
         User user = userRepository.findById(departmentApiRequest.getUserId()).orElseThrow(
@@ -126,7 +126,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     @Transactional
-    public Header<DepartmentApiResponse> update(FileUploadToDepartmentDTO request) {
+    public Header<DepartmentApiResponse> update(FileUploadToDepartmentApiRequest request) {
         DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
         MultipartFile[] files = request.getFiles();
 

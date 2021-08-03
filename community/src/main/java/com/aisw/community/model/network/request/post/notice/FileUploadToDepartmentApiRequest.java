@@ -9,9 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileUploadToUniversityDTO {
+public class FileUploadToDepartmentApiRequest {
 
-    private UniversityApiRequest universityApiRequest;
+    private DepartmentApiRequest departmentApiRequest;
 
     private MultipartFile[] files;
 }

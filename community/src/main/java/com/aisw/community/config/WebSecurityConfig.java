@@ -63,12 +63,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager()))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
                 .authorizeRequests()
-//                .antMatchers("/board/**")
-//                .access("hasRole('ROLE_STUDENT') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-//                .antMatchers("/notice/**")
-//                .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-//                .antMatchers("/admin/**")
-//                .access("hasRole('ROLE_ADMIN')")
+                .antMatchers("/auth/**")
+                .access("hasRole('Role_GENERAL') or hasRole('ROLE_STUDENT') or hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
+                .antMatchers("/auth-student/**")
+                .access("hasRole('ROLE_STUDENT') or hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
+                .antMatchers("/auth-council/**")
+                .access("hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
+                .antMatchers("/auth-admin/**")
+                .access("hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
                 .anyRequest().permitAll();
     }
 

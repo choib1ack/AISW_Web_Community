@@ -15,28 +15,28 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/site")
+@RequestMapping()
 public class SiteInformationApiController {
 
     @Autowired
     private SiteInformationApiLogicService siteInformationApiLogicService;
 
-    @PostMapping("")
+    @PostMapping("/auth-admin")
     public Header<SiteInformationApiResponse> create(@ModelAttribute FileUploadToSiteInformationDTO request) {
         return siteInformationApiLogicService.create(request);
     }
 
-    @GetMapping("")
+    @GetMapping("/site")
     public Header<List<SiteInformationWithFileApiResponse>> read() {
         return siteInformationApiLogicService.read();
     }
 
-    @PutMapping("")
+    @PutMapping("/auth-admin")
     public Header<SiteInformationApiResponse> update(@ModelAttribute FileUploadToSiteInformationDTO request) {
         return siteInformationApiLogicService.update(request);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/auth-admin/{id}")
     public Header delete(@PathVariable Long id) {
         return siteInformationApiLogicService.delete(id);
     }

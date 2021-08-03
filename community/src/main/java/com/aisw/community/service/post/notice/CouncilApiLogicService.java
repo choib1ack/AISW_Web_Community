@@ -12,7 +12,7 @@ import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
-import com.aisw.community.model.network.request.post.notice.FileUploadToCouncilDTO;
+import com.aisw.community.model.network.request.post.notice.FileUploadToCouncilApiRequest;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.CouncilApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest, FileUploadToCouncilDTO, NoticeResponseDTO, CouncilApiResponse, Council> {
+public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest, FileUploadToCouncilApiRequest, NoticeResponseDTO, CouncilApiResponse, Council> {
 
     @Autowired
     private UserRepository userRepository;
@@ -68,7 +68,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
-    public Header<CouncilApiResponse> create(FileUploadToCouncilDTO request) {
+    public Header<CouncilApiResponse> create(FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
 
         User user = userRepository.findById(councilApiRequest.getUserId()).orElseThrow(
@@ -124,7 +124,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
-    public Header<CouncilApiResponse> update(FileUploadToCouncilDTO request) {
+    public Header<CouncilApiResponse> update(FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
         MultipartFile[] files = request.getFiles();
 
