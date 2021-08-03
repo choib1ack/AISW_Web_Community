@@ -4,6 +4,8 @@ import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.config.jwt.JwtProperties;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -32,6 +34,10 @@ public class JwtTokenProvider {
         return request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
     }
 
+    public DecodedJWT requireDecodedJwt(HttpServletRequest request) {
+        return JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(resolveToken(request));
+    }
+
     public DecodedJWT requireDecodedJwt(String token) {
         return JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token);
     }
@@ -39,10 +45,12 @@ public class JwtTokenProvider {
     // 토큰의 유효성 + 만료일자 확인
     public boolean validateToken(String token) {
         try {
-            DecodedJWT decodedJWT = requireDecodedJwt(token);
-            return decodedJWT.getExpiresAt().after(new Date());
-        } catch (Exception e) {
-            return false;
+            return requireDecodedJwt(token).getExpiresAt().after(new Date());
+        } catch (TokenExpiredException e) {
+            e.getStackTrace();
+        } catch (InvalidClaimException e) {
+            e.getStackTrace();
         }
+        return false;
     }
 }
