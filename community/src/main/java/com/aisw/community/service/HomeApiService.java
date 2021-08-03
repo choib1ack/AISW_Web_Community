@@ -42,8 +42,7 @@ public class HomeApiService {
 
     @Autowired
     private SiteInformationRepository siteInformationRepository;
-
-
+    
     public Header<HomeApiResponse> main() {
         HomeApiResponse homeApiResponse = HomeApiResponse.builder()
                 .universityList(universityRepository.findTop10ByOrderByCreatedAtDesc()
