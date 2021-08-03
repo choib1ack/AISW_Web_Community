@@ -45,7 +45,7 @@ public class QnaDetailApiResponse {
 
     private String updatedBy;
 
-    private Long accountId;
+    private Long userId;
 
     private Boolean checkLike = false;
 

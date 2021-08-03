@@ -43,7 +43,7 @@ public class FreeDetailApiResponse {
 
     private String updatedBy;
 
-    private Long accountId;
+    private Long userId;
 
     private Boolean checkLike = false;
 

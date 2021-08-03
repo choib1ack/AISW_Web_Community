@@ -3,6 +3,7 @@ package com.aisw.community.service.post.like;
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
@@ -15,6 +16,7 @@ import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,10 +37,10 @@ public class ContentLikeApiLogicService {
     private UserRepository userRepository;
 
     @Transactional
-    public Header<ContentLikeApiResponse> pressLike(Header<ContentLikeApiRequest> request) {
+    public Header<ContentLikeApiResponse> pressLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
-        User user = userRepository.findById(contentLikeApiRequest.getAccountId())
-                .orElseThrow(() -> new UserNotFoundException(contentLikeApiRequest.getAccountId()));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
         ContentLike newContentLike = null;
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
@@ -74,10 +76,10 @@ public class ContentLikeApiLogicService {
     }
 
     @Transactional
-    public Header removeLike(Header<ContentLikeApiRequest> request) {
+    public Header removeLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
-        User user = userRepository.findById(contentLikeApiRequest.getAccountId())
-                .orElseThrow(() -> new UserNotFoundException(contentLikeApiRequest.getAccountId()));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
 
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
@@ -111,7 +113,7 @@ public class ContentLikeApiLogicService {
     private ContentLikeApiResponse response(ContentLike contentLike) {
         ContentLikeApiResponse contentLikeApiResponse = ContentLikeApiResponse.builder()
                 .id(contentLike.getId())
-                .accountId(contentLike.getUser().getId())
+                .userId(contentLike.getUser().getId())
                 .build();
         if(contentLike.getBoard() != null) {
             contentLikeApiResponse.setBoardId(contentLike.getBoard().getId());

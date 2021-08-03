@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -26,13 +27,13 @@ public class FreeApiController implements CrudInterface<FreeApiRequest, FreeApiR
 
     @Override
     @PostMapping("")
-    public Header<FreeApiResponse> create(@RequestBody Header<FreeApiRequest> request) {
-        return boardPostService.create(request);
+    public Header<FreeApiResponse> create(Authentication authentication, @RequestBody Header<FreeApiRequest> request) {
+        return boardPostService.create(authentication, request);
     }
 
     @PostMapping("/upload")
-    public Header<FreeApiResponse> create(@ModelAttribute FileUploadToFreeApiRequest request) {
-        return boardPostService.create(request);
+    public Header<FreeApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToFreeApiRequest request) {
+        return boardPostService.create(authentication, request);
     }
 
     @Override
@@ -43,19 +44,19 @@ public class FreeApiController implements CrudInterface<FreeApiRequest, FreeApiR
 
     @Override
     @PutMapping("")
-    public Header<FreeApiResponse> update(@RequestBody Header<FreeApiRequest> request) {
-        return boardPostService.update(request);
+    public Header<FreeApiResponse> update(Authentication authentication, @RequestBody Header<FreeApiRequest> request) {
+        return boardPostService.update(authentication, request);
     }
 
     @PutMapping("/upload")
-    public Header<FreeApiResponse> update(@ModelAttribute FileUploadToFreeApiRequest request) {
-        return boardPostService.update(request);
+    public Header<FreeApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToFreeApiRequest request) {
+        return boardPostService.update(authentication, request);
     }
 
     @Override
-    @DeleteMapping("{id}/{userId}")
-    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
-        return boardPostService.delete(id, userId);
+    @DeleteMapping("{id}")
+    public Header delete(Authentication authentication, @PathVariable Long id) {
+        return boardPostService.delete(authentication, id);
     }
 
     @GetMapping("/comment/{id}")

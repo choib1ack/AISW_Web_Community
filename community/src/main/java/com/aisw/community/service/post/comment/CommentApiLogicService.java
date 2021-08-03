@@ -3,10 +3,10 @@ package com.aisw.community.service.post.comment;
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
-import com.aisw.community.advice.exception.UserNotFoundException;
-import com.aisw.community.model.entity.user.User;
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.comment.CommentApiRequest;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
@@ -15,6 +15,7 @@ import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.comment.CustomCommentRepository;
 import com.aisw.community.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,10 +40,10 @@ public class CommentApiLogicService {
     private CustomCommentRepository customCommentRepository;
 
     @Transactional
-    public Header<CommentApiResponse> create(Header<CommentApiRequest> request) {
+    public Header<CommentApiResponse> create(Authentication authentication, Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
-        User user = userRepository.findById(commentApiRequest.getAccountId()).orElseThrow(
-                () -> new UserNotFoundException(commentApiRequest.getAccountId()));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
         Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
                 () -> new PostNotFoundException(commentApiRequest.getBoardId()));
 
@@ -57,7 +58,7 @@ public class CommentApiLogicService {
                 .user(user)
                 .superComment(superComment)
                 .board(boardRepository.getOne(commentApiRequest.getBoardId()))
-                .user(userRepository.getOne(commentApiRequest.getAccountId()))
+                .user(userRepository.getOne(commentApiRequest.getUserId()))
                 .build();
 
         Comment newComment = commentRepository.save(comment);
@@ -65,12 +66,14 @@ public class CommentApiLogicService {
     }
 
     @Transactional
-    public Header delete(Long id, Long userId) {
+    public Header delete(Authentication authentication, Long id) {
         Comment comment = commentRepository.findCommentByIdWithSuperComment(id).orElseThrow(
                 () -> new CommentNotFoundException(id));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
 
-        if (comment.getUser().getId() != userId) {
-            throw new NotEqualAccountException(userId);
+        if (comment.getUser().getId() != user.getId()) {
+            throw new NotEqualAccountException(user.getId());
         }
 
         if(comment.getSubComment().size() != 0) {
@@ -111,7 +114,7 @@ public class CommentApiLogicService {
                 .likes(comment.getLikes())
                 .isAnonymous(comment.getIsAnonymous())
                 .boardId(comment.getBoard().getId())
-                .accountId(comment.getUser().getId())
+                .userId(comment.getUser().getId())
                 .build();
 
         return freeCommentApiResponse;

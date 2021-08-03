@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -25,13 +26,13 @@ public class DepartmentApiController implements CrudInterface<DepartmentApiReque
 
     @Override
     @PostMapping("/auth-admin/notice/department")
-    public Header<DepartmentApiResponse> create(@RequestBody Header<DepartmentApiRequest> request) {
-        return noticePostService.create(request);
+    public Header<DepartmentApiResponse> create(Authentication authentication, @RequestBody Header<DepartmentApiRequest> request) {
+        return noticePostService.create(authentication, request);
     }
 
     @PostMapping("/auth-admin/notice/department/upload")
-    public Header<DepartmentApiResponse> create(@ModelAttribute FileUploadToDepartmentApiRequest request) {
-        return noticePostService.create(request);
+    public Header<DepartmentApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToDepartmentApiRequest request) {
+        return noticePostService.create(authentication, request);
     }
 
     @Override
@@ -42,19 +43,19 @@ public class DepartmentApiController implements CrudInterface<DepartmentApiReque
 
     @Override
     @PutMapping("/auth-admin/notice/department")
-    public Header<DepartmentApiResponse> update(@RequestBody Header<DepartmentApiRequest> request) {
-        return noticePostService.update(request);
+    public Header<DepartmentApiResponse> update(Authentication authentication, @RequestBody Header<DepartmentApiRequest> request) {
+        return noticePostService.update(authentication, request);
     }
 
     @PutMapping("/auth-admin/notice/department/upload")
-    public Header<DepartmentApiResponse> update(@ModelAttribute FileUploadToDepartmentApiRequest request) {
-        return noticePostService.update(request);
+    public Header<DepartmentApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToDepartmentApiRequest request) {
+        return noticePostService.update(authentication, request);
     }
 
     @Override
-    @DeleteMapping("/auth-admin/notice/department/{id}/{userId}")
-    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
-        return noticePostService.delete(id, userId);
+    @DeleteMapping("/auth-admin/notice/department/{id}")
+    public Header delete(Authentication authentication, @PathVariable Long id) {
+        return noticePostService.delete(authentication, id);
     }
 
     @GetMapping("/notice/department")

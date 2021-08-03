@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -25,13 +26,13 @@ public class CouncilApiController implements CrudInterface<CouncilApiRequest, Co
 
     @Override
     @PostMapping("/auth-council/notice/council")
-    public Header<CouncilApiResponse> create(@RequestBody Header<CouncilApiRequest> request) {
-        return noticePostService.create(request);
+    public Header<CouncilApiResponse> create(Authentication authentication, @RequestBody Header<CouncilApiRequest> request) {
+        return noticePostService.create(authentication, request);
     }
 
     @PostMapping("/auth-council/notice/council/upload")
-    public Header<CouncilApiResponse> create(@ModelAttribute FileUploadToCouncilApiRequest request) {
-        return noticePostService.create(request);
+    public Header<CouncilApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToCouncilApiRequest request) {
+        return noticePostService.create(authentication, request);
     }
 
     @Override
@@ -42,19 +43,19 @@ public class CouncilApiController implements CrudInterface<CouncilApiRequest, Co
 
     @Override
     @PutMapping("/auth-council/notice/council")
-    public Header<CouncilApiResponse> update(@RequestBody Header<CouncilApiRequest> request) {
-        return noticePostService.update(request);
+    public Header<CouncilApiResponse> update(Authentication authentication, @RequestBody Header<CouncilApiRequest> request) {
+        return noticePostService.update(authentication, request);
     }
 
     @PutMapping("/auth-council/notice/council/upload")
-    public Header<CouncilApiResponse> update(@ModelAttribute FileUploadToCouncilApiRequest request) {
-        return noticePostService.update(request);
+    public Header<CouncilApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToCouncilApiRequest request) {
+        return noticePostService.update(authentication, request);
     }
 
     @Override
-    @DeleteMapping("/auth-council/notice/council/{id}/{userId}")
-    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
-        return noticePostService.delete(id, userId);
+    @DeleteMapping("/auth-council/notice/council/{id}")
+    public Header delete(Authentication authentication, @PathVariable Long id) {
+        return noticePostService.delete(authentication, id);
     }
 
     @GetMapping("/notice/council")
