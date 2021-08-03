@@ -2,6 +2,7 @@ package com.aisw.community.config.jwt;
 
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.network.request.user.LoginApiRequest;
+import com.aisw.community.provider.JwtTokenProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // login해야하기 때문에 AuthenticationManager가 있어야 UsernamePasswordAuthenticationFilter로 작동 가능
     private final AuthenticationManager authenticationManager;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     // Authentication 객체 만들어서 리턴 => 의존 : AuthenticationManager
     // 인증 요청시에 실행되는 함수 => /login
     // 인증 안 되면 401 에러 / error: Unathorized
@@ -49,9 +52,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(loginApiRequest.getUsername());
-        System.out.println("JwtAuthenticationFilter : " + loginApiRequest);
-
         // 유저네임패스워드 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         loginApiRequest.getUsername(),
@@ -69,9 +69,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // Tip: 인증 프로바이더의 디폴트 암호화 방식은 BCryptPasswordEncoder
         // 결론은 인증 프로바이더에게 알려줄 필요가 없음.
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
-
-        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        System.out.println("Authentication : " + principalDetails.getUser().getUsername());
         // authentication 객체가 session 영역에 저장됨 -> 로그인 완료
         return authentication;
     }
@@ -82,15 +79,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) {
         System.out.println("login success");
-        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
-
-        String jwtToken = JWT.create()
-                .withSubject(principalDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
-                .withClaim("id", principalDetails.getUser().getId())
-                .withClaim("username", principalDetails.getUser().getUsername())
-                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
-
+        String jwtToken = jwtTokenProvider.createToken(authResult);
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
     }
 }

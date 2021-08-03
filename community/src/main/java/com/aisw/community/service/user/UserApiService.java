@@ -10,6 +10,7 @@ import com.aisw.community.model.network.response.user.UserApiResponse;
 import com.aisw.community.model.network.response.user.VerificationApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

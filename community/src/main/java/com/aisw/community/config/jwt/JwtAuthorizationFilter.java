@@ -2,6 +2,7 @@ package com.aisw.community.config.jwt;
 
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
+import com.aisw.community.provider.JwtTokenProvider;
 import com.aisw.community.repository.user.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -22,35 +23,34 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
 	private UserRepository userRepository;
 
-	public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+	private JwtTokenProvider jwtTokenProvider;
+
+	public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTokenProvider jwtTokenProvider) {
 		super(authenticationManager);
 		this.userRepository = userRepository;
+		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-
 		String header = request.getHeader(JwtProperties.HEADER_STRING);
 		System.out.println("header Authorization : " + header);
-		
+
 		if (header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)) {
 			chain.doFilter(request, response);
 			return;
 		}
 
-		String token = request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
-		System.out.println("token : " + token);
+		String token = jwtTokenProvider.resolveToken(request);
 		// 토큰 검증 (이게 인증이기 때문에 AuthenticationManager도 필요 없음)
-		// 내가 SecurityContext에 집적 접근해서 세션을 만들때 자동으로 UserDetailsService에 있는
+		// 내가 SecurityContext에 직접 접근해서 세션을 만들때 자동으로 UserDetailsService에 있는
 		// loadByUsername이 호출됨.
-		String username = JWT.require(Algorithm.HMAC512(JwtProperties.SECRET)).build().verify(token)
-				.getClaim("username").asString();
+		String username = jwtTokenProvider.requireDecodedJwt(token).getClaim("username").asString();
 
 		// 서명 정상
-		if (username != null) {
+		if (username != null && jwtTokenProvider.validateToken(token)) {
 			User user = userRepository.findByUsername(username);
-			System.out.println(username);
 
 			// 인증은 토큰 검증시 끝. 인증을 하기 위해서가 아닌 스프링 시큐리티가 수행해주는 권한 처리를 위해
 			// 아래와 같이 토큰을 만들어서 Authentication 객체를 강제로 만들고 그걸 세션에 저장!
@@ -63,8 +63,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 			// 강제로 시큐리티의 세션에 접근하여 값 저장
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 		}
-
 		chain.doFilter(request, response);
 	}
-
 }

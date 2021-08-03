@@ -4,6 +4,7 @@ package com.aisw.community.config;
 
 import com.aisw.community.config.jwt.JwtAuthenticationFilter;
 import com.aisw.community.config.jwt.JwtAuthorizationFilter;
+import com.aisw.community.provider.JwtTokenProvider;
 import com.aisw.community.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,23 +30,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CorsConfig corsConfig;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-//    @Autowired
-//    private UserDetailsService userDetailsService;
-
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-//        auth.authenticationProvider(authenticationProvider());
-//    }
-
-//    @Bean
-//    public AuthenticationProvider authenticationProvider(){
-//        return new CustomAuthenticationProvider();
-//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -60,8 +51,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Bearer: Authorization에 token 넣어서 보냄
                 .httpBasic().disable()
 
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtTokenProvider))
                 .authorizeRequests()
                 .antMatchers("/auth/**")
                 .access("hasRole('Role_GENERAL') or hasRole('ROLE_STUDENT') or hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
@@ -72,10 +63,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth-admin/**")
                 .access("hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
                 .anyRequest().permitAll();
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-
     }
 }
