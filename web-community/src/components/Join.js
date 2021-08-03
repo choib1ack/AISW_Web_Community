@@ -30,6 +30,7 @@ export default function Join() {
 
     useEffect(() => {
         console.log(location.state.google_data);
+        console.log(location.state.account_role);
     }, [location]);
 
     async function sendServer(data) {
@@ -63,7 +64,7 @@ export default function Join() {
             provider: location.state.google_data.tokenObj.idpId,
             provider_id: location.state.google_data.profileObj.googleId,
             phone_number: data.phone_number,
-            // role: 'NOT_PERMITTED',
+            role: location.state.account_role,   // GENERAL, STUDENT
             student_id: data.student_id,
             university: 'COMMON',
             picture: location.state.google_data.profileObj.picture
@@ -208,6 +209,7 @@ export default function Join() {
                         </div>
                     </Form>
                 </Col>
+                <Col/>
             </Row>
         </Container>
     );
