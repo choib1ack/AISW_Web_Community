@@ -1,7 +1,6 @@
 package com.aisw.community.model.network.request.post.board;
 
 
-import com.aisw.community.model.network.request.admin.BannerApiRequest;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,9 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileUploadToFreeDTO {
+public class FileUploadToQnaApiRequest {
 
-    private FreeApiRequest freeApiRequest;
+    private QnaApiRequest qnaApiRequest;
 
     private MultipartFile[] files;
 }

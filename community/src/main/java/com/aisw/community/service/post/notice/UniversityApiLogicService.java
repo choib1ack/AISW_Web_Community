@@ -11,7 +11,7 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.notice.FileUploadToUniversityDTO;
+import com.aisw.community.model.network.request.post.notice.FileUploadToUniversityApiRequest;
 import com.aisw.community.model.network.request.post.notice.UniversityApiRequest;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, FileUploadToUniversityDTO, NoticeResponseDTO, UniversityApiResponse, University> {
+public class UniversityApiLogicService extends NoticePostService<UniversityApiRequest, FileUploadToUniversityApiRequest, NoticeResponseDTO, UniversityApiResponse, University> {
 
     @Autowired
     private UserRepository userRepository;
@@ -69,7 +69,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     @Transactional
-    public Header<UniversityApiResponse> create(FileUploadToUniversityDTO request) {
+    public Header<UniversityApiResponse> create(FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
 
         User user = userRepository.findById(universityApiRequest.getUserId()).orElseThrow(
@@ -127,7 +127,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     @Transactional
-    public Header<UniversityApiResponse> update(FileUploadToUniversityDTO request) {
+    public Header<UniversityApiResponse> update(FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
         MultipartFile[] files = request.getFiles();
 

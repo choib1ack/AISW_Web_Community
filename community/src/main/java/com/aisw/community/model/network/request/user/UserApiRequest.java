@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Builder
 public class UserApiRequest {
 
+    private Long id;
+
     private String name;
 
     private String email;

@@ -12,7 +12,7 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.board.FileUploadToQnaDTO;
+import com.aisw.community.model.network.request.post.board.FileUploadToQnaApiRequest;
 import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUploadToQnaDTO, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
+public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUploadToQnaApiRequest, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
 
     @Autowired
     private UserRepository userRepository;
@@ -82,7 +82,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    public Header<QnaApiResponse> create(FileUploadToQnaDTO request) {
+    public Header<QnaApiResponse> create(FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
 
         User user = userRepository.findById(qnaApiRequest.getUserId()).orElseThrow(
@@ -143,7 +143,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    public Header<QnaApiResponse> update(FileUploadToQnaDTO request) {
+    public Header<QnaApiResponse> update(FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
         MultipartFile[] files = request.getFiles();
 
@@ -256,6 +256,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .category(qna.getCategory())
                 .accountId(qna.getUser().getId())
                 .checkLike(false)
+                .fileApiResponseList(qna.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .commentApiResponseList(commentApiLogicService.searchByPost(qna.getId()))
                 .build();
 
@@ -293,6 +295,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .category(qna.getCategory())
                 .accountId(qna.getUser().getId())
                 .checkLike(false)
+                .fileApiResponseList(qna.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
 
         List<ContentLike> contentLikeList = contentLikeRepository.findAllByUserId(accountId);

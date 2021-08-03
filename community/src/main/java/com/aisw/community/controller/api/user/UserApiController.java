@@ -10,19 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping()
 class UserApiController {
 
     @Autowired
     private UserApiService userApiService;
 
-    @PostMapping("/signup")
+    @PostMapping("/user/signup")
     public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
         return userApiService.signup(request);
     }
 
-    @PostMapping("/verification")
+    @PostMapping("/user/verification")
     public Header<VerificationApiResponse> verification(@RequestBody Header<VerificationApiRequest> request) {
         return userApiService.verification(request);
     }
+
+
 }

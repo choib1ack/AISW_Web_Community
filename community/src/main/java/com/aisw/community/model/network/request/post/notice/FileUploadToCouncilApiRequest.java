@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileUploadToCouncilDTO {
+public class FileUploadToCouncilApiRequest {
 
     private CouncilApiRequest councilApiRequest;
 

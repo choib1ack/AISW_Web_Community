@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/site/category")
+@RequestMapping("/auth-admin/site/category")
 public class SiteCategoryApiController {
 
     @Autowired

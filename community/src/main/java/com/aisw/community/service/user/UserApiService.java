@@ -62,6 +62,10 @@ public class UserApiService {
         return Header.OK(response);
     }
 
+    public Header<UserApiResponse> update(Header<UserApiRequest> request) {
+
+    }
+
     private UserApiResponse response(User user) {
         UserApiResponse userApiResponse = UserApiResponse.builder()
                 .id(user.getId())
