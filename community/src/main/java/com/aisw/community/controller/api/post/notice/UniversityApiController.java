@@ -36,7 +36,7 @@ public class UniversityApiController implements CrudInterface<UniversityApiReque
     }
 
     @Override
-    @GetMapping("/auth-student/notice/university/{id}")
+    @GetMapping("/auth/notice/university/{id}")
     public Header<UniversityApiResponse> read(@PathVariable Long id) {
         return noticePostService.read(id);
     }
