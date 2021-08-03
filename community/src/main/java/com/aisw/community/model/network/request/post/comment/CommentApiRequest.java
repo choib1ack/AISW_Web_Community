@@ -18,7 +18,7 @@ public class CommentApiRequest {
 
     private Long boardId;
 
-    private Long accountId;
+    private Long userId;
 
     private Long superCommentId;
 }

@@ -39,7 +39,7 @@ public class DepartmentApiResponse {
 
     private String updatedBy;
 
-    private Long accountId;
+    private Long userId;
 
     private List<FileApiResponse> fileApiResponseList;
 }

@@ -12,7 +12,7 @@ public class ContentLikeApiResponse {
 
     private Long id;
 
-    private Long accountId;
+    private Long userId;
 
     private Long boardId;
 

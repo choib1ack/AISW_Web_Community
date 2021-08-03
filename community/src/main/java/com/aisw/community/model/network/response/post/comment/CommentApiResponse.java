@@ -31,11 +31,11 @@ public class CommentApiResponse {
 
     private Long boardId;
 
-    private Long accountId;
+    private Long userId;
 
     private List<CommentApiResponse> subComment = new ArrayList<>();
 
-    public CommentApiResponse(Long id, String writer, String content, LocalDateTime createdAt, Boolean isAnonymous, Long likes, Long boardId, Long accountId) {
+    public CommentApiResponse(Long id, String writer, String content, LocalDateTime createdAt, Boolean isAnonymous, Long likes, Long boardId, Long userId) {
         this.id = id;
         this.writer = writer;
         this.content = content;
@@ -43,7 +43,7 @@ public class CommentApiResponse {
         this.isAnonymous = isAnonymous;
         this.likes = likes;
         this.boardId = boardId;
-        this.accountId = accountId;
+        this.userId = userId;
     }
 
     public static CommentApiResponse convertCommentToDto(Comment comment) {

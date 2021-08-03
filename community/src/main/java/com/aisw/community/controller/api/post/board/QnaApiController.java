@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,13 +33,13 @@ public class QnaApiController implements CrudInterface<QnaApiRequest, QnaApiResp
 
     @Override
     @PostMapping("/auth-student/board/qna")
-    public Header<QnaApiResponse> create(@RequestBody Header<QnaApiRequest> request) {
-        return boardPostService.create(request);
+    public Header<QnaApiResponse> create(Authentication authentication, @RequestBody Header<QnaApiRequest> request) {
+        return boardPostService.create(authentication, request);
     }
 
     @PostMapping("/auth-student/board/qna/upload")
-    public Header<QnaApiResponse> create(@ModelAttribute FileUploadToQnaApiRequest request) {
-        return boardPostService.create(request);
+    public Header<QnaApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToQnaApiRequest request) {
+        return boardPostService.create(authentication, request);
     }
 
     @Override
@@ -49,19 +50,19 @@ public class QnaApiController implements CrudInterface<QnaApiRequest, QnaApiResp
 
     @Override
     @PutMapping("/auth-student/board/qna")
-    public Header<QnaApiResponse> update(@RequestBody Header<QnaApiRequest> request) {
-        return boardPostService.update(request);
+    public Header<QnaApiResponse> update(Authentication authentication, @RequestBody Header<QnaApiRequest> request) {
+        return boardPostService.update(authentication, request);
     }
 
     @PutMapping("/auth-student/board/qna/upload")
-    public Header<QnaApiResponse> update(@ModelAttribute FileUploadToQnaApiRequest request) {
-        return boardPostService.update(request);
+    public Header<QnaApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToQnaApiRequest request) {
+        return boardPostService.update(authentication, request);
     }
 
     @Override
-    @DeleteMapping("/auth-student/board/qna/{id}/{userId}")
-    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
-        return boardPostService.delete(id, userId);
+    @DeleteMapping("/auth-student/board/qna/{id}")
+    public Header delete(Authentication authentication, @PathVariable Long id) {
+        return boardPostService.delete(authentication, id);
     }
 
     @GetMapping("/auth-student/board/qna/comment/{id}")

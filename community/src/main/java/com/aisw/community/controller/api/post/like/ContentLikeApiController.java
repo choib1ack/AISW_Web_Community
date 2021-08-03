@@ -6,6 +6,7 @@ import com.aisw.community.model.network.response.post.like.ContentLikeApiRespons
 import com.aisw.community.service.post.like.ContentLikeApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -17,12 +18,12 @@ public class ContentLikeApiController {
     private ContentLikeApiLogicService contentLikeApiLogicService;
 
     @PostMapping("/press")
-    public Header<ContentLikeApiResponse> pressLike(@RequestBody Header<ContentLikeApiRequest> request) {
-        return contentLikeApiLogicService.pressLike(request);
+    public Header<ContentLikeApiResponse> pressLike(Authentication authentication, @RequestBody Header<ContentLikeApiRequest> request) {
+        return contentLikeApiLogicService.pressLike(authentication, request);
     }
 
     @PostMapping("remove")
-    public Header removeLike(@RequestBody Header<ContentLikeApiRequest> request) {
-        return contentLikeApiLogicService.removeLike(request);
+    public Header removeLike(Authentication authentication, @RequestBody Header<ContentLikeApiRequest> request) {
+        return contentLikeApiLogicService.removeLike(authentication, request);
     }
 }

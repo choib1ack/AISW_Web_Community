@@ -21,6 +21,4 @@ public class UniversityApiRequest {
     private BulletinStatus status;
 
     private Campus campus;
-
-    private Long userId;
 }
