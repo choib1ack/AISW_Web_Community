@@ -11,7 +11,7 @@ public class UserManagementApiResponse {
 
     private String name;
 
-    private Integer studentId;
+    private String studentId;
 
     private String role;
 }
