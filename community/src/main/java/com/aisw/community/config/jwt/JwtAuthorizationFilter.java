@@ -43,11 +43,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		}
 
 		String token = jwtTokenProvider.resolveToken(request);
+		System.out.println("token: " + token);
 		// 토큰 검증 (이게 인증이기 때문에 AuthenticationManager도 필요 없음)
 		// 내가 SecurityContext에 직접 접근해서 세션을 만들때 자동으로 UserDetailsService에 있는
 		// loadByUsername이 호출됨.
 		String username = jwtTokenProvider.requireDecodedJwt(token).getClaim("username").asString();
-
+		System.out.println("username: " + username);
 		// 서명 정상
 		if (username != null && jwtTokenProvider.validateToken(token)) {
 			User user = userRepository.findByUsername(username);

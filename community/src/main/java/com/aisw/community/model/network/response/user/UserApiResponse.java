@@ -27,7 +27,7 @@ public class UserApiResponse {
 
     private Grade grade;
 
-    private Integer studentId;
+    private String studentId;
 
     private LocalDateTime createdAt;
 
