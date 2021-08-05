@@ -29,7 +29,6 @@ export default function Menu() {
     const active_menu = useSelector(state => state.menu)
     const dispatch = useDispatch()
 
-    const [modalShow, setModalShow] = useState(false);
     // const [activeTab, setActiveTab] = useState(0);
 
     const handleClickTab = (event) => {
