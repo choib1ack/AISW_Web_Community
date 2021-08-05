@@ -2,17 +2,17 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.advice.exception.NotEqualAccountException;
 import com.aisw.community.advice.exception.PostNotFoundException;
-import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.like.ContentLike;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.board.FileUploadToFreeDTO;
+import com.aisw.community.model.network.request.post.board.FileUploadToFreeApiRequest;
 import com.aisw.community.model.network.request.post.board.FreeApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
@@ -23,12 +23,13 @@ import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.FreeRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
-import com.aisw.community.repository.user.AccountRepository;
+import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,10 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUploadToFreeDTO, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
-
-    @Autowired
-    private AccountRepository accountRepository;
+public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUploadToFreeApiRequest, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
 
     @Autowired
     private FreeRepository freeRepository;
@@ -59,19 +57,21 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     private FileApiLogicService fileApiLogicService;
 
     @Override
-    public Header<FreeApiResponse> create(Header<FreeApiRequest> request) {
+    public Header<FreeApiResponse> create(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(
-                () -> new UserNotFoundException(freeApiRequest.getAccountId()));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
+
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
-                .writer(account.getName())
+                .writer(user.getName())
                 .content(freeApiRequest.getContent())
                 .status(freeApiRequest.getStatus())
                 .isAnonymous(freeApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .account(account)
+                .likes(0L)
+                .user(user)
                 .build();
 
         Free newFree = baseRepository.save(free);
@@ -80,20 +80,21 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    public Header<FreeApiResponse> create(FileUploadToFreeDTO request) {
+    public Header<FreeApiResponse> create(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
 
-        Account account = accountRepository.findById(freeApiRequest.getAccountId()).orElseThrow(
-                () -> new UserNotFoundException(freeApiRequest.getAccountId()));
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
-                .writer(account.getName())
+                .writer(user.getName())
                 .content(freeApiRequest.getContent())
                 .status(freeApiRequest.getStatus())
                 .isAnonymous(freeApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .account(account)
+                .likes(0L)
+                .user(user)
                 .build();
 
         Free newFree = baseRepository.save(free);
@@ -117,14 +118,16 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    public Header<FreeApiResponse> update(Header<FreeApiRequest> request) {
+    public Header<FreeApiResponse> update(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
 
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
 
-        if (free.getAccount().getId() != freeApiRequest.getAccountId()) {
-            throw new NotEqualAccountException(freeApiRequest.getAccountId());
+        if (free.getUser().getId() != user.getId()) {
+            throw new NotEqualAccountException(user.getId());
         }
 
         free
@@ -139,15 +142,17 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    public Header<FreeApiResponse> update(FileUploadToFreeDTO request) {
+    public Header<FreeApiResponse> update(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
         MultipartFile[] files = request.getFiles();
 
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
 
-        if (free.getAccount().getId() != freeApiRequest.getAccountId()) {
-            throw new NotEqualAccountException(freeApiRequest.getAccountId());
+        if (free.getUser().getId() != user.getId()) {
+            throw new NotEqualAccountException(user.getId());
         }
 
         free.getFileList().stream().forEach(file -> fileRepository.delete(file));
@@ -165,11 +170,13 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     }
 
     @Override
-    public Header delete(Long id, Long userId) {
+    public Header delete(Authentication authentication, Long id) {
         Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        User user = principal.getUser();
 
-        if (free.getAccount().getId() != userId) {
-            throw new NotEqualAccountException(userId);
+        if (free.getUser().getId() != user.getId()) {
+            throw new NotEqualAccountException(user.getId());
         }
 
         baseRepository.delete(free);
@@ -191,7 +198,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .accountId(free.getAccount().getId())
+                .userId(free.getUser().getId())
                 .fileApiResponseList(free.getFileList().stream()
                         .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
@@ -214,7 +221,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .accountId(free.getAccount().getId())
+                .userId(free.getUser().getId())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
 
@@ -246,8 +253,10 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .accountId(free.getAccount().getId())
+                .userId(free.getUser().getId())
                 .checkLike(false)
+                .fileApiResponseList(free.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()))
                 .build();
 
@@ -283,10 +292,13 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .checkLike(false)
-                .accountId(free.getAccount().getId())
+                .userId(free.getUser().getId())
+                .fileApiResponseList(free.getFileList().stream()
+                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .commentApiResponseList(commentApiLogicService.searchByPost(free.getId()))
                 .build();
 
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByAccountId(accountId);
+        List<ContentLike> contentLikeList = contentLikeRepository.findAllByUserId(accountId);
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {
                 if (contentLike.getBoard().getId() == free.getId()) {

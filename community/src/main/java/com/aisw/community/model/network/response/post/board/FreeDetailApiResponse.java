@@ -3,6 +3,7 @@ package com.aisw.community.model.network.response.post.board;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
+import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -42,9 +43,11 @@ public class FreeDetailApiResponse {
 
     private String updatedBy;
 
-    private Long accountId;
+    private Long userId;
 
     private Boolean checkLike = false;
+
+    private List<FileApiResponse> fileApiResponseList;
 
     private List<CommentApiResponse> commentApiResponseList;
 }

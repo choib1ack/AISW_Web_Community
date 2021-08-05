@@ -1,6 +1,6 @@
 package com.aisw.community.model.entity.post.notice;
 
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.Campus;
 import com.aisw.community.model.enumclass.FirstCategory;
@@ -25,9 +25,9 @@ public class University extends Notice {
 
     @Builder
     public University(Long id, String title, String writer, String content, BulletinStatus status,
-                      Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account,
+                      Long views, FirstCategory firstCategory, SecondCategory secondCategory, User user,
                       Campus campus) {
-        super(id, title, writer, content, status, views, firstCategory, secondCategory, account);
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, user);
         this.campus = campus;
     }
 }

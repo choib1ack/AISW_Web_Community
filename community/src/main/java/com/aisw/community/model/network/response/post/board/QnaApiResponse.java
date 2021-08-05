@@ -45,7 +45,7 @@ public class QnaApiResponse {
 
     private String updatedBy;
 
-    private Long accountId;
+    private Long userId;
 
     private List<FileApiResponse> fileApiResponseList;
 }

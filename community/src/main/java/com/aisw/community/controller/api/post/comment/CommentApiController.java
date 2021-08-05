@@ -6,6 +6,7 @@ import com.aisw.community.model.network.response.post.comment.CommentApiResponse
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -17,12 +18,12 @@ public class CommentApiController {
     private CommentApiLogicService commentApiLogicService;
 
     @PostMapping("")
-    public Header<CommentApiResponse> create(@RequestBody Header<CommentApiRequest> request) {
-        return commentApiLogicService.create(request);
+    public Header<CommentApiResponse> create(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
+        return commentApiLogicService.create(authentication, request);
     }
 
-    @DeleteMapping("{id}/{userId}")
-    public Header delete(@PathVariable Long id, @PathVariable Long userId) {
-        return commentApiLogicService.delete(id, userId);
+    @DeleteMapping("{id}")
+    public Header delete(Authentication authentication, @PathVariable Long id) {
+        return commentApiLogicService.delete(authentication, id);
     }
 }

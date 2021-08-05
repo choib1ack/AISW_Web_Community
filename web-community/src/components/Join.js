@@ -15,11 +15,8 @@ import {useLocation} from "react-router-dom";
 
 export default function Join() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
-    const password = useRef();
     const phone_number = useRef();
-    password.current = watch("password");
     phone_number.current = watch("phone_number");
-    // const [pwValidate, setPWValidate] = useState(0);
     const [agree, setAgree] = useState(false);
 
     // redux toolkit
@@ -33,9 +30,7 @@ export default function Join() {
 
     useEffect(() => {
         console.log(location.state.google_data);
-        console.log(location.state.google_data.profileObj.email);
-        console.log(location.state.google_data.profileObj.familyName);
-        console.log(location.state.google_data.profileObj.imageUrl);
+        console.log(location.state.account_role);
     }, [location]);
 
     async function sendServer(data) {
@@ -53,7 +48,6 @@ export default function Join() {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log("에러 발생");
             console.log(errorObject);
-            console.log(data);
 
             alert("회원가입에 실패하였습니다.") // 실패 메시지
         })
@@ -66,15 +60,14 @@ export default function Join() {
             email: location.state.google_data.profileObj.email,
             gender: data.gender,
             grade: data.grade,
-            job: data.job,
-            level: 'NOT_SUBSCRIBED',
             name: location.state.google_data.profileObj.familyName,
-            // password: data.password,
+            provider: location.state.google_data.tokenObj.idpId,
+            provider_id: location.state.google_data.profileObj.googleId,
             phone_number: data.phone_number,
-            role: 'NOT_PERMITTED',
+            role: location.state.account_role,   // GENERAL, STUDENT
             student_id: data.student_id,
             university: 'COMMON',
-            picture: location.state.google_data.profileObj.imageUrl
+            picture: location.state.google_data.profileObj.picture
         }
 
         if (agree) {
@@ -83,27 +76,6 @@ export default function Join() {
             console.log("동의해주세요.");
         }
     }
-
-    // 비밀번호 유효성 검사
-    // function checkPassword(password) {
-    //     const num = password.search(/[0-9]/g);
-    //     const eng = password.search(/[a-z]/ig);
-    //     const spe = password.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
-    //
-    //     if (password.length < 8 || password.length > 20) {
-    //         setPWValidate(1);
-    //         return false;
-    //     } else if (password.search(/\s/) !== -1) {
-    //         setPWValidate(2);
-    //         return false;
-    //     } else if (num < 0 || eng < 0 || spe < 0) {
-    //         setPWValidate(3);
-    //         return false;
-    //     } else {
-    //         setPWValidate(0);
-    //         return true;
-    //     }
-    // }
 
     // 전화번호 유효성 검사
     function checkPhoneNumber(phone) {
@@ -115,7 +87,7 @@ export default function Join() {
 
     return (
         <Container className="p-5">
-            <FinishModal show={modalShow} link={`/login`}
+            <FinishModal show={modalShow} link={`/`}
                          title="회원가입" body="회원가입이 완료되었습니다 !"/>
 
             <h3 className="font-weight-bold mb-5">
@@ -126,58 +98,7 @@ export default function Join() {
                 <Col/>
                 <Col sm={12} md={10} lg={8}>
                     <Form onSubmit={handleSubmit(onSubmit)} className="text-left">
-                        {/*<Form.Group>*/}
-                        {/*    <Form.Label>이메일</Form.Label>*/}
-                        {/*    <Form.Control required type="email" placeholder="E-mail"*/}
-                        {/*                  name="email" ref={register}/>*/}
-                        {/*</Form.Group>*/}
-                        {/*<Form.Group>*/}
-                        {/*    <Form.Label>비밀번호</Form.Label>*/}
-                        {/*    <Form.Control required type="password" placeholder="Password"*/}
-                        {/*                  name="password"*/}
-                        {/*                  ref={register({*/}
-                        {/*                      validate: (value) => checkPassword(value)*/}
-                        {/*                  })}*/}
-                        {/*    />*/}
-                        {/*</Form.Group>*/}
-                        {/*{*/}
-                        {/*    errors.password &&*/}
-                        {/*    errors.password.type === "validate" &&*/}
-                        {/*    (*/}
-                        {/*        pwValidate === 1 && (*/}
-                        {/*            <p style={{color: 'red', fontSize: 12}}>8자리 ~ 20자리 이내로 입력해주세요.</p>*/}
-                        {/*        )*/}
-                        {/*    )*/}
-                        {/*    || (*/}
-                        {/*        pwValidate === 2 && (*/}
-                        {/*            <p style={{color: 'red', fontSize: 12}}> 비밀번호는 공백 없이 입력해주세요. .</p>*/}
-                        {/*        )*/}
-                        {/*    )*/}
-                        {/*    || (*/}
-                        {/*        pwValidate === 3 && (*/}
-                        {/*            <p style={{color: 'red', fontSize: 12}}>영문, 숫자, 특수문자를 혼합하여 입력해주세요.</p>*/}
-                        {/*        )*/}
-                        {/*    )*/}
-                        {/*}*/}
-                        {/*<Form.Group>*/}
-                        {/*    <Form.Label>비밀번호 확인</Form.Label>*/}
-                        {/*    <Form.Control required type="password" placeholder="Confirm Password"*/}
-                        {/*                  name="password_confirm"*/}
-                        {/*                  ref={register({validate: (value) => value === password.current})}/>*/}
-                        {/*</Form.Group>*/}
-                        {/*{*/}
-                        {/*    errors.password_confirm &&*/}
-                        {/*    errors.password_confirm.type === "validate" && (*/}
-                        {/*        <p style={{color: 'red', fontSize: 12}}>비밀번호와 비밀번호 확인이 일치하지 않습니다.</p>*/}
-                        {/*    )}*/}
-
                         <Form.Row>
-                            {/*<Form.Group sm={9} as={Col}>*/}
-                            {/*    <Form.Label>이름</Form.Label>*/}
-                            {/*    <Form.Control required type="text" placeholder="ex) 홍길동"*/}
-                            {/*                  name="name" ref={register}/>*/}
-                            {/*</Form.Group>*/}
-
                             <Form.Group sm={9} as={Col}>
                                 <Form.Label>전화번호</Form.Label>
                                 <Form.Control required type="text" placeholder="ex) 010-0000-0000"
@@ -290,7 +211,6 @@ export default function Join() {
                 </Col>
                 <Col/>
             </Row>
-
         </Container>
     );
 }

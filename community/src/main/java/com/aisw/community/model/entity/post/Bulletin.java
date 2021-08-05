@@ -1,7 +1,7 @@
 package com.aisw.community.model.entity.post;
 
 import com.aisw.community.model.entity.post.file.File;
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -17,14 +17,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-@ToString(exclude = {"account"})
+@ToString(exclude = {"user"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
@@ -67,13 +65,13 @@ public class Bulletin {
     private String updatedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Account account; // user id
+    private User user; // user id
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bulletin", orphanRemoval = true)
     private List<File> fileList = new ArrayList<>();
 
     public Bulletin(Long id, String title, String writer, String content, BulletinStatus status,
-                    Long views, FirstCategory firstCategory, SecondCategory secondCategory, Account account) {
+                    Long views, FirstCategory firstCategory, SecondCategory secondCategory, User user) {
         this.id = id;
         this.title = title;
         this.writer = writer;
@@ -82,7 +80,7 @@ public class Bulletin {
         this.views = views;
         this.firstCategory = firstCategory;
         this.secondCategory = secondCategory;
-        this.account= account;
+        this.user = user;
     }
 
     @PrePersist

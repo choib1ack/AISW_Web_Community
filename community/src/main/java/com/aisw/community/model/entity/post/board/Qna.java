@@ -1,6 +1,6 @@
 package com.aisw.community.model.entity.post.board;
 
-import com.aisw.community.model.entity.user.Account;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
@@ -25,9 +25,9 @@ public class Qna extends Board {
 
     @Builder
     public Qna(Long id, String title, String writer, String content, BulletinStatus status, Long views,
-               FirstCategory firstCategory, SecondCategory secondCategory, Account account, Long likes,
+               FirstCategory firstCategory, SecondCategory secondCategory, User user, Long likes,
                Boolean isAnonymous, String subject) {
-        super(id, title, writer, content, status, views, firstCategory, secondCategory, account, likes, isAnonymous);
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, user, likes, isAnonymous);
         this.subject = subject;
     }
 }

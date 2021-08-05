@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,8 +20,8 @@ public abstract class NoticePostService<Req, FileReq, ListRes, Res, Entity> impl
     @Autowired(required = false)
     protected JpaRepository<Entity, Long> baseRepository;
 
-    public abstract Header<Res> create(FileReq request);
-    public abstract Header<Res> update(FileReq request);
+    public abstract Header<Res> create(Authentication authentication, FileReq request);
+    public abstract Header<Res> update(Authentication authentication, FileReq request);
     public abstract Header<ListRes> search(Pageable pageable);
     public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
     public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);
