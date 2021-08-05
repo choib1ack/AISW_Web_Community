@@ -18,6 +18,7 @@ class UserApiController {
 
     @PostMapping("/signup")
     public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
+        System.out.println(request);
         return userApiService.signup(request);
     }
 

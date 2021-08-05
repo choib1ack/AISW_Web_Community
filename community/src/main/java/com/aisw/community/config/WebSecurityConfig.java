@@ -4,6 +4,7 @@ package com.aisw.community.config;
 
 import com.aisw.community.config.jwt.JwtAuthenticationFilter;
 import com.aisw.community.config.jwt.JwtAuthorizationFilter;
+import com.aisw.community.config.jwt.RedisUtil;
 import com.aisw.community.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Autowired
     private UserRepository userRepository;
@@ -60,8 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Bearer: Authorization에 token 넣어서 보냄
                 .httpBasic().disable()
 
-                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(),redisUtil))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, redisUtil))
                 .authorizeRequests()
 //                .antMatchers("/board/**")
 //                .access("hasRole('ROLE_STUDENT') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
