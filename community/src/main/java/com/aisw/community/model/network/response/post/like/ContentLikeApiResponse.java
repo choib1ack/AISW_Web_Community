@@ -12,8 +12,6 @@ public class ContentLikeApiResponse {
 
     private Long id;
 
-    private Long userId;
-
     private Long boardId;
 
     private Long commentId;

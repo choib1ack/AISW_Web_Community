@@ -64,10 +64,9 @@ public class FreeApiController implements CrudInterface<FreeApiRequest, FreeApiR
         return boardPostService.readWithComment(id);
     }
 
-    @GetMapping("/comment&like/{postId}/{accountId}")
-    public Header<FreeDetailApiResponse> readWithCommentAndLike(
-            @PathVariable Long postId, @PathVariable Long accountId) {
-        return boardPostService.readWithCommentAndLike(postId, accountId);
+    @GetMapping("/comment&like/{id}")
+    public Header<FreeDetailApiResponse> readWithCommentAndLike(Authentication authentication, @PathVariable Long id) {
+        return boardPostService.readWithCommentAndLike(authentication, id);
     }
 
     @GetMapping("")

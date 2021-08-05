@@ -39,7 +39,5 @@ public class CouncilApiResponse {
 
     private String updatedBy;
 
-    private Long userId;
-
     private List<FileApiResponse> fileApiResponseList;
 }

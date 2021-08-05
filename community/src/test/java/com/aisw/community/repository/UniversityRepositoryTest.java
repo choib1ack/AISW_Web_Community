@@ -51,7 +51,7 @@ public class UniversityRepositoryTest extends CommunityApplicationTests {
                 .views(views)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.UNIVERSITY)
-                .account(userId)
+                .user(userId)
                 .campus(Campus.COMMON)
                 .build();
 

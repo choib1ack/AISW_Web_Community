@@ -19,19 +19,19 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     // JWT 토큰 생성
-    public String createToken(Authentication authentication) {
+    public String createToken(Authentication authentication, long expiredTime) {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
         return JWT.create()
                 .withSubject(principalDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
+                .withExpiresAt(new Date(System.currentTimeMillis() + expiredTime))
                 .withClaim("id", principalDetails.getUser().getId())
                 .withClaim("username", principalDetails.getUser().getUsername())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader(JwtProperties.HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
+        return request.getHeader(JwtProperties.ACCESS_HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
     }
 
     public DecodedJWT requireDecodedJwt(HttpServletRequest request) {
@@ -43,14 +43,7 @@ public class JwtTokenProvider {
     }
 
     // 토큰의 유효성 + 만료일자 확인
-    public boolean validateToken(String token) {
-        try {
-            return requireDecodedJwt(token).getExpiresAt().after(new Date());
-        } catch (TokenExpiredException e) {
-            e.getStackTrace();
-        } catch (InvalidClaimException e) {
-            e.getStackTrace();
-        }
-        return false;
+    public boolean validateToken(String token) throws TokenExpiredException, InvalidClaimException {
+        return requireDecodedJwt(token).getExpiresAt().after(new Date());
     }
 }

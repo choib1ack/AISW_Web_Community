@@ -2,12 +2,14 @@ package com.aisw.community.model.entity.post.like;
 
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
+import com.aisw.community.model.entity.user.Alert;
 import com.aisw.community.model.entity.user.User;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,7 +19,7 @@ import javax.persistence.*;
 @Builder
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@ToString(exclude = {"user", "board", "comment"})
+@ToString(exclude = {"user", "board", "comment", "alertList"})
 public class ContentLike {
 
     @Id
@@ -32,4 +34,7 @@ public class ContentLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Comment comment;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contentLike", cascade = CascadeType.ALL)
+    private List<Alert> alertList;
 }
