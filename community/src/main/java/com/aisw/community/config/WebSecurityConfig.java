@@ -1,24 +1,18 @@
 package com.aisw.community.config;
 
-//import com.aisw.community.provider.CustomAuthenticationProvider;
-
 import com.aisw.community.config.jwt.JwtAuthenticationFilter;
 import com.aisw.community.config.jwt.JwtAuthorizationFilter;
 import com.aisw.community.provider.JwtTokenProvider;
+import com.aisw.community.provider.RedisProvider;
 import com.aisw.community.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +26,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private RedisProvider redisProvider;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -52,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic().disable()
 
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider))
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtTokenProvider))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtTokenProvider, redisProvider))
                 .authorizeRequests()
                 .antMatchers("/auth/**")
                 .access("hasRole('Role_GENERAL') or hasRole('ROLE_STUDENT') or hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
