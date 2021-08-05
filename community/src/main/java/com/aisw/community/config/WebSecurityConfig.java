@@ -48,7 +48,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Bearer: Authorization에 token 넣어서 보냄
                 .httpBasic().disable()
 
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, redisProvider))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtTokenProvider, redisProvider))
                 .authorizeRequests()
                 .antMatchers("/auth/**")

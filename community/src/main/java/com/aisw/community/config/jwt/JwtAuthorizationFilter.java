@@ -109,7 +109,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 // 강제로 시큐리티의 세션에 접근하여 값 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                String jwtToken = jwtTokenProvider.createToken(authentication, JwtProperties.REFRESH_EXPIRATION_TIME);
+                // access token 생성
+                String jwtToken = jwtTokenProvider.createToken(authentication, JwtProperties.EXPIRATION_TIME);
                 response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
             }
         }
