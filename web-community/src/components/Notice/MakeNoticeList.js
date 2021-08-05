@@ -85,7 +85,7 @@ export default function MakeNoticeList(props) {
     }
 
     const indexing = (index) => {
-        let current_max = noticeData.normal.page_info.total - (noticeData.normal.page_info.current * 10);
+        let current_max = noticeData.normal.page_info.total_elements - (props.pageInfo.current * 10); // 현재 페이지에서 max값
         return current_max - index.toString();
     }
 
