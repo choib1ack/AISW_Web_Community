@@ -47,7 +47,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Grade grade;
 
-    private Integer studentId;
+    private String studentId;
 
     @CreatedDate
     private LocalDateTime createdAt;

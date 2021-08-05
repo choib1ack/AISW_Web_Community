@@ -1,5 +1,8 @@
 package com.aisw.community.service.user;
 
+import com.aisw.community.advice.exception.PhoneNumberNotSuitableException;
+import com.aisw.community.advice.exception.SignUpNotSuitableException;
+import com.aisw.community.advice.exception.StudentIdNotSuitableException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
@@ -15,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 @RequiredArgsConstructor
 @Service
 public class UserApiService {
@@ -26,26 +31,43 @@ public class UserApiService {
     public Header<UserApiResponse> signup(Header<UserApiRequest> request) {
         UserApiRequest userApiRequest = request.getData();
 
-        if (userApiRequest.getProvider() != null && userApiRequest.getProviderId() != null) {
-            User user = User.builder()
-                    .username(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId())
-                    .name(userApiRequest.getName())
-                    .email(userApiRequest.getEmail())
-                    .password(bCryptPasswordEncoder.encode("AISW"))
-                    .phoneNumber(userApiRequest.getPhoneNumber())
-                    .grade(userApiRequest.getGrade())
-                    .studentId(userApiRequest.getStudentId())
-                    .gender(userApiRequest.getGender())
-                    .university(userApiRequest.getUniversity())
-                    .collegeName(userApiRequest.getCollegeName())
-                    .departmentName(userApiRequest.getDepartmentName())
-                    .role(userApiRequest.getRole())
-                    .build();
+        if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
+            throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
+        if (!validatePhoneNumber(userApiRequest.getPhoneNumber()))
+            throw new PhoneNumberNotSuitableException(userApiRequest.getPhoneNumber());
+        if (!validateStudentId(userApiRequest.getStudentId()))
+            throw new StudentIdNotSuitableException(userApiRequest.getStudentId());
 
-            User newUser = userRepository.save(user);
-            return Header.OK(response(newUser));
-        }
-        return Header.ERROR("request is wrong");
+        User user = User.builder()
+                .username(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId())
+                .name(userApiRequest.getName())
+                .email(userApiRequest.getEmail())
+                .password(bCryptPasswordEncoder.encode("AISW"))
+                .phoneNumber(userApiRequest.getPhoneNumber())
+                .grade(userApiRequest.getGrade())
+                .studentId(userApiRequest.getStudentId())
+                .gender(userApiRequest.getGender())
+                .university(userApiRequest.getUniversity())
+                .collegeName(userApiRequest.getCollegeName())
+                .departmentName(userApiRequest.getDepartmentName())
+                .role(userApiRequest.getRole())
+                .build();
+        User newUser = userRepository.save(user);
+        return Header.OK(response(newUser));
+    }
+
+    private boolean validatePhoneNumber(String phoneNumber) {
+        // 숫자 & 11자리 & 앞 3글자 010
+        return isNumeric(phoneNumber) && (phoneNumber.length() == 11) && phoneNumber.substring(0, 3).equals("010");
+    }
+
+    private boolean validateStudentId(String studentId) {
+        // 숫자 & 9자리
+        return isNumeric(studentId) && (studentId.length() == 9);
+    }
+
+    public boolean isNumeric(String str) {
+        return Pattern.matches("^[0-9]*$", str);
     }
 
     public Header<VerificationApiResponse> verification(Header<VerificationApiRequest> request) {

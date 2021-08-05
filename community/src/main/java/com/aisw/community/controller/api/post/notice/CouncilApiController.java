@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping()
 public class CouncilApiController implements CrudInterface<CouncilApiRequest, CouncilApiResponse> {
 
     @Autowired(required = false)

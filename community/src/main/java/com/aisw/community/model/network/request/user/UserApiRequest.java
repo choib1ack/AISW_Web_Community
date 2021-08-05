@@ -1,9 +1,8 @@
 package com.aisw.community.model.network.request.user;
 
-import com.aisw.community.model.enumclass.*;
+import com.aisw.community.model.enumclass.Gender;
+import com.aisw.community.model.enumclass.Grade;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,7 +19,7 @@ public class UserApiRequest {
 
     private Grade grade;
 
-    private Integer studentId;
+    private String studentId;
 
     private Gender gender;
 

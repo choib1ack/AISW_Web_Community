@@ -24,6 +24,4 @@ public interface CouncilRepository extends JpaRepository<Council, Long> {
     Page<Council> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
     Page<Council> findAllByStatusOrStatus(BulletinStatus status1, BulletinStatus status2, Pageable pageable);
-
-    List<Council> findTop10ByOrderByCreatedAtDesc();
 }

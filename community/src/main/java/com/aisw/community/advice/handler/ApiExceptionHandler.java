@@ -72,4 +72,39 @@ public class ApiExceptionHandler {
                 new ApiErrorResponse("NotEqualAccount", "the user is not writer: " + ex.getId());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(SignUpNotSuitableException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(SignUpNotSuitableException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("SignUpNotSuitable", "request is not suitable: " + ex.getUsername());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PhoneNumberNotSuitableException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(PhoneNumberNotSuitableException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("PhoneNumberNotSuitable", "phone number is not suitable: " + ex.getPhoneNumber());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(StudentIdNotSuitableException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(StudentIdNotSuitableException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("StudentIdNotSuitable", "student id is not suitable: " + ex.getStudentId());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessTokenExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(AccessTokenExpiredException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("JwtTokenExpired", "access token is expired: " + ex.getToken());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(RefreshTokenExpiredException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("RefreshTokenExpired", "refresh token is expired: " + ex.getToken());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
