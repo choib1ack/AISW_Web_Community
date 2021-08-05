@@ -19,6 +19,7 @@ function NewBoard() {
     const [modalShow, setModalShow] = useState(false);
     const board_type = useRef();
     board_type.current = watch("board_type");
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
@@ -26,13 +27,16 @@ function NewBoard() {
     const dispatch = useDispatch()
 
     async function postBoard(data, path) {
+        console.log(path);
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
         await axios.post("/board/" + path,
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data,
-            },
+            {data: data},
+            {headers: headers}
         ).then((res) => {
             console.log(res)
             setModalShow(true)   // 완료 모달 띄우기

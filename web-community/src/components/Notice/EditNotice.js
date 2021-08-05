@@ -5,7 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useForm, Controller} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
@@ -22,6 +22,7 @@ export default function EditNotice({match}, props) {
     const detail = location.state.detail;
     const content = location.state.content;
     const {notice_category, id} = match.params;
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
@@ -29,13 +30,14 @@ export default function EditNotice({match}, props) {
     const dispatch = useDispatch()
 
     async function sendNotice(data, path) {
-        await axios.put("/notice/" + path,
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data,
-            },
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
+        await axios.put("/auth-admin/notice/" + path,
+            {data: data},
+            {headers: headers}
         ).then((res) => {
             console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
@@ -112,8 +114,9 @@ export default function EditNotice({match}, props) {
                     <Row>
                         <Col>
                             <Form.Group controlId="subject">
-                                <Form.Control type="text" value={detail.title}
-                                              name="title" ref={register}/>
+                                <Form.Control type="text" defaultValue={detail.title}
+                                              name="title" ref={register}
+                                />
                             </Form.Group>
                         </Col>
                     </Row>

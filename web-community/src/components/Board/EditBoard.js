@@ -23,6 +23,7 @@ function EditBoard({match}, props) {
     const detail = location.state.detail;
     const content = location.state.content;
     const {board_category, id} = match.params;
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
@@ -30,13 +31,14 @@ function EditBoard({match}, props) {
     const dispatch = useDispatch()
 
     async function sendBoard(data, path) {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
         await axios.put("/board/" + path,
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data,
-            },
+            {data: data},
+            {headers: headers}
         ).then((res) => {
             console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
@@ -101,7 +103,7 @@ function EditBoard({match}, props) {
                     <Row>
                         <Col>
                             <Form.Group controlId="subject">
-                                <Form.Control type="text" value={detail.title}
+                                <Form.Control type="text" defaultValue={detail.title}
                                               name="title" ref={register}/>
                             </Form.Group>
                         </Col>
