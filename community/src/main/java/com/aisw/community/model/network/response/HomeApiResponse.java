@@ -18,11 +18,8 @@ import java.util.List;
 @Builder
 public class HomeApiResponse {
 
-    private List<BoardApiResponse> universityList;
-    private List<BoardApiResponse> departmentList;
-    private List<BoardApiResponse> councilList;
-    private List<BoardApiResponse> qnaList;
-    private List<BoardApiResponse> freeList;
+    private List<BoardApiResponse> noticeList;
+    private List<BoardApiResponse> boardList;
     private List<HomeBannerAndSiteResponse> bannerList;
     private List<HomeBannerAndSiteResponse> siteList;
 }

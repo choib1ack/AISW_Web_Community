@@ -22,7 +22,6 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping()
 public class QnaApiController implements CrudInterface<QnaApiRequest, QnaApiResponse> {
 
     @Autowired

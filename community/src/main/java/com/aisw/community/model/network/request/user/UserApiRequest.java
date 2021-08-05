@@ -4,8 +4,6 @@ import com.aisw.community.model.enumclass.Gender;
 import com.aisw.community.model.enumclass.Grade;
 import lombok.*;
 
-import javax.validation.constraints.Size;
-
 @Getter
 @Setter
 @AllArgsConstructor
