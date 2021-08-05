@@ -6,7 +6,6 @@ import com.aisw.community.repository.user.UserRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +39,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String refreshToken = null;
         String refreshUname = null;
 
-        String header = request.getHeader(JwtProperties.ACCESS_HEADER);
+        String header = request.getHeader(JwtProperties.ACCESS_HEADER_STRING);
         System.out.println("header Authorization : " + header);
 
         if (header == null || !header.startsWith(JwtProperties.TOKEN_PREFIX)) {
@@ -48,7 +47,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        String token = request.getHeader(JwtProperties.ACCESS_HEADER).replace(JwtProperties.TOKEN_PREFIX, "");
+        String token = request.getHeader(JwtProperties.ACCESS_HEADER_STRING).replace(JwtProperties.TOKEN_PREFIX, "");
         System.out.println("token : " + token);
         // 토큰 검증 (이게 인증이기 때문에 AuthenticationManager도 필요 없음)
         // 내가 SecurityContext에 집적 접근해서 세션을 만들때 자동으로 UserDetailsService에 있는
@@ -109,7 +108,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
                     String newtoken = MakeAccessToken(principalDetails);
-                    response.addHeader(JwtProperties.ACCESS_HEADER, JwtProperties.TOKEN_PREFIX + newtoken);
+                    response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + newtoken);
                 }
             }
         } catch (TokenExpiredException e) {

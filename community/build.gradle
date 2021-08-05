@@ -42,7 +42,6 @@ dependencies {
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
     // spring-data-redis
-    compile('org.springframework.boot:spring-boot-starter-data-redis')
     compile 'org.springframework.boot:spring-boot-starter-oauth2-client' // oauth2
 
 
