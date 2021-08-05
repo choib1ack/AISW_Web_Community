@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping()
 public class UniversityApiController implements CrudInterface<UniversityApiRequest, UniversityApiResponse> {
 
     @Autowired(required = false)

@@ -25,6 +25,4 @@ public interface UniversityRepository extends JpaRepository<University, Long> {
     Page<University> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
     Page<University> findAllByStatusOrStatus(BulletinStatus status1, BulletinStatus status2, Pageable pageable);
-
-    List<University> findTop10ByOrderByCreatedAtDesc();
 }
