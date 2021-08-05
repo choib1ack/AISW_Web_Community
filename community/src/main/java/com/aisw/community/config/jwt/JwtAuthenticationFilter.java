@@ -1,10 +1,7 @@
 package com.aisw.community.config.jwt;
 
-import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.network.request.user.LoginApiRequest;
 import com.aisw.community.provider.JwtTokenProvider;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,7 +14,6 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
 
 // login 요청해서 post로 username, password 전송하면 UsernamePasswordAuthenticationFilter 동작
 // formLogin을 disable하면 UsernamePasswordAuthenticationFilter 동작 안 함
@@ -79,7 +75,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) {
         System.out.println("login success");
-        String jwtToken = jwtTokenProvider.createToken(authResult);
-        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+        String jwtToken = jwtTokenProvider.createToken(authResult,JwtProperties.EXPIRATION_TIME);
+        response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
     }
 }

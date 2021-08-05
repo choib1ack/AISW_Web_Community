@@ -93,4 +93,18 @@ public class ApiExceptionHandler {
                 new ApiErrorResponse("StudentIdNotSuitable", "student id is not suitable: " + ex.getStudentId());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(AccessTokenExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(AccessTokenExpiredException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("JwtTokenExpired", "access token is expired: " + ex.getToken());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RefreshTokenExpiredException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(RefreshTokenExpiredException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("RefreshTokenExpired", "refresh token is expired: " + ex.getToken());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 }
