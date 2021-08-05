@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefreshTokenExpiredException extends RuntimeException {
+public class ContentLikeNotFoundException extends RuntimeException {
 
-    private String token;
+    private Long id;
 }

@@ -2,6 +2,7 @@ package com.aisw.community.model.entity.post.comment;
 
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.post.board.Board;
+import com.aisw.community.model.entity.user.Alert;
 import com.aisw.community.model.entity.user.User;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -22,7 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"board", "user", "superComment", "subComment", "contentLikeList"})
+@ToString(exclude = {"board", "user", "superComment", "subComment", "contentLikeList", "alertList"})
 @EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
@@ -63,6 +64,9 @@ public class Comment {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
     private Set<ContentLike> contentLikeList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<Alert> alertList;
 
     @PrePersist
     public void prePersist() {

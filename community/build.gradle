@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.querydsl:querydsl-apt'
 
     implementation "org.mariadb.jdbc:mariadb-java-client"
+
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'

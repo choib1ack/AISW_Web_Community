@@ -42,7 +42,7 @@ public class CouncilRepositoryTest extends CommunityApplicationTests {
                 .views(views)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.COUNCIL)
-                .account(userId)
+                .user(userId)
                 .build();
 
         Council newCouncil = councilRepository.save(council);

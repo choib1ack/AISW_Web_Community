@@ -26,7 +26,7 @@ public class UserRepositoryTest extends CommunityApplicationTests{
         String password = "Test06";
         String phoneNumber = "010-6666-6666";
         Grade grade = Grade.FRESHMAN;
-        Integer studentId = 202066666;
+        String studentId = "202066666";
         Gender gender = Gender.MALE;
 //        Campus university = Campus.GLOBAL;
 //        CollegeName collegeName = CollegeName.IT_CONVERGENCE;

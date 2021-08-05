@@ -48,7 +48,7 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
                 .isAnonymous(isAnonymous)
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
-                .account(userId)
+                .user(userId)
                 .build();
 
         Free newFree = freeRepository.save(free);

@@ -2,19 +2,20 @@ package com.aisw.community.service.post.like;
 
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.PostNotFoundException;
-import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
 import com.aisw.community.model.entity.post.like.ContentLike;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;
+import com.aisw.community.model.network.request.user.AlertApiRequest;
 import com.aisw.community.model.network.response.post.like.ContentLikeApiResponse;
-import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
+import com.aisw.community.repository.user.UserRepository;
+import com.aisw.community.service.user.AlertApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class ContentLikeApiLogicService {
     private CommentRepository commentRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AlertApiService alertApiService;
 
     @Transactional
     public Header<ContentLikeApiResponse> pressLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
@@ -72,6 +73,10 @@ public class ContentLikeApiLogicService {
             boardRepository.save(board);
             newContentLike = contentLikeRepository.save(contentLike);
         }
+
+        AlertApiRequest alertApiRequest = AlertApiRequest.builder().contentLikeId(newContentLike.getId()).build();
+        alertApiService.create(authentication, alertApiRequest);
+
         return Header.OK(response(newContentLike));
     }
 
@@ -113,7 +118,6 @@ public class ContentLikeApiLogicService {
     private ContentLikeApiResponse response(ContentLike contentLike) {
         ContentLikeApiResponse contentLikeApiResponse = ContentLikeApiResponse.builder()
                 .id(contentLike.getId())
-                .userId(contentLike.getUser().getId())
                 .build();
         if(contentLike.getBoard() != null) {
             contentLikeApiResponse.setBoardId(contentLike.getBoard().getId());

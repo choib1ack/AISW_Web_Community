@@ -49,7 +49,7 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
                 .subject(subject)
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
-                .account(userId)
+                .user(userId)
                 .build();
 
         Qna newQna = qnaRepository.save(qna);

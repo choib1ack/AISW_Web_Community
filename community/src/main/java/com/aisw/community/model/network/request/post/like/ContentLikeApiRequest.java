@@ -9,8 +9,6 @@ import lombok.*;
 @Builder
 public class ContentLikeApiRequest {
 
-    private Long userId;
-
     private Long boardId;
 
     private Long commentId;

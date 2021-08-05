@@ -27,7 +27,7 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-@ToString(exclude = {"bulletinList", "commentList", "contentLikeList"})
+@ToString(exclude = {"bulletinList", "commentList", "contentLikeList", "alertList"})
 public class User {
 
     @Id
@@ -80,4 +80,7 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
     private Set<ContentLike> contentLikeList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Alert> alertList;
 }

@@ -1,7 +1,7 @@
 package com.aisw.community.service.post.comment;
 
 import com.aisw.community.advice.exception.CommentNotFoundException;
-import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Board;
@@ -9,11 +9,12 @@ import com.aisw.community.model.entity.post.comment.Comment;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.comment.CommentApiRequest;
+import com.aisw.community.model.network.request.user.AlertApiRequest;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.comment.CustomCommentRepository;
-import com.aisw.community.repository.user.UserRepository;
+import com.aisw.community.service.user.AlertApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -28,9 +29,6 @@ import java.util.Map;
 public class CommentApiLogicService {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private BoardRepository<Board> boardRepository;
 
     @Autowired
@@ -38,6 +36,9 @@ public class CommentApiLogicService {
 
     @Autowired
     private CustomCommentRepository customCommentRepository;
+
+    @Autowired
+    private AlertApiService alertApiService;
 
     @Transactional
     public Header<CommentApiResponse> create(Authentication authentication, Header<CommentApiRequest> request) {
@@ -58,10 +59,13 @@ public class CommentApiLogicService {
                 .user(user)
                 .superComment(superComment)
                 .board(boardRepository.getOne(commentApiRequest.getBoardId()))
-                .user(userRepository.getOne(commentApiRequest.getUserId()))
                 .build();
 
         Comment newComment = commentRepository.save(comment);
+
+        AlertApiRequest alertApiRequest = AlertApiRequest.builder().commentId(newComment.getId()).build();
+        alertApiService.create(authentication, alertApiRequest);
+
         return Header.OK(response(newComment));
     }
 
@@ -73,7 +77,7 @@ public class CommentApiLogicService {
         User user = principal.getUser();
 
         if (comment.getUser().getId() != user.getId()) {
-            throw new NotEqualAccountException(user.getId());
+            throw new NotEqualUserException(user.getId());
         }
 
         if(comment.getSubComment().size() != 0) {
@@ -114,7 +118,6 @@ public class CommentApiLogicService {
                 .likes(comment.getLikes())
                 .isAnonymous(comment.getIsAnonymous())
                 .boardId(comment.getBoard().getId())
-                .userId(comment.getUser().getId())
                 .build();
 
         return freeCommentApiResponse;

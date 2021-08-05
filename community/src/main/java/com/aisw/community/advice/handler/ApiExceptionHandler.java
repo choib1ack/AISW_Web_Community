@@ -31,6 +31,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ContentLikeNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(ContentLikeNotFoundException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("ContentLikeNotFound", "content like is not found with ID: " + ex.getId());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(AdminNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleException(AdminNotFoundException ex) {
         ApiErrorResponse response =
@@ -66,8 +73,15 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(NotEqualAccountException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(NotEqualAccountException ex) {
+    @ExceptionHandler(AlertNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(AlertNotFoundException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("AlertNotFound", "alert is not found with ID: " + ex.getId());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotEqualUserException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(NotEqualUserException ex) {
         ApiErrorResponse response =
                 new ApiErrorResponse("NotEqualAccount", "the user is not writer: " + ex.getId());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -98,13 +112,6 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleException(AccessTokenExpiredException ex) {
         ApiErrorResponse response =
                 new ApiErrorResponse("JwtTokenExpired", "access token is expired: " + ex.getToken());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(RefreshTokenExpiredException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(RefreshTokenExpiredException ex) {
-        ApiErrorResponse response =
-                new ApiErrorResponse("RefreshTokenExpired", "refresh token is expired: " + ex.getToken());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
