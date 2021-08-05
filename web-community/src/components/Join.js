@@ -29,8 +29,8 @@ export default function Join() {
     const location = useLocation();
 
     useEffect(() => {
-        console.log(location.state.google_data);
-        console.log(location.state.account_role);
+        // console.log(location.state.google_data);
+        // console.log(location.state.account_role);
     }, [location]);
 
     async function sendServer(data) {

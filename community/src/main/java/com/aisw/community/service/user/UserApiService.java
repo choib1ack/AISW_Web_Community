@@ -1,5 +1,8 @@
 package com.aisw.community.service.user;
 
+import com.aisw.community.advice.exception.PhoneNumberNotSuitableException;
+import com.aisw.community.advice.exception.SignUpNotSuitableException;
+import com.aisw.community.advice.exception.StudentIdNotSuitableException;
 import com.aisw.community.advice.exception.UserNotFoundException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
@@ -29,11 +32,11 @@ public class UserApiService {
         UserApiRequest userApiRequest = request.getData();
 
         if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
-            return Header.ERROR("요청이 잘못 되었습니다.");
+            throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
         if (!validatePhoneNumber(userApiRequest.getPhoneNumber()))
-            return Header.ERROR("전화번호가 형식에 맞지 않습니다.");
+            throw new PhoneNumberNotSuitableException(userApiRequest.getPhoneNumber());
         if (!validateStudentId(userApiRequest.getStudentId()))
-            return Header.ERROR("학번이 형식에 맞지 않습니다.");
+            throw new StudentIdNotSuitableException(userApiRequest.getStudentId());
 
         User user = User.builder()
                 .username(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId())
