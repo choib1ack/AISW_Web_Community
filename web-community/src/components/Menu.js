@@ -99,7 +99,7 @@ export default function Menu() {
             password: 'AISW',
         }).then((res) => {
             console.log(res);
-            window.localStorage.setItem("auth", JSON.stringify(res.headers.authorization)); // 토큰 저장
+            window.localStorage.setItem("auth", res.headers.authorization); // 토큰 저장
             window.localStorage.setItem("user_name", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
 
             history.push('/')   // 홈으로 가기
