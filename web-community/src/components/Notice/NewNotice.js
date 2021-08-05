@@ -17,21 +17,27 @@ import FileUpload from "../FileUpload";
 export default function NewNotice() {
     const {register, handleSubmit, control} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
     const write = useSelector(state => state.write)
     const dispatch = useDispatch()
 
+    useEffect(() => {
+        console.log(auth);
+    }, [])
+
     async function sendNotice(data, path) {
-        await axios.post("/notice/" + path,
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data,
-            },
-        ).then((res) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
+        await axios.post("/auth-admin/notice/" + path,
+            {data: data},
+            {headers: headers
+        }).then((res) => {
             console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
@@ -50,32 +56,25 @@ export default function NewNotice() {
             let test;
             if (data.board_type === "university") {
                 test = {
-                    attachment_file: "string",
+                    // attachment_file: "string",
                     campus: "COMMON",
                     content: data.content,
-                    level: 0,
-                    status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id,
-                    writer: "string"
+                    status: "URGENT",
+                    title: data.title
                 }
             } else if (data.board_type === "department") {
                 test = {
-                    attachment_file: "string",
+                    // attachment_file: "string",
                     content: data.content,
-                    level: 0,
                     status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id
+                    title: data.title
                 }
             } else if (data.board_type === "council") {
                 test = {
-                    attachment_file: "string",
+                    // attachment_file: "string",
                     content: data.content,
-                    level: 0,
                     status: "GENERAL",
-                    title: data.title,
-                    account_id: user.id
+                    title: data.title
                 }
             }
             sendNotice(test, data.board_type)

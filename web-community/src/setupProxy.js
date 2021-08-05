@@ -22,9 +22,12 @@ module.exports = function (app) {
         createProxyMiddleware('/site', {
             target: 'http://localhost:8080',
             changeOrigin: true,
-        })
-        ,
+        }),
         createProxyMiddleware('/file/download', {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+        }),
+        createProxyMiddleware('/auth-admin/notice/university', {
             target: 'http://localhost:8080',
             changeOrigin: true,
         })
