@@ -1,6 +1,6 @@
 import './App.css';
 import Menu from "./components/Menu";
-import React from "react";
+import React, {useState} from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Footer from "./components/Footer";
 import Login from "./components/Login";
@@ -22,6 +22,7 @@ import FAQ from "./components/FAQ";
 function App() {
     return (
         <Router forceRefresh={true}>
+        {/*<Router>*/}
             <div className="App" style={{height: "100%"}}>
                 <Menu/>
 
