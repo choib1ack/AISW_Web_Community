@@ -30,10 +30,6 @@ export default function MyPage(props) {
         history.push('/')   // 홈으로 가기
     }
 
-    useEffect(() => {
-        console.log(user.userData)
-    }, [])
-
     return (
         <div>
             <>
