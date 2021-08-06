@@ -54,7 +54,7 @@ public class Banner {
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<File> fileList;
 
     @PrePersist

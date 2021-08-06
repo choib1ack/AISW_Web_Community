@@ -24,6 +24,6 @@ public class SiteCategory {
 
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "siteCategory", cascade = CascadeType.ALL)
-    private List<SiteInformation> siteInformationList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "siteCategory", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<SiteInformation> siteInformationList;
 }

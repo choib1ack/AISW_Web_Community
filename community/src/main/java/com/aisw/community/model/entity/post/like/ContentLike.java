@@ -35,6 +35,6 @@ public class ContentLike {
     @ManyToOne(fetch = FetchType.LAZY)
     private Comment comment;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contentLike", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contentLike", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Alert> alertList;
 }
