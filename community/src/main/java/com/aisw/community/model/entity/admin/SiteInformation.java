@@ -51,6 +51,6 @@ public class SiteInformation {
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "siteInformation", orphanRemoval = true)
-    private List<File> fileList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "siteInformation", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<File> fileList;
 }

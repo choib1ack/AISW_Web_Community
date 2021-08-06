@@ -62,10 +62,10 @@ public class Comment {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "superComment", orphanRemoval = true)
     private List<Comment> subComment;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", orphanRemoval = true, cascade = CascadeType.ALL)
     private Set<ContentLike> contentLikeList;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Alert> alertList;
 
     @PrePersist

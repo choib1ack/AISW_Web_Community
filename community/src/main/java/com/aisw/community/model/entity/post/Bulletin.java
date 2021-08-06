@@ -67,8 +67,8 @@ public class Bulletin {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user; // user id
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bulletin", orphanRemoval = true)
-    private List<File> fileList = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "bulletin", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<File> fileList;
 
     public Bulletin(Long id, String title, String writer, String content, BulletinStatus status,
                     Long views, FirstCategory firstCategory, SecondCategory secondCategory, User user) {
