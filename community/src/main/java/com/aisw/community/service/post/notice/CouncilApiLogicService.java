@@ -2,6 +2,7 @@ package com.aisw.community.service.post.notice;
 
 import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.entity.user.User;
@@ -45,8 +46,11 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Transactional
     public Header<CouncilApiResponse> create(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         Council council = Council.builder()
@@ -67,6 +71,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Transactional
     public Header<CouncilApiResponse> create(Authentication authentication, FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         Council council = Council.builder()
@@ -101,6 +107,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Transactional
     public Header<CouncilApiResponse> update(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
 
         Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
@@ -123,6 +131,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Transactional
     public Header<CouncilApiResponse> update(Authentication authentication, FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
         MultipartFile[] files = request.getFiles();
 
         Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
@@ -172,9 +182,13 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .createdBy(council.getCreatedBy())
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
-                .fileApiResponseList(council.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
+        if (council.getFileList() == null) {
+            council.setFileList(new ArrayList<>());
+        } else {
+            councilApiResponse.setFileApiResponseList(council.getFileList().stream()
+                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        }
 
         return councilApiResponse;
     }
