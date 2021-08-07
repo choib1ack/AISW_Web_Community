@@ -5,9 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class AccessTokenExpiredException extends RuntimeException {
 
-    private String token;
+    private String msg;
+    public AccessTokenExpiredException(String token){
+        super(token);
+        this.msg = "access token is expired: ";
+    }
+
+
 }

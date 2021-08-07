@@ -1,5 +1,6 @@
 package com.aisw.community.config;
 
+import com.aisw.community.advice.handler.ExceptionHandlerFilter;
 import com.aisw.community.config.jwt.JwtAuthenticationFilter;
 import com.aisw.community.config.jwt.JwtAuthorizationFilter;
 import com.aisw.community.provider.JwtTokenProvider;
@@ -20,6 +21,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ExceptionHandlerFilter exceptionHandlerFilter;
 
     @Autowired
     private CorsConfig corsConfig;
@@ -60,5 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth-admin/**")
                 .access("hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
                 .anyRequest().permitAll();
+        http.addFilterBefore(exceptionHandlerFilter, JwtAuthorizationFilter.class);
     }
 }
