@@ -94,6 +94,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(PostStatusNotSuitableException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(PostStatusNotSuitableException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("PostStatusNotSuitable", "post status is not suitable: " + ex.getStatus());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(PhoneNumberNotSuitableException.class)
     public ResponseEntity<ApiErrorResponse> handleException(PhoneNumberNotSuitableException ex) {
         ApiErrorResponse response =

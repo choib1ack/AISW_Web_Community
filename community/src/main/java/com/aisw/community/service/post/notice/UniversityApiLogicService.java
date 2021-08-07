@@ -2,6 +2,7 @@ package com.aisw.community.service.post.notice;
 
 import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.entity.user.User;
@@ -45,8 +46,11 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Transactional
     public Header<UniversityApiResponse> create(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         University university = University.builder()
@@ -68,6 +72,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Transactional
     public Header<UniversityApiResponse> create(Authentication authentication, FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         University university = University.builder()
@@ -103,6 +109,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Transactional
     public Header<UniversityApiResponse> update(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
 
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
@@ -126,6 +134,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Transactional
     public Header<UniversityApiResponse> update(Authentication authentication, FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
         MultipartFile[] files = request.getFiles();
 
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
@@ -177,9 +187,13 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .fileApiResponseList(university.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
+        if (university.getFileList() == null) {
+            university.setFileList(new ArrayList<>());
+        } else {
+            universityApiResponse.setFileApiResponseList(university.getFileList().stream()
+                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        }
 
         return universityApiResponse;
     }

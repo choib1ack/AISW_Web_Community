@@ -10,7 +10,8 @@ public enum SecondCategory {
     DEPARTMENT(1, "학과", "학과 공지글"),
     COUNCIL(2, "학생회", "학생회 공지글"),
     FREE(3, "자유게시판", "자유게시판 게시글"),
-    QNA(4, "질문게시판", "질문게시판 게시글");
+    QNA(4, "질문게시판", "질문게시판 게시글"),
+    JOB(5, "취업게시판", "취업게시판 게시글");
 
     private Integer id;
     private String title;

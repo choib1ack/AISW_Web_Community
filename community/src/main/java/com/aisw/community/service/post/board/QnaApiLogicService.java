@@ -2,6 +2,7 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.post.like.ContentLike;
@@ -56,8 +57,11 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Transactional
     public Header<QnaApiResponse> create(Authentication authentication, Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -82,6 +86,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Transactional
     public Header<QnaApiResponse> create(Authentication authentication, FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -120,6 +126,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Transactional
     public Header<QnaApiResponse> update(Authentication authentication, Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
@@ -144,6 +152,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Transactional
     public Header<QnaApiResponse> update(Authentication authentication, FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
         MultipartFile[] files = request.getFiles();
 
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
@@ -200,9 +210,13 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
-                .fileApiResponseList(qna.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
+        if (qna.getFileList() == null) {
+            qna.setFileList(new ArrayList<>());
+        } else {
+            qnaApiResponse.setFileApiResponseList(qna.getFileList().stream()
+                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        }
 
         return qnaApiResponse;
     }
@@ -382,28 +396,28 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, Page<Qna> qnasByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(qnas.stream()
-                        .map(board -> BoardApiResponse.builder()
-                                .id(board.getId())
-                                .title(board.getTitle())
-                                .category(board.getCategory())
-                                .createdAt(board.getCreatedAt())
-                                .status(board.getStatus())
-                                .views(board.getViews())
-                                .writer(board.getWriter())
+                        .map(qna -> BoardApiResponse.builder()
+                                .id(qna.getId())
+                                .title(qna.getTitle())
+                                .category(qna.getCategory())
+                                .createdAt(qna.getCreatedAt())
+                                .status(qna.getStatus())
+                                .views(qna.getViews())
+                                .writer(qna.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
         List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
         List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
-        qnasByStatus.stream().forEach(board -> {
+        qnasByStatus.stream().forEach(qna -> {
             BoardApiResponse boardApiResponse = BoardApiResponse.builder()
-                    .id(board.getId())
-                    .title(board.getTitle())
-                    .category(board.getCategory())
-                    .createdAt(board.getCreatedAt())
-                    .status(board.getStatus())
-                    .views(board.getViews())
-                    .writer(board.getWriter())
+                    .id(qna.getId())
+                    .title(qna.getTitle())
+                    .category(qna.getCategory())
+                    .createdAt(qna.getCreatedAt())
+                    .status(qna.getStatus())
+                    .views(qna.getViews())
+                    .writer(qna.getWriter())
                     .build();
             if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);

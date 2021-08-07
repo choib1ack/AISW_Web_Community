@@ -2,6 +2,7 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.like.ContentLike;
@@ -56,8 +57,11 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Transactional
     public Header<FreeApiResponse> create(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
+        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -81,6 +85,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Transactional
     public Header<FreeApiResponse> create(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
+        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -119,6 +125,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Transactional
     public Header<FreeApiResponse> update(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
+        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
 
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
@@ -143,6 +151,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Transactional
     public Header<FreeApiResponse> update(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
+        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         MultipartFile[] files = request.getFiles();
 
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
@@ -197,9 +207,13 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .likes(free.getLikes())
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
-                .fileApiResponseList(free.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
+        if (free.getFileList() == null) {
+            free.setFileList(new ArrayList<>());
+        } else {
+            freeApiResponse.setFileApiResponseList(free.getFileList().stream()
+                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        }
 
         return freeApiResponse;
     }
@@ -367,28 +381,28 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
             (Page<Free> frees, Page<Free> freesByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(frees.stream()
-                        .map(board -> BoardApiResponse.builder()
-                                .id(board.getId())
-                                .title(board.getTitle())
-                                .category(board.getCategory())
-                                .createdAt(board.getCreatedAt())
-                                .status(board.getStatus())
-                                .views(board.getViews())
-                                .writer(board.getWriter())
+                        .map(free -> BoardApiResponse.builder()
+                                .id(free.getId())
+                                .title(free.getTitle())
+                                .category(free.getCategory())
+                                .createdAt(free.getCreatedAt())
+                                .status(free.getStatus())
+                                .views(free.getViews())
+                                .writer(free.getWriter())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
         List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
         List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
-        freesByStatus.stream().forEach(board -> {
+        freesByStatus.stream().forEach(free -> {
             BoardApiResponse boardApiResponse = BoardApiResponse.builder()
-                    .id(board.getId())
-                    .title(board.getTitle())
-                    .category(board.getCategory())
-                    .createdAt(board.getCreatedAt())
-                    .status(board.getStatus())
-                    .views(board.getViews())
-                    .writer(board.getWriter())
+                    .id(free.getId())
+                    .title(free.getTitle())
+                    .category(free.getCategory())
+                    .createdAt(free.getCreatedAt())
+                    .status(free.getStatus())
+                    .views(free.getViews())
+                    .writer(free.getWriter())
                     .build();
             if (boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);

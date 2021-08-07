@@ -26,6 +26,11 @@ public class CommentApiController {
         return commentApiLogicService.create(authentication, request);
     }
 
+    @PostMapping("/auth/job/comment")
+    public Header<CommentApiResponse> createAtJob(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
+        return commentApiLogicService.create(authentication, request);
+    }
+
     @DeleteMapping("/auth/free/comment/{id}")
     public Header deleteAtFree(Authentication authentication, @PathVariable Long id) {
         return commentApiLogicService.delete(authentication, id);
@@ -33,6 +38,11 @@ public class CommentApiController {
 
     @DeleteMapping("/auth-student/qna/comment/{id}")
     public Header deleteAtQna(Authentication authentication, @PathVariable Long id) {
+        return commentApiLogicService.delete(authentication, id);
+    }
+
+    @DeleteMapping("/auth/job/comment/{id}")
+    public Header deleteAtJob(Authentication authentication, @PathVariable Long id) {
         return commentApiLogicService.delete(authentication, id);
     }
 }
