@@ -2,6 +2,7 @@ package com.aisw.community.config.jwt;
 
 import com.aisw.community.model.network.request.user.LoginApiRequest;
 import com.aisw.community.provider.JwtTokenProvider;
+import com.aisw.community.provider.RedisProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +25,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final RedisProvider redisProvider;
 
     // Authentication 객체 만들어서 리턴 => 의존 : AuthenticationManager
     // 인증 요청시에 실행되는 함수 => /login
@@ -77,5 +80,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         System.out.println("login success");
         String jwtToken = jwtTokenProvider.createToken(authResult,JwtProperties.EXPIRATION_TIME);
         response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+
+        String refreshToken = jwtTokenProvider.createToken(authResult,JwtProperties.REFRESH_EXPIRATION_TIME);
+        redisProvider.setDataExpire(refreshToken, authResult.getName(), JwtProperties.REFRESH_EXPIRATION_TIME);
+        response.addHeader(JwtProperties.REFRESH_HEADER_STRING, JwtProperties.TOKEN_PREFIX + refreshToken);
     }
 }

@@ -1,5 +1,6 @@
 package com.aisw.community.config;
 
+import com.aisw.community.advice.handler.ExceptionHandlerFilter;
 import com.aisw.community.config.jwt.JwtAuthenticationFilter;
 import com.aisw.community.config.jwt.JwtAuthorizationFilter;
 import com.aisw.community.provider.JwtTokenProvider;
@@ -20,6 +21,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ExceptionHandlerFilter exceptionHandlerFilter;
 
     @Autowired
     private CorsConfig corsConfig;
@@ -48,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // Bearer: Authorization에 token 넣어서 보냄
                 .httpBasic().disable()
 
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, redisProvider))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtTokenProvider, redisProvider))
                 .authorizeRequests()
                 .antMatchers("/auth/**")
@@ -60,5 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth-admin/**")
                 .access("hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
                 .anyRequest().permitAll();
+        http.addFilterBefore(exceptionHandlerFilter, JwtAuthorizationFilter.class);
     }
 }

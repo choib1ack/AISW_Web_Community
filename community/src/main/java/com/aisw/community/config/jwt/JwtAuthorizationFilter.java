@@ -8,6 +8,7 @@ import com.aisw.community.provider.RedisProvider;
 import com.aisw.community.repository.user.UserRepository;
 import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-
         // access token 확인
         String accessToken = jwtTokenProvider.resolveToken(request);
         System.out.println("accessToken: " + accessToken);
@@ -80,12 +80,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         } catch (TokenExpiredException e) {
             // access token이 만료된 경우
             header = request.getHeader(JwtProperties.REFRESH_HEADER_STRING);
-
+            System.out.println(header);
             // access token이 만료되어서 프론트로 exception
             if (header == null) {
+                System.out.println(accessToken);
+//                response.setStatus(HttpStatus.BAD_REQUEST.value());
+//                chain.doFilter(request,response);
+//                return;
                 throw new AccessTokenExpiredException(accessToken);
             }
-
+            System.out.println("hello");
             refreshToken = header.replace(JwtProperties.TOKEN_PREFIX, "");
             System.out.println("refreshToken: " + refreshToken);
         }
@@ -109,7 +113,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 // 강제로 시큐리티의 세션에 접근하여 값 저장
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                String jwtToken = jwtTokenProvider.createToken(authentication, JwtProperties.REFRESH_EXPIRATION_TIME);
+                // access token 생성
+                String jwtToken = jwtTokenProvider.createToken(authentication, JwtProperties.EXPIRATION_TIME);
                 response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
             }
         }

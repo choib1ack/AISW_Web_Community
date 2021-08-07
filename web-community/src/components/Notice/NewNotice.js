@@ -36,8 +36,8 @@ export default function NewNotice() {
 
         await axios.post("/auth-admin/notice/" + path,
             {data: data},
-            {headers: headers
-        }).then((res) => {
+            {headers: headers}
+        ).then((res) => {
             console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {

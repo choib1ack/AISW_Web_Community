@@ -25,12 +25,13 @@ export default function BoardDetail({match}) {
     const [error, setError] = useState(null);
     const [refresh, setRefresh] = useState(0);
     const [htmlContent, setHtmlContent] = useState(null);
-    const [likeState, dispatch] = useReducer(reducer, { "press":false, "num":0 });
-	
+    const [likeState, dispatch] = useReducer(reducer, {"press": false, "num": 0});
+
     let history = useHistory();
 
     // redux toolkit
     const user = useSelector(state => state.user)
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
@@ -40,7 +41,7 @@ export default function BoardDetail({match}) {
 
     const {board_category} = match.params;
     const {id} = match.params;
-    const url = match.url.substring(0,11)+"/comment&like/"+id+"/"+1;
+    const url = match.url.substring(0, 11) + "/comment&like/" + id + "/" + 1;
 
     function reducer(state, action) {
         switch (action.type) {
@@ -52,12 +53,12 @@ export default function BoardDetail({match}) {
                 };
             case 'PRESS':
                 return {
-                    num : state.num+1,
+                    num: state.num + 1,
                     press: true
                 };
             case 'REMOVE':
                 return {
-                    num : state.num-1,
+                    num: state.num - 1,
                     press: false
                 };
             default:
@@ -90,7 +91,7 @@ export default function BoardDetail({match}) {
             }
         ).then((res) => {
             alert("게시글에 좋아요를 눌렀습니다");
-            dispatch({ type: 'PRESS' });
+            dispatch({type: 'PRESS'});
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             alert("좋아요 누름 에러!" + errorObject);
@@ -113,7 +114,7 @@ export default function BoardDetail({match}) {
             }
         ).then((res) => {
             alert("게시글에 좋아요를 취소했습니다");
-            dispatch({ type: 'REMOVE' });
+            dispatch({type: 'REMOVE'});
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             alert("좋아요 취소 에러!" + errorObject);
@@ -144,7 +145,11 @@ export default function BoardDetail({match}) {
 
                 const response = await axios.get(url);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
-                dispatch({ type: 'INITIALIZE', value_likes:response.data.data.likes, value_press:response.data.data.check_like });
+                dispatch({
+                    type: 'INITIALIZE',
+                    value_likes: response.data.data.likes,
+                    value_press: response.data.data.check_like
+                });
                 console.log(response.data.data);
 
                 setHtmlContent(response.data.data.content);
@@ -166,15 +171,21 @@ export default function BoardDetail({match}) {
     }
 
     async function handleDelete() {
-        await axios.delete("/board/" + board_category + "/" + id)
-            .then((res) => {
-                console.log(res)
-                history.push('/board')  // BoardList로 이동
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log("에러 발생");
-                console.log(errorObject);
-            })
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
+        await axios.delete(`/board/${board_category}/${id}`, {
+            headers: headers
+        }).then((res) => {
+            console.log(res)
+            history.push('/board')  // BoardList로 이동
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러 발생");
+            console.log(errorObject);
+        })
     }
 
     function CustomModal() {
@@ -241,9 +252,9 @@ export default function BoardDetail({match}) {
                     <div className="p-4" style={{minHeight: "100px"}}>
                         {/*좋아요*/}
 
-                        {likeState.press?<span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
+                        {likeState.press ? <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCancelClick}
-                                     style={{cursor: "pointer"}}/> {likeState.num}</span>:
+                                     style={{cursor: "pointer"}}/> {likeState.num}</span> :
                             <span style={{float: "right", fontSize: '13px', color: '#949494'}}>
                                 <img src={likeGrayImage} onClick={handleLikeClick}
                                      style={{cursor: "pointer"}}/> {likeState.num}</span>}
