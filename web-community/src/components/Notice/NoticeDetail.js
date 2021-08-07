@@ -89,15 +89,21 @@ export default function NoticeDetail({match}) {
     }
 
     async function handleDelete() {
-        await axios.delete("/notice/" + notice_category + "/" + id)
-            .then((res) => {
-                console.log(res)
-                history.push('/notice')  // BoardList로 이동
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log("에러 발생");
-                console.log(errorObject);
-            })
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
+        await axios.delete(`/auth-admin/notice/${notice_category}/${id}`, {
+            headers: headers
+        }).then((res) => {
+            console.log(res)
+            history.push('/notice')  // BoardList로 이동
+        }).catch(error => {
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log("에러 발생");
+            console.log(errorObject);
+        })
     }
 
     function CustomModal() {

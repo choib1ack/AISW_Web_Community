@@ -18,7 +18,6 @@ export default function Join() {
     const phone_number = useRef();
     phone_number.current = watch("phone_number");
     const [agree, setAgree] = useState(false);
-
     // redux toolkit
     const user = useSelector(state => state.user.userData)
     const dispatch = useDispatch()
@@ -63,12 +62,14 @@ export default function Join() {
             name: location.state.google_data.profileObj.familyName,
             provider: location.state.google_data.tokenObj.idpId,
             provider_id: location.state.google_data.profileObj.googleId,
-            phone_number: data.phone_number,
+            phone_number: data.phone_number.replaceAll('-',''),
             role: location.state.account_role,   // GENERAL, STUDENT
             student_id: data.student_id,
             university: 'COMMON',
             picture: location.state.google_data.profileObj.picture
         }
+
+        console.log(userData);
 
         if (agree) {
             sendServer(userData);   // 백엔드 체크
