@@ -27,6 +27,7 @@ import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -57,10 +58,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     private FileApiLogicService fileApiLogicService;
 
     @Override
-    @Transactional
     public Header<FreeApiResponse> create(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
@@ -85,7 +85,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Transactional
     public Header<FreeApiResponse> create(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
-        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
@@ -112,6 +112,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
+    @Cacheable(value = "freeRead", key = "#id")
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
@@ -122,10 +123,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     }
 
     @Override
-    @Transactional
     public Header<FreeApiResponse> update(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
 
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
@@ -151,7 +151,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Transactional
     public Header<FreeApiResponse> update(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
-        if(freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         MultipartFile[] files = request.getFiles();
 
@@ -241,6 +241,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
+    @Cacheable(value = "freeReadWithComment", key = "#id")
     public Header<FreeDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(free -> (Free) free.setViews(free.getViews() + 1))
@@ -320,9 +321,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 for (CommentApiResponse commentApiResponse : commentApiResponseList) {
                     if (contentLike.getComment().getId() == commentApiResponse.getId()) {
                         commentApiResponse.setCheckLike(true);
-                    }
-                    else {
-                        for(CommentApiResponse subCommentApiResponse : commentApiResponse.getSubComment()) {
+                    } else {
+                        for (CommentApiResponse subCommentApiResponse : commentApiResponse.getSubComment()) {
                             if (contentLike.getComment().getId() == subCommentApiResponse.getId()) {
                                 subCommentApiResponse.setCheckLike(true);
                             }
@@ -338,7 +338,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
 
     @Override
-    public Header<BoardResponseDTO> search(Pageable pageable) {
+    @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
+    public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 

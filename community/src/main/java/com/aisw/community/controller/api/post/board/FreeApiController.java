@@ -69,8 +69,8 @@ public class FreeApiController implements CrudInterface<FreeApiRequest, FreeApiR
     }
 
     @GetMapping("/board/free")
-    public Header<BoardResponseDTO> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardPostService.search(pageable);
+    public Header<BoardResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return boardPostService.readAll(pageable);
     }
 
     @GetMapping("/board/free/search/writer")

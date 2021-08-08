@@ -12,6 +12,7 @@ import com.aisw.community.repository.admin.SiteInformationRepository;
 import com.aisw.community.repository.post.BulletinRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -90,6 +91,7 @@ public class FileApiLogicService {
         fileRepository.delete(deleteFile);
     }
 
+    @Transactional
     public ResponseEntity<Resource> download(String fileName, HttpServletRequest request) {
         Resource resource = fileStorageService.loadFileAsResource(fileName);
 

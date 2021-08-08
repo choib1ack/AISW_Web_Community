@@ -18,10 +18,12 @@ import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.repository.user.AlertRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class AlertApiService {
     @Autowired
     private ContentLikeRepository contentLikeRepository;
 
+    @Transactional
     public Header<AlertApiResponse> create(Authentication authentication, AlertApiRequest alertApiRequest) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
@@ -80,12 +83,14 @@ public class AlertApiService {
         return Header.OK(alertList, pagination);
     }
 
+
     public Header<AlertApiResponse> checkAlert(Authentication authentication, Long id) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
 
         Alert alert = alertRepository.findById(id).orElseThrow(() -> new AlertNotFoundException(id));
-        if(alert.getUser().getId() != principal.getUser().getId())
+        if(alert.getUser().getId() != principal.getUser().getId()) {
             throw new NotEqualUserException(id);
+        }
 
         Alert updatedAlert = alert.setChecked(true);
         boolean isComment = false;

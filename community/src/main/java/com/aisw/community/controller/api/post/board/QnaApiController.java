@@ -75,8 +75,8 @@ public class QnaApiController implements CrudInterface<QnaApiRequest, QnaApiResp
     }
 
     @GetMapping("/board/qna")
-    public Header<BoardResponseDTO> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardPostService.search(pageable);
+    public Header<BoardResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return boardPostService.readAll(pageable);
     }
 
     @GetMapping("/board/qna/search/writer")

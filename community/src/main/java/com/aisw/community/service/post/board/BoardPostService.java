@@ -18,7 +18,7 @@ public abstract class BoardPostService<Req, FileReq, ListRes, DetailRes, BaseRes
     public abstract Header<BaseRes> update(Authentication authentication, FileReq request);
     public abstract Header<DetailRes> readWithComment(Long id);
     public abstract Header<DetailRes> readWithCommentAndLike(Authentication authentication, Long id);
-    public abstract Header<ListRes> search(Pageable pageable);
+    public abstract Header<ListRes> readAll(Pageable pageable);
     public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
     public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);
     public abstract Header<ListRes> searchByTitleOrContent(String title, String content, Pageable pageable);

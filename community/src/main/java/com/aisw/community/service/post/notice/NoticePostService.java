@@ -22,7 +22,7 @@ public abstract class NoticePostService<Req, FileReq, ListRes, Res, Entity> impl
 
     public abstract Header<Res> create(Authentication authentication, FileReq request);
     public abstract Header<Res> update(Authentication authentication, FileReq request);
-    public abstract Header<ListRes> search(Pageable pageable);
+    public abstract Header<ListRes> readAll(Pageable pageable);
     public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
     public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);
     public abstract Header<ListRes> searchByTitleOrContent(String title, String content, Pageable pageable);

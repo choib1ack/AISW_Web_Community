@@ -58,8 +58,8 @@ public class CouncilApiController implements CrudInterface<CouncilApiRequest, Co
     }
 
     @GetMapping("/notice/council")
-    public Header<NoticeResponseDTO> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return noticePostService.search(pageable);
+    public Header<NoticeResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return noticePostService.readAll(pageable);
     }
 
     @GetMapping("/notice/council/search/writer")

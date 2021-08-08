@@ -23,8 +23,8 @@ public class BoardApiController extends BulletinController<BoardResponseDTO, Boa
     private BoardApiLogicService boardApiLogicService;
 
     @GetMapping("/main")
-    public Header<BoardResponseDTO> searchList(@PageableDefault(sort = "createdAt",
+    public Header<BoardResponseDTO> readAll(@PageableDefault(sort = "createdAt",
             direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardApiLogicService.searchList(pageable);
+        return boardApiLogicService.readAll(pageable);
     }
 }

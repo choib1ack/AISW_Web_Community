@@ -22,6 +22,7 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     private FileApiLogicService fileApiLogicService;
 
     @Override
-    @Transactional
     public Header<CouncilApiResponse> create(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
         if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
@@ -94,6 +94,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
+    @Cacheable(value = "councilRead", key = "#id")
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
@@ -104,7 +105,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    @Transactional
     public Header<CouncilApiResponse> update(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
         if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
@@ -213,7 +213,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    public Header<NoticeResponseDTO> search(Pageable pageable) {
+    @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
+    public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
 
