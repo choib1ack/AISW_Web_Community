@@ -25,6 +25,7 @@ import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -55,7 +56,6 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     private FileApiLogicService fileApiLogicService;
 
     @Override
-    @Transactional
     public Header<JobApiResponse> create(Authentication authentication, Header<JobApiRequest> request) {
         JobApiRequest jobApiRequest = request.getData();
         if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT) || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE))
@@ -110,6 +110,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
+    @Cacheable(value = "jobRead", key = "#id")
     public Header<JobApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
@@ -120,7 +121,6 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     }
 
     @Override
-    @Transactional
     public Header<JobApiResponse> update(Authentication authentication, Header<JobApiRequest> request) {
         JobApiRequest jobApiRequest = request.getData();
         if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT) || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE))
@@ -238,6 +238,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
+    @Cacheable(value = "jobReadWithComment", key = "#id")
     public Header<JobDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(job -> (Job) job.setViews(job.getViews() + 1))
@@ -334,7 +335,8 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
 
     @Override
-    public Header<JobResponseDTO> search(Pageable pageable) {
+    @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
+    public Header<JobResponseDTO> readAll(Pageable pageable) {
         Page<Job> jobs = baseRepository.findAll(pageable);
         Page<Job> freesByStatus = searchByStatus(pageable);
 

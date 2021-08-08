@@ -58,8 +58,8 @@ public class DepartmentApiController implements CrudInterface<DepartmentApiReque
     }
 
     @GetMapping("/notice/department")
-    public Header<NoticeResponseDTO> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return noticePostService.search(pageable);
+    public Header<NoticeResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return noticePostService.readAll(pageable);
     }
 
     @GetMapping("/notice/department/search/writer")

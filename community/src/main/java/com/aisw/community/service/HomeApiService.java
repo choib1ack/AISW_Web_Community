@@ -17,6 +17,7 @@ import com.aisw.community.repository.post.board.QnaRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
 import com.aisw.community.repository.post.notice.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,10 +38,11 @@ public class HomeApiService {
     @Autowired
     private SiteInformationRepository siteInformationRepository;
 
-        public Header<HomeApiResponse> main() {
-            List<Notice> noticeList = noticeRepository.findTop10ByOrderByCreatedAtDesc();
-            List<Board> boardList = boardRepository.findTop10ByOrderByCreatedAtDesc();
-            HomeApiResponse homeApiResponse = HomeApiResponse.builder()
+    @Cacheable(value = "home")
+    public Header<HomeApiResponse> main() {
+        List<Notice> noticeList = noticeRepository.findTop10ByOrderByCreatedAtDesc();
+        List<Board> boardList = boardRepository.findTop10ByOrderByCreatedAtDesc();
+        HomeApiResponse homeApiResponse = HomeApiResponse.builder()
                 .noticeList(noticeList.stream().map(notice -> response(notice)).collect(Collectors.toList()))
                 .boardList(boardList.stream().map(board -> response(board)).collect(Collectors.toList()))
                 .bannerList(bannerRepository.findAllByPublishStatus(true)

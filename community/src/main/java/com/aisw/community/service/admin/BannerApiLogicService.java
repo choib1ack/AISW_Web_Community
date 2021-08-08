@@ -14,6 +14,7 @@ import com.aisw.community.repository.admin.CustomBannerRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -63,6 +64,7 @@ public class BannerApiLogicService {
         return Header.OK(response(newBanner, fileApiResponseList));
     }
 
+    @Cacheable(value = "bannerRead", key = "#pageable.pageNumber")
     public Header<List<BannerApiResponse>> read(Pageable pageable) {
         Page<Banner> bannerList = customBannerRepository.findAllFetchJoinWithFile(pageable);
 

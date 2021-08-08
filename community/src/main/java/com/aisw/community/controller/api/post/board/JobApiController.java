@@ -1,12 +1,9 @@
 package com.aisw.community.controller.api.post.board;
 
 import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.board.Job;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.post.board.FileUploadToFreeApiRequest;
 import com.aisw.community.model.network.request.post.board.FileUploadToJobApiRequest;
-import com.aisw.community.model.network.request.post.board.FreeApiRequest;
 import com.aisw.community.model.network.request.post.board.JobApiRequest;
 import com.aisw.community.model.network.response.post.board.*;
 import com.aisw.community.service.post.board.BoardPostService;
@@ -70,8 +67,8 @@ public class JobApiController implements CrudInterface<JobApiRequest, JobApiResp
     }
 
     @GetMapping("/board/job")
-    public Header<JobResponseDTO> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardPostService.search(pageable);
+    public Header<JobResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return boardPostService.readAll(pageable);
     }
 
     @GetMapping("/board/job/search/writer")

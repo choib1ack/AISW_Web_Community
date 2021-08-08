@@ -22,6 +22,7 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     private FileApiLogicService fileApiLogicService;
 
     @Override
-    @Transactional
     public Header<UniversityApiResponse> create(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
         if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW))
@@ -96,6 +96,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     @Transactional
+    @Cacheable(value = "universityRead", key = "#id")
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(university -> university.setViews(university.getViews() + 1))
@@ -106,7 +107,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
-    @Transactional
     public Header<UniversityApiResponse> update(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
         if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW))
@@ -219,7 +219,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
-    public Header<NoticeResponseDTO> search(Pageable pageable) {
+    @Cacheable(value = "universityReadAll", key = "#pageable.pageNumber")
+    public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<University> universities = baseRepository.findAll(pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
 

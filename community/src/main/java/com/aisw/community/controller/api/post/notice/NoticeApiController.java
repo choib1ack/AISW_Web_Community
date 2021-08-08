@@ -25,6 +25,6 @@ public class NoticeApiController extends BulletinController<NoticeResponseDTO, N
     @GetMapping("/main")
     public Header<NoticeResponseDTO> searchList(@PageableDefault(sort = "createdAt",
             direction = Sort.Direction.DESC) Pageable pageable) {
-        return noticeApiLogicService.searchList(pageable);
+        return noticeApiLogicService.readAll(pageable);
     }
 }

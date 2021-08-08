@@ -26,7 +26,7 @@ public class SiteInformationApiController {
         return siteInformationApiLogicService.create(request);
     }
 
-    @GetMapping("/site")
+    @GetMapping("auth-admin/site")
     public Header<List<SiteInformationWithFileApiResponse>> read() {
         return siteInformationApiLogicService.read();
     }

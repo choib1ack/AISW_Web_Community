@@ -80,10 +80,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         } catch (TokenExpiredException e) {
             // access token이 만료된 경우
             header = request.getHeader(JwtProperties.REFRESH_HEADER_STRING);
-            System.out.println(header);
+            System.out.println("refresh token header: " + header);
             // access token이 만료되어서 프론트로 exception
             if (header == null) {
-                System.out.println(accessToken);
 //                response.setStatus(HttpStatus.BAD_REQUEST.value());
 //                chain.doFilter(request,response);
 //                return;

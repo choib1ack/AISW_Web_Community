@@ -16,6 +16,7 @@ import com.aisw.community.repository.admin.SiteInformationRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +62,7 @@ public class SiteInformationApiLogicService {
         return Header.OK(response(newSiteInformation, fileApiResponseList));
     }
 
+    @Cacheable(value = "readSite")
     public Header<List<SiteInformationWithFileApiResponse>> read() {
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
         List<SiteCategory> siteCategoryList = siteCategoryRepository.findAll();
