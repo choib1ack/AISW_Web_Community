@@ -7,6 +7,8 @@ import Switch from "react-switch";
 import Loading from "../Loading";
 
 function SiteModal(props) {
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
+
     const mode = (!props.info) ? "add" : "update";
     // console.log(mode);
 
@@ -153,8 +155,13 @@ function SiteModal(props) {
         //     console.log(value);
         // }
 
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
         if(mode=="add"){
-            axios.post("/site", formData).then(res => {
+            axios.post("/auth-admin", formData,{headers: headers}).then(res => {
                 // console.log(res);
                 props.setShow(false);
                 alert('새 사이트가 등록되었습니다.')

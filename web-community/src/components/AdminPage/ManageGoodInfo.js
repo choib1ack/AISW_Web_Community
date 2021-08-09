@@ -15,7 +15,7 @@ function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     useEffect(() => {
         const fetchSiteData = async () => {
@@ -29,8 +29,19 @@ function ManageGoodInfo({match}) {
                     return;
                 }
 
-                const response = await axios.get("/site/");
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': auth
+                }
+
+                const response = await axios({
+                    method:'get',
+                    url:"/auth-admin/site",
+                    headers:headers
+                });
+
                 console.log(response);
+
                 setSiteData(Object.values(response.data.data));
                 setLoading(false);
             } catch (e) {

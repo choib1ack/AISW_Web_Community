@@ -6,6 +6,8 @@ import Button from "react-bootstrap/Button";
 
 function CategoryModal(props){
 
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
+
     let default_category = props.mode == "update" ? props.name : null;
 
     const [newCategoryName, setNewCategoryName] = useState(default_category);
@@ -25,7 +27,7 @@ function CategoryModal(props){
     }
 
     const handleDelete = () => {
-        axios.delete("/site/category/"+props.id).then(res => {
+        axios.delete("/auth-admin/site/category/"+props.id).then(res => {
             props.setShowCategoryModal(false);
             alert('카테고리가 삭제되었습니다.');
             props.setSiteData(null);
@@ -37,9 +39,17 @@ function CategoryModal(props){
     }
 
     function sendData(category_name) {
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': auth
+        }
+
         if(props.mode=="add"){ // add
-            axios.post("/site/category?name="+category_name).then(res => {
-                // console.log(res);
+            axios.post("/auth-admin/site/category?name="+category_name,
+                {data : null},
+                {headers: headers}
+            ).then(res => {
                 props.setShowCategoryModal(false);
                 alert('새 카테고리가 등록되었습니다.')
                 props.setSiteData(null);
@@ -49,7 +59,7 @@ function CategoryModal(props){
                 //console.log(err);
             })
         }else{ // update
-            axios.put("/site/category/"+props.id+"?name="+category_name).then(res => {
+            axios.put("/auth-admin/site/category/"+props.id+"?name="+category_name).then(res => {
                 // console.log(res);
                 props.setShowCategoryModal(false);
                 alert('카테고리 정보가 수정되었습니다.')
