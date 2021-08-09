@@ -86,11 +86,6 @@ public class FileApiLogicService {
         return newFile;
     }
 
-    public void delete(File file) {
-        File deleteFile = fileRepository.findById(file.getId()).orElseThrow(() -> new FileNotFoundException(file.getId()));
-        fileRepository.delete(deleteFile);
-    }
-
     @Transactional
     public ResponseEntity<Resource> download(String fileName, HttpServletRequest request) {
         Resource resource = fileStorageService.loadFileAsResource(fileName);

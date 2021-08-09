@@ -1,7 +1,6 @@
 package com.aisw.community.service.post.like;
 
-import com.aisw.community.advice.exception.CommentNotFoundException;
-import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.*;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
@@ -14,7 +13,6 @@ import com.aisw.community.model.network.response.post.like.ContentLikeApiRespons
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
-import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.service.user.AlertApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -40,14 +38,16 @@ public class ContentLikeApiLogicService {
     @Transactional
     public Header<ContentLikeApiResponse> pressLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
+
         ContentLike newContentLike = null;
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
             contentLikeRepository.findContentLikeByUserIdAndCommentId(user.getId(), comment.getId())
-                    .ifPresent(contentLike -> {throw new RuntimeException();});
+                    .orElseThrow(() -> new ContentLikeNotFoundException(comment.getId()));
 
             ContentLike contentLike = ContentLike.builder()
                     .user(user)
@@ -62,7 +62,7 @@ public class ContentLikeApiLogicService {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
             contentLikeRepository.findContentLikeByUserIdAndBoardId(user.getId(), board.getId())
-                    .ifPresent(contentLike -> {throw new RuntimeException();});
+                    .orElseThrow(() -> new ContentLikeNotFoundException(board.getId()));
 
             ContentLike contentLike = ContentLike.builder()
                     .user(user)
@@ -83,6 +83,7 @@ public class ContentLikeApiLogicService {
     @Transactional
     public Header removeLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -97,7 +98,7 @@ public class ContentLikeApiLogicService {
                         contentLikeRepository.delete(contentLike);
                         return Header.OK();
                     })
-                    .orElseGet(() -> Header.ERROR("좋아요 안 눌림"));
+                    .orElseThrow(() -> new ContentLikeNotFoundException(comment.getId()));
         }
         else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
@@ -110,9 +111,9 @@ public class ContentLikeApiLogicService {
                         contentLikeRepository.delete(contentLike);
                         return Header.OK();
                     })
-                    .orElseGet(() -> Header.ERROR("좋아요 안 눌림"));
+                    .orElseThrow(() -> new ContentLikeNotFoundException(board.getId()));
         }
-        return Header.ERROR("request error");
+        throw new WrongRequestException();
     }
 
     private ContentLikeApiResponse response(ContentLike contentLike) {
