@@ -43,6 +43,7 @@ public class CommentApiLogicService {
     @Transactional
     public Header<CommentApiResponse> create(Authentication authentication, Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
@@ -73,9 +74,9 @@ public class CommentApiLogicService {
     public Header delete(Authentication authentication, Long id) {
         Comment comment = commentRepository.findCommentByIdWithSuperComment(id).orElseThrow(
                 () -> new CommentNotFoundException(id));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if (comment.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -85,6 +86,7 @@ public class CommentApiLogicService {
         } else {
             commentRepository.delete(getDeletableAncestorComment(comment));
         }
+
         return Header.OK();
     }
 
