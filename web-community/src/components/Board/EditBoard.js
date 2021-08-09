@@ -1,7 +1,6 @@
 import {Controller, useForm} from "react-hook-form";
 import React, {useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import axios from "axios";
 import Container from "react-bootstrap/Container";
 import FinishModal from "../FinishModal";
 import Title from "../Title";
@@ -14,6 +13,7 @@ import classNames from "classnames";
 import {checkContent, checkTitle} from "./NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import {useLocation} from "react-router-dom";
+import axiosApi from "../../axiosApi";
 
 function EditBoard({match}, props) {
     const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
@@ -23,7 +23,7 @@ function EditBoard({match}, props) {
     const detail = location.state.detail;
     const content = location.state.content;
     const {board_category, id} = match.params;
-    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
+    const [refreshToken, setRefreshToken] = useState(() => window.localStorage.getItem("REFRESH_TOKEN") || null);
 
     // redux toolkit
     const user = useSelector(state => state.user.userData)
@@ -31,14 +31,8 @@ function EditBoard({match}, props) {
     const dispatch = useDispatch()
 
     async function sendBoard(data, path) {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': auth
-        }
-
-        await axios.put("/board/" + path,
+        await axiosApi.put("/board/" + path,
             {data: data},
-            {headers: headers}
         ).then((res) => {
             console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
@@ -47,7 +41,25 @@ function EditBoard({match}, props) {
             console.log("에러 발생");
             console.log(errorObject);
 
-            alert("글 게시에 실패하였습니다.") // 실패 메시지
+            if (error.response.data.error === "JwtTokenExpired ") {
+                axiosApi.put("/board/" + path,
+                    {data: data},
+                    {
+                        headers: {
+                            'Refresh_Token': refreshToken
+                        }
+                    }
+                ).then((res) => {
+                    console.log(res)
+                    setModalShow(true)   // 완료 모달 띄우기
+                }).catch(error => {
+                    let errorObject = JSON.parse(JSON.stringify(error));
+                    console.log("에러 발생");
+                    console.log(errorObject);
+                })
+            } else {
+                alert("글 게시에 실패하였습니다.") // 실패 메시지
+            }
         })
     }
 
