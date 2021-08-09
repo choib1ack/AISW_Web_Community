@@ -58,10 +58,10 @@ export default function Menu() {
     }
 
 
-    useEffect(() => {
-        console.log(user);
-        console.log(active_menu);
-    }, [])
+    // useEffect(() => {
+    //     console.log(user);
+    //     console.log(active_menu);
+    // }, [])
 
     const [modalShow, setModalShow] = useState(false);
     const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("user_name")) || null);
