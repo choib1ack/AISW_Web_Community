@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 public class AccessTokenExpiredException extends RuntimeException {
 
     private String msg;
-    public AccessTokenExpiredException(String token){
+    public AccessTokenExpiredException(String token,String msg){
         super(token);
-        this.msg = "access token is expired: ";
+        this.msg = msg;
     }
 
 

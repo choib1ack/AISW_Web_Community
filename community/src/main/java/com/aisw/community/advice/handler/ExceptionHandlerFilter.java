@@ -32,7 +32,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         } catch (AccessTokenExpiredException ex) {
 //            resolver.resolveException(request, response, null, ex);
             // custom error response class used across my project
-            ApiErrorResponse errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, ex);
+            ApiErrorResponse errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "JwtTokenExpired", ex);
 
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.getWriter().write(convertObjectToJson(errorResponse));

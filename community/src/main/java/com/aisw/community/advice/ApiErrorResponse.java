@@ -14,15 +14,13 @@ public class ApiErrorResponse {
     private String message;
 
     public ApiErrorResponse(String error, String message) {
-        super();
         this.error = error;
         this.message = message;
     }
 
-    public ApiErrorResponse(HttpStatus badRequest, AccessTokenExpiredException ex) {
-        super();
+    public ApiErrorResponse(HttpStatus badRequest, String error, AccessTokenExpiredException ex) {
         this.status = badRequest.value();
-        this.error = "JwtTokenExpired ";
+        this.error = error;
         this.message = ex.getMsg() + ex.getMessage();
     }
 }

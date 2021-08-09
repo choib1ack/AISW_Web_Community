@@ -87,7 +87,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 //                response.setStatus(HttpStatus.BAD_REQUEST.value());
 //                chain.doFilter(request,response);
 //                return;
-                throw new AccessTokenExpiredException(accessToken);
+                throw new AccessTokenExpiredException(accessToken, "access token is expired: ");
             }
             System.out.println("hello");
             refreshToken = header.replace(JwtProperties.TOKEN_PREFIX, "");
