@@ -31,6 +31,20 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(ContentLikeNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(ContentLikeNotFoundException ex) {
+        ApiErrorResponse response = null;
+
+        if(ex.getUserId() != null) {
+            response = new ApiErrorResponse("ContentLikeNotFound",
+                    "content like is not found with target: " + ex.getTargetId());
+        } else {
+            response = new ApiErrorResponse("ContentLikeNotFound",
+                    "content like is not found with ID: " + ex.getId());
+        }
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(AdminNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleException(AdminNotFoundException ex) {
         ApiErrorResponse response =
@@ -66,8 +80,15 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(NotEqualAccountException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(NotEqualAccountException ex) {
+    @ExceptionHandler(AlertNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(AlertNotFoundException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("AlertNotFound", "alert is not found with ID: " + ex.getId());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NotEqualUserException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(NotEqualUserException ex) {
         ApiErrorResponse response =
                 new ApiErrorResponse("NotEqualAccount", "the user is not writer: " + ex.getId());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -77,6 +98,13 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleException(SignUpNotSuitableException ex) {
         ApiErrorResponse response =
                 new ApiErrorResponse("SignUpNotSuitable", "request is not suitable: " + ex.getUsername());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PostStatusNotSuitableException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(PostStatusNotSuitableException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("PostStatusNotSuitable", "post status is not suitable: " + ex.getStatus());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -93,5 +121,6 @@ public class ApiExceptionHandler {
                 new ApiErrorResponse("StudentIdNotSuitable", "student id is not suitable: " + ex.getStudentId());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
 
 }

@@ -31,8 +31,6 @@ public class CommentApiResponse {
 
     private Long boardId;
 
-    private Long userId;
-
     private List<CommentApiResponse> subComment = new ArrayList<>();
 
     public CommentApiResponse(Long id, String writer, String content, LocalDateTime createdAt, Boolean isAnonymous, Long likes, Long boardId, Long userId) {
@@ -43,7 +41,6 @@ public class CommentApiResponse {
         this.isAnonymous = isAnonymous;
         this.likes = likes;
         this.boardId = boardId;
-        this.userId = userId;
     }
 
     public static CommentApiResponse convertCommentToDto(Comment comment) {

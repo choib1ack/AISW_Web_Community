@@ -2,10 +2,8 @@ package com.aisw.community.controller.api.admin;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.FileUploadToSiteInformationDTO;
-import com.aisw.community.model.network.response.admin.SiteCategoryApiResponse;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
 import com.aisw.community.model.network.response.admin.SiteInformationWithFileApiResponse;
-import com.aisw.community.service.admin.SiteCategoryApiLogicService;
 import com.aisw.community.service.admin.SiteInformationApiLogicService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +19,14 @@ public class SiteInformationApiController {
     @Autowired
     private SiteInformationApiLogicService siteInformationApiLogicService;
 
-    @PostMapping("/auth-admin")
+    @PostMapping("/auth-admin/site")
     public Header<SiteInformationApiResponse> create(@ModelAttribute FileUploadToSiteInformationDTO request) {
         return siteInformationApiLogicService.create(request);
     }
 
-    @GetMapping("/site")
-    public Header<List<SiteInformationWithFileApiResponse>> read() {
-        return siteInformationApiLogicService.read();
+    @GetMapping("auth-admin/site")
+    public Header<List<SiteInformationWithFileApiResponse>> readAll() {
+        return siteInformationApiLogicService.readAll();
     }
 
     @PutMapping("/auth-admin")

@@ -87,9 +87,10 @@ export default function MakeBoardList(props) {
         }
     }
 
-    const indexing = (index) =>{
-        let current_max = boardData.normal.page_info.totals-(boardData.normal.page_info.current*10);
-        return current_max-index.toString();
+
+    const indexing = (index) => {
+        let current_max = boardData.normal.page_info.total_elements - (props.pageInfo.current * 10); // 현재 페이지에서 max값
+        return current_max - index.toString();
     }
 
     const attachment = (file) => {

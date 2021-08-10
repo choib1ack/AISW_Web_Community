@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,9 +35,9 @@ public class Banner {
 
     private String content;
 
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     private Boolean publishStatus;
 
@@ -54,14 +55,15 @@ public class Banner {
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<File> fileList;
 
     @PrePersist
     @PreUpdate
     public void checkPublish() {
-        LocalDateTime now = LocalDateTime.now();
-        if(now.isAfter(startDate) && now.isBefore(endDate)) {
+        LocalDate now = LocalDate.now();
+        if((now.isEqual(startDate) || now.isAfter(startDate))
+                && (now.isEqual(endDate) || now.isBefore(endDate))) {
             publishStatus = Boolean.TRUE;
         } else {
             publishStatus = Boolean.FALSE;

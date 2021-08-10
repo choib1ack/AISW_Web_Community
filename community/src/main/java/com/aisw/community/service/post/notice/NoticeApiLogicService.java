@@ -9,6 +9,7 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.post.notice.NoticeRepository;
 import com.aisw.community.service.post.BulletinService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,8 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     @Autowired
     private NoticeRepository noticeRepository;
 
-    public Header<NoticeResponseDTO> searchList(Pageable pageable) {
+    @Cacheable(value = "noticeReadAll", key = "#pageable.pageNumber")
+    public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAll(pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
 

@@ -34,7 +34,6 @@ public class FileStorageService {
         }
     }
 
-    @Transactional
     public String storeFile(MultipartFile file) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 

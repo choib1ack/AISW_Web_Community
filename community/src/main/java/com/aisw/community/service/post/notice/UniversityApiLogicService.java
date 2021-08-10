@@ -1,8 +1,8 @@
 package com.aisw.community.service.post.notice;
 
-import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
-import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.entity.user.User;
@@ -20,9 +20,9 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
-import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -49,6 +49,10 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Override
     public Header<UniversityApiResponse> create(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         University university = University.builder()
@@ -70,6 +74,10 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Transactional
     public Header<UniversityApiResponse> create(Authentication authentication, FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         University university = University.builder()
@@ -92,6 +100,7 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     @Transactional
+    @Cacheable(value = "universityRead", key = "#id")
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(university -> university.setViews(university.getViews() + 1))
@@ -102,16 +111,19 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
-    @Transactional
     public Header<UniversityApiResponse> update(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
+        }
 
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if(university.getUser().getId() != user.getId()) {
-            throw new NotEqualAccountException(user.getId());
+            throw new NotEqualUserException(user.getId());
         }
 
         university
@@ -128,16 +140,20 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Transactional
     public Header<UniversityApiResponse> update(Authentication authentication, FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
-        MultipartFile[] files = request.getFiles();
+        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
+        }
 
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if(university.getUser().getId() != user.getId()) {
-            throw new NotEqualAccountException(user.getId());
+            throw new NotEqualUserException(user.getId());
         }
 
+        MultipartFile[] files = request.getFiles();
         university.getFileList().stream().forEach(file -> fileRepository.delete(file));
         university.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, university.getId(), UploadCategory.POST);
@@ -155,10 +171,11 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     @Override
     public Header delete(Authentication authentication, Long id) {
         University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if (university.getUser().getId() != user.getId()) {
-            throw new NotEqualAccountException(user.getId());
+            throw new NotEqualUserException(user.getId());
         }
 
         baseRepository.delete(university);
@@ -179,10 +196,13 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .userId(university.getUser().getId())
-                .fileApiResponseList(university.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
+        if (university.getFileList() == null) {
+            university.setFileList(new ArrayList<>());
+        } else {
+            universityApiResponse.setFileApiResponseList(university.getFileList().stream()
+                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        }
 
         return universityApiResponse;
     }
@@ -201,7 +221,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
-                .userId(university.getUser().getId())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
 
@@ -209,7 +228,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
-    public Header<NoticeResponseDTO> search(Pageable pageable) {
+    @Cacheable(value = "universityReadAll", key = "#pageable.pageNumber")
+    public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<University> universities = baseRepository.findAll(pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
 

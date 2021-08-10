@@ -1,8 +1,8 @@
 package com.aisw.community.service.post.notice;
 
-import com.aisw.community.advice.exception.NotEqualAccountException;
+import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
-import com.aisw.community.advice.exception.UserNotFoundException;
+import com.aisw.community.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.entity.user.User;
@@ -20,7 +20,6 @@ import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.DepartmentRepository;
-import com.aisw.community.repository.user.UserRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -50,6 +49,10 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Override
     public Header<DepartmentApiResponse> create(Authentication authentication, Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
+        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         Department department = Department.builder()
@@ -70,6 +73,10 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Transactional
     public Header<DepartmentApiResponse> create(Authentication authentication, FileUploadToDepartmentApiRequest request) {
         DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
+        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         Department department = Department.builder()
@@ -91,6 +98,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     @Transactional
+    @Cacheable(value = "departmentRead", key = "#id")
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(department -> department.setViews(department.getViews() + 1))
@@ -101,16 +109,19 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    @Transactional
     public Header<DepartmentApiResponse> update(Authentication authentication, Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
+        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
+        }
 
         Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if(department.getUser().getId() != user.getId()) {
-            throw new NotEqualAccountException(user.getId());
+            throw new NotEqualUserException(user.getId());
         }
 
         department
@@ -126,16 +137,20 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Transactional
     public Header<DepartmentApiResponse> update(Authentication authentication, FileUploadToDepartmentApiRequest request) {
         DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
-        MultipartFile[] files = request.getFiles();
+        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
+        }
 
         Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if(department.getUser().getId() != user.getId()) {
-            throw new NotEqualAccountException(user.getId());
+            throw new NotEqualUserException(user.getId());
         }
 
+        MultipartFile[] files = request.getFiles();
         department.getFileList().stream().forEach(file -> fileRepository.delete(file));
         department.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, department.getId(), UploadCategory.POST);
@@ -152,10 +167,11 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     @Override
     public Header delete(Authentication authentication, Long id) {
         Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if (department.getUser().getId() != user.getId()) {
-            throw new NotEqualAccountException(user.getId());
+            throw new NotEqualUserException(user.getId());
         }
 
         baseRepository.delete(department);
@@ -175,10 +191,13 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .createdBy(department.getCreatedBy())
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
-                .userId(department.getUser().getId())
-                .fileApiResponseList(department.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
                 .build();
+        if (department.getFileList() == null) {
+            department.setFileList(new ArrayList<>());
+        } else {
+            departmentApiResponse.setFileApiResponseList(department.getFileList().stream()
+                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        }
 
         return departmentApiResponse;
     }
@@ -196,7 +215,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .createdBy(department.getCreatedBy())
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
-                .userId(department.getUser().getId())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
 
@@ -204,9 +222,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    @Cacheable(value = "departmentSearch", key = "#pageable.pageNumber")
-
-    public Header<NoticeResponseDTO> search(Pageable pageable) {
+    @Cacheable(value = "departmentReadAll", key = "#pageable.pageNumber")
+    public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
 

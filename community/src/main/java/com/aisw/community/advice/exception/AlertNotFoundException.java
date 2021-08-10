@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class NotEqualAccountException extends RuntimeException {
+public class AlertNotFoundException extends RuntimeException {
 
     private Long id;
 }

@@ -43,7 +43,7 @@ public class DepartmentRepositoryTest extends CommunityApplicationTests {
                 .views(views)
                 .firstCategory(FirstCategory.NOTICE)
                 .secondCategory(SecondCategory.DEPARTMENT)
-                .account(userId)
+                .user(userId)
                 .build();
 
         Department newDepartment = departmentRepository.save(department);

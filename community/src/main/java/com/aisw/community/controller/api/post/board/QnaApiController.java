@@ -69,15 +69,14 @@ public class QnaApiController implements CrudInterface<QnaApiRequest, QnaApiResp
         return boardPostService.readWithComment(id);
     }
 
-    @GetMapping("/auth-student/board/qna/comment&like/{postId}/{accountId}")
-    public Header<QnaDetailApiResponse> readWithCommentAndLike(
-            @PathVariable Long postId, @PathVariable Long accountId) {
-        return boardPostService.readWithCommentAndLike(postId, accountId);
+    @GetMapping("/auth-student/board/qna/comment&like/{id}")
+    public Header<QnaDetailApiResponse> readWithCommentAndLike(Authentication authentication, @PathVariable Long id) {
+        return boardPostService.readWithCommentAndLike(authentication, id);
     }
 
     @GetMapping("/board/qna")
-    public Header<BoardResponseDTO> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardPostService.search(pageable);
+    public Header<BoardResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return boardPostService.readAll(pageable);
     }
 
     @GetMapping("/board/qna/search/writer")

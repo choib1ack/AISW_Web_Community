@@ -19,63 +19,61 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/board/free")
 public class FreeApiController implements CrudInterface<FreeApiRequest, FreeApiResponse> {
 
     @Autowired(required = false)
     protected BoardPostService<FreeApiRequest, FileUploadToFreeApiRequest, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> boardPostService;
 
     @Override
-    @PostMapping("")
+    @PostMapping("/auth/board/free")
     public Header<FreeApiResponse> create(Authentication authentication, @RequestBody Header<FreeApiRequest> request) {
         return boardPostService.create(authentication, request);
     }
 
-    @PostMapping("/upload")
+    @PostMapping("/auth/board/free/upload")
     public Header<FreeApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToFreeApiRequest request) {
         return boardPostService.create(authentication, request);
     }
 
     @Override
-    @GetMapping("{id}")
+    @GetMapping("/board/free/{id}")
     public Header<FreeApiResponse> read(@PathVariable Long id) {
         return boardPostService.read(id);
     }
 
     @Override
-    @PutMapping("")
+    @PutMapping("/auth/board/free")
     public Header<FreeApiResponse> update(Authentication authentication, @RequestBody Header<FreeApiRequest> request) {
         return boardPostService.update(authentication, request);
     }
 
-    @PutMapping("/upload")
+    @PutMapping("/auth/board/free/upload")
     public Header<FreeApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToFreeApiRequest request) {
         return boardPostService.update(authentication, request);
     }
 
     @Override
-    @DeleteMapping("{id}")
+    @DeleteMapping("/auth/board/free/{id}")
     public Header delete(Authentication authentication, @PathVariable Long id) {
         return boardPostService.delete(authentication, id);
     }
 
-    @GetMapping("/comment/{id}")
+    @GetMapping("/board/free/comment/{id}")
     public Header<FreeDetailApiResponse> readWithComment(@PathVariable Long id) {
         return boardPostService.readWithComment(id);
     }
 
-    @GetMapping("/comment&like/{postId}/{accountId}")
-    public Header<FreeDetailApiResponse> readWithCommentAndLike(
-            @PathVariable Long postId, @PathVariable Long accountId) {
-        return boardPostService.readWithCommentAndLike(postId, accountId);
+    @GetMapping("/auth/board/free/comment&like/{id}")
+    public Header<FreeDetailApiResponse> readWithCommentAndLike(Authentication authentication, @PathVariable Long id) {
+        return boardPostService.readWithCommentAndLike(authentication, id);
     }
 
-    @GetMapping("")
-    public Header<BoardResponseDTO> search(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return boardPostService.search(pageable);
+    @GetMapping("/board/free")
+    public Header<BoardResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return boardPostService.readAll(pageable);
     }
 
-    @GetMapping("/search/writer")
+    @GetMapping("/board/free/search/writer")
     public Header<BoardResponseDTO> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -83,7 +81,7 @@ public class FreeApiController implements CrudInterface<FreeApiRequest, FreeApiR
         return boardPostService.searchByWriter(writer, pageable);
     }
 
-    @GetMapping("/search/title")
+    @GetMapping("/board/free/search/title")
     public Header<BoardResponseDTO> searchByTitle(
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -91,7 +89,7 @@ public class FreeApiController implements CrudInterface<FreeApiRequest, FreeApiR
         return boardPostService.searchByTitle(title, pageable);
     }
 
-    @GetMapping("/search/title&content")
+    @GetMapping("/board/free/search/title&content")
     public Header<BoardResponseDTO> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {

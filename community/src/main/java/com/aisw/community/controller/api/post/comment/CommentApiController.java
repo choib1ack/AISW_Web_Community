@@ -11,19 +11,38 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/board/comment")
 public class CommentApiController {
 
     @Autowired
     private CommentApiLogicService commentApiLogicService;
 
-    @PostMapping("")
-    public Header<CommentApiResponse> create(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
+    @PostMapping("/auth/free/comment")
+    public Header<CommentApiResponse> createAtFree(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
         return commentApiLogicService.create(authentication, request);
     }
 
-    @DeleteMapping("{id}")
-    public Header delete(Authentication authentication, @PathVariable Long id) {
+    @PostMapping("/auth-student/qna/comment")
+    public Header<CommentApiResponse> createAtQna(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
+        return commentApiLogicService.create(authentication, request);
+    }
+
+    @PostMapping("/auth/job/comment")
+    public Header<CommentApiResponse> createAtJob(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
+        return commentApiLogicService.create(authentication, request);
+    }
+
+    @DeleteMapping("/auth/free/comment/{id}")
+    public Header deleteAtFree(Authentication authentication, @PathVariable Long id) {
+        return commentApiLogicService.delete(authentication, id);
+    }
+
+    @DeleteMapping("/auth-student/qna/comment/{id}")
+    public Header deleteAtQna(Authentication authentication, @PathVariable Long id) {
+        return commentApiLogicService.delete(authentication, id);
+    }
+
+    @DeleteMapping("/auth/job/comment/{id}")
+    public Header deleteAtJob(Authentication authentication, @PathVariable Long id) {
         return commentApiLogicService.delete(authentication, id);
     }
 }
