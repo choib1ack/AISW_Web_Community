@@ -122,17 +122,5 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AccessTokenExpiredException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(AccessTokenExpiredException ex) {
-        ApiErrorResponse response =
-                new ApiErrorResponse("JwtTokenExpired", "access token is expired: " + ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
 
-    @ExceptionHandler(WrongRequestException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(WrongRequestException ex) {
-        ApiErrorResponse response =
-                new ApiErrorResponse("WrongRequest", "request is wrong");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
 }
