@@ -9,5 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RefreshTokenExpiredException extends RuntimeException {
 
-    private String token;
+    private String msg;
+
+    public RefreshTokenExpiredException(String token, String msg) {
+        super(token);
+        this.msg = msg;
+    }
 }

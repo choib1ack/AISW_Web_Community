@@ -1,14 +1,15 @@
 package com.aisw.community.config.jwt;
 
 import com.aisw.community.advice.exception.AccessTokenExpiredException;
+import com.aisw.community.advice.exception.RefreshTokenExpiredException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.provider.JwtTokenProvider;
 import com.aisw.community.provider.RedisProvider;
 import com.aisw.community.repository.user.UserRepository;
 import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -84,40 +85,46 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // access token이 만료되어서 프론트로 exception
             if (header == null) {
                 System.out.println(accessToken);
-//                response.setStatus(HttpStatus.BAD_REQUEST.value());
-//                chain.doFilter(request,response);
-//                return;
                 throw new AccessTokenExpiredException(accessToken, "access token is expired: ");
             }
             System.out.println("hello");
             refreshToken = header.replace(JwtProperties.TOKEN_PREFIX, "");
             System.out.println("refreshToken: " + refreshToken);
+        } catch (JWTVerificationException e) {
+            throw new InvalidClaimException("access token is invalid: ");
         }
 
-        // access token 만료 + refresh token 검증
-        if (refreshToken != null) {
-            // redis 내의 username과 refresh token으로 가져온 username 비교
-            String refreshUname = redisProvider.getData(refreshToken);
-            System.out.println(refreshUname);
+        try {
+            // access token 만료 + refresh token 검증
+            if (refreshToken != null) {
+                // redis 내의 username과 refresh token으로 가져온 username 비교
+                String refreshUname = redisProvider.getData(refreshToken);
+                System.out.println(refreshUname);
 
-            String username = jwtTokenProvider.requireDecodedJwt(refreshToken).getClaim("username").asString();
+                String username = jwtTokenProvider.requireDecodedJwt(refreshToken).getClaim("username").asString();
 
-            if (refreshUname.equals(username)) {
-                User user = userRepository.findByUsername(username);
-                PrincipalDetails principalDetails = new PrincipalDetails(user);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, // 나중에 컨트롤러에서 DI해서
-                        // 쓸 때 사용하기 편함.
-                        null, // 패스워드는 모르니까 null 처리, 어차피 지금 인증하는게 아니니까!!
-                        principalDetails.getAuthorities());
+                if (refreshUname.equals(username)) {
+                    User user = userRepository.findByUsername(username);
+                    PrincipalDetails principalDetails = new PrincipalDetails(user);
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, // 나중에 컨트롤러에서 DI해서
+                            // 쓸 때 사용하기 편함.
+                            null, // 패스워드는 모르니까 null 처리, 어차피 지금 인증하는게 아니니까!!
+                            principalDetails.getAuthorities());
 
-                // 강제로 시큐리티의 세션에 접근하여 값 저장
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    // 강제로 시큐리티의 세션에 접근하여 값 저장
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                // access token 생성
-                String jwtToken = jwtTokenProvider.createToken(authentication, JwtProperties.EXPIRATION_TIME);
-                response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+                    // access token 생성
+                    String jwtToken = jwtTokenProvider.createToken(authentication, JwtProperties.EXPIRATION_TIME);
+                    response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+                }
             }
+        } catch (TokenExpiredException e) {
+            throw new RefreshTokenExpiredException(accessToken, "refresh token is expired: ");
+        } catch (InvalidClaimException e) {
+            throw new InvalidClaimException("access token is invalid: ");
         }
+
 
         chain.doFilter(request, response);
     }
