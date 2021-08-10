@@ -1,7 +1,6 @@
 package com.aisw.community.config.jwt;
 
-import com.aisw.community.advice.exception.AccessTokenExpiredException;
-import com.aisw.community.advice.exception.RefreshTokenExpiredException;
+import com.aisw.community.advice.exception.TokenException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.provider.JwtTokenProvider;
@@ -85,13 +84,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // access token이 만료되어서 프론트로 exception
             if (header == null) {
                 System.out.println(accessToken);
-                throw new AccessTokenExpiredException(accessToken, "access token is expired: ");
+                throw new TokenException("access token", accessToken);
             }
             System.out.println("hello");
             refreshToken = header.replace(JwtProperties.TOKEN_PREFIX, "");
             System.out.println("refreshToken: " + refreshToken);
         } catch (JWTVerificationException e) {
-            throw new InvalidClaimException("access token is invalid: ");
+            throw new TokenException("invalid token", accessToken);
         }
 
         try {
@@ -120,9 +119,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 }
             }
         } catch (TokenExpiredException e) {
-            throw new RefreshTokenExpiredException(accessToken, "refresh token is expired: ");
-        } catch (InvalidClaimException e) {
-            throw new InvalidClaimException("access token is invalid: ");
+            throw new TokenException("refresh token", refreshToken);
+        } catch (JWTVerificationException e) {
+            throw new TokenException("invalid token", refreshToken);
         }
 
 

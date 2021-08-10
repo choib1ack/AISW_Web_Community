@@ -1,9 +1,7 @@
 package com.aisw.community.advice.handler;
 
 import com.aisw.community.advice.ApiErrorResponse;
-import com.aisw.community.advice.exception.AccessTokenExpiredException;
-import com.aisw.community.advice.exception.RefreshTokenExpiredException;
-import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.aisw.community.advice.exception.TokenException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -24,21 +22,19 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (AccessTokenExpiredException ex) {
-            ApiErrorResponse errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "JwtTokenExpired", ex);
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.getWriter().write(convertObjectToJson(errorResponse));
-        } catch (RefreshTokenExpiredException ex) {
-            ApiErrorResponse errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "RefreshJwtTokenExpired", ex);
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
-            response.getWriter().write(convertObjectToJson(errorResponse));
-        } catch (InvalidClaimException ex) {
-            System.out.println(ex.getMessage());
-            System.out.println(ex.getCause().getMessage());
-            ApiErrorResponse errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "InvalidClaimException", ex);
+        } catch (TokenException ex) {
+            ApiErrorResponse errorResponse = null;
+            if (ex.getMessage().equals("access token")) {
+                errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "JwtTokenExpired", ex);
+            } else if (ex.getMessage().equals("refresh token")) {
+                errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "RefreshJwtTokenExpired", ex);
+            } else if (ex.getMessage().equals("invalid token")) {
+                errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "InvalidToken", ex);
+            }
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.getWriter().write(convertObjectToJson(errorResponse));
         }
+
     }
 
     public String convertObjectToJson(Object object) throws JsonProcessingException {

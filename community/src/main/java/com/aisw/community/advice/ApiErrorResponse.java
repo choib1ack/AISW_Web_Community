@@ -1,8 +1,6 @@
 package com.aisw.community.advice;
 
-import com.aisw.community.advice.exception.AccessTokenExpiredException;
-import com.aisw.community.advice.exception.RefreshTokenExpiredException;
-import com.auth0.jwt.exceptions.InvalidClaimException;
+import com.aisw.community.advice.exception.TokenException;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -20,22 +18,10 @@ public class ApiErrorResponse {
         this.message = message;
     }
 
-    public ApiErrorResponse(HttpStatus badRequest, String error, AccessTokenExpiredException ex) {
+    public ApiErrorResponse(HttpStatus badRequest, String error, TokenException ex) {
         this.status = badRequest.value();
         this.error = error;
-        this.message = ex.getMsg() + ex.getMessage();
-    }
-
-    public ApiErrorResponse(HttpStatus badRequest, String error, RefreshTokenExpiredException ex) {
-        this.status = badRequest.value();
-        this.error = error;
-        this.message = ex.getMsg() + ex.getMessage();
-    }
-
-    public ApiErrorResponse(HttpStatus badRequest, String error, InvalidClaimException ex) {
-        this.status = badRequest.value();
-        this.error = error;
-        this.message = ex.getMessage();
+        this.message = ex.getToken();
     }
 
 }
