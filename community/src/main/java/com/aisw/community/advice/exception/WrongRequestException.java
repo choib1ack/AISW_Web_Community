@@ -8,6 +8,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WrongRequestException extends RuntimeException {
-
-    private Long id;
 }
