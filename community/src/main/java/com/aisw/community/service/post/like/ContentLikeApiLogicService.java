@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -49,8 +50,10 @@ public class ContentLikeApiLogicService {
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
-            contentLikeRepository.findContentLikeByUserIdAndCommentId(user.getId(), comment.getId())
-                    .orElseThrow(() -> new ContentLikeNotFoundException(comment.getId()));
+            Optional<ContentLike> optional = contentLikeRepository.findContentLikeByUserIdAndCommentId(user.getId(), comment.getId());
+            if(optional.isPresent()) {
+                throw new ContentLikeAlreadyExistException(comment.getId());
+            }
 
             ContentLike contentLike = ContentLike.builder()
                     .user(user)
@@ -64,8 +67,10 @@ public class ContentLikeApiLogicService {
         else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
-            contentLikeRepository.findContentLikeByUserIdAndBoardId(user.getId(), board.getId())
-                    .orElseThrow(() -> new ContentLikeNotFoundException(board.getId()));
+            Optional<ContentLike> optional = contentLikeRepository.findContentLikeByUserIdAndBoardId(user.getId(), board.getId());
+            if(optional.isPresent()) {
+                throw new ContentLikeAlreadyExistException(board.getId());
+            }
 
             ContentLike contentLike = ContentLike.builder()
                     .user(user)
