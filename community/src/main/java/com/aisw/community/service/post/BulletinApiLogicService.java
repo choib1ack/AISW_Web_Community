@@ -8,6 +8,7 @@ import com.aisw.community.model.network.response.post.BulletinApiResponse;
 import com.aisw.community.model.network.response.post.BulletinResponseDTO;
 import com.aisw.community.repository.post.BulletinRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponseDTO
     private BulletinRepository bulletinRepository;
 
     @Override
+    @Cacheable(value = "bulletinSearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BulletinResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Bulletin> bulletins = bulletinRepository.findAllByWriterContaining(writer, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
@@ -31,6 +34,8 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponseDTO
     }
 
     @Override
+    @Cacheable(value = "bulletinSearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BulletinResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Bulletin> bulletins = bulletinRepository.findAllByTitleContaining(title, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
@@ -39,6 +44,8 @@ public class BulletinApiLogicService extends BulletinService<BulletinResponseDTO
     }
 
     @Override
+    @Cacheable(value = "bulletinSearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<BulletinResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Bulletin> bulletins = bulletinRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);

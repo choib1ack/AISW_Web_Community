@@ -69,6 +69,9 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<QnaApiResponse> create(Authentication authentication, Header<QnaApiRequest> request) {
@@ -108,6 +111,9 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<QnaApiResponse> create(Authentication authentication, FileUploadToQnaApiRequest request) {
@@ -160,6 +166,9 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<QnaApiResponse> update(Authentication authentication, Header<QnaApiRequest> request) {
@@ -199,6 +208,9 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<QnaApiResponse> update(Authentication authentication, FileUploadToQnaApiRequest request) {
@@ -242,6 +254,9 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header delete(Authentication authentication, Long id) {
@@ -274,11 +289,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .build();
-        if (qna.getFileList() == null) {
-            qna.setFileList(new ArrayList<>());
-        } else {
-            qnaApiResponse.setFileApiResponseList(qna.getFileList().stream()
-                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        if (qna.getFileList() != null) {
+            qnaApiResponse.setFileApiResponseList(fileApiLogicService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()));
         }
 
         return qnaApiResponse;

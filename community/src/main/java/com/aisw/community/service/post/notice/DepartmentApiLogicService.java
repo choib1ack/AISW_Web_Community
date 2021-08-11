@@ -22,7 +22,9 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.DepartmentRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -47,6 +49,20 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "departmentReadAll", allEntries = true),
+            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<DepartmentApiResponse> create(Authentication authentication, Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
         if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -71,6 +87,20 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "departmentReadAll", allEntries = true),
+            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<DepartmentApiResponse> create(Authentication authentication, FileUploadToDepartmentApiRequest request) {
         DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
         if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -98,7 +128,6 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     @Transactional
-//    @Cacheable(value = "departmentRead", key = "#id")
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(department -> department.setViews(department.getViews() + 1))
@@ -109,6 +138,20 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "departmentReadAll", allEntries = true),
+            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<DepartmentApiResponse> update(Authentication authentication, Header<DepartmentApiRequest> request) {
         DepartmentApiRequest departmentApiRequest = request.getData();
         if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -135,6 +178,20 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "departmentReadAll", allEntries = true),
+            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<DepartmentApiResponse> update(Authentication authentication, FileUploadToDepartmentApiRequest request) {
         DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
         if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -165,6 +222,20 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "departmentReadAll", allEntries = true),
+            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Authentication authentication, Long id) {
         Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -192,11 +263,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
                 .build();
-        if (department.getFileList() == null) {
-            department.setFileList(new ArrayList<>());
-        } else {
-            departmentApiResponse.setFileApiResponseList(department.getFileList().stream()
-                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        if (department.getFileList() != null) {
+            departmentApiResponse.setFileApiResponseList(fileApiLogicService.getFileList(department.getFileList(), UploadCategory.POST, department.getId()));
         }
 
         return departmentApiResponse;
@@ -222,7 +290,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-//    @Cacheable(value = "departmentReadAll", key = "#pageable.pageNumber")
+    @Cacheable(value = "departmentReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
@@ -231,6 +299,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
+    @Cacheable(value = "departmentSearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByWriterContaining(writer, pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
@@ -239,6 +309,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
+    @Cacheable(value = "departmentSearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByTitleContaining(title, pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
@@ -247,6 +319,8 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
+    @Cacheable(value = "departmentSearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Department> departments = departmentRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);

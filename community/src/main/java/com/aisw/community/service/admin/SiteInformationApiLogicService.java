@@ -45,7 +45,7 @@ public class SiteInformationApiLogicService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "readSite", allEntries = true),
-            @CacheEvict(value = "home")
+            @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteInformationApiResponse> create(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
@@ -92,7 +92,7 @@ public class SiteInformationApiLogicService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "readSite", allEntries = true),
-            @CacheEvict(value = "home")
+            @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteInformationApiResponse> update(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
@@ -119,7 +119,7 @@ public class SiteInformationApiLogicService {
 
     @Caching(evict = {
             @CacheEvict(value = "readSite", allEntries = true),
-            @CacheEvict(value = "home")
+            @CacheEvict(value = "home", allEntries = true)
     })
     public Header delete(Long id) {
         SiteInformation siteInformation = siteInformationRepository.findById(id)
