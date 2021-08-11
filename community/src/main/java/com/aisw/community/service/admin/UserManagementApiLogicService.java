@@ -24,7 +24,8 @@ public class UserManagementApiLogicService {
     public Header<List<UserManagementApiResponse>> readAll(Pageable pageable) {
         Page<User> userList = userRepository.findAll(pageable);
 
-        List<UserManagementApiResponse> userManagementApiResponseList = userList.stream().map(user -> response(user)).collect(Collectors.toList());
+        List<UserManagementApiResponse> userManagementApiResponseList = userList.stream()
+                .map(user -> response(user)).collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
                 .totalElements(userList.getTotalElements())
@@ -38,8 +39,6 @@ public class UserManagementApiLogicService {
 
     public Header<UserManagementApiResponse> changeRole(Header<UserManagementApiRequest> request) {
         UserManagementApiRequest userManagementApiRequest = request.getData();
-
-        System.out.println(userManagementApiRequest);
 
         User user = userRepository.findById(userManagementApiRequest.getId())
                 .orElseThrow(() -> new UserNotFoundException(userManagementApiRequest.getId()));

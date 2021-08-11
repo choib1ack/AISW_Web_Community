@@ -1,16 +1,12 @@
 package com.aisw.community.advice.handler;
 
 import com.aisw.community.advice.ApiErrorResponse;
-import com.aisw.community.advice.exception.AccessTokenExpiredException;
+import com.aisw.community.advice.exception.TokenException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.oauth2.sdk.ErrorResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,23 +17,24 @@ import java.io.IOException;
 @Component
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
-//    @Autowired
-//    @Qualifier("handlerExceptionResolver")
-//    private HandlerExceptionResolver resolver;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (AccessTokenExpiredException ex) {
-//            resolver.resolveException(request, response, null, ex);
-            // custom error response class used across my project
-            ApiErrorResponse errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, ex);
-
+        } catch (TokenException ex) {
+            ApiErrorResponse errorResponse = null;
+            if (ex.getMessage().equals("access token")) {
+                errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "JwtTokenExpired", ex);
+            } else if (ex.getMessage().equals("refresh token")) {
+                errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "RefreshJwtTokenExpired", ex);
+            } else if (ex.getMessage().equals("invalid token")) {
+                errorResponse = new ApiErrorResponse(HttpStatus.BAD_REQUEST, "InvalidToken", ex);
+            }
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.getWriter().write(convertObjectToJson(errorResponse));
-
         }
+
     }
 
     public String convertObjectToJson(Object object) throws JsonProcessingException {

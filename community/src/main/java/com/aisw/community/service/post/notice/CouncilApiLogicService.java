@@ -49,8 +49,10 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Override
     public Header<CouncilApiResponse> create(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         Council council = Council.builder()
@@ -71,8 +73,10 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Transactional
     public Header<CouncilApiResponse> create(Authentication authentication, FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         Council council = Council.builder()
@@ -94,7 +98,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
-    @Cacheable(value = "councilRead", key = "#id")
+//    @Cacheable(value = "councilRead", key = "#id")
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
@@ -107,11 +111,13 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Override
     public Header<CouncilApiResponse> update(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
+        }
 
         Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if(council.getUser().getId() != user.getId()) {
@@ -131,18 +137,20 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Transactional
     public Header<CouncilApiResponse> update(Authentication authentication, FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
-        MultipartFile[] files = request.getFiles();
+        }
 
         Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if(council.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
+        MultipartFile[] files = request.getFiles();
         council.getFileList().stream().forEach(file -> fileRepository.delete(file));
         council.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, council.getId(), UploadCategory.POST);
@@ -159,6 +167,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     @Override
     public Header delete(Authentication authentication, Long id) {
         Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
         if (council.getUser().getId() != user.getId()) {
@@ -213,7 +222,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);

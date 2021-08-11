@@ -62,8 +62,8 @@ public class SiteInformationApiLogicService {
         return Header.OK(response(newSiteInformation, fileApiResponseList));
     }
 
-    @Cacheable(value = "readSite")
-    public Header<List<SiteInformationWithFileApiResponse>> read() {
+//    @Cacheable(value = "readSite")
+    public Header<List<SiteInformationWithFileApiResponse>> readAll() {
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
         List<SiteCategory> siteCategoryList = siteCategoryRepository.findAll();
         siteCategoryList.stream().forEach(category -> {
@@ -79,6 +79,7 @@ public class SiteInformationApiLogicService {
                         siteInformationWithFileApiResponse.getSiteInformationApiResponseList().add(response(siteInformation));
                     }
                 }));
+
         return Header.OK(siteInformationWithFileApiResponseList);
     }
 
@@ -107,7 +108,8 @@ public class SiteInformationApiLogicService {
     }
 
     public Header delete(Long id) {
-        SiteInformation siteInformation = siteInformationRepository.findById(id).orElseThrow(() -> new SiteInformationNotFoundException(id));
+        SiteInformation siteInformation = siteInformationRepository.findById(id)
+                .orElseThrow(() -> new SiteInformationNotFoundException(id));
         siteInformationRepository.delete(siteInformation);
         return Header.OK();
     }

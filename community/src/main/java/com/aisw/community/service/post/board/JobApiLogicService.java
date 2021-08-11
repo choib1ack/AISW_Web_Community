@@ -58,8 +58,11 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     @Override
     public Header<JobApiResponse> create(Authentication authentication, Header<JobApiRequest> request) {
         JobApiRequest jobApiRequest = request.getData();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT) || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE))
+        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
+                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
             throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -83,8 +86,11 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     @Transactional
     public Header<JobApiResponse> create(Authentication authentication, FileUploadToJobApiRequest request) {
         JobApiRequest jobApiRequest = request.getJobApiRequest();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT) || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE))
+        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
+                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
             throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -110,7 +116,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "jobRead", key = "#id")
+//    @Cacheable(value = "jobRead", key = "#id")
     public Header<JobApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
@@ -123,13 +129,16 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     @Override
     public Header<JobApiResponse> update(Authentication authentication, Header<JobApiRequest> request) {
         JobApiRequest jobApiRequest = request.getData();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT) || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE))
+        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
+                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
             throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
+        }
+
         Job job = baseRepository.findById(jobApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(jobApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -148,19 +157,21 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     @Transactional
     public Header<JobApiResponse> update(Authentication authentication, FileUploadToJobApiRequest request) {
         JobApiRequest jobApiRequest = request.getJobApiRequest();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT) || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE))
+        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
+                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
             throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
-        MultipartFile[] files = request.getFiles();
+        }
 
         Job job = baseRepository.findById(jobApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(jobApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
+        MultipartFile[] files = request.getFiles();
         job.getFileList().stream().forEach(file -> fileRepository.delete(file));
         job.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, job.getId(), UploadCategory.POST);
@@ -178,9 +189,9 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     @Override
     public Header delete(Authentication authentication, Long id) {
         Job job = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -238,7 +249,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "jobReadWithComment", key = "#id")
+//    @Cacheable(value = "jobReadWithComment", key = "#id")
     public Header<JobDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(job -> (Job) job.setViews(job.getViews() + 1))
@@ -335,7 +346,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
 
     @Override
-    @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
     public Header<JobResponseDTO> readAll(Pageable pageable) {
         Page<Job> jobs = baseRepository.findAll(pageable);
         Page<Job> freesByStatus = searchByStatus(pageable);

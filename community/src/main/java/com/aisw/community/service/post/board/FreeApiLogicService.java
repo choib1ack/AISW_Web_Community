@@ -60,8 +60,10 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Override
     public Header<FreeApiResponse> create(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -85,8 +87,10 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Transactional
     public Header<FreeApiResponse> create(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -112,7 +116,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    @Cacheable(value = "freeRead", key = "#id")
+//    @Cacheable(value = "freeRead", key = "#id")
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
@@ -125,14 +129,15 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Override
     public Header<FreeApiResponse> update(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
+        }
 
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -151,19 +156,20 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Transactional
     public Header<FreeApiResponse> update(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
-        MultipartFile[] files = request.getFiles();
+        }
 
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
+        MultipartFile[] files = request.getFiles();
         free.getFileList().stream().forEach(file -> fileRepository.delete(file));
         free.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, free.getId(), UploadCategory.POST);
@@ -181,9 +187,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     @Override
     public Header delete(Authentication authentication, Long id) {
         Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -241,7 +247,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    @Cacheable(value = "freeReadWithComment", key = "#id")
+//    @Cacheable(value = "freeReadWithComment", key = "#id")
     public Header<FreeDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(free -> (Free) free.setViews(free.getViews() + 1))
@@ -338,7 +344,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
 
     @Override
-    @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);

@@ -60,8 +60,10 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Override
     public Header<QnaApiResponse> create(Authentication authentication, Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -86,8 +88,10 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Transactional
     public Header<QnaApiResponse> create(Authentication authentication, FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
+        }
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
@@ -113,7 +117,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "qnaRead", key = "#id")
+//    @Cacheable(value = "qnaRead", key = "#id")
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
@@ -126,8 +130,10 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Override
     public Header<QnaApiResponse> update(Authentication authentication, Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
+        }
+
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
@@ -152,19 +158,20 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     @Transactional
     public Header<QnaApiResponse> update(Authentication authentication, FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW))
+        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
-        MultipartFile[] files = request.getFiles();
+        }
 
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
+
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
-
         if(qna.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
+        MultipartFile[] files = request.getFiles();
         qna.getFileList().stream().forEach(file -> fileRepository.delete(file));
         qna.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileApiLogicService.uploadFiles(files, qna.getId(), UploadCategory.POST);
@@ -245,7 +252,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "qnaReadWithComment", key = "#id")
+//    @Cacheable(value = "qnaReadWithComment", key = "#id")
     public Header<QnaDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> (Qna)qna.setViews(qna.getViews() + 1))
@@ -343,7 +350,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);

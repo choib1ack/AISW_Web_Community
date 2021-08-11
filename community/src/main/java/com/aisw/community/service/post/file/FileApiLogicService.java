@@ -1,6 +1,9 @@
 package com.aisw.community.service.post.file;
 
-import com.aisw.community.advice.exception.*;
+import com.aisw.community.advice.exception.BannerNotFoundException;
+import com.aisw.community.advice.exception.CanNotDetermineFileTypeException;
+import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.SiteInformationNotFoundException;
 import com.aisw.community.model.entity.admin.Banner;
 import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.entity.post.Bulletin;
@@ -12,7 +15,6 @@ import com.aisw.community.repository.admin.SiteInformationRepository;
 import com.aisw.community.repository.post.BulletinRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -84,11 +86,6 @@ public class FileApiLogicService {
         File newFile = fileRepository.save(file);
 
         return newFile;
-    }
-
-    public void delete(File file) {
-        File deleteFile = fileRepository.findById(file.getId()).orElseThrow(() -> new FileNotFoundException(file.getId()));
-        fileRepository.delete(deleteFile);
     }
 
     @Transactional

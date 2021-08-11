@@ -33,8 +33,15 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ContentLikeNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleException(ContentLikeNotFoundException ex) {
-        ApiErrorResponse response =
-                new ApiErrorResponse("ContentLikeNotFound", "content like is not found with ID: " + ex.getId());
+        ApiErrorResponse response = null;
+
+        if(ex.getUserId() != null) {
+            response = new ApiErrorResponse("ContentLikeNotFound",
+                    "content like is not found with target: " + ex.getTargetId());
+        } else {
+            response = new ApiErrorResponse("ContentLikeNotFound",
+                    "content like is not found with ID: " + ex.getId());
+        }
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -115,10 +122,5 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AccessTokenExpiredException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(AccessTokenExpiredException ex) {
-        ApiErrorResponse response =
-                new ApiErrorResponse("JwtTokenExpired", "access token is expired: " + ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
+
 }
