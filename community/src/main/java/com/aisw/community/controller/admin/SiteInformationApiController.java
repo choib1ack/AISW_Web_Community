@@ -29,12 +29,12 @@ public class SiteInformationApiController {
         return siteInformationApiLogicService.readAll();
     }
 
-    @PutMapping("/auth-admin")
+    @PutMapping("/auth-admin/site")
     public Header<SiteInformationApiResponse> update(@ModelAttribute FileUploadToSiteInformationDTO request) {
         return siteInformationApiLogicService.update(request);
     }
 
-    @DeleteMapping("/auth-admin/{id}")
+    @DeleteMapping("/auth-admin/site/{id}")
     public Header delete(@PathVariable Long id) {
         return siteInformationApiLogicService.delete(id);
     }
