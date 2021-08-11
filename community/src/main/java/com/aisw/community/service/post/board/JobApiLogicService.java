@@ -67,6 +67,9 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<JobApiResponse> create(Authentication authentication, Header<JobApiRequest> request) {
@@ -106,6 +109,9 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<JobApiResponse> create(Authentication authentication, FileUploadToJobApiRequest request) {
@@ -159,6 +165,9 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<JobApiResponse> update(Authentication authentication, Header<JobApiRequest> request) {
@@ -198,6 +207,9 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<JobApiResponse> update(Authentication authentication, FileUploadToJobApiRequest request) {
@@ -241,6 +253,9 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header delete(Authentication authentication, Long id) {
@@ -272,11 +287,8 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
                 .isAnonymous(job.getIsAnonymous())
                 .category(job.getCategory())
                 .build();
-        if (job.getFileList() == null) {
-            job.setFileList(new ArrayList<>());
-        } else {
-            jobApiResponse.setFileApiResponseList(job.getFileList().stream()
-                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        if (job.getFileList() != null) {
+            jobApiResponse.setFileApiResponseList(fileApiLogicService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()));
         }
 
         return jobApiResponse;

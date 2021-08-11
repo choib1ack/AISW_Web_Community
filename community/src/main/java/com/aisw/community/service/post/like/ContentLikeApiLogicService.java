@@ -46,7 +46,7 @@ public class ContentLikeApiLogicService {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
-        ContentLike newContentLike = null;
+        ContentLike newContentLike;
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));

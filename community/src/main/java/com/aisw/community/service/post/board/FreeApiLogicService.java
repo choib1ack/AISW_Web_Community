@@ -69,6 +69,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<FreeApiResponse> create(Authentication authentication, Header<FreeApiRequest> request) {
@@ -107,6 +110,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<FreeApiResponse> create(Authentication authentication, FileUploadToFreeApiRequest request) {
@@ -159,6 +165,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<FreeApiResponse> update(Authentication authentication, Header<FreeApiRequest> request) {
@@ -197,6 +206,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<FreeApiResponse> update(Authentication authentication, FileUploadToFreeApiRequest request) {
@@ -239,6 +251,9 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
             @CacheEvict(value = "boardSearchByWriter", allEntries = true),
             @CacheEvict(value = "boardSearchByTitle", allEntries = true),
             @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header delete(Authentication authentication, Long id) {
@@ -270,11 +285,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
                 .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .build();
-        if (free.getFileList() == null) {
-            free.setFileList(new ArrayList<>());
-        } else {
-            freeApiResponse.setFileApiResponseList(free.getFileList().stream()
-                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        if (free.getFileList() != null) {
+            freeApiResponse.setFileApiResponseList(fileApiLogicService.getFileList(free.getFileList(), UploadCategory.POST, free.getId()));
         }
 
         return freeApiResponse;
