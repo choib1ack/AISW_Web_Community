@@ -38,7 +38,7 @@ public class HomeApiService {
     @Autowired
     private SiteInformationRepository siteInformationRepository;
 
-//    @Cacheable(value = "home")
+    @Cacheable(value = "home")
     public Header<HomeApiResponse> main() {
         List<Notice> noticeList = noticeRepository.findTop10ByOrderByCreatedAtDesc();
         List<Board> boardList = boardRepository.findTop10ByOrderByCreatedAtDesc();

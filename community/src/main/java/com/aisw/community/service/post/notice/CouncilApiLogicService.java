@@ -22,7 +22,9 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -47,6 +49,20 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "councilReadAll", allEntries = true),
+            @CacheEvict(value = "councilSearchByWriter", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitle", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<CouncilApiResponse> create(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
         if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -71,6 +87,20 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "councilReadAll", allEntries = true),
+            @CacheEvict(value = "councilSearchByWriter", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitle", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<CouncilApiResponse> create(Authentication authentication, FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
         if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -98,7 +128,6 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
-//    @Cacheable(value = "councilRead", key = "#id")
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
@@ -109,6 +138,20 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "councilReadAll", allEntries = true),
+            @CacheEvict(value = "councilSearchByWriter", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitle", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<CouncilApiResponse> update(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
         if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -135,6 +178,20 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "councilReadAll", allEntries = true),
+            @CacheEvict(value = "councilSearchByWriter", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitle", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<CouncilApiResponse> update(Authentication authentication, FileUploadToCouncilApiRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
         if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -165,6 +222,20 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "councilReadAll", allEntries = true),
+            @CacheEvict(value = "councilSearchByWriter", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitle", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Authentication authentication, Long id) {
         Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -192,11 +263,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
                 .build();
-        if (council.getFileList() == null) {
-            council.setFileList(new ArrayList<>());
-        } else {
-            councilApiResponse.setFileApiResponseList(council.getFileList().stream()
-                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        if (council.getFileList() != null) {
+            councilApiResponse.setFileApiResponseList(fileApiLogicService.getFileList(council.getFileList(), UploadCategory.POST, council.getId()));
         }
 
         return councilApiResponse;
@@ -222,7 +290,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-//    @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
+    @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -231,6 +299,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Cacheable(value = "councilSearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByWriterContaining(writer, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -239,6 +309,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Cacheable(value = "councilSearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByTitleContaining(title, pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
@@ -247,6 +319,8 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
+    @Cacheable(value = "councilSearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Council> councils = councilRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
