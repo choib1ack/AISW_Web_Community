@@ -60,17 +60,17 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     private ContentLikeApiLogicService contentLikeApiLogicService;
 
     @Override
-//    @Caching(evict = {
-//            @CacheEvict(value = "freeReadAll", allEntries = true),
-//            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "boardReadAll", allEntries = true),
-//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "home", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<FreeApiResponse> create(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
         if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -98,17 +98,17 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-//    @Caching(evict = {
-//            @CacheEvict(value = "freeReadAll", allEntries = true),
-//            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "boardReadAll", allEntries = true),
-//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "home", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<FreeApiResponse> create(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
         if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -150,17 +150,17 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     }
 
     @Override
-//    @Caching(evict = {
-//            @CacheEvict(value = "freeReadAll", allEntries = true),
-//            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "boardReadAll", allEntries = true),
-//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "home", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<FreeApiResponse> update(Authentication authentication, Header<FreeApiRequest> request) {
         FreeApiRequest freeApiRequest = request.getData();
         if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -188,17 +188,17 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-//    @Caching(evict = {
-//            @CacheEvict(value = "freeReadAll", allEntries = true),
-//            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "boardReadAll", allEntries = true),
-//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "home", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<FreeApiResponse> update(Authentication authentication, FileUploadToFreeApiRequest request) {
         FreeApiRequest freeApiRequest = request.getFreeApiRequest();
         if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -230,17 +230,17 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     }
 
     @Override
-//    @Caching(evict = {
-//            @CacheEvict(value = "freeReadAll", allEntries = true),
-//            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "boardReadAll", allEntries = true),
-//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-//            @CacheEvict(value = "home", allEntries = true)
-//    })
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Authentication authentication, Long id) {
         Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -397,7 +397,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
 
     @Override
-//    @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
+    @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -406,8 +406,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     }
 
     @Override
-//    @Cacheable(value = "freeSearchByWriter",
-//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
+    @Cacheable(value = "freeSearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -416,8 +416,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     }
 
     @Override
-//    @Cacheable(value = "freeSearchByTitle",
-//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
+    @Cacheable(value = "freeSearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
@@ -426,8 +426,8 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
     }
 
     @Override
-//    @Cacheable(value = "freeSearchByTitleOrContent",
-//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
+    @Cacheable(value = "freeSearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
