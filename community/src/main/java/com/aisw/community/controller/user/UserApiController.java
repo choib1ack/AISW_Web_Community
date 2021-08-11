@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.user;
+package com.aisw.community.controller.user;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.UserApiRequest;

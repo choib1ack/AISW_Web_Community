@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post.like;
+package com.aisw.community.controller.post.like;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;

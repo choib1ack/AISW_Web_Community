@@ -1,6 +1,6 @@
-package com.aisw.community.controller.api.post.notice;
+package com.aisw.community.controller.post.notice;
 
-import com.aisw.community.controller.api.post.BulletinController;
+import com.aisw.community.controller.post.BulletinController;
 import com.aisw.community.model.entity.post.notice.Notice;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;

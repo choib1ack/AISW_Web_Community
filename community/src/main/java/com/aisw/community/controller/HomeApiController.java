@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api;
+package com.aisw.community.controller;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.HomeApiResponse;

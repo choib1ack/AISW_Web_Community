@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post;
+package com.aisw.community.controller.post;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.service.post.BulletinService;

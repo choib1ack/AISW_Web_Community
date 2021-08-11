@@ -1,6 +1,6 @@
-package com.aisw.community.controller.api.post.board;
+package com.aisw.community.controller.post.board;
 
-import com.aisw.community.controller.api.post.BulletinController;
+import com.aisw.community.controller.post.BulletinController;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
