@@ -44,7 +44,7 @@ public class CommentApiLogicService {
     private AlertApiService alertApiService;
 
     @Transactional
-//    @CacheEvict(value = "commentSearchByPost", key = "#boardId")
+    @CacheEvict(value = "commentSearchByPost", key = "#boardId")
     public Header<CommentApiResponse> create(Authentication authentication, Long boardId, Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
 
@@ -75,7 +75,7 @@ public class CommentApiLogicService {
     }
 
     @Transactional
-//    @CacheEvict(value = "commentSearchByPost", key = "#boardId")
+    @CacheEvict(value = "commentSearchByPost", key = "#boardId")
     public Header delete(Authentication authentication, Long boardId, Long commentId) {
         Comment comment = commentRepository.findCommentByIdWithSuperComment(commentId).orElseThrow(
                 () -> new CommentNotFoundException(commentId));

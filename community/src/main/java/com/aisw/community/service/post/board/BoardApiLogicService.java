@@ -24,7 +24,7 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     @Autowired
     private BoardRepository boardRepository;
 
-//    @Cacheable(value = "boardReadAll", key = "#pageable.pageNumber")
+    @Cacheable(value = "boardReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
@@ -33,8 +33,8 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     }
 
     @Override
-//    @Cacheable(value = "boardSearchByWriter",
-//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
+    @Cacheable(value = "boardSearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByWriterContaining(writer, pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
@@ -43,8 +43,8 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     }
 
     @Override
-//    @Cacheable(value = "boardSearchByTitle",
-//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
+    @Cacheable(value = "boardSearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByTitleContaining(title, pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
@@ -53,8 +53,8 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     }
 
     @Override
-//    @Cacheable(value = "boardSearchByTitleOrContent",
-//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
+    @Cacheable(value = "boardSearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
