@@ -25,7 +25,9 @@ import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.post.comment.CommentApiLogicService;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -56,6 +58,17 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<JobApiResponse> create(Authentication authentication, Header<JobApiRequest> request) {
         JobApiRequest jobApiRequest = request.getData();
         if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
@@ -84,6 +97,17 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<JobApiResponse> create(Authentication authentication, FileUploadToJobApiRequest request) {
         JobApiRequest jobApiRequest = request.getJobApiRequest();
         if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
@@ -116,7 +140,6 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
-//    @Cacheable(value = "jobRead", key = "#id")
     public Header<JobApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
@@ -127,6 +150,17 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<JobApiResponse> update(Authentication authentication, Header<JobApiRequest> request) {
         JobApiRequest jobApiRequest = request.getData();
         if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
@@ -155,6 +189,17 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<JobApiResponse> update(Authentication authentication, FileUploadToJobApiRequest request) {
         JobApiRequest jobApiRequest = request.getJobApiRequest();
         if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
@@ -187,6 +232,17 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Authentication authentication, Long id) {
         Job job = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -249,7 +305,6 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
-//    @Cacheable(value = "jobReadWithComment", key = "#id")
     public Header<JobDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(job -> (Job) job.setViews(job.getViews() + 1))
@@ -275,8 +330,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
                 .category(job.getCategory())
                 .userId(job.getUser().getId())
                 .checkLike(false)
-                .fileApiResponseList(job.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileApiLogicService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()))
                 .commentApiResponseList(commentApiLogicService.searchByPost(job.getId()))
                 .build();
 
@@ -314,9 +368,8 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
                 .category(job.getCategory())
                 .checkLike(false)
                 .userId(job.getUser().getId())
-                .fileApiResponseList(job.getFileList().stream()
-                        .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()))
-                .commentApiResponseList(commentApiLogicService.searchByPost(job.getId()))
+                .fileApiResponseList(fileApiLogicService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()))
+                .commentApiResponseList(commentApiResponseList)
                 .build();
 
         List<ContentLike> contentLikeList = contentLikeRepository.findAllByUserId(user.getId());
@@ -346,7 +399,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
 
     @Override
-//    @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
+    @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
     public Header<JobResponseDTO> readAll(Pageable pageable) {
         Page<Job> jobs = baseRepository.findAll(pageable);
         Page<Job> freesByStatus = searchByStatus(pageable);
@@ -355,6 +408,8 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     }
 
     @Override
+    @Cacheable(value = "jobSearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<JobResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Job> jobs = jobRepository.findAllByWriterContaining(writer, pageable);
         Page<Job> jobsByStatus = searchByStatus(pageable);
@@ -363,6 +418,8 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     }
 
     @Override
+    @Cacheable(value = "jobSearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<JobResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Job> jobs = jobRepository.findAllByTitleContaining(title, pageable);
         Page<Job> jobsByStatus = searchByStatus(pageable);
@@ -371,6 +428,8 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
     }
 
     @Override
+    @Cacheable(value = "jobSearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<JobResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Job> jobs = jobRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
