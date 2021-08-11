@@ -28,8 +28,8 @@ function EditBoard({match}) {
     // redux toolkit
     const write = useSelector(state => state.write)
 
-    async function sendBoard(data, path) {
-        await axiosApi.put("/auth/board/" + path,
+    async function sendBoard(auth, data, path) {
+        await axiosApi.put(`/${auth}/board/` + path,
             {data: data},
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
@@ -38,7 +38,7 @@ function EditBoard({match}) {
             console.log(errorObject);
 
             if (error.response.data.error === "JwtTokenExpired") {
-                axiosApi.put("/auth/board/" + path,
+                axiosApi.put(`/${auth}/board/` + path,
                     {data: data},
                     {
                         headers: {
@@ -62,9 +62,9 @@ function EditBoard({match}) {
         data.board_type = board_category;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
+            let temp, auth;
             if (data.board_type === 'free') {
-                test = {
+                temp = {
                     content: data.content,
                     id: data.id,
                     is_anonymous: true,
@@ -72,7 +72,7 @@ function EditBoard({match}) {
                     title: data.title,
                 }
             } else if (data.board_type === 'qna') {
-                test = {
+                temp = {
                     content: data.content,
                     id: data.id,
                     is_anonymous: true,
@@ -81,8 +81,9 @@ function EditBoard({match}) {
                     title: data.title,
                 }
             }
-            test.id = id;
-            sendBoard(test, data.board_type);
+            temp.id = id;
+
+            sendBoard(auth, temp, data.board_type);
         }
     }
 

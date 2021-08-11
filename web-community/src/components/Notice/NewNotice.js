@@ -22,7 +22,9 @@ export default function NewNotice() {
     const write = useSelector(state => state.write)
 
     async function sendNotice(data, path) {
-        await axiosApi.post("/auth-admin/notice/" + path,
+        const post_auth_url = (path === 'council' ? 'auth-council' : 'auth');
+
+        await axiosApi.post(`/${post_auth_url}/notice/${path}`,
             {data: data}
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기

@@ -17,7 +17,6 @@ export default function NoticeDetail({match}) {
     let history = useHistory();
 
     const {notice_category, id} = match.params;
-    const url = match.url;
 
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
@@ -49,13 +48,15 @@ export default function NoticeDetail({match}) {
     }
 
     useEffect(() => {
+        const get_auth_url = (notice_category === 'university' ? 'auth' : 'auth-student');
+
         const fetchNoticeData = async () => {
             try {
                 setError(null);
                 setNoticeDetailData(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/auth/notice/${notice_category}/${id}`);
+                const response = await axiosApi.get(`/${get_auth_url}/notice/${notice_category}/${id}`);
 
                 setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
                 setHtmlContent(response.data.data.content);
@@ -76,11 +77,13 @@ export default function NoticeDetail({match}) {
     if (!noticeDetailData) return null;
 
     function handleEdit() {
-        history.push({pathname: `${url}/edit`, state: {detail: noticeDetailData, content: htmlContent}});
+        history.push({pathname: `${match.url}/edit`, state: {detail: noticeDetailData, content: htmlContent}});
     }
 
     async function handleDelete() {
-        await axiosApi.delete(`/auth-admin/notice/${notice_category}/${id}`)
+        const delete_auth_url = (notice_category === 'council' ? 'auth-council' : 'auth');
+
+        await axiosApi.delete(`/${delete_auth_url}/notice/${notice_category}/${id}`)
             .then((res) => {
                 history.push('/notice')  // BoardList로 이동
             }).catch(error => {

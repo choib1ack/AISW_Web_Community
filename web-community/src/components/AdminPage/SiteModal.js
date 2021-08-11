@@ -1,16 +1,15 @@
 import React, {useState} from "react";
-import axios from "axios";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Switch from "react-switch";
 import Loading from "../Loading";
+import axiosApi from "../../axiosApi";
 
 function SiteModal(props) {
     const mode = (!props.info) ? "add" : "update";
-    // console.log(mode);
 
-    const default_info = mode == "add" ?
+    const default_info = mode === "add" ?
         {
             name: "",
             detail: "",
@@ -34,7 +33,7 @@ function SiteModal(props) {
             category: props.category_name
         });	//파일
 
-    function encodeBase64ImageTagviaFileReader (file_name) {
+    function encodeBase64ImageTagviaFileReader(file_name) {
         // console.log(file_name);
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest()
@@ -47,14 +46,14 @@ function SiteModal(props) {
                 setImgFile(new File([xhr.response], props.file_info.file_name, {type: props.file_info.file_type}));
                 // xhr.response는 실제 데이터. base64로 바꾸기 전! 이거를 업로드 해줘야함. base64로 바꾼거 올리면 엑박ㅠ
             }
-            xhr.open('GET', "/file/download/"+file_name)
+            xhr.open('GET', "/file/download/" + file_name)
             xhr.responseType = 'blob'
             xhr.send()
         })
     }
 
-    if(mode=="update" && props.file_info != null){
-        if(imgBase64 == "") {
+    if (mode === "update" && props.file_info != null) {
+        if (imgBase64 === "") {
             encodeBase64ImageTagviaFileReader(props.file_info.file_name)
                 .then(data => {
                     setImgBase64(data);
@@ -69,9 +68,8 @@ function SiteModal(props) {
     }
 
     const handleDelete = async () => {
-        await axios.delete("/site/" + props.info.id)
+        await axiosApi.delete("/auth-admin/site/" + props.info.id)
             .then((res) => {
-                //console.log(res);
                 props.setShow(false);
                 alert("사이트 정보가 삭제되었습니다");
                 props.setSiteData(null);
@@ -102,7 +100,7 @@ function SiteModal(props) {
         const target = event.target;
         const name = target.name;
         const value = target.value;
-        if (name == "site_image") {
+        if (name === "site_image") {
             handleChangeFile(event);
             return;
         }
@@ -120,7 +118,6 @@ function SiteModal(props) {
     }
 
     const handleSubmit = (event) => {
-
         let site_info = {
             "content": siteInfo.site_detail,
             "category": props.category_name,
@@ -134,7 +131,6 @@ function SiteModal(props) {
 
 
     function sendDataWithFile(data) {
-
         const formData = new FormData();
         formData.append('files', imgFile);
         formData.append('siteInformationApiRequest.name', data.name);
@@ -143,7 +139,7 @@ function SiteModal(props) {
         formData.append('siteInformationApiRequest.linkUrl', data.link_url);
         formData.append('siteInformationApiRequest.category', data.category);
 
-        if(mode=="update"){
+        if (mode === "update") {
             formData.append('siteInformationApiRequest.id', props.info.id);
         }
 
@@ -153,9 +149,8 @@ function SiteModal(props) {
         //     console.log(value);
         // }
 
-        if(mode=="add"){
-            axios.post("/site", formData).then(res => {
-                // console.log(res);
+        if (mode === "add") {
+            axiosApi.post("/auth-admin/site", formData).then(res => {
                 props.setShow(false);
                 alert('새 사이트가 등록되었습니다.')
                 props.setSiteData(null);
@@ -163,9 +158,8 @@ function SiteModal(props) {
                 alert('새 사이트 등록에 실패했습니다.')
                 console.log(err);
             })
-        }else{
-            axios.put("/site", formData).then(res => {
-                // console.log(res);
+        } else {
+            axiosApi.put("/auth-admin/site", formData).then(res => {
                 props.setShow(false);
                 alert('사이트 정보가 변경되었습니다.')
                 props.setSiteData(null);
@@ -182,7 +176,7 @@ function SiteModal(props) {
             <div className="AddSiteModal">
                 <Modal show={props.show} onHide={modalClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>{mode == "add" ? "새 사이트 추가" : "사이트 수정"}</Modal.Title>
+                        <Modal.Title>{mode === "add" ? "새 사이트 추가" : "사이트 수정"}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <Form>
@@ -202,7 +196,7 @@ function SiteModal(props) {
                                               name="site_url" onChange={handleInputChange}/>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label style={{width:"100%"}}>
+                                <Form.Label style={{width: "100%"}}>
                                     게시 여부<span style={{color: "#FF0000"}}> *</span>
                                 </Form.Label>
                                 <Switch
@@ -226,7 +220,7 @@ function SiteModal(props) {
                                 <div><Form.Label>
                                     대표 이미지 (500x500)<span style={{color: "#FF0000"}}> *</span>
                                 </Form.Label></div>
-                                {imgBase64 == "" ? (mode == "update"?<Loading/>:null):
+                                {imgBase64 === "" ? (mode === "update" ? <Loading/> : null) :
                                     <div><img src={imgBase64} style={{width: "50%", height: "50%"}}/></div>
                                 }
                                 <input type="file" id="imgFile" name="site_image" onChange={handleInputChange}/>
@@ -234,12 +228,12 @@ function SiteModal(props) {
                         </Form>
                     </Modal.Body>
                     <Modal.Footer>
-                        {mode != "add" ?
+                        {mode !== "add" ?
                             <Button variant="secondary" onClick={handleDelete}>
                                 삭제
                             </Button> : null}
                         <Button variant="primary" type="submit" onClick={handleSubmit}>
-                            {mode == "add"?"추가":"수정"}
+                            {mode === "add" ? "추가" : "수정"}
                         </Button>
                     </Modal.Footer>
                 </Modal>

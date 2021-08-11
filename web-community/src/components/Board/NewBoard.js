@@ -24,8 +24,8 @@ function NewBoard() {
     // redux toolkit
     const write = useSelector(state => state.write)
 
-    async function postBoard(data, path) {
-        await axiosApi.post("/auth/board/" + path,
+    async function postBoard(auth, data, path) {
+        await axiosApi.post(`/${auth}/board/` + path,
             {data: data},
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
@@ -34,7 +34,7 @@ function NewBoard() {
             console.log(errorObject);
 
             if (error.response.data.error === "JwtTokenExpired") {
-                axiosApi.post("/auth/board/" + path,
+                axiosApi.post(`/${auth}/board/` + path,
                     {data: data},
                     {
                         headers: {
@@ -57,24 +57,28 @@ function NewBoard() {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
+            let temp, auth;
+
             if (data.board_type === 'free') {
-                test = {
+                temp = {
                     content: data.content,
                     is_anonymous: true,
                     status: "GENERAL",
                     title: data.title,
                 }
+                auth = 'auth';
             } else if (data.board_type === 'qna') {
-                test = {
+                temp = {
                     content: data.content,
                     is_anonymous: true,
                     status: "GENERAL",
                     subject: data.subject,
                     title: data.title,
                 }
+                auth = 'auth-student';
             }
-            postBoard(test, data.board_type);
+
+            postBoard(auth, temp, data.board_type);
         }
     }
 

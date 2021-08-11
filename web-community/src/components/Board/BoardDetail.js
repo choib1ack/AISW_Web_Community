@@ -23,6 +23,7 @@ export default function BoardDetail({match}) {
     const [likeState, dispatch] = useReducer(reducer, {"press": false, "num": 0});
     const [show, setShow] = useState(false);
     const {board_category, id} = match.params;
+    const auth_url = (board_category === 'qna' ? 'auth-student' : 'auth');
     let history = useHistory();
 
     const handleShow = () => setShow(true);
@@ -63,10 +64,10 @@ export default function BoardDetail({match}) {
 
     const handleLikeClick = async () => {
         const data = {
-            "board_id": id,
+            "board_id": Number(id),
         }
 
-        await axiosApi.post('/like/press/', data)
+        await axiosApi.post('/like/press', {data: data})
             .then((res) => {
                 alert("게시글에 좋아요를 눌렀습니다");
                 dispatch({type: 'PRESS'});
@@ -77,11 +78,7 @@ export default function BoardDetail({match}) {
     }
 
     const handleLikeCancelClick = async () => {
-        const data = {
-            "board_id": id,
-        }
-
-        await axiosApi.post('/like/remove/', data)
+        await axiosApi.delete(`/like/remove/${id}?target=POST`)
             .then((res) => {
                 alert("게시글에 좋아요를 취소했습니다");
                 dispatch({type: 'REMOVE'});
@@ -113,7 +110,7 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/auth/board/${board_category}/comment&like/${id}`);
+                const response = await axiosApi.get(`/${auth_url}/board/${board_category}/comment&like/${id}`);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
                 dispatch({
                     type: 'INITIALIZE',
@@ -238,6 +235,7 @@ export default function BoardDetail({match}) {
                         />
                         <WriteComment
                             board_id={id}
+                            board_category={board_category}
                             Refresh={Refresh}
                         />
                     </div>

@@ -8,7 +8,6 @@ import Table from "react-bootstrap/Table";
 import Switch from "react-switch";
 import BannerModal from "./BannerModal";
 import {Carousel} from "react-bootstrap";
-import axios from "axios";
 import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 
