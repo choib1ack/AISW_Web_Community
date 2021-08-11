@@ -63,8 +63,7 @@ public class ContentLikeApiLogicService {
             comment.setLikes(comment.getLikes() + 1);
             commentRepository.save(comment);
             newContentLike = contentLikeRepository.save(contentLike);
-        }
-        else if(contentLikeApiRequest.getCommentId() == null) {
+        } else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
             Optional<ContentLike> optional = contentLikeRepository.findContentLikeByUserIdAndBoardId(user.getId(), board.getId());
@@ -80,6 +79,8 @@ public class ContentLikeApiLogicService {
             board.setLikes(board.getLikes() + 1);
             boardRepository.save(board);
             newContentLike = contentLikeRepository.save(contentLike);
+        } else {
+            throw new WrongRequestException();
         }
 
         AlertApiRequest alertApiRequest = AlertApiRequest.builder().contentLikeId(newContentLike.getId()).build();
