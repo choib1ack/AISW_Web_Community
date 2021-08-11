@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post;
+package com.aisw.community.controller.post;
 
 import com.aisw.community.model.entity.post.Bulletin;
 import com.aisw.community.model.network.response.post.BulletinResponseDTO;

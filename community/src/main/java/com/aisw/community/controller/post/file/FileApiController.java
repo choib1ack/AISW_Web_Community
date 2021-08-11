@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post.file;
+package com.aisw.community.controller.post.file;
 
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;

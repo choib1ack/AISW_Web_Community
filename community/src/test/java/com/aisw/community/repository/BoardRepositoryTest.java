@@ -1,7 +1,7 @@
 package com.aisw.community.repository;
 
 import com.aisw.community.CommunityApplicationTests;
-import com.aisw.community.controller.api.post.board.BoardApiController;
+import com.aisw.community.controller.post.board.BoardApiController;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.repository.post.board.BoardRepository;
 import org.junit.jupiter.api.Test;

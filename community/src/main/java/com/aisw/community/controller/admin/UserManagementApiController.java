@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.admin;
+package com.aisw.community.controller.admin;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.admin.UserManagementApiRequest;
