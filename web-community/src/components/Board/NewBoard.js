@@ -27,7 +27,7 @@ function NewBoard() {
     const dispatch = useDispatch()
 
     async function postBoard(data, path) {
-        await axiosApi.post("/board/" + path,
+        await axiosApi.post("/auth/board/" + path,
             {data: data},
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
@@ -35,8 +35,10 @@ function NewBoard() {
                 let errorObject = JSON.parse(JSON.stringify(error));
                 console.log(errorObject);
 
-                if (error.response.data.error === "JwtTokenExpired") {
-                    axiosApi.post("/board/" + path,
+                console.log(error.response.data.error);
+
+                if (error.response.data.error === "JwtTokenExpired ") {
+                    axiosApi.post("/auth/board/" + path,
                         {data: data},
                         {
                             headers: {

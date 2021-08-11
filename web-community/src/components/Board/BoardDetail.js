@@ -18,6 +18,7 @@ import {Link, useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {useSelector} from "react-redux";
+import axiosApi from "../../axiosApi";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -41,12 +42,12 @@ export default function BoardDetail({match}) {
 
     const {board_category} = match.params;
     const {id} = match.params;
-    const url = match.url.substring(0, 11) + "/comment&like/" + id + "/" + 1;
+    // const url = match.url.substring(0, 11) + "/comment&like/" + id + "/" + 1;
+    const url = `/auth/board/${board_category}/comment&like/${id}/1`;
 
     function reducer(state, action) {
         switch (action.type) {
             case 'INITIALIZE':
-                console.log("초기화!");
                 return {
                     "num": action.value_likes,
                     "press": action.value_press,
@@ -143,7 +144,7 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axios.get(url);
+                const response = await axiosApi.get(url);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
                 dispatch({
                     type: 'INITIALIZE',
