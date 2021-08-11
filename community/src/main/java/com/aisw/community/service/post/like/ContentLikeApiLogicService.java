@@ -90,7 +90,6 @@ public class ContentLikeApiLogicService {
 
     @Transactional
     public Header removeLike(Authentication authentication, Long id, String target) {
-
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
