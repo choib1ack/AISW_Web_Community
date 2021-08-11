@@ -98,7 +98,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
 
     @Override
     @Transactional
-    @Cacheable(value = "councilRead", key = "#id")
+//    @Cacheable(value = "councilRead", key = "#id")
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
@@ -222,7 +222,7 @@ public class CouncilApiLogicService extends NoticePostService<CouncilApiRequest,
     }
 
     @Override
-    @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Council> councils = baseRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);

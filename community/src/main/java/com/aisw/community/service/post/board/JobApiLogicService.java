@@ -116,7 +116,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "jobRead", key = "#id")
+//    @Cacheable(value = "jobRead", key = "#id")
     public Header<JobApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
@@ -249,7 +249,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "jobReadWithComment", key = "#id")
+//    @Cacheable(value = "jobReadWithComment", key = "#id")
     public Header<JobDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(job -> (Job) job.setViews(job.getViews() + 1))
@@ -346,7 +346,7 @@ public class JobApiLogicService extends BoardPostService<JobApiRequest, FileUplo
 
 
     @Override
-    @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
     public Header<JobResponseDTO> readAll(Pageable pageable) {
         Page<Job> jobs = baseRepository.findAll(pageable);
         Page<Job> freesByStatus = searchByStatus(pageable);

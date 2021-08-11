@@ -62,7 +62,7 @@ public class SiteInformationApiLogicService {
         return Header.OK(response(newSiteInformation, fileApiResponseList));
     }
 
-    @Cacheable(value = "readSite")
+//    @Cacheable(value = "readSite")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
         List<SiteCategory> siteCategoryList = siteCategoryRepository.findAll();

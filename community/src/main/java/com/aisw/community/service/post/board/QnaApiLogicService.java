@@ -117,7 +117,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "qnaRead", key = "#id")
+//    @Cacheable(value = "qnaRead", key = "#id")
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
@@ -252,7 +252,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Cacheable(value = "qnaReadWithComment", key = "#id")
+//    @Cacheable(value = "qnaReadWithComment", key = "#id")
     public Header<QnaDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> (Qna)qna.setViews(qna.getViews() + 1))
@@ -350,7 +350,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
