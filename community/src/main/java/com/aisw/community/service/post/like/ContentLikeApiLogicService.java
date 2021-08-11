@@ -89,15 +89,13 @@ public class ContentLikeApiLogicService {
     }
 
     @Transactional
-    public Header removeLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
-        ContentLikeApiRequest contentLikeApiRequest = request.getData();
+    public Header removeLike(Authentication authentication, Long id, String target) {
 
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
-        if(contentLikeApiRequest.getBoardId() == null) {
-            Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
-                    .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
+        if(target.equals("COMMENT")) {
+            Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
             return contentLikeRepository
                     .findContentLikeByUserIdAndCommentId(user.getId(), comment.getId())
                     .map(contentLike -> {
@@ -108,9 +106,8 @@ public class ContentLikeApiLogicService {
                     })
                     .orElseThrow(() -> new ContentLikeNotFoundException(comment.getId()));
         }
-        else if(contentLikeApiRequest.getCommentId() == null) {
-            Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
-                    .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
+        else if(target.equals("POST")) {
+            Board board = boardRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
             return contentLikeRepository
                     .findContentLikeByUserIdAndBoardId(user.getId(), board.getId())
                     .map(contentLike -> {

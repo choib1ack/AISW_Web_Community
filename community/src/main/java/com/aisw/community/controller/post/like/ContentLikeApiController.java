@@ -22,8 +22,8 @@ public class ContentLikeApiController {
         return contentLikeApiLogicService.pressLike(authentication, request);
     }
 
-    @DeleteMapping("remove")
-    public Header removeLike(Authentication authentication, @RequestBody Header<ContentLikeApiRequest> request) {
-        return contentLikeApiLogicService.removeLike(authentication, request);
+    @DeleteMapping("remove/{id}")
+    public Header removeLike(Authentication authentication, @PathVariable Long id, @RequestParam String target) {
+        return contentLikeApiLogicService.removeLike(authentication, id, target);
     }
 }
