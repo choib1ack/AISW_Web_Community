@@ -13,7 +13,9 @@ import com.aisw.community.repository.admin.BannerRepository;
 import com.aisw.community.repository.admin.CustomBannerRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
+import org.hibernate.annotations.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,7 @@ public class BannerApiLogicService {
     private FileApiLogicService fileApiLogicService;
 
     @Transactional
+//    @CacheEvict(value = "bannerRead", allEntries = true)
     public Header<BannerApiResponse> create(FileUploadToBannerDTO request) {
         BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
 
@@ -84,6 +87,7 @@ public class BannerApiLogicService {
     }
 
     @Transactional
+//    @CacheEvict(value = "bannerRead", allEntries = true)
     public Header<BannerApiResponse> update(FileUploadToBannerDTO request) {
         BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
         MultipartFile[] files = request.getFiles();
@@ -107,6 +111,7 @@ public class BannerApiLogicService {
         return Header.OK(response(updateBanner, fileApiResponseList));
     }
 
+//    @CacheEvict(value = "bannerRead", allEntries = true)
     public Header delete(Long id) {
         Banner banner = bannerRepository.findById(id).orElseThrow(() -> new BannerNotFoundException(id));
         bannerRepository.delete(banner);
@@ -114,7 +119,8 @@ public class BannerApiLogicService {
     }
 
     @Scheduled(cron = "0 0 4 * * *")
-    private void checkEndDate() {
+//    @CacheEvict(value = "bannerRead", allEntries = true)
+    public void checkEndDate() {
         LocalDate now = LocalDate.now();
 
         List<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE);

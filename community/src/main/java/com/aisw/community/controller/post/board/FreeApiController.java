@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post.board;
+package com.aisw.community.controller.post.board;
 
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.post.board.Free;

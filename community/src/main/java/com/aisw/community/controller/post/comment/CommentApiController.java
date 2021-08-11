@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post.comment;
+package com.aisw.community.controller.post.comment;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.comment.CommentApiRequest;
