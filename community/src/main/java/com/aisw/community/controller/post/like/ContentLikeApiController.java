@@ -22,7 +22,7 @@ public class ContentLikeApiController {
         return contentLikeApiLogicService.pressLike(authentication, request);
     }
 
-    @PostMapping("remove")
+    @DeleteMapping("remove")
     public Header removeLike(Authentication authentication, @RequestBody Header<ContentLikeApiRequest> request) {
         return contentLikeApiLogicService.removeLike(authentication, request);
     }

@@ -33,15 +33,15 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ContentLikeNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleException(ContentLikeNotFoundException ex) {
-        ApiErrorResponse response = null;
-
-        if(ex.getUserId() != null) {
-            response = new ApiErrorResponse("ContentLikeNotFound",
-                    "content like is not found with target: " + ex.getTargetId());
-        } else {
-            response = new ApiErrorResponse("ContentLikeNotFound",
+        ApiErrorResponse response = new ApiErrorResponse("ContentLikeNotFound",
                     "content like is not found with ID: " + ex.getId());
-        }
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ContentLikeAlreadyExistException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(ContentLikeAlreadyExistException ex) {
+        ApiErrorResponse response = new ApiErrorResponse("ContentLikeAlreadyExist",
+                "content like is already exist: " + ex.getId());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
