@@ -5,45 +5,34 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
-import React, {useEffect, useState} from "react";
-import {useForm, Controller} from "react-hook-form";
-import {useDispatch, useSelector} from "react-redux";
-import axios from "axios";
+import React, {useState} from "react";
+import {useForm} from "react-hook-form";
+import {useSelector} from "react-redux";
 import FinishModal from "../FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import {useLocation} from "react-router-dom";
 import WriteEditorContainer from "../WriteEditorContainer";
+import axiosApi from "../../axiosApi";
 
 export default function EditNotice({match}, props) {
-    const {register, handleSubmit, control} = useForm({mode: "onChange"});
+    const {register, handleSubmit} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
 
     const detail = location.state.detail;
     const content = location.state.content;
     const {notice_category, id} = match.params;
-    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     // redux toolkit
-    const user = useSelector(state => state.user.userData)
     const write = useSelector(state => state.write)
-    const dispatch = useDispatch()
 
     async function sendNotice(data, path) {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': auth
-        }
-
-        await axios.put("/auth-admin/notice/" + path,
+        await axiosApi.put("/auth-admin/notice/" + path,
             {data: data},
-            {headers: headers}
         ).then((res) => {
-            console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
             console.log(errorObject);
 
             alert("글 게시에 실패하였습니다.") // 실패 메시지
@@ -57,32 +46,22 @@ export default function EditNotice({match}, props) {
             let test;
             if (notice_category === "university") {
                 test = {
-                    attachment_file: "string",
                     campus: "COMMON",
                     content: data.content,
-                    level: 0,
                     status: "GENERAL",
                     title: data.title,
-                    account_id: user.id,
-                    writer: "string"
                 }
             } else if (notice_category === "department") {
                 test = {
-                    attachment_file: "string",
                     content: data.content,
-                    level: 0,
                     status: "GENERAL",
                     title: data.title,
-                    account_id: user.id
                 }
             } else if (notice_category === "council") {
                 test = {
-                    attachment_file: "string",
                     content: data.content,
-                    level: 0,
                     status: "GENERAL",
                     title: data.title,
-                    account_id: user.id
                 }
             }
             test.id = id

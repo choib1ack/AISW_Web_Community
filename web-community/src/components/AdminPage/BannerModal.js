@@ -56,8 +56,8 @@ function BannerModal(props) {
         })
     }
 
-    if (mode == "update" && props.file_info != null) {
-        if (imgBase64 == "") {
+    if (mode === "update" && props.file_info != null) {
+        if (imgBase64 === "") {
             encodeBase64ImageTagviaFileReader(props.file_info.file_name)
                 .then(data => {
                     setImgBase64(data);
@@ -112,7 +112,7 @@ function BannerModal(props) {
         const target = event.target;
         const name = target.name;
         const value = target.value;
-        if (name == "banner_image") {
+        if (name === "banner_image") {
             handleChangeFile(event);
         }
         setBannerInfo({
@@ -267,7 +267,7 @@ function BannerModal(props) {
                             <div><Form.Label>
                                 배너 이미지 (500x500)<span style={{color: "#FF0000"}}> *</span>
                             </Form.Label></div>
-                            {imgBase64 == "" ? null :
+                            {imgBase64 === "" ? null :
                                 <div><img src={imgBase64} style={{width: "100%", objectFit: "cover"}} height="90"/>
                                 </div>
                             }

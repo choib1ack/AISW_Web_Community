@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import classNames from 'classnames';
@@ -6,25 +6,23 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Title from "../Title";
-import {Controller, useForm} from "react-hook-form";
+import {useForm} from "react-hook-form";
 import FinishModal from "../FinishModal";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
 import FileUpload from "../FileUpload";
 import axiosApi from "../../axiosApi";
 
 function NewBoard() {
-    const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
+    const {register, handleSubmit, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const board_type = useRef();
     board_type.current = watch("board_type");
     const [refreshToken, setRefreshToken] = useState(() => window.localStorage.getItem("REFRESH_TOKEN") || null);
 
     // redux toolkit
-    const user = useSelector(state => state.user.userData)
     const write = useSelector(state => state.write)
-    const dispatch = useDispatch()
 
     async function postBoard(data, path) {
         await axiosApi.post("/auth/board/" + path,
@@ -32,30 +30,27 @@ function NewBoard() {
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
+            let errorObject = JSON.parse(JSON.stringify(error));
+            console.log(errorObject);
 
-                console.log(error.response.data.error);
-
-                if (error.response.data.error === "JwtTokenExpired ") {
-                    axiosApi.post("/auth/board/" + path,
-                        {data: data},
-                        {
-                            headers: {
-                                'Refresh_Token': refreshToken
-                            }
+            if (error.response.data.error === "JwtTokenExpired") {
+                axiosApi.post("/auth/board/" + path,
+                    {data: data},
+                    {
+                        headers: {
+                            'Refresh_Token': refreshToken
                         }
-                    ).then((res) => {
-                        setModalShow(true)   // 완료 모달 띄우기
-                    }).catch(error => {
-                        let errorObject = JSON.parse(JSON.stringify(error));
-                        console.log(errorObject);
-                    })
-                } else {
-                    alert("글 게시에 실패하였습니다.") // 실패 메시지
-                }
+                    }
+                ).then((res) => {
+                    setModalShow(true)   // 완료 모달 띄우기
+                }).catch(error => {
+                    let errorObject = JSON.parse(JSON.stringify(error));
+                    console.log(errorObject);
+                })
+            } else {
+                alert("글 게시에 실패하였습니다.") // 실패 메시지
             }
-        )
+        })
     }
 
     const onSubmit = (data) => {
@@ -65,27 +60,21 @@ function NewBoard() {
             let test;
             if (data.board_type === 'free') {
                 test = {
-                    attachment_file: "string",
                     content: data.content,
                     is_anonymous: true,
-                    level: 0,
                     status: "GENERAL",
                     title: data.title,
-                    account_id: user.id
                 }
             } else if (data.board_type === 'qna') {
                 test = {
-                    attachment_file: "string",
                     content: data.content,
                     is_anonymous: true,
-                    level: 0,
                     status: "GENERAL",
                     subject: data.subject,
                     title: data.title,
-                    account_id: user.id
                 }
             }
-            postBoard(test, data.board_type)
+            postBoard(test, data.board_type);
         }
     }
 

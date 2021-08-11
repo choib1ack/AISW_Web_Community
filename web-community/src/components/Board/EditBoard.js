@@ -1,5 +1,5 @@
-import {Controller, useForm} from "react-hook-form";
-import React, {useRef, useState} from "react";
+import {useForm} from "react-hook-form";
+import React, {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import Container from "react-bootstrap/Container";
 import FinishModal from "../FinishModal";
@@ -15,8 +15,8 @@ import WriteEditorContainer from "../WriteEditorContainer";
 import {useLocation} from "react-router-dom";
 import axiosApi from "../../axiosApi";
 
-function EditBoard({match}, props) {
-    const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
+function EditBoard({match}) {
+    const {register, handleSubmit} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
 
@@ -26,23 +26,19 @@ function EditBoard({match}, props) {
     const [refreshToken, setRefreshToken] = useState(() => window.localStorage.getItem("REFRESH_TOKEN") || null);
 
     // redux toolkit
-    const user = useSelector(state => state.user.userData)
     const write = useSelector(state => state.write)
-    const dispatch = useDispatch()
 
     async function sendBoard(data, path) {
-        await axiosApi.put("/board/" + path,
+        await axiosApi.put("/auth/board/" + path,
             {data: data},
         ).then((res) => {
-            console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
             console.log(errorObject);
 
-            if (error.response.data.error === "JwtTokenExpired ") {
-                axiosApi.put("/board/" + path,
+            if (error.response.data.error === "JwtTokenExpired") {
+                axiosApi.put("/auth/board/" + path,
                     {data: data},
                     {
                         headers: {
@@ -50,11 +46,9 @@ function EditBoard({match}, props) {
                         }
                     }
                 ).then((res) => {
-                    console.log(res)
                     setModalShow(true)   // 완료 모달 띄우기
                 }).catch(error => {
                     let errorObject = JSON.parse(JSON.stringify(error));
-                    console.log("에러 발생");
                     console.log(errorObject);
                 })
             } else {
@@ -65,20 +59,30 @@ function EditBoard({match}, props) {
 
     const onSubmit = (data) => {
         data.content = write.value;
+        data.board_type = board_category;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test = {
-                attachment_file: "string",
-                content: data.content,
-                is_anonymous: true,
-                level: 0,
-                status: "GENERAL",
-                subject: data.subject,
-                title: data.title,
-                account_id: user.id,
-                id: id
+            let test;
+            if (data.board_type === 'free') {
+                test = {
+                    content: data.content,
+                    id: data.id,
+                    is_anonymous: true,
+                    status: "GENERAL",
+                    title: data.title,
+                }
+            } else if (data.board_type === 'qna') {
+                test = {
+                    content: data.content,
+                    id: data.id,
+                    is_anonymous: true,
+                    status: "GENERAL",
+                    subject: data.subject,
+                    title: data.title,
+                }
             }
-            sendBoard(test, board_category)
+            test.id = id;
+            sendBoard(test, data.board_type);
         }
     }
 

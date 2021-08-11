@@ -3,12 +3,11 @@ import Container from "react-bootstrap/Container";
 import fileImage from "../../icon/file.svg";
 import Title from "../Title";
 import {ListButton} from "../Button/ListButton";
-import axios from "axios";
 import Loading from "../Loading";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
-import {useSelector} from "react-redux";
+import axiosApi from "../../axiosApi";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -17,7 +16,6 @@ export default function NoticeDetail({match}) {
     const [htmlContent, setHtmlContent] = useState(null);
     let history = useHistory();
 
-    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
     const {notice_category, id} = match.params;
     const url = match.url;
 
@@ -57,15 +55,7 @@ export default function NoticeDetail({match}) {
                 setNoticeDetailData(null);
                 setLoading(true);
 
-                const headers = {
-                    'Content-Type': 'application/json',
-                    'Authorization': auth
-                }
-
-                const response = await axios.get(`/auth/notice/${notice_category}/${id}`, {
-                        headers: headers
-                    }
-                );
+                const response = await axiosApi.get(`/auth/notice/${notice_category}/${id}`);
 
                 setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
                 setHtmlContent(response.data.data.content);
@@ -79,9 +69,10 @@ export default function NoticeDetail({match}) {
     }, []); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
-    if (error) return <tr>
-        <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
-    </tr>;
+    if (error) return (
+        <tr>
+            <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
+        </tr>);
     if (!noticeDetailData) return null;
 
     function handleEdit() {
@@ -89,21 +80,13 @@ export default function NoticeDetail({match}) {
     }
 
     async function handleDelete() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': auth
-        }
-
-        await axios.delete(`/auth-admin/notice/${notice_category}/${id}`, {
-            headers: headers
-        }).then((res) => {
-            console.log(res)
-            history.push('/notice')  // BoardList로 이동
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
-            console.log(errorObject);
-        })
+        await axiosApi.delete(`/auth-admin/notice/${notice_category}/${id}`)
+            .then((res) => {
+                history.push('/notice')  // BoardList로 이동
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log(errorObject);
+            })
     }
 
     function CustomModal() {

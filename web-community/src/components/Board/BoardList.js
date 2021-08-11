@@ -14,14 +14,9 @@ import MakeNoticeList from "../Notice/MakeNoticeList";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);
-
     const [searchData, setSearchData] = useState({is_search:false, search_type:"select_title", keyword:""});
-
     const [pageInfo, setPageInfo] = useState({current:0, total:1});
-
     const [selectedSubject, setSelectedSubject] = useState([]); // 과목별 게시판
-
-    console.log("BoardList");
 
     window.scrollTo(0, 0);
 
@@ -53,7 +48,7 @@ function BoardList({match}) {
 
     const searchEnterPress = (e) => {
         // 검색 시 엔터를 눌렀을 때
-        if (e.key == 'Enter') {
+        if (e.key === 'Enter') {
             searchContents();
         }
     }
@@ -98,7 +93,7 @@ function BoardList({match}) {
 
                 <Row style={{marginBottom: '1rem'}}>
                     <Col lg={12} md={12} sm={12}>
-                        {category == 2 ?
+                        {category === 2 ?
                             <SubjectList
                                 handleSelectSubject={handleSelectSubject}
                                 handleRemoveSubject={handleRemoveSubject}
