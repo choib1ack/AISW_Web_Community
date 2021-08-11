@@ -18,6 +18,7 @@ import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,7 +43,10 @@ public class SiteInformationApiLogicService {
     private FileApiLogicService fileApiLogicService;
 
     @Transactional
-//    @CacheEvict(value = "readSite", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home")
+    })
     public Header<SiteInformationApiResponse> create(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
 
@@ -64,7 +68,7 @@ public class SiteInformationApiLogicService {
         return Header.OK(response(newSiteInformation, fileApiResponseList));
     }
 
-//    @Cacheable(value = "readSite")
+    @Cacheable(value = "readSite")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
         List<SiteCategory> siteCategoryList = siteCategoryRepository.findAll();
@@ -86,7 +90,10 @@ public class SiteInformationApiLogicService {
     }
 
     @Transactional
-//    @CacheEvict(value = "readSite", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home")
+    })
     public Header<SiteInformationApiResponse> update(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
         MultipartFile[] files = request.getFiles();
@@ -110,7 +117,10 @@ public class SiteInformationApiLogicService {
         return Header.OK(response(siteInformation, fileApiResponseList));
     }
 
-//    @CacheEvict(value = "readSite", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home")
+    })
     public Header delete(Long id) {
         SiteInformation siteInformation = siteInformationRepository.findById(id)
                 .orElseThrow(() -> new SiteInformationNotFoundException(id));
