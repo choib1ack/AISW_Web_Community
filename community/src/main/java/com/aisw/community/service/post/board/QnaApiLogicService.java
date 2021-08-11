@@ -60,17 +60,17 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     private FileApiLogicService fileApiLogicService;
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
+//    @Caching(evict = {
+//            @CacheEvict(value = "qnaReadAll", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "boardReadAll", allEntries = true),
+//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "home", allEntries = true)
+//    })
     public Header<QnaApiResponse> create(Authentication authentication, Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
         if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -99,17 +99,17 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
+//    @Caching(evict = {
+//            @CacheEvict(value = "qnaReadAll", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "boardReadAll", allEntries = true),
+//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "home", allEntries = true)
+//    })
     public Header<QnaApiResponse> create(Authentication authentication, FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
         if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -151,17 +151,17 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
+//    @Caching(evict = {
+//            @CacheEvict(value = "qnaReadAll", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "boardReadAll", allEntries = true),
+//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "home", allEntries = true)
+//    })
     public Header<QnaApiResponse> update(Authentication authentication, Header<QnaApiRequest> request) {
         QnaApiRequest qnaApiRequest = request.getData();
         if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -190,17 +190,17 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
+//    @Caching(evict = {
+//            @CacheEvict(value = "qnaReadAll", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "boardReadAll", allEntries = true),
+//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "home", allEntries = true)
+//    })
     public Header<QnaApiResponse> update(Authentication authentication, FileUploadToQnaApiRequest request) {
         QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
         if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -233,17 +233,17 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
+//    @Caching(evict = {
+//            @CacheEvict(value = "qnaReadAll", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "boardReadAll", allEntries = true),
+//            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+//            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+//            @CacheEvict(value = "home", allEntries = true)
+//    })
     public Header delete(Authentication authentication, Long id) {
         Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
@@ -404,7 +404,7 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Qna> qnas = baseRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -413,8 +413,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Cacheable(value = "qnaSearchByWriter",
-            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
+//    @Cacheable(value = "qnaSearchByWriter",
+//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -423,8 +423,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Cacheable(value = "qnaSearchByTitle",
-            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
+//    @Cacheable(value = "qnaSearchByTitle",
+//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
@@ -433,8 +433,8 @@ public class QnaApiLogicService extends BoardPostService<QnaApiRequest, FileUplo
     }
 
     @Override
-    @Cacheable(value = "qnaSearchByTitleOrContent",
-            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
+//    @Cacheable(value = "qnaSearchByTitleOrContent",
+//            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);

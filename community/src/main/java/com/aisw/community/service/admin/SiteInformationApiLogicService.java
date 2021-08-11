@@ -16,6 +16,7 @@ import com.aisw.community.repository.admin.SiteInformationRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,7 @@ public class SiteInformationApiLogicService {
     private FileApiLogicService fileApiLogicService;
 
     @Transactional
+//    @CacheEvict(value = "readSite", allEntries = true)
     public Header<SiteInformationApiResponse> create(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
 
@@ -84,6 +86,7 @@ public class SiteInformationApiLogicService {
     }
 
     @Transactional
+//    @CacheEvict(value = "readSite", allEntries = true)
     public Header<SiteInformationApiResponse> update(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
         MultipartFile[] files = request.getFiles();
@@ -107,6 +110,7 @@ public class SiteInformationApiLogicService {
         return Header.OK(response(siteInformation, fileApiResponseList));
     }
 
+//    @CacheEvict(value = "readSite", allEntries = true)
     public Header delete(Long id) {
         SiteInformation siteInformation = siteInformationRepository.findById(id)
                 .orElseThrow(() -> new SiteInformationNotFoundException(id));
