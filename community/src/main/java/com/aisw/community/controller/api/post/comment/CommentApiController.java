@@ -16,33 +16,32 @@ public class CommentApiController {
     @Autowired
     private CommentApiLogicService commentApiLogicService;
 
-    @PostMapping("/auth/free/comment")
-    public Header<CommentApiResponse> createAtFree(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
-        return commentApiLogicService.create(authentication, request);
+    @PostMapping("/auth/free/{boardId}/comment")
+    public Header<CommentApiResponse> createAtFree(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
+        return commentApiLogicService.create(authentication, boardId, request);
     }
 
-    @PostMapping("/auth-student/qna/comment")
-    public Header<CommentApiResponse> createAtQna(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
-        return commentApiLogicService.create(authentication, request);
+    @PostMapping("/auth-student/qna/{boardId}/comment")
+    public Header<CommentApiResponse> createAtQna(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
+        return commentApiLogicService.create(authentication, boardId, request);
+
+    }    @PostMapping("/auth/job/{boardId}/comment")
+    public Header<CommentApiResponse> createAtJob(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
+        return commentApiLogicService.create(authentication, boardId, request);
     }
 
-    @PostMapping("/auth/job/comment")
-    public Header<CommentApiResponse> createAtJob(Authentication authentication, @RequestBody Header<CommentApiRequest> request) {
-        return commentApiLogicService.create(authentication, request);
+    @DeleteMapping("/auth/free/{boardId}/comment/{commentId}")
+    public Header deleteAtFree(Authentication authentication, @PathVariable Long boardId, @PathVariable Long commentId) {
+        return commentApiLogicService.delete(authentication, boardId, commentId);
     }
 
-    @DeleteMapping("/auth/free/comment/{id}")
-    public Header deleteAtFree(Authentication authentication, @PathVariable Long id) {
-        return commentApiLogicService.delete(authentication, id);
+    @DeleteMapping("/auth-student/qna/{boardId}/comment/{commentId}")
+    public Header deleteAtQna(Authentication authentication, @PathVariable Long boardId, @PathVariable Long commentId) {
+        return commentApiLogicService.delete(authentication, boardId, commentId);
     }
 
-    @DeleteMapping("/auth-student/qna/comment/{id}")
-    public Header deleteAtQna(Authentication authentication, @PathVariable Long id) {
-        return commentApiLogicService.delete(authentication, id);
-    }
-
-    @DeleteMapping("/auth/job/comment/{id}")
-    public Header deleteAtJob(Authentication authentication, @PathVariable Long id) {
-        return commentApiLogicService.delete(authentication, id);
+    @DeleteMapping("/auth/job/{boardId}/comment/{commentId}")
+    public Header deleteAtJob(Authentication authentication, @PathVariable Long boardId, @PathVariable Long commentId) {
+        return commentApiLogicService.delete(authentication, boardId, commentId);
     }
 }

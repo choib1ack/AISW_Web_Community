@@ -15,9 +15,12 @@ import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.user.AlertApiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -114,6 +117,10 @@ public class ContentLikeApiLogicService {
                     .orElseThrow(() -> new ContentLikeNotFoundException(board.getId()));
         }
         throw new WrongRequestException();
+    }
+
+    public List<ContentLike> getContentLikeByUser(Long id) {
+        return contentLikeRepository.findAllByUserId(id);
     }
 
     private ContentLikeApiResponse response(ContentLike contentLike) {
