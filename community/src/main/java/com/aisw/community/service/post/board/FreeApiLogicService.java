@@ -116,7 +116,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    @Cacheable(value = "freeRead", key = "#id")
+//    @Cacheable(value = "freeRead", key = "#id")
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
@@ -247,7 +247,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
     @Override
     @Transactional
-    @Cacheable(value = "freeReadWithComment", key = "#id")
+//    @Cacheable(value = "freeReadWithComment", key = "#id")
     public Header<FreeDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(free -> (Free) free.setViews(free.getViews() + 1))
@@ -344,7 +344,7 @@ public class FreeApiLogicService extends BoardPostService<FreeApiRequest, FileUp
 
 
     @Override
-    @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Free> frees = baseRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);

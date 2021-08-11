@@ -98,7 +98,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
 
     @Override
     @Transactional
-    @Cacheable(value = "departmentRead", key = "#id")
+//    @Cacheable(value = "departmentRead", key = "#id")
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(department -> department.setViews(department.getViews() + 1))
@@ -222,7 +222,7 @@ public class DepartmentApiLogicService extends NoticePostService<DepartmentApiRe
     }
 
     @Override
-    @Cacheable(value = "departmentReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "departmentReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Department> departments = baseRepository.findAll(pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);

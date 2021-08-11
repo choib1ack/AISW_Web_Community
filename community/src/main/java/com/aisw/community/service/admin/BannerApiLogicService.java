@@ -65,7 +65,7 @@ public class BannerApiLogicService {
         return Header.OK(response(newBanner, fileApiResponseList));
     }
 
-    @Cacheable(value = "bannerRead", key = "#pageable.pageNumber")
+//    @Cacheable(value = "bannerRead", key = "#pageable.pageNumber")
     public Header<List<BannerApiResponse>> readAll(Pageable pageable) {
         Page<Banner> bannerList = customBannerRepository.findAllFetchJoinWithFile(pageable);
 

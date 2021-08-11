@@ -24,7 +24,7 @@ public class BoardApiLogicService extends BulletinService<BoardResponseDTO, Boar
     @Autowired
     private BoardRepository boardRepository;
 
-    @Cacheable(value = "boardReadAll", key = "#pageable.pageNumber")
+//    @Cacheable(value = "boardReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
         Page<Board> boardsByStatus = searchByStatus(pageable);
