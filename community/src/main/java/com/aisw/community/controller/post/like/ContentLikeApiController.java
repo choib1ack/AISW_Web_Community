@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post.like;
+package com.aisw.community.controller.post.like;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;
@@ -22,8 +22,8 @@ public class ContentLikeApiController {
         return contentLikeApiLogicService.pressLike(authentication, request);
     }
 
-    @PostMapping("remove")
-    public Header removeLike(Authentication authentication, @RequestBody Header<ContentLikeApiRequest> request) {
-        return contentLikeApiLogicService.removeLike(authentication, request);
+    @DeleteMapping("remove/{id}")
+    public Header removeLike(Authentication authentication, @PathVariable Long id, @RequestParam String target) {
+        return contentLikeApiLogicService.removeLike(authentication, id, target);
     }
 }

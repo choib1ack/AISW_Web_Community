@@ -22,7 +22,9 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -47,6 +49,20 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     private FileApiLogicService fileApiLogicService;
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "universityReadAll", allEntries = true),
+            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<UniversityApiResponse> create(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
         if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -72,6 +88,20 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "universityReadAll", allEntries = true),
+            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<UniversityApiResponse> create(Authentication authentication, FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
         if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -100,7 +130,6 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     @Transactional
-    @Cacheable(value = "universityRead", key = "#id")
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(university -> university.setViews(university.getViews() + 1))
@@ -111,6 +140,20 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "universityReadAll", allEntries = true),
+            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<UniversityApiResponse> update(Authentication authentication, Header<UniversityApiRequest> request) {
         UniversityApiRequest universityApiRequest = request.getData();
         if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -138,6 +181,20 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "universityReadAll", allEntries = true),
+            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<UniversityApiResponse> update(Authentication authentication, FileUploadToUniversityApiRequest request) {
         UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
         if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
@@ -169,6 +226,20 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "universityReadAll", allEntries = true),
+            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Authentication authentication, Long id) {
         University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
@@ -197,11 +268,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
                 .build();
-        if (university.getFileList() == null) {
-            university.setFileList(new ArrayList<>());
-        } else {
-            universityApiResponse.setFileApiResponseList(university.getFileList().stream()
-                    .map(file -> fileApiLogicService.response(file)).collect(Collectors.toList()));
+        if (university.getFileList() != null) {
+            universityApiResponse.setFileApiResponseList(fileApiLogicService.getFileList(university.getFileList(), UploadCategory.POST, university.getId()));
         }
 
         return universityApiResponse;
@@ -237,6 +305,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Cacheable(value = "universitySearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByWriterContaining(writer, pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
@@ -245,6 +315,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Cacheable(value = "universitySearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<University> universities = universityRepository.findAllByTitleContaining(title, pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
@@ -253,6 +325,8 @@ public class UniversityApiLogicService extends NoticePostService<UniversityApiRe
     }
 
     @Override
+    @Cacheable(value = "universitySearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<University> universities = universityRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);

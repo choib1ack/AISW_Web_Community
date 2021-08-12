@@ -1,6 +1,9 @@
 package com.aisw.community.service.post.file;
 
-import com.aisw.community.advice.exception.*;
+import com.aisw.community.advice.exception.BannerNotFoundException;
+import com.aisw.community.advice.exception.CanNotDetermineFileTypeException;
+import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.SiteInformationNotFoundException;
 import com.aisw.community.model.entity.admin.Banner;
 import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.entity.post.Bulletin;
@@ -12,6 +15,7 @@ import com.aisw.community.repository.admin.SiteInformationRepository;
 import com.aisw.community.repository.post.BulletinRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -47,6 +51,7 @@ public class FileApiLogicService {
     private SiteInformationRepository siteInformationRepository;
 
     @Transactional
+    @CacheEvict(value = "getFileList", key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#category.name, #id)")
     public List<FileApiResponse> uploadFiles(MultipartFile[] multipartFiles, Long id, UploadCategory category) {
         return Arrays.asList(multipartFiles)
                 .stream()
@@ -104,6 +109,11 @@ public class FileApiLogicService {
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment: filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    @Cacheable(value = "getFileList", key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#category.name, #id)")
+    public List<FileApiResponse> getFileList(List<File> fileList, UploadCategory category, Long id) {
+        return fileList.stream().map(this::response).collect(Collectors.toList());
     }
 
     public FileApiResponse response(File file) {

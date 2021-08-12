@@ -33,6 +33,8 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     }
 
     @Override
+    @Cacheable(value = "noticeSearchByWriter",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByWriterContaining(writer, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
@@ -41,6 +43,8 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     }
 
     @Override
+    @Cacheable(value = "noticeSearchByTitle",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContaining(title, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);
@@ -49,6 +53,8 @@ public class NoticeApiLogicService extends BulletinService<NoticeResponseDTO, No
     }
 
     @Override
+    @Cacheable(value = "noticeSearchByTitleOrContent",
+            key = "T(com.aisw.community.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Notice> noticesByStatus = searchByStatus(pageable);

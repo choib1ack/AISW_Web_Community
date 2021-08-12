@@ -16,9 +16,12 @@ import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.comment.CustomCommentRepository;
 import com.aisw.community.service.user.AlertApiService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +44,8 @@ public class CommentApiLogicService {
     private AlertApiService alertApiService;
 
     @Transactional
-    public Header<CommentApiResponse> create(Authentication authentication, Header<CommentApiRequest> request) {
+    @CacheEvict(value = "commentSearchByPost", key = "#boardId")
+    public Header<CommentApiResponse> create(Authentication authentication, Long boardId, Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
 
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
@@ -71,9 +75,10 @@ public class CommentApiLogicService {
     }
 
     @Transactional
-    public Header delete(Authentication authentication, Long id) {
-        Comment comment = commentRepository.findCommentByIdWithSuperComment(id).orElseThrow(
-                () -> new CommentNotFoundException(id));
+    @CacheEvict(value = "commentSearchByPost", key = "#boardId")
+    public Header delete(Authentication authentication, Long boardId, Long commentId) {
+        Comment comment = commentRepository.findCommentByIdWithSuperComment(commentId).orElseThrow(
+                () -> new CommentNotFoundException(commentId));
 
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
@@ -125,6 +130,7 @@ public class CommentApiLogicService {
         return freeCommentApiResponse;
     }
 
+//    @Cacheable(value = "commentSearchByPost", key = "#id")
     public List<CommentApiResponse> searchByPost(Long id) {
         List<Comment> comments = customCommentRepository.findCommentByBoardId(id);
 

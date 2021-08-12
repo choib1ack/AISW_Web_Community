@@ -4,8 +4,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Title from "./Title";
 import Card from "react-bootstrap/Card";
-import axios from "axios";
 import Loading from "./Loading";
+import axiosApi from "../axiosApi";
 
 function GoodInfo() {
     const [siteData, setSiteData] = useState(null);
@@ -23,7 +23,7 @@ function GoodInfo() {
                     setLoading(false);
                     return;
                 }
-                const response = await axios.get("/site/");
+                const response = await axiosApi.get("/auth-admin/site");
                 setSiteData(Object.values(response.data.data));
                 setLoading(false);
             } catch (e) {

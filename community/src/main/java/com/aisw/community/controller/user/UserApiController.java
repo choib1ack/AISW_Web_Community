@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.user;
+package com.aisw.community.controller.user;
 
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.UserApiRequest;
@@ -55,5 +55,10 @@ class UserApiController {
     @PutMapping("/auth/alert/{id}")
     public Header<AlertApiResponse> checkAlert(Authentication authentication, @PathVariable Long id) {
         return alertApiService.checkAlert(authentication, id);
+    }
+
+    @GetMapping("/auth/refresh")
+    public Header getRefreshToken() {
+        return Header.OK();
     }
 }

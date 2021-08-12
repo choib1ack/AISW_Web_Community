@@ -9,11 +9,11 @@ import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./MyPage";
 import Button from "react-bootstrap/Button";
 import GoogleLogin from "react-google-login";
-import googleLogo from '../image/google-logo.png';
 import {setActiveTab} from "../features/menuSlice";
 import {setOnline, logout, login, join} from "../features/userSlice";
 import axios from "axios";
 import axiosApi from "../axiosApi";
+import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 
 export default function Menu() {
     const history = useHistory();
@@ -27,7 +27,6 @@ export default function Menu() {
 
     const handleClickTab = (event) => {
         let name = event.target.name;
-        console.log(name);
         switch (name) {
             case "logo":
                 dispatch(setActiveTab(0));
@@ -48,17 +47,10 @@ export default function Menu() {
                 dispatch(setActiveTab(5));
                 break;
         }
-        console.log(active_menu);
     }
 
-
-    // useEffect(() => {
-    //     console.log(user);
-    //     console.log(active_menu);
-    // }, [])
-
     const [modalShow, setModalShow] = useState(false);
-    const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("user_name")) || null);
+    const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("USER_NAME")) || null);
 
 
     // 이미 있는 회원인지 확인
@@ -206,37 +198,28 @@ export default function Menu() {
                             ) : (
                                 <Col xs={3}>
                                     <GoogleLogin
-                                        clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                        clientId={GOOGLE_CLIENT_ID}
                                         render={renderProps => (
                                             <button className="Menu-button" onClick={renderProps.onClick}
                                                     disabled={renderProps.disabled}>로그인</button>
                                         )}
-                                        onSuccess={result => {
-                                            handleLoginSuccess(result)
-                                        }}
-                                        onFailure={result => {
-                                            handleLoginFailure(result)
-                                        }}
-                                        // uxMode='redirect'
-                                        redirectUri="http://localhost:8080/auth/google/callback"
+                                        onSuccess={result => handleLoginSuccess(result)}
+                                        onFailure={result => handleLoginFailure(result)}
+                                        redirectUri={GOOGLE_REDIRECT_URI}
                                         cookiePolicy={'single_host_origin'}
-                                        // responseType='code'
+                                        // uxMode='redirect'
                                     />
                                     <GoogleLogin
-                                        clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                        clientId={GOOGLE_CLIENT_ID}
                                         render={renderProps => (
                                             <button className="Menu-button blue-button" onClick={renderProps.onClick}
                                                     disabled={renderProps.disabled}>회원가입</button>
                                         )}
-                                        onSuccess={result => {
-                                            handleJoinSuccess(result)
-                                        }}
-                                        onFailure={result => {
-                                            handleJoinFailure(result)
-                                        }}
-                                        // uxMode='redirect'
-                                        redirectUri="http://localhost:8080/auth/google/callback"
+                                        onSuccess={result => handleJoinSuccess(result)}
+                                        onFailure={result => handleJoinFailure(result)}
+                                        redirectUri={GOOGLE_REDIRECT_URI}
                                         cookiePolicy={'single_host_origin'}
+                                        // uxMode='redirect'
                                     />
                                 </Col>
                             )

@@ -6,10 +6,10 @@ import React, {useEffect, useState} from "react";
 import edit_icon from "../../icon/edit_icon.png";
 import addWebPageImage from "../../image/add_webpage_btn.svg";
 import BorderButton from "../Button/BorderButton";
-import axios from "axios";
 import SiteModal from "./SiteModal";
 import Loading from "../Loading";
 import CategoryModal from "./CategoryModal";
+import axiosApi from "../../axiosApi";
 
 function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState(null);
@@ -23,14 +23,12 @@ function ManageGoodInfo({match}) {
                 setError(null);
                 //setSiteData(null);
                 setLoading(true);
-                //console.log(siteData);
                 if(siteData) {
                     setLoading(false);
                     return;
                 }
 
-                const response = await axios.get("/site/");
-                console.log(response);
+                const response = await axiosApi.get("/auth-admin/site/");
                 setSiteData(Object.values(response.data.data));
                 setLoading(false);
             } catch (e) {

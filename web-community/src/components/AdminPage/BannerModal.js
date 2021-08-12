@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css"
 import {ko} from "date-fns/esm/locale";
 import styled from "styled-components";
+import axiosApi from "../../axiosApi";
 
 function BannerModal(props) {
     const mode = (props.info == null) ? "add" : "update";
@@ -56,8 +57,8 @@ function BannerModal(props) {
         })
     }
 
-    if (mode == "update" && props.file_info != null) {
-        if (imgBase64 == "") {
+    if (mode === "update" && props.file_info != null) {
+        if (imgBase64 === "") {
             encodeBase64ImageTagviaFileReader(props.file_info.file_name)
                 .then(data => {
                     setImgBase64(data);
@@ -112,7 +113,7 @@ function BannerModal(props) {
         const target = event.target;
         const name = target.name;
         const value = target.value;
-        if (name == "banner_image") {
+        if (name === "banner_image") {
             handleChangeFile(event);
         }
         setBannerInfo({
@@ -122,9 +123,9 @@ function BannerModal(props) {
     }
 
     const handleDelete = async () => {
-        await axios.delete("/banner/" + props.info.id)
+        await axiosApi.delete("/auth-admin/banner/" + props.info.id)
             .then((res) => {
-                alert("사이트 정보가 삭제되었습니다");
+                alert("배너 정보가 삭제되었습니다");
                 window.location.reload();
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
@@ -168,7 +169,7 @@ function BannerModal(props) {
 
     async function sendData(formData) {
         if (mode === "add") {
-            await axios.post("/banner", formData).then((res) => {
+            await axiosApi.post("/auth-admin/banner", formData).then((res) => {
                 alert("새 배너 등록 완료!")
                 window.location.reload();
             }).catch(error => {
@@ -177,7 +178,7 @@ function BannerModal(props) {
                 alert("새 배너 등록에 실패하였습니다."); // 실패 메시지
             })
         } else {
-            await axios.put("/banner", formData).then((res) => {
+            await axiosApi.put("/auth-admin/banner", formData).then((res) => {
                 alert("배너 수정 완료!")
                 window.location.reload();
             }).catch(error => {
@@ -206,15 +207,12 @@ function BannerModal(props) {
         setEndDate(end);
 
         if (start != null && end != null) {
-            start = start.yyyy_mm_dd() + '-00-00';
-            end = end.yyyy_mm_dd() + '-00-00';
-
             // 기간 설정
             setBannerInfo(
                 {
                     ...bannerInfo,
-                    start_date: start,
-                    end_date: end
+                    start_date: start.yyyy_mm_dd(),
+                    end_date: end.yyyy_mm_dd()
                 }
             );
         }
@@ -267,7 +265,7 @@ function BannerModal(props) {
                             <div><Form.Label>
                                 배너 이미지 (500x500)<span style={{color: "#FF0000"}}> *</span>
                             </Form.Label></div>
-                            {imgBase64 == "" ? null :
+                            {imgBase64 === "" ? null :
                                 <div><img src={imgBase64} style={{width: "100%", objectFit: "cover"}} height="90"/>
                                 </div>
                             }

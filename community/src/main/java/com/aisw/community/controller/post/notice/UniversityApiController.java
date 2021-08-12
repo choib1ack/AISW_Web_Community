@@ -1,4 +1,4 @@
-package com.aisw.community.controller.api.post.notice;
+package com.aisw.community.controller.post.notice;
 
 import com.aisw.community.ifs.CrudInterface;
 import com.aisw.community.model.entity.post.notice.University;

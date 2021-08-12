@@ -13,12 +13,26 @@ const axiosApi = () => {
 
     // Set the AUTH token for any request
     instance.interceptors.request.use(function (config) {
-        let token = window.localStorage.getItem('ACCESS_TOKEN');
-        config.headers.Authorization = token ? token : '';
+        const token = window.localStorage.getItem('ACCESS_TOKEN');
+        config.headers.Authorization = token ? token : null;
+        console.log(config.headers);
         return config;
     });
 
     return instance;
 };
+
+export const setRefreshToken = async (path, data) => {
+    const refreshToken = window.localStorage.getItem('REFRESH_TOKEN');
+
+    await axiosApi.post("/board/" + path,
+        {data: data},
+        {
+            headers: {
+                'Refresh_Token': refreshToken
+            }
+        }
+    )
+}
 
 export default axiosApi();
