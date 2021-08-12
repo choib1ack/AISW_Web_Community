@@ -6,14 +6,10 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
 import Switch from "react-switch";
-import {useDispatch, useSelector} from "react-redux";
-import {setBanner} from "../../features/bannerSlice";
-import FinishModal from "../FinishModal";
 import BannerModal from "./BannerModal";
-import exampleBanner from "../../image/banner_example1.svg"
 import {Carousel} from "react-bootstrap";
-import axios from "axios";
 import Loading from "../Loading";
+import axiosApi from "../../axiosApi";
 
 function Bannner() {
     // redux toolkit
@@ -40,7 +36,7 @@ function Bannner() {
                     return;
                 }
 
-                const response = await axios.get("/banner/");
+                const response = await axiosApi.get("/auth-admin/banner");
                 setBannerData(Object.values(response.data.data));
                 setLoading(false);
             } catch (e) {

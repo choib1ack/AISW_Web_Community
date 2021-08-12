@@ -18,19 +18,14 @@ export default function Join() {
     const phone_number = useRef();
     phone_number.current = watch("phone_number");
     const [agree, setAgree] = useState(false);
+
     // redux toolkit
     const user = useSelector(state => state.user.userData)
     const dispatch = useDispatch()
 
     // 회원가입 완료 모달
     const [modalShow, setModalShow] = useState(false);
-
     const location = useLocation();
-
-    useEffect(() => {
-        // console.log(location.state.google_data);
-        // console.log(location.state.account_role);
-    }, [location]);
 
     async function sendServer(data) {
         await axios.post("/user/signup",
@@ -45,7 +40,6 @@ export default function Join() {
             dispatch(join())
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
             console.log(errorObject);
 
             alert("회원가입에 실패하였습니다.") // 실패 메시지
@@ -63,13 +57,11 @@ export default function Join() {
             provider: location.state.google_data.tokenObj.idpId,
             provider_id: location.state.google_data.profileObj.googleId,
             phone_number: data.phone_number.replaceAll('-',''),
-            role: location.state.account_role,   // GENERAL, STUDENT
+            role: `ROLE_${location.state.account_role}`,   // GENERAL, STUDENT
             student_id: data.student_id,
             university: 'COMMON',
             picture: location.state.google_data.profileObj.picture
         }
-
-        console.log(userData);
 
         if (agree) {
             sendServer(userData);   // 백엔드 체크
