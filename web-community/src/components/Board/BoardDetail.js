@@ -137,7 +137,7 @@ export default function BoardDetail({match}) {
     }
 
     async function handleDelete() {
-        await axiosApi.delete(`/auth/board/${board_category}/${id}`)
+        await axiosApi.delete(`/auth-student/board/${board_category}/${id}`)
             .then((res) => {
                 history.push('/board')  // BoardList로 이동
             }).catch(error => {

@@ -97,6 +97,7 @@ function NewBoard() {
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
                                     <option value="qna">과목별게시판</option>
+                                    <option value="job">취업게시판</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
