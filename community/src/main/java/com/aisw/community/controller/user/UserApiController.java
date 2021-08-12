@@ -56,4 +56,9 @@ class UserApiController {
     public Header<AlertApiResponse> checkAlert(Authentication authentication, @PathVariable Long id) {
         return alertApiService.checkAlert(authentication, id);
     }
+
+    @GetMapping("/auth/refresh")
+    public Header getRefreshToken() {
+        return Header.OK();
+    }
 }
