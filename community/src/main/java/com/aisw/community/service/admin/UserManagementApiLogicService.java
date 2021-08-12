@@ -8,6 +8,8 @@ import com.aisw.community.model.network.request.admin.UserManagementApiRequest;
 import com.aisw.community.model.network.response.admin.UserManagementApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,12 @@ public class UserManagementApiLogicService {
     @Autowired
     private UserRepository userRepository;
 
+    @Cacheable(value = "userManagementReadAll", key = "#pageable.pageNumber")
     public Header<List<UserManagementApiResponse>> readAll(Pageable pageable) {
         Page<User> userList = userRepository.findAll(pageable);
 
-        List<UserManagementApiResponse> userManagementApiResponseList = userList.stream().map(user -> response(user)).collect(Collectors.toList());
+        List<UserManagementApiResponse> userManagementApiResponseList = userList.stream()
+                .map(user -> response(user)).collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
                 .totalElements(userList.getTotalElements())
@@ -36,10 +40,9 @@ public class UserManagementApiLogicService {
         return Header.OK(userManagementApiResponseList, pagination);
     }
 
+    @CacheEvict(value = "userManagementReadAll", allEntries = true)
     public Header<UserManagementApiResponse> changeRole(Header<UserManagementApiRequest> request) {
         UserManagementApiRequest userManagementApiRequest = request.getData();
-
-        System.out.println(userManagementApiRequest);
 
         User user = userRepository.findById(userManagementApiRequest.getId())
                 .orElseThrow(() -> new UserNotFoundException(userManagementApiRequest.getId()));

@@ -1,6 +1,6 @@
 package com.aisw.community.advice;
 
-import com.aisw.community.advice.exception.AccessTokenExpiredException;
+import com.aisw.community.advice.exception.TokenException;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -14,15 +14,14 @@ public class ApiErrorResponse {
     private String message;
 
     public ApiErrorResponse(String error, String message) {
-        super();
         this.error = error;
         this.message = message;
     }
 
-    public ApiErrorResponse(HttpStatus badRequest, AccessTokenExpiredException ex) {
-        super();
+    public ApiErrorResponse(HttpStatus badRequest, String error, TokenException ex) {
         this.status = badRequest.value();
-        this.error = "JwtTokenExpired ";
-        this.message = ex.getMsg() + ex.getMessage();
+        this.error = error;
+        this.message = ex.getToken();
     }
+
 }

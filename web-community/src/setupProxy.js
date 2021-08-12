@@ -17,8 +17,7 @@ module.exports = function (app) {
         createProxyMiddleware('/like/press', {
             target: 'http://localhost:8080',
             changeOrigin: true,
-        })
-        ,
+        }),
         createProxyMiddleware('/site', {
             target: 'http://localhost:8080',
             changeOrigin: true,
@@ -30,6 +29,10 @@ module.exports = function (app) {
         createProxyMiddleware('/auth-admin/notice/university', {
             target: 'http://localhost:8080',
             changeOrigin: true,
-        })
+        }),
+        createProxyMiddleware('/auth/free/comment', {
+            target: 'http://localhost:8080',
+            changeOrigin: true,
+        }),
     )
 };

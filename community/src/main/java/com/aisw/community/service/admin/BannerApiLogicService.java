@@ -14,7 +14,9 @@ import com.aisw.community.repository.admin.CustomBannerRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,16 +45,20 @@ public class BannerApiLogicService {
     private FileApiLogicService fileApiLogicService;
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "bannerRead", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<BannerApiResponse> create(FileUploadToBannerDTO request) {
         BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
 
         Banner banner = Banner.builder()
                 .name(bannerApiRequest.getName())
                 .content(bannerApiRequest.getContent())
-                .startDate(LocalDateTime.parse(bannerApiRequest.getStartDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
-                .endDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
+                .startDate(LocalDate.parse(bannerApiRequest.getStartDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .endDate(LocalDate.parse(bannerApiRequest.getEndDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .linkUrl(bannerApiRequest.getLinkUrl())
                 .build();
 
@@ -65,7 +71,7 @@ public class BannerApiLogicService {
     }
 
     @Cacheable(value = "bannerRead", key = "#pageable.pageNumber")
-    public Header<List<BannerApiResponse>> read(Pageable pageable) {
+    public Header<List<BannerApiResponse>> readAll(Pageable pageable) {
         Page<Banner> bannerList = customBannerRepository.findAllFetchJoinWithFile(pageable);
 
         List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
@@ -83,6 +89,10 @@ public class BannerApiLogicService {
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "bannerRead", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<BannerApiResponse> update(FileUploadToBannerDTO request) {
         BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
         MultipartFile[] files = request.getFiles();
@@ -96,16 +106,20 @@ public class BannerApiLogicService {
 
         banner.setName(bannerApiRequest.getName())
                 .setContent(bannerApiRequest.getContent())
-                .setStartDate(LocalDateTime.parse(bannerApiRequest.getStartDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
-                .setEndDate(LocalDateTime.parse(bannerApiRequest.getEndDate(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")))
+                .setStartDate(LocalDate.parse(bannerApiRequest.getStartDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .setEndDate(LocalDate.parse(bannerApiRequest.getEndDate(),
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .setLinkUrl(bannerApiRequest.getLinkUrl());
         Banner updateBanner = bannerRepository.save(banner);
 
         return Header.OK(response(updateBanner, fileApiResponseList));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "bannerRead", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Long id) {
         Banner banner = bannerRepository.findById(id).orElseThrow(() -> new BannerNotFoundException(id));
         bannerRepository.delete(banner);
@@ -113,20 +127,27 @@ public class BannerApiLogicService {
     }
 
     @Scheduled(cron = "0 0 4 * * *")
-    private void checkEndDate() {
-        LocalDateTime now = LocalDateTime.now();
+    @Caching(evict = {
+            @CacheEvict(value = "bannerRead", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
+    public void checkEndDate() {
+        LocalDate now = LocalDate.now();
 
         List<Banner> bannerList = bannerRepository.findAllByPublishStatus(Boolean.TRUE);
 
         bannerList.stream().forEach(banner -> {
-            if(!(now.isAfter(banner.getStartDate()) && now.isBefore(banner.getEndDate()))) {
+            if (now.isEqual(banner.getStartDate()) || now.isAfter(banner.getStartDate())
+                    && (now.isEqual(banner.getEndDate()) || now.isBefore(banner.getEndDate()))) {
+                banner.setPublishStatus(Boolean.TRUE);
+            } else {
                 banner.setPublishStatus(Boolean.FALSE);
             }
             bannerRepository.save(banner);
         });
     }
 
-    private BannerApiResponse response(Banner banner){
+    private BannerApiResponse response(Banner banner) {
         BannerApiResponse bannerApiResponse = BannerApiResponse.builder()
                 .id(banner.getId())
                 .name(banner.getName())
@@ -146,7 +167,7 @@ public class BannerApiLogicService {
         return bannerApiResponse;
     }
 
-    private BannerApiResponse response(Banner banner, List<FileApiResponse> fileApiResponseList){
+    private BannerApiResponse response(Banner banner, List<FileApiResponse> fileApiResponseList) {
         BannerApiResponse bannerApiResponse = BannerApiResponse.builder()
                 .id(banner.getId())
                 .name(banner.getName())

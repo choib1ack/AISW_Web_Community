@@ -11,14 +11,11 @@ import SelectButton from "../Button/SelectButton";
 import {BlueButton} from "../Button/BlueButton";
 
 export default function NoticeList({match}) {
-
     const [category, setCategory] = useState(0);
     const [searchData, setSearchData] = useState({is_search:false, search_type:"select_title", keyword:""});
     const [pageInfo, setPageInfo] = useState({current:0, total:1});
 
     window.scrollTo(0, 0);
-
-    //console.log("NoticeList")
 
     const handleSearchTextChange = (event) => {
         setSearchData({...searchData, keyword:event.target.value});
@@ -47,8 +44,7 @@ export default function NoticeList({match}) {
 
     const searchEnterPress = (e) => {
         // 검색 시 엔터를 눌렀을 때
-        if (e.key == 'Enter') {
-            // console.log("엔터누름");
+        if (e.key === 'Enter') {
             searchContents();
         }
     }

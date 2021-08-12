@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import {useHistory} from "react-router-dom";
 import fileImage from "../../icon/file.svg";
 import Loading from "../Loading";
+import axiosApi from "../../axiosApi";
 
 export default function MakeNoticeList(props) {
 
@@ -19,7 +19,6 @@ export default function MakeNoticeList(props) {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     let search_data = props.searchData;
 
@@ -111,31 +110,22 @@ export default function MakeNoticeList(props) {
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
-
                 if (noticeData.normal.data != null) return;
 
                 setError(null);
                 setNoticeData(null);
                 setLoading(true);
 
-                const headers = {
-                    'Content-Type': 'application/json',
-                    'Authorization': auth
-                }
+                const response = await axiosApi.get(url(props.category));
 
-                const response = await axios.get(url(props.category), {
-                    header: headers
-                });
-
-                if (props.pageInfo.current == 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
-
+                if (props.pageInfo.current === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                     setNoticeData({
                         ...noticeData,
                         fix_notice: response.data.data.notice_api_notice_response_list,
                         fix_urgent: response.data.data.notice_api_urgent_response_list
                     })
-
                 }
+
                 setNoticeData({
                     ...noticeData,
                     normal: {
@@ -172,14 +162,14 @@ export default function MakeNoticeList(props) {
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;
     //console.log(noticeData.normal.data);
-    if (!noticeData.normal.data || noticeData.normal.data.length == 0) return <tr>
+    if (!noticeData.normal.data || noticeData.normal.data.length === 0) return <tr>
         <td colSpan={5}>데이터가 없습니다.</td>
     </tr>;
     return (
         <>
-            {noticeData.fix_urgent != null ? noticeData.fix_urgent.map(data => (
+            {noticeData.fix_urgent !== null ? noticeData.fix_urgent.map(data => (
                 <tr key={data.notice_id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
                     <td>
@@ -192,9 +182,9 @@ export default function MakeNoticeList(props) {
                 </tr>
             )) : null}
 
-            {noticeData.fix_notice != null ? noticeData.fix_notice.map(data => (
+            {noticeData.fix_notice !== null ? noticeData.fix_notice.map(data => (
                 <tr key={data.notice_id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
                     <td>
@@ -209,7 +199,7 @@ export default function MakeNoticeList(props) {
 
             {noticeData.normal.data.map((data, index) => (
                 <tr key={data.notice_id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) == 0 ?
+                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{indexing(index)}</td>
                     <td>

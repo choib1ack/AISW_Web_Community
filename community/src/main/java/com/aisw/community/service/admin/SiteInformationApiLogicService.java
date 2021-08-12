@@ -16,7 +16,9 @@ import com.aisw.community.repository.admin.SiteInformationRepository;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileApiLogicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +43,10 @@ public class SiteInformationApiLogicService {
     private FileApiLogicService fileApiLogicService;
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<SiteInformationApiResponse> create(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
 
@@ -63,7 +69,7 @@ public class SiteInformationApiLogicService {
     }
 
     @Cacheable(value = "readSite")
-    public Header<List<SiteInformationWithFileApiResponse>> read() {
+    public Header<List<SiteInformationWithFileApiResponse>> readAll() {
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
         List<SiteCategory> siteCategoryList = siteCategoryRepository.findAll();
         siteCategoryList.stream().forEach(category -> {
@@ -79,10 +85,15 @@ public class SiteInformationApiLogicService {
                         siteInformationWithFileApiResponse.getSiteInformationApiResponseList().add(response(siteInformation));
                     }
                 }));
+
         return Header.OK(siteInformationWithFileApiResponseList);
     }
 
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<SiteInformationApiResponse> update(FileUploadToSiteInformationDTO request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
         MultipartFile[] files = request.getFiles();
@@ -106,8 +117,13 @@ public class SiteInformationApiLogicService {
         return Header.OK(response(siteInformation, fileApiResponseList));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Long id) {
-        SiteInformation siteInformation = siteInformationRepository.findById(id).orElseThrow(() -> new SiteInformationNotFoundException(id));
+        SiteInformation siteInformation = siteInformationRepository.findById(id)
+                .orElseThrow(() -> new SiteInformationNotFoundException(id));
         siteInformationRepository.delete(siteInformation);
         return Header.OK();
     }
