@@ -9,20 +9,14 @@ import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./MyPage";
 import Button from "react-bootstrap/Button";
 import GoogleLogin from "react-google-login";
-
-import googleLogo from '../image/google-logo.png';
-import {GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL, GITHUB_AUTH_URL} from '../constants';
-
 import {setActiveTab} from "../features/menuSlice";
-
 import {setOnline, logout, login, join} from "../features/userSlice";
-
 import axios from "axios";
+import axiosApi from "../axiosApi";
+import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 
 export default function Menu() {
-
     const history = useHistory();
-
 
     // redux toolkit
     const user = useSelector(state => state.user)
@@ -33,7 +27,6 @@ export default function Menu() {
 
     const handleClickTab = (event) => {
         let name = event.target.name;
-        console.log(name);
         switch (name) {
             case "logo":
                 dispatch(setActiveTab(0));
@@ -54,17 +47,10 @@ export default function Menu() {
                 dispatch(setActiveTab(5));
                 break;
         }
-        console.log(active_menu);
     }
 
-
-    useEffect(() => {
-        console.log(user);
-        console.log(active_menu);
-    }, [])
-
     const [modalShow, setModalShow] = useState(false);
-    const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("user_name")) || null);
+    const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("USER_NAME")) || null);
 
 
     // 이미 있는 회원인지 확인
@@ -98,9 +84,9 @@ export default function Menu() {
             username: username,
             password: 'AISW',
         }).then((res) => {
-            console.log(res);
-            window.localStorage.setItem("auth", res.headers.authorization); // 토큰 저장
-            window.localStorage.setItem("user_name", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
+            window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization); // 토큰 저장
+            window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token); // 토큰 저장
+            window.localStorage.setItem("USER_NAME", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
 
             history.push('/')   // 홈으로 가기
         }).catch(error => {
@@ -144,25 +130,25 @@ export default function Menu() {
                 <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>
                         <Link to="/">
-                            <img src={logo} style={{width: "120px"}}  name="logo" onClick={handleClickTab}/>
+                            <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab}/>
                         </Link>
                     </Col>
                     <Col xs={6}>
                         <Link to="/notice">
                             <button className="Menu-button" name="notice" onClick={handleClickTab}
-                            style={{color:active_menu.active==1?"#0472FD":"dimgrey"}}>
+                                    style={{color: active_menu.active == 1 ? "#0472FD" : "dimgrey"}}>
                                 공지사항
                             </button>
                         </Link>
                         <Link to="/board">
                             <button className="Menu-button" name="board" onClick={handleClickTab}
-                                    style={{color:active_menu.active==2?"#0472FD":"dimgrey"}}>
+                                    style={{color: active_menu.active == 2 ? "#0472FD" : "dimgrey"}}>
                                 게시판
                             </button>
                         </Link>
                         <Link to="/deptInfo">
                             <button className="Menu-button" name="dept_info" onClick={handleClickTab}
-                                    style={{color:active_menu.active==3?"#0472FD":"dimgrey"}}>
+                                    style={{color: active_menu.active == 3 ? "#0472FD" : "dimgrey"}}>
                                 학과정보
                             </button>
                         </Link>
@@ -179,14 +165,14 @@ export default function Menu() {
                         {/*</Link>*/}
                         <Link to="/goodInfo">
                             <button className="Menu-button" name="site" onClick={handleClickTab}
-                                    style={{color:active_menu.active==4?"#0472FD":"dimgrey"}}>
+                                    style={{color: active_menu.active == 4 ? "#0472FD" : "dimgrey"}}>
                                 유용한사이트
                             </button>
                         </Link>
 
                         <Link to="/faq">
                             <button className="Menu-button" name="faq" onClick={handleClickTab}
-                                    style={{color:active_menu.active==5?"#0472FD":"dimgrey"}}>
+                                    style={{color: active_menu.active == 5 ? "#0472FD" : "dimgrey"}}>
                                 FAQ
                             </button>
                         </Link>
@@ -212,37 +198,28 @@ export default function Menu() {
                             ) : (
                                 <Col xs={3}>
                                     <GoogleLogin
-                                        clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                        clientId={GOOGLE_CLIENT_ID}
                                         render={renderProps => (
                                             <button className="Menu-button" onClick={renderProps.onClick}
                                                     disabled={renderProps.disabled}>로그인</button>
                                         )}
-                                        onSuccess={result => {
-                                            handleLoginSuccess(result)
-                                        }}
-                                        onFailure={result => {
-                                            handleLoginFailure(result)
-                                        }}
-                                        // uxMode='redirect'
-                                        redirectUri="http://localhost:8080/auth/google/callback"
+                                        onSuccess={result => handleLoginSuccess(result)}
+                                        onFailure={result => handleLoginFailure(result)}
+                                        redirectUri={GOOGLE_REDIRECT_URI}
                                         cookiePolicy={'single_host_origin'}
-                                        // responseType='code'
+                                        // uxMode='redirect'
                                     />
                                     <GoogleLogin
-                                        clientId='1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com'
+                                        clientId={GOOGLE_CLIENT_ID}
                                         render={renderProps => (
                                             <button className="Menu-button blue-button" onClick={renderProps.onClick}
                                                     disabled={renderProps.disabled}>회원가입</button>
                                         )}
-                                        onSuccess={result => {
-                                            handleJoinSuccess(result)
-                                        }}
-                                        onFailure={result => {
-                                            handleJoinFailure(result)
-                                        }}
-                                        // uxMode='redirect'
-                                        redirectUri="http://localhost:8080/auth/google/callback"
+                                        onSuccess={result => handleJoinSuccess(result)}
+                                        onFailure={result => handleJoinFailure(result)}
+                                        redirectUri={GOOGLE_REDIRECT_URI}
                                         cookiePolicy={'single_host_origin'}
+                                        // uxMode='redirect'
                                     />
                                 </Col>
                             )

@@ -1,23 +1,18 @@
 import React, {useEffect, useState, useReducer} from "react";
 import Container from "react-bootstrap/Container";
-import Card from "react-bootstrap/Card";
-import userImage from "../../icon/user.svg";
 import {ListButton} from "../Button/ListButton";
-import arrowImage from "../../icon/comment_replay.png";
 import Title from "../Title";
 import fileImage from "../../icon/file.svg";
-import axios from "axios";
 import likeImage from "../../icon/like.svg"
 import likeGrayImage from "../../icon/like_gray.svg"
 import WriteComment from "./WriteComment";
 import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
 import Loading from '../Loading';
-import WriteReComment from "./WriteReComment";
-import {Link, useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import {useSelector} from "react-redux";
+import axiosApi from "../../axiosApi";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -26,27 +21,19 @@ export default function BoardDetail({match}) {
     const [refresh, setRefresh] = useState(0);
     const [htmlContent, setHtmlContent] = useState(null);
     const [likeState, dispatch] = useReducer(reducer, {"press": false, "num": 0});
-
+    const [show, setShow] = useState(false);
+    const {board_category, id} = match.params;
+    const auth_url = (board_category === 'qna' ? 'auth-student' : 'auth');
     let history = useHistory();
 
-    // redux toolkit
-    const user = useSelector(state => state.user)
-    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
-
-    const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
 
     window.scrollTo(0, 0);
 
-    const {board_category} = match.params;
-    const {id} = match.params;
-    const url = match.url.substring(0, 11) + "/comment&like/" + id + "/" + 1;
-
     function reducer(state, action) {
         switch (action.type) {
             case 'INITIALIZE':
-                console.log("초기화!");
                 return {
                     "num": action.value_likes,
                     "press": action.value_press,
@@ -76,49 +63,29 @@ export default function BoardDetail({match}) {
     }
 
     const handleLikeClick = async () => {
-        // account_id는 나중에 바꿔야함
         const data = {
-            "account_id": 1,
-            "board_id": id
-            // "comment_id": 1
+            "board_id": Number(id),
         }
-        await axios.post('/like/press/',
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data
-            }
-        ).then((res) => {
-            alert("게시글에 좋아요를 눌렀습니다");
-            dispatch({type: 'PRESS'});
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            alert("좋아요 누름 에러!" + errorObject);
-        })
+
+        await axiosApi.post('/like/press', {data: data})
+            .then((res) => {
+                alert("게시글에 좋아요를 눌렀습니다");
+                dispatch({type: 'PRESS'});
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                alert("좋아요 누름 에러!" + errorObject);
+            })
     }
 
     const handleLikeCancelClick = async () => {
-        // account_id는 나중에 바꿔야함
-        const data = {
-            "account_id": 1,
-            "board_id": id
-            // "comment_id": 1
-        }
-        await axios.post('/like/remove/',
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data
-            }
-        ).then((res) => {
-            alert("게시글에 좋아요를 취소했습니다");
-            dispatch({type: 'REMOVE'});
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            alert("좋아요 취소 에러!" + errorObject);
-        })
+        await axiosApi.delete(`/like/remove/${id}?target=POST`)
+            .then((res) => {
+                alert("게시글에 좋아요를 취소했습니다");
+                dispatch({type: 'REMOVE'});
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                alert("좋아요 취소 에러!" + errorObject);
+            })
     }
 
     // 첨부파일이 있을 때만 보여줌
@@ -143,14 +110,13 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axios.get(url);
+                const response = await axiosApi.get(`/${auth_url}/board/${board_category}/comment&like/${id}`);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
                 dispatch({
                     type: 'INITIALIZE',
                     value_likes: response.data.data.likes,
                     value_press: response.data.data.check_like
                 });
-                console.log(response.data.data);
 
                 setHtmlContent(response.data.data.content);
             } catch (e) {
@@ -171,21 +137,13 @@ export default function BoardDetail({match}) {
     }
 
     async function handleDelete() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': auth
-        }
-
-        await axios.delete(`/board/${board_category}/${id}`, {
-            headers: headers
-        }).then((res) => {
-            console.log(res)
-            history.push('/board')  // BoardList로 이동
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
-            console.log(errorObject);
-        })
+        await axiosApi.delete(`/auth/board/${board_category}/${id}`)
+            .then((res) => {
+                history.push('/board')  // BoardList로 이동
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log(errorObject);
+            })
     }
 
     function CustomModal() {
@@ -277,6 +235,7 @@ export default function BoardDetail({match}) {
                         />
                         <WriteComment
                             board_id={id}
+                            board_category={board_category}
                             Refresh={Refresh}
                         />
                     </div>

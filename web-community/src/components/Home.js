@@ -5,57 +5,58 @@ import "./Home.css";
 import {Link, useHistory} from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
-import {MakeCarouselList} from "./AdminPage/Banner";
-import Carousel from 'react-grid-carousel'
-
-import SiteImage1 from '../siteImages/baekjoon.png';
-import SiteImage2 from '../siteImages/fast_campus.png';
-import SiteImage3 from '../siteImages/goorm.png';
-import SiteImage4 from '../siteImages/programmers.png';
-import SiteImage5 from '../siteImages/saramin.png';
-import SiteImage6 from '../siteImages/jabkorea.png';
-import SiteImage7 from '../siteImages/wanted.png';
 import HomeSiteImageSlide from "./HomeSiteImageSlide";
+import {Carousel} from "react-bootstrap";
 
 export default function Home() {
+
     let history = useHistory();
     const ToLink = (url) => {
         history.push(url);
     }
+    // console.log("여기는 홈")
 
-    const [bannerData, setBannerData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [homeData, setHomeData] = useState(null);
 
     useEffect(() => {
-        const fetchBannerData = async () => {
-            try {
-                setError(null);
-                setLoading(true);
+        const fetchHomeData = async () => {
 
-                if (bannerData) {
-                    setLoading(false);
+            try {
+
+                if (homeData != null) {
                     return;
                 }
 
-                const response = await axios.get("/banner/");
-                setBannerData(Object.values(response.data.data));
-                setLoading(false);
+                setLoading(true);
+                setError(null);
+
+
+                await axios.get("/home")
+                    .then(res =>{
+                        setHomeData(res.data.data);
+                    }
+                );
+
             } catch (e) {
                 setError(e);
             }
+            setLoading(false);
         };
 
-        fetchBannerData();
-    }, [bannerData]);
+        fetchHomeData();
+    }, []);
+
+
+    if (loading) return <Loading/>;
+    if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
+    if (!homeData) return <div>데이터가 없습니다.</div>;
 
     return (
         <div className="Home">
-            {/*<h1>Home</h1>*/}
-            {/*<MyPage/>*/}
-
-            <MakeCarouselList
-                banners={bannerData}
+            <MakeBannerCarousel
+                banners={homeData.banner_list}
                 page="Home"
             />
 
@@ -96,7 +97,9 @@ export default function Home() {
                                     <span style={{float: "right", cursor: "pointer", color: "#636363"}}>+더보기</span>
                                 </Link>
                             </div>
-                            <MakeHomeNoticeList/>
+                            <MakeHomeNoticeList
+                                noticeData={homeData.notice_list}
+                            />
                         </div>
                     </Col>
                     <Col lg={6} md={6} sm={6}>
@@ -107,7 +110,9 @@ export default function Home() {
                                     <span style={{float: "right", cursor: "pointer", color: "#636363"}}>+더보기</span>
                                 </Link>
                             </div>
-                            <MakeHomeBoardList/>
+                            <MakeHomeBoardList
+                                boardData={homeData.board_list}
+                            />
                         </div>
                     </Col>
                 </Row>
@@ -117,79 +122,12 @@ export default function Home() {
                         {/*    <div style={{marginBottom: "20px", textAlign: "left"}}>*/}
                         {/*        볼만한 사이트*/}
                         {/*    </div>*/}
-                        <HomeSiteImageSlide/>
+                        <HomeSiteImageSlide
+                            siteInfo={homeData.site_list}
+                        />
                         {/*</div>*/}
                     </Col>
                 </Row>
-
-                {/*<Row style={{margin: "20px 0px"}}>*/}
-                {/*    <Col lg={12} md={12} sm={12}>*/}
-                {/*        <div style={{border: "1px solid #E3E3E3", padding: "20px", textAlign: "left"}}>*/}
-                {/*            <div style={{marginBottom: "20px"}}>*/}
-                {/*                채용정보*/}
-                {/*                <Link to="/jobInfo">*/}
-                {/*                    <span style={{float: "right", cursor: "pointer", color: "#636363"}}>+더보기</span>*/}
-                {/*                </Link>*/}
-                {/*            </div>*/}
-                {/*            <div>*/}
-                {/*                <Row>*/}
-                {/*                    <Col lg={6} md={12} sm={12}>*/}
-                {/*                        <JobCard image={jobLogo} title='커머스 서버 개발 전문가'*/}
-                {/*                                 host='중고나라' place='서울시 강남구' position='신입,인턴' detail={false}/>*/}
-                {/*                    </Col>*/}
-                {/*                    <Col lg={6} md={12} sm={12}>*/}
-                {/*                        <JobCard image={jobLogo2} title='커머스 서버 개발 전문가'*/}
-                {/*                                 host='중고나라' place='서울시 강남구' position='신입,인턴' detail={false}/>*/}
-                {/*                    </Col>*/}
-                {/*                </Row>*/}
-                {/*                <Row>*/}
-                {/*                    <Col lg={6} md={12} sm={12}>*/}
-                {/*                        <JobCard image={jobLogo} title='커머스 서버 개발 전문가'*/}
-                {/*                                 host='중고나라' place='서울시 강남구' position='신입,인턴'/>*/}
-                {/*                    </Col>*/}
-                {/*                    <Col lg={6} md={12} sm={12}>*/}
-                {/*                        <JobCard image={jobLogo2} title='커머스 서버 개발 전문가'*/}
-                {/*                                 host='중고나라' place='서울시 강남구' position='신입,인턴'/>*/}
-                {/*                    </Col>*/}
-                {/*                </Row>*/}
-                {/*            </div>*/}
-                {/*        </div>*/}
-                {/*    </Col>*/}
-                {/*</Row>*/}
-                {/*<Row style={{margin: "20px 0px"}}>*/}
-                {/*    <Col lg={12} md={12} sm={12}>*/}
-                {/*        <div style={{border: "1px solid #E3E3E3", padding: "20px", textAlign: "left"}}>*/}
-                {/*            <div style={{marginBottom: "20px"}}>*/}
-                {/*                공모전/대외활동*/}
-                {/*                <Link to="/contestInfo">*/}
-                {/*                    <span style={{float: "right", cursor: "pointer", color: "#636363"}}>+더보기</span>*/}
-                {/*                </Link>*/}
-                {/*            </div>*/}
-                {/*            <Row>*/}
-                {/*                <Col lg={3} md={4} sm={6}>*/}
-                {/*                    <ContestInfoCard image={contestImage1}*/}
-                {/*                                     title='인공지능 학습용 데이터 활용 아이디어 공모전'*/}
-                {/*                                     host='과학기술정보통신부' date='2020-12-14(월) ~ 2021-01-07(목)'/>*/}
-                {/*                </Col>*/}
-                {/*                <Col lg={3} md={4} sm={6}>*/}
-                {/*                    <ContestInfoCard image={contestImage1}*/}
-                {/*                                     title='인공지능 학습용 데이터 활용 아이디어 공모전'*/}
-                {/*                                     host='과학기술정보통신부' date='2020-12-14(월) ~ 2021-01-07(목)'/>*/}
-                {/*                </Col>*/}
-                {/*                <Col lg={3} md={4} sm={6}>*/}
-                {/*                    <ContestInfoCard image={contestImage1}*/}
-                {/*                                     title='인공지능 학습용 데이터 활용 아이디어 공모전'*/}
-                {/*                                     host='과학기술정보통신부' date='2020-12-14(월) ~ 2021-01-07(목)'/>*/}
-                {/*                </Col>*/}
-                {/*                <Col lg={3} md={4} sm={6}>*/}
-                {/*                    <ContestInfoCard image={contestImage1}*/}
-                {/*                                     title='인공지능 학습용 데이터 활용 아이디어 공모전'*/}
-                {/*                                     host='과학기술정보통신부' date='2020-12-14(월) ~ 2021-01-07(목)'/>*/}
-                {/*                </Col>*/}
-                {/*            </Row>*/}
-                {/*        </div>*/}
-                {/*    </Col>*/}
-                {/*</Row>*/}
                 <div style={{marginBottom: "100px"}}></div>
             </div>
 
@@ -197,47 +135,48 @@ export default function Home() {
     )
 }
 
-function MakeHomeNoticeList() {
-    const [noticeData, setNoticeData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+function MakeBannerCarousel({bannerData}) {
+    let height = window.innerHeight * 0.3;
 
-    useEffect(() => {
-        const fetchNoticeData = async () => {
-            try {
-                setError(null);
-                setNoticeData(null);
-                setLoading(true);
-                const response = await axios.get("/notice/main");
-                // console.log(response);
-                setNoticeData(response.data.data.notice_api_response_list); // 데이터는 response.data 안에 있음
-            } catch (e) {
-                setError(e);
-            }
-            setLoading(false);
-        };
+    return (
+        <>
+            <Carousel style={{
+                border: "1px solid #E3E3E3", width: "100%", height: height + 1,
+                padding: "2px", display: "flex", justifyContent: "center", alignItems: "center"
+            }}
+            >
+                {bannerData!=null ? bannerData.map((data, index) => (
+                    data.publish_status &&
+                    (
+                        <Carousel.Item interval={1000} key={index}>
+                            <a href={data.link_url}>
+                                <img className="d-block" src={data.file_api_response_list[0].file_download_uri}
+                                     alt={index}
+                                     height={height}
+                                     style={{width: "100%", objectFit: "cover"}}/>
+                            </a>
+                        </Carousel.Item>
+                    )
+                )):null}
+            </Carousel>
+        </>
+    )
+}
 
-        fetchNoticeData();
-    }, []);
+function MakeHomeNoticeList({noticeData}) {
 
     let history = useHistory();
     const ToLink = (url) => {
         history.push(url);
     }
 
-    if (loading) return <Loading/>;
-    if (error) return <tr>
-        <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
-    </tr>;
     if (!noticeData) return null;
-    if (Object.keys(noticeData).length == 0) return <tr>
-        <td colSpan={5}>데이터가 없습니다.</td>
-    </tr>;
+    if (Object.keys(noticeData).length == 0) return <p>데이터가 없습니다.</p>;
 
     return (
         <>
-            {noticeData.map(data => (
-                <p onClick={() => ToLink(`/notice/${data.category.toLowerCase()}/${data.id}`)} key={data.notice_id}
+            {noticeData.map((data, index) => (
+                <p onClick={() => ToLink(`/notice/${data.category.toLowerCase()}/${data.id}`)} key={index}
                    className={"clickable"}>
                     {data.title} <span style={{float: "right"}}>{data.created_at.substring(0, 10)}</span>
                 </p>
@@ -249,48 +188,20 @@ function MakeHomeNoticeList() {
 
 }
 
-function MakeHomeBoardList() {
-    const [boardData, setBoardData] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchNoticeData = async () => {
-            try {
-                setError(null);
-                setBoardData(null);
-                setLoading(true);
-                const response = await axios.get("/board/main");
-                setBoardData(response.data.data.board_api_response_list);
-            } catch (e) {
-                setError(e);
-            }
-            setLoading(false);
-        };
-
-        fetchNoticeData();
-    }, []);
+function MakeHomeBoardList({boardData}) {
 
     let history = useHistory();
     const ToLink = (url) => {
         history.push(url);
     }
 
-    if (loading) return <tr>
-        <td colSpan={5}>로딩중..</td>
-    </tr>;
-    if (error) return <tr>
-        <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
-    </tr>;
     if (!boardData) return null;
-    if (Object.keys(boardData).length == 0) return <tr>
-        <td colSpan={5}>데이터가 없습니다.</td>
-    </tr>;
+    if (Object.keys(boardData).length == 0) return <p>데이터가 없습니다.</p>;
 
     return (
         <>
-            {boardData.map(data => (
-                <p onClick={() => ToLink(`/board/${data.category.toLowerCase()}/${data.id}`)} key={data.notice_id}
+            {boardData.map((data, index) => (
+                <p onClick={() => ToLink(`/board/${data.category.toLowerCase()}/${data.id}`)} key={index}
                    className={"clickable"}>
                     {data.title} <span style={{float: "right"}}>{data.created_at.substring(0, 10)}</span>
                 </p>

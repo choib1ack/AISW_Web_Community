@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import classNames from 'classnames';
@@ -6,46 +6,50 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Title from "../Title";
-import {Controller, useForm} from "react-hook-form";
-import axios from "axios";
+import {useForm} from "react-hook-form";
 import FinishModal from "../FinishModal";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
 import FileUpload from "../FileUpload";
+import axiosApi from "../../axiosApi";
 
 function NewBoard() {
-    const {register, handleSubmit, control, watch} = useForm({mode: "onChange"});
+    const {register, handleSubmit, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const board_type = useRef();
     board_type.current = watch("board_type");
-    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
+    const [refreshToken, setRefreshToken] = useState(() => window.localStorage.getItem("REFRESH_TOKEN") || null);
 
     // redux toolkit
-    const user = useSelector(state => state.user.userData)
     const write = useSelector(state => state.write)
-    const dispatch = useDispatch()
 
-    async function postBoard(data, path) {
-        console.log(path);
-
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': auth
-        }
-
-        await axios.post("/board/" + path,
+    async function postBoard(auth, data, path) {
+        await axiosApi.post(`/${auth}/board/` + path,
             {data: data},
-            {headers: headers}
         ).then((res) => {
-            console.log(res)
             setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
             console.log(errorObject);
 
-            alert("글 게시에 실패하였습니다.") // 실패 메시지
+            if (error.response.data.error === "JwtTokenExpired") {
+                axiosApi.post(`/${auth}/board/` + path,
+                    {data: data},
+                    {
+                        headers: {
+                            'Refresh_Token': refreshToken
+                        }
+                    }
+                ).then((res) => {
+                    setModalShow(true)   // 완료 모달 띄우기
+                }).catch(error => {
+                    let errorObject = JSON.parse(JSON.stringify(error));
+                    console.log(errorObject);
+                })
+            } else {
+                alert("글 게시에 실패하였습니다.") // 실패 메시지
+            }
         })
     }
 
@@ -53,30 +57,28 @@ function NewBoard() {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
+            let temp, auth;
+
             if (data.board_type === 'free') {
-                test = {
-                    attachment_file: "string",
+                temp = {
                     content: data.content,
                     is_anonymous: true,
-                    level: 0,
                     status: "GENERAL",
                     title: data.title,
-                    account_id: user.id
                 }
+                auth = 'auth';
             } else if (data.board_type === 'qna') {
-                test = {
-                    attachment_file: "string",
+                temp = {
                     content: data.content,
                     is_anonymous: true,
-                    level: 0,
                     status: "GENERAL",
                     subject: data.subject,
                     title: data.title,
-                    account_id: user.id
                 }
+                auth = 'auth-student';
             }
-            postBoard(test, data.board_type)
+
+            postBoard(auth, temp, data.board_type);
         }
     }
 
