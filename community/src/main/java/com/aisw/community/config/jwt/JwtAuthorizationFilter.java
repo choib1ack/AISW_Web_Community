@@ -6,7 +6,6 @@ import com.aisw.community.model.entity.user.User;
 import com.aisw.community.provider.JwtTokenProvider;
 import com.aisw.community.provider.RedisProvider;
 import com.aisw.community.repository.user.UserRepository;
-import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 // 인가
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -98,12 +98,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // access token 만료 + refresh token 검증
             if (refreshToken != null) {
                 // redis 내의 username과 refresh token으로 가져온 username 비교
-                String refreshUname = redisProvider.getData(refreshToken);
-                System.out.println(refreshUname);
-
                 String username = jwtTokenProvider.requireDecodedJwt(refreshToken).getClaim("username").asString();
 
-                if (refreshUname.equals(username)) {
+                String redisRefreshToken = redisProvider.getData(username);
+                if (redisRefreshToken.equals(refreshToken)) {
                     User user = userRepository.findByUsername(username);
                     PrincipalDetails principalDetails = new PrincipalDetails(user);
                     Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetails, // 나중에 컨트롤러에서 DI해서
@@ -124,8 +122,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         } catch (JWTVerificationException e) {
             throw new TokenException("invalid token", refreshToken);
         }
-
-
         chain.doFilter(request, response);
     }
 }
