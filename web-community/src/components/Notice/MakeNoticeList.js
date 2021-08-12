@@ -57,7 +57,7 @@ export default function MakeNoticeList(props) {
                 url += "/council";
                 break;
         }
-        if (search_data.is_search) {
+        if (search_data.search>0) {
             if (category == 0) {
                 url = url.substring(0, url.length - 5);
             }
@@ -73,7 +73,7 @@ export default function MakeNoticeList(props) {
                     break;
             }
         }
-        url += search_data.is_search ? "" : "?page=" + (noticeData.normal.page_info.current_page);
+        url += search_data.search>0 ? "" : "?page=" + (noticeData.normal.page_info.current_page);
         return url;
     }
 
@@ -161,7 +161,7 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category]);
+    }, [props.category, props.searchData.search]);
 
     if (loading) return <Loading/>;
     if (error) return <tr>
@@ -195,8 +195,8 @@ export default function MakeNoticeList(props) {
                 </tr>
                 </thead>
                 <tbody>
-            {noticeData.fix_urgent !== null ? noticeData.fix_urgent.map(data => (
-                <tr key={data.notice_id}
+            {noticeData.fix_urgent !== null && props.searchData.search==0 ? noticeData.fix_urgent.map(data => (
+                <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
@@ -210,8 +210,8 @@ export default function MakeNoticeList(props) {
                 </tr>
             )) : null}
 
-            {noticeData.fix_notice !== null ? noticeData.fix_notice.map(data => (
-                <tr key={data.notice_id}
+            {noticeData.fix_notice !== null && props.searchData.search==0 ? noticeData.fix_notice.map(data => (
+                <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
@@ -226,7 +226,7 @@ export default function MakeNoticeList(props) {
             )) : null}
 
             {noticeData.normal.data.map((data, index) => (
-                <tr key={data.notice_id}
+                <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{indexing(index)}</td>

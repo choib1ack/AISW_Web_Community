@@ -10,17 +10,26 @@ import {BlueButton} from "../Button/BlueButton";
 
 export default function NoticeList({match}) {
     const [category, setCategory] = useState(0);
-    const [searchData, setSearchData] = useState({is_search:false, search_type:"select_title", keyword:""});
-
+    const [searchData, setSearchData] = useState(
+        {
+            search: 0,
+            search_type:"select_title",
+            keyword:""
+        });
 
     window.scrollTo(0, 0);
 
     const handleSearchTextChange = (event) => {
-        setSearchData({...searchData, keyword:event.target.value});
+        setSearchData(
+            {
+                ...searchData,
+                keyword:event.target.value
+            });
         if (event.target.value === "") {
-            setSearchData({...searchData, keyword:"", is_search:false});
+            setSearchData({...searchData, keyword:"", search:0});
         }
     }
+
     const handleSearchTypeChange = (event) => {
         setSearchData({...searchData, search_type:event.target.value})
     }
@@ -29,14 +38,11 @@ export default function NoticeList({match}) {
         setCategory(category_num);
 
         // 검색 초기화
-        setSearchData({is_search:false, search_type:"select_title", keyword:""});
-
-        // 페이징 초기화
-        // setPageInfo({...pageInfo, current: 0});
+        setSearchData({search:0, search_type:"select_title", keyword:""});
     }
 
     const searchContents = () => {
-        setSearchData({...searchData, is_search:true})
+        setSearchData({...searchData, search: searchData.search+1})
         // console.log("서치 활성화");
     }
 
