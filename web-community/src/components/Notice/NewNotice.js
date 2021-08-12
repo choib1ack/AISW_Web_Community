@@ -22,7 +22,7 @@ export default function NewNotice() {
     const write = useSelector(state => state.write)
 
     async function sendNotice(data, path) {
-        const post_auth_url = (path === 'council' ? 'auth-council' : 'auth');
+        const post_auth_url = (path === 'council' ? 'auth-council' : 'auth-admin');
 
         await axiosApi.post(`/${post_auth_url}/notice/${path}`,
             {data: data}
@@ -46,7 +46,7 @@ export default function NewNotice() {
                 test = {
                     campus: "COMMON",
                     content: data.content,
-                    status: "URGENT",
+                    status: "GENERAL",
                     title: data.title
                 }
             } else if (data.board_type === "department") {

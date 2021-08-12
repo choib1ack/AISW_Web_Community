@@ -3,6 +3,8 @@ import axios from "axios";
 import {Link, useHistory} from "react-router-dom";
 import fileImage from "../../icon/file.svg";
 import Loading from "../Loading";
+import Table from "react-bootstrap/Table";
+import Pagination from "../PaginationCustom";
 
 export default function MakeBoardList(props) {
 
@@ -13,19 +15,35 @@ export default function MakeBoardList(props) {
             fix_notice: null,
             fix_urgent: null,
             normal: {
-                page_info: null,
+                page_info: {
+                    "current_page": 0,
+                    "total_pages": 1
+                },
                 data: null
             }
         }
     );
 
+    const setPagination = (now_page) => {
+
+        setBoardData({
+            ...boardData,
+            normal: {
+                ...boardData.normal,
+                page_info : {
+                    ...boardData.normal.page_info,
+                    "current_page" : now_page
+                }
+            }
+        })
+    }
+
     let search_data = props.searchData;
 
-    const url = (category, page) => {
+    const url = (category) => {
         let url = "/board"
         switch (category) {
             case 0:
-                // 요거 전체로 바꿔야함
                 url += "/main";
                 break;
             case 1:
@@ -34,8 +52,11 @@ export default function MakeBoardList(props) {
             case 2:
                 url += "/qna";
                 break;
+            case 3:
+                url += "/job";
+                break;
         }
-        if (search_data.is_search) {
+        if (search_data.search>0) {
             if (category == 0) {
                 url = url.substring(0, url.length - 5);
             }
@@ -51,12 +72,13 @@ export default function MakeBoardList(props) {
                     break;
             }
         }
+        console.log(props.selected_subject_list)
         if (props.selected_subject_list.length !== 0) {
             url += "/subject";
         }
-        url += search_data.is_search ? "" : "?page=" + (props.pageInfo.current);
+        url += search_data.search>0 ? "" : "?page=" + (boardData.normal.page_info.current_page);
         if (props.selected_subject_list.length !== 0) {
-            console.log("서브젝트");
+            // console.log("서브젝트");
             url += "&subject=" + props.selected_subject_list.join(",");
         }
         return url;
@@ -70,6 +92,8 @@ export default function MakeBoardList(props) {
                 return "free";
             case 2:
                 return "qna";
+            case 3:
+                return "job";
         }
     }
 
@@ -86,7 +110,7 @@ export default function MakeBoardList(props) {
 
 
     const indexing = (index) => {
-        let current_max = boardData.normal.page_info.total_elements - (props.pageInfo.current * 10); // 현재 페이지에서 max값
+        let current_max = boardData.normal.page_info.total_elements - (boardData.normal.page_info.current_page * 10); // 현재 페이지에서 max값
         return current_max - index.toString();
     }
 
@@ -112,44 +136,31 @@ export default function MakeBoardList(props) {
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
-                if (boardData.normal.data != null) return;
 
                 setError(null);
-                setBoardData(null);
                 setLoading(true);
 
                 const response = await axios.get(url(props.category));
-                setBoardData(response.data.data.board_api_response_list);
 
-                if (props.pageInfo.current === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                if (boardData.normal.page_info.current_page === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                     setBoardData({
                         ...boardData,
                         fix_notice: response.data.data.board_api_notice_response_list,
-                        fix_urgent: response.data.data.board_api_urgent_response_list
+                        fix_urgent: response.data.data.board_api_urgent_response_list,
+                        normal: {
+                            page_info: response.data.pagination,
+                            data: response.data.data.board_api_response_list
+                        }
+                    })
+                }else{
+                    setBoardData({
+                        ...boardData,
+                        normal: {
+                            page_info: response.data.pagination,
+                            data: response.data.data.board_api_response_list
+                        }
                     })
                 }
-
-                setBoardData({
-                    ...boardData,
-                    normal: {
-                        page_info: response.data.pagination,
-                        data: response.data.data.board_api_response_list
-                    }
-                })
-
-                props.setPageInfo(
-                    {
-                        ...props.pageInfo,
-                        total: response.data.pagination.total_pages
-                    }
-                )
-
-                props.setSearchData(
-                    {
-                        ...props.searchData,
-                        keyword: ""
-                    }
-                )
 
             } catch (e) {
                 setError(e);
@@ -158,7 +169,7 @@ export default function MakeBoardList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.searchData, props.pageInfo, props.selected_subject_list]);
+    }, [props.category, props.searchData.search, props.selected_subject_list]);
 
     if (loading) return <Loading/>;
     if (error) return (
@@ -166,16 +177,36 @@ export default function MakeBoardList(props) {
             <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
         </tr>
     );
-    if (!boardData.normal.data || boardData.normal.data.length === 0) return (
-        <tr>
-            <td colSpan={5}>데이터가 없습니다.</td>
-        </tr>
-    );
+    if (!boardData.normal.data || boardData.normal.data.length === 0)
+        return (<Table>
+            <thead>
+            <tr>
+                <th style={{width: "10%"}}>no</th>
+                <th style={{width: "55%"}}>제목</th>
+                <th style={{width: "10%"}}>작성자</th>
+                <th style={{width: "10%"}}>등록일</th>
+                <th style={{width: "10%"}}>조회</th>
+            </tr>
+            </thead>
+            <tbody><tr>
+                <td colSpan={5}>데이터가 없습니다.</td>
+            </tr></tbody>
+        </Table>);
 
     return (
         <>
-            {/*{urgentFixData.map(data => (*/}
-            {boardData.fix_urgent !== null ? boardData.fix_urgent.map(data => (
+            <Table>
+                <thead>
+                <tr>
+                    <th style={{width: "10%"}}>no</th>
+                    <th style={{width: "55%"}}>제목</th>
+                    <th style={{width: "10%"}}>작성자</th>
+                    <th style={{width: "10%"}}>등록일</th>
+                    <th style={{width: "10%"}}>조회</th>
+                </tr>
+                </thead>
+                <tbody>
+            {boardData.fix_urgent !== null && props.searchData.search==0  ? boardData.fix_urgent.map(data => (
                 <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
@@ -189,7 +220,7 @@ export default function MakeBoardList(props) {
                     <td>{data.views}</td>
                 </tr>
             )) : null}
-            {boardData.fix_notice !== null ? boardData.fix_notice.map(data => (
+            {boardData.fix_notice !== null && props.searchData.search==0  ? boardData.fix_notice.map(data => (
                 <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
@@ -205,7 +236,7 @@ export default function MakeBoardList(props) {
             )) : null}
             {boardData.normal.data.map((data, index) =>
                 (
-                    <tr key={data.notice_id}
+                    <tr key={data.id}
                         onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                         <td>{indexing(index)}</td>
@@ -219,6 +250,11 @@ export default function MakeBoardList(props) {
                     </tr>
 
                 ))}
+                </tbody>
+            </Table>
+            <Pagination
+                pageInfo={boardData.normal.page_info}
+                setPagination={setPagination}/>
         </>
     );
 }
