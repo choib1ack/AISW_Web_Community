@@ -19,8 +19,12 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleException(UserNotFoundException ex) {
-        ApiErrorResponse response =
-                new ApiErrorResponse("UserNotFound", "user is not found with ID: " + ex.getId());
+        ApiErrorResponse response = null;
+        if(ex.getId() != null) {
+             response = new ApiErrorResponse("UserNotFound", "user is not found with ID: " + ex.getId());
+        } else if(ex.getUsername() != null) {
+            response = new ApiErrorResponse("UserNotFound", "user is not found with username: " + ex.getUsername());
+        }
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -121,6 +125,5 @@ public class ApiExceptionHandler {
                 new ApiErrorResponse("StudentIdNotSuitable", "student id is not suitable: " + ex.getStudentId());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
 
 }
