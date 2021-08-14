@@ -24,8 +24,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AlertApiService {
@@ -44,33 +44,31 @@ public class AlertApiService {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
-        Alert alert = Alert.builder().user(user).build();
-        boolean isComment = false;
+        Alert alert = Alert.builder().user(user).firstCategory(alertApiRequest.getFirstCategory())
+                .secondCategory(alertApiRequest.getSecondCategory()).postId(alertApiRequest.getPostId()).build();
+
         if(alertApiRequest.getCommentId() != null) {
             Comment comment = commentRepository.findById(alertApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(alertApiRequest.getCommentId()));
             alert.setComment(comment);
-            isComment = true;
+            if(comment.getSuperComment() == null) alert.setAlertCategory(AlertCategory.COMMENT);
+            else alert.setAlertCategory(AlertCategory.NESTED_COMMENT);
         } else if(alertApiRequest.getContentLikeId() != null) {
             ContentLike contentLike = contentLikeRepository.findById(alertApiRequest.getContentLikeId())
                     .orElseThrow(() -> new ContentLikeNotFoundException(alertApiRequest.getContentLikeId()));
             alert.setContentLike(contentLike);
+            if(contentLike.getBoard() != null) alert.setAlertCategory(AlertCategory.LIKE_POST);
+            else if(contentLike.getComment() != null) alert.setAlertCategory(AlertCategory.LIKE_COMMENT);
         }
         Alert newAlert = alertRepository.save(alert);
-
-        return Header.OK(response(newAlert, isComment));
+        return Header.OK(response(newAlert));
     }
 
     public Header<List<AlertApiResponse>> readAllAlert(Authentication authentication, Pageable pageable) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
 
         Page<Alert> alerts = alertRepository.findAllByUserId(principal.getUser().getId(), pageable);
-
-        List<AlertApiResponse> alertList = new ArrayList<>();
-        alerts.stream().forEach(alert -> {
-            if(alert.getComment() != null) alertList.add(response(alert, true));
-            else alertList.add(response(alert, false));
-        });
+        List<AlertApiResponse> alertApiResponseList = alerts.stream().map(this::response).collect(Collectors.toList());
 
         Pagination pagination = Pagination.builder()
                 .totalElements(alerts.getTotalElements())
@@ -79,7 +77,7 @@ public class AlertApiService {
                 .currentPage(alerts.getNumber())
                 .build();
 
-        return Header.OK(alertList, pagination);
+        return Header.OK(alertApiResponseList, pagination);
     }
 
 
@@ -91,46 +89,22 @@ public class AlertApiService {
             throw new NotEqualUserException(id);
         }
 
-        Alert updatedAlert = alert.setChecked(true);
-        boolean isComment = false;
-        if(updatedAlert.getComment() != null) isComment = true;
+        alert.setChecked(true);
+        Alert updatedAlert = alertRepository.save(alert);
 
-        return Header.OK(response(updatedAlert, isComment));
+        return Header.OK(response(updatedAlert));
     }
 
-    private AlertApiResponse response(Alert alert, Boolean isComment) {
+    private AlertApiResponse response(Alert alert) {
         AlertApiResponse alertApiResponse = AlertApiResponse.builder()
                 .id(alert.getId())
+                .firstCategory(alert.getFirstCategory())
+                .secondCategory(alert.getSecondCategory())
+                .alertCategory(alert.getAlertCategory())
+                .postId(alert.getPostId())
                 .checked(alert.getChecked())
                 .createdAt(alert.getCreatedAt())
                 .build();
-        if(isComment) {
-            Comment comment = alert.getComment();
-            if(comment.getSuperComment() == null) {
-                alertApiResponse.setAlertCategory(AlertCategory.COMMENT);
-            } else {
-                alertApiResponse.setAlertCategory(AlertCategory.NESTED_COMMENT);
-            }
-            alertApiResponse
-                    .setFirstCategory(comment.getBoard().getFirstCategory())
-                    .setSecondCategory(comment.getBoard().getSecondCategory())
-                    .setPostId(comment.getBoard().getId());
-        } else {
-            ContentLike contentLike = alert.getContentLike();
-            if(contentLike.getComment() != null) {
-                alertApiResponse
-                        .setAlertCategory(AlertCategory.LIKE_COMMENT)
-                        .setFirstCategory(contentLike.getComment().getBoard().getFirstCategory())
-                        .setSecondCategory(contentLike.getComment().getBoard().getSecondCategory())
-                        .setPostId(contentLike.getComment().getBoard().getId());
-            } else if(contentLike.getBoard() != null) {
-                alertApiResponse
-                        .setAlertCategory(AlertCategory.LIKE_POST)
-                        .setFirstCategory(contentLike.getBoard().getFirstCategory())
-                        .setSecondCategory(contentLike.getBoard().getSecondCategory())
-                        .setPostId(contentLike.getBoard().getId());
-            }
-        }
         return alertApiResponse;
     }
 }

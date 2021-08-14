@@ -79,7 +79,7 @@ public class User {
     private List<Comment> commentList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<ContentLike> contentLikeList;
+    private List<ContentLike> contentLikeList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Alert> alertList;

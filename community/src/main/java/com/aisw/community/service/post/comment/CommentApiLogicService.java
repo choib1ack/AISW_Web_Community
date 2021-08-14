@@ -3,6 +3,7 @@ package com.aisw.community.service.post.comment;
 import com.aisw.community.advice.exception.CommentNotFoundException;
 import com.aisw.community.advice.exception.NotEqualUserException;
 import com.aisw.community.advice.exception.PostNotFoundException;
+import com.aisw.community.advice.exception.WrongRequestException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.comment.Comment;
@@ -11,6 +12,7 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.comment.CommentApiRequest;
 import com.aisw.community.model.network.request.user.AlertApiRequest;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
+import com.aisw.community.model.network.response.user.AlertApiResponse;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.comment.CustomCommentRepository;
@@ -68,7 +70,11 @@ public class CommentApiLogicService {
 
         Comment newComment = commentRepository.save(comment);
 
-        AlertApiRequest alertApiRequest = AlertApiRequest.builder().commentId(newComment.getId()).build();
+        AlertApiRequest alertApiRequest = AlertApiRequest.builder()
+                .commentId(newComment.getId())
+                .firstCategory(board.getFirstCategory())
+                .secondCategory(board.getSecondCategory())
+                .postId(board.getId()).build();
         alertApiService.create(authentication, alertApiRequest);
 
         return Header.OK(response(newComment));
@@ -130,7 +136,7 @@ public class CommentApiLogicService {
         return freeCommentApiResponse;
     }
 
-//    @Cacheable(value = "commentSearchByPost", key = "#id")
+    @Cacheable(value = "commentSearchByPost", key = "#id")
     public List<CommentApiResponse> searchByPost(Long id) {
         List<Comment> comments = customCommentRepository.findCommentByBoardId(id);
 

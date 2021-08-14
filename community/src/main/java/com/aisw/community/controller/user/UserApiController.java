@@ -52,7 +52,7 @@ class UserApiController {
         return alertApiService.readAllAlert(authentication, pageable);
     }
 
-    @PutMapping("/auth/alert/{id}")
+    @GetMapping("/auth/alert/{id}")
     public Header<AlertApiResponse> checkAlert(Authentication authentication, @PathVariable Long id) {
         return alertApiService.checkAlert(authentication, id);
     }
