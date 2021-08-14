@@ -15,6 +15,8 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 // login 요청해서 post로 username, password 전송하면 UsernamePasswordAuthenticationFilter 동작
 // formLogin을 disable하면 UsernamePasswordAuthenticationFilter 동작 안 함
@@ -34,7 +36,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
-
         // 1. username, password 받아서
         // 2. 정상인지 로그인 시도 -> AuthenticationManager로 로그인 시도하면
         // PrincipalDetailsService가 호출 -> loadUserByUsername() 함수 실행
@@ -53,8 +54,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
         // 유저네임패스워드 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        loginApiRequest.getUsername(),
-                        loginApiRequest.getPassword());
+                loginApiRequest.getUsername(),
+                loginApiRequest.getPassword());
 
         System.out.println("JwtAuthenticationFilter : 토큰생성완료");
 
@@ -78,11 +79,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) {
         System.out.println("login success");
-        String jwtToken = jwtTokenProvider.createToken(authResult,JwtProperties.EXPIRATION_TIME);
+        String jwtToken = jwtTokenProvider.createToken(authResult, JwtProperties.EXPIRATION_TIME);
         response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
 
-        String refreshToken = jwtTokenProvider.createToken(authResult,JwtProperties.REFRESH_EXPIRATION_TIME);
-        redisProvider.setDataExpire(refreshToken, authResult.getName(), JwtProperties.REFRESH_EXPIRATION_TIME);
+        String refreshToken = jwtTokenProvider.createToken(authResult, JwtProperties.REFRESH_EXPIRATION_TIME);
+        Date pre = new Date();
+        redisProvider.setDataExpire(authResult.getName(), refreshToken, JwtProperties.REFRESH_EXPIRATION_TIME);
+        Date now = new Date();
+        System.out.println(now.getTime() - pre.getTime());
         response.addHeader(JwtProperties.REFRESH_HEADER_STRING, JwtProperties.TOKEN_PREFIX + refreshToken);
     }
 }

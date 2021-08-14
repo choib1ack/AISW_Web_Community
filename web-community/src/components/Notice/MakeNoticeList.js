@@ -3,6 +3,8 @@ import {useHistory} from "react-router-dom";
 import fileImage from "../../icon/file.svg";
 import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
+import Pagination from "../PaginationCustom";
+import Table from "react-bootstrap/Table";
 
 export default function MakeNoticeList(props) {
 
@@ -11,11 +13,28 @@ export default function MakeNoticeList(props) {
             fix_notice: null,
             fix_urgent: null,
             normal: {
-                page_info: null,
+                page_info: {
+                    "current_page": 0,
+                    "total_pages": 1
+                },
                 data: null
             }
         }
     );
+
+    const setPagination = (now_page) => {
+
+        setNoticeData({
+            ...noticeData,
+            normal: {
+                ...noticeData.normal,
+                page_info : {
+                    ...noticeData.normal.page_info,
+                    "current_page" : now_page
+                }
+            }
+        })
+    }
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -38,7 +57,7 @@ export default function MakeNoticeList(props) {
                 url += "/council";
                 break;
         }
-        if (search_data.is_search) {
+        if (search_data.search>0) {
             if (category == 0) {
                 url = url.substring(0, url.length - 5);
             }
@@ -54,8 +73,7 @@ export default function MakeNoticeList(props) {
                     break;
             }
         }
-        url += search_data.is_search ? "" : "?page=" + (props.pageInfo.current);
-        // url+="page="+(props.current_page);
+        url += search_data.search>0 ? "" : "?page=" + (noticeData.normal.page_info.current_page);
         return url;
     }
 
@@ -84,7 +102,7 @@ export default function MakeNoticeList(props) {
     }
 
     const indexing = (index) => {
-        let current_max = noticeData.normal.page_info.total_elements - (props.pageInfo.current * 10); // 현재 페이지에서 max값
+        let current_max = noticeData.normal.page_info.total_elements - (noticeData.normal.page_info.current_page * 10); // 현재 페이지에서 max값
         return current_max - index.toString();
     }
 
@@ -110,43 +128,31 @@ export default function MakeNoticeList(props) {
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
-                if (noticeData.normal.data != null) return;
 
                 setError(null);
-                setNoticeData(null);
                 setLoading(true);
 
                 const response = await axiosApi.get(url(props.category));
 
-                if (props.pageInfo.current === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                if (noticeData.normal.page_info.current_page === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                     setNoticeData({
                         ...noticeData,
                         fix_notice: response.data.data.notice_api_notice_response_list,
-                        fix_urgent: response.data.data.notice_api_urgent_response_list
+                        fix_urgent: response.data.data.notice_api_urgent_response_list,
+                        normal: {
+                            page_info: response.data.pagination,
+                            data: response.data.data.notice_api_response_list
+                        }
+                    })
+                }else{
+                    setNoticeData({
+                        ...noticeData,
+                        normal: {
+                            page_info: response.data.pagination,
+                            data: response.data.data.notice_api_response_list
+                        }
                     })
                 }
-
-                setNoticeData({
-                    ...noticeData,
-                    normal: {
-                        page_info: response.data.pagination,
-                        data: response.data.data.notice_api_response_list
-                    }
-                })
-
-                props.setPageInfo(
-                    {
-                        ...props.pageInfo,
-                        total: response.data.pagination.total_pages
-                    }
-                )
-
-                props.setSearchData(
-                    {
-                        ...props.searchData,
-                        keyword: ""
-                    }
-                )
 
             } catch (e) {
                 setError(e);
@@ -155,20 +161,42 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.searchData, props.pageInfo]);
+    }, [props.category, props.searchData.search]);
 
     if (loading) return <Loading/>;
     if (error) return <tr>
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;
-    //console.log(noticeData.normal.data);
-    if (!noticeData.normal.data || noticeData.normal.data.length === 0) return <tr>
+    if (!noticeData.normal.data || noticeData.normal.data.length === 0)
+        return (<Table>
+        <thead>
+        <tr>
+            <th style={{width: "10%"}}>no</th>
+            <th style={{width: "55%"}}>제목</th>
+            <th style={{width: "10%"}}>작성자</th>
+            <th style={{width: "10%"}}>등록일</th>
+            <th style={{width: "10%"}}>조회</th>
+        </tr>
+        </thead>
+        <tbody><tr>
         <td colSpan={5}>데이터가 없습니다.</td>
-    </tr>;
+    </tr></tbody>
+    </Table>);
     return (
         <>
-            {noticeData.fix_urgent !== null ? noticeData.fix_urgent.map(data => (
-                <tr key={data.notice_id}
+            <Table>
+                <thead>
+                <tr>
+                    <th style={{width: "10%"}}>no</th>
+                    <th style={{width: "55%"}}>제목</th>
+                    <th style={{width: "10%"}}>작성자</th>
+                    <th style={{width: "10%"}}>등록일</th>
+                    <th style={{width: "10%"}}>조회</th>
+                </tr>
+                </thead>
+                <tbody>
+            {noticeData.fix_urgent !== null && props.searchData.search==0 ? noticeData.fix_urgent.map(data => (
+                <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
@@ -182,8 +210,8 @@ export default function MakeNoticeList(props) {
                 </tr>
             )) : null}
 
-            {noticeData.fix_notice !== null ? noticeData.fix_notice.map(data => (
-                <tr key={data.notice_id}
+            {noticeData.fix_notice !== null && props.searchData.search==0 ? noticeData.fix_notice.map(data => (
+                <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{status(data.status)}</td>
@@ -198,7 +226,7 @@ export default function MakeNoticeList(props) {
             )) : null}
 
             {noticeData.normal.data.map((data, index) => (
-                <tr key={data.notice_id}
+                <tr key={data.id}
                     onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                         data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                     <td>{indexing(index)}</td>
@@ -211,6 +239,11 @@ export default function MakeNoticeList(props) {
                     <td>{data.views}</td>
                 </tr>
             ))}
+                </tbody>
+            </Table>
+            <Pagination
+                pageInfo={noticeData.normal.page_info}
+                setPagination={setPagination}/>
         </>
     );
 }

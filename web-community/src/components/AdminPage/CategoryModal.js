@@ -7,7 +7,9 @@ import axiosApi from "../../axiosApi";
 
 function CategoryModal(props) {
 
+
     let default_category = props.mode === "update" ? props.name : null;
+
 
     const [newCategoryName, setNewCategoryName] = useState(default_category);
 
@@ -26,7 +28,9 @@ function CategoryModal(props) {
     }
 
     const handleDelete = () => {
+
         axiosApi.delete("/auth-admin/site/category/" + props.id).then(res => {
+
             props.setShowCategoryModal(false);
             alert('카테고리가 삭제되었습니다.');
             props.setSiteData(null);
@@ -37,8 +41,10 @@ function CategoryModal(props) {
     }
 
     function sendData(category_name) {
+
         if (props.mode === "add") { // add
             axiosApi.post("/auth-admin/site/category?name=" + category_name).then(res => {
+
                 props.setShowCategoryModal(false);
                 alert('새 카테고리가 등록되었습니다.')
                 props.setSiteData(null);
@@ -46,8 +52,10 @@ function CategoryModal(props) {
             }).catch(err => {
                 alert('새 카테고리 등록에 실패했습니다.')
             })
+
         } else { // update
             axiosApi.put("/auth-admin/site/category/" + props.id + "?name=" + category_name).then(res => {
+
                 // console.log(res);
                 props.setShowCategoryModal(false);
                 alert('카테고리 정보가 수정되었습니다.')
