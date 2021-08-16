@@ -50,7 +50,8 @@ public class ContentLikeService {
         if(contentLikeApiRequest.getBoardId() == null) {
             Comment comment = commentRepository.findByIdFetchBoard(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
-            Optional<ContentLike> optional = contentLikeRepository.findContentLikeByUserIdAndCommentId(user.getId(), comment.getId());
+            Optional<ContentLike> optional = contentLikeRepository
+                    .findContentLikeByUserIdAndCommentId(user.getId(), comment.getId());
             if(optional.isPresent()) {
                 throw new ContentLikeAlreadyExistException(comment.getId());
             }
@@ -71,7 +72,8 @@ public class ContentLikeService {
         } else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
-            Optional<ContentLike> optional = contentLikeRepository.findContentLikeByUserIdAndBoardId(user.getId(), board.getId());
+            Optional<ContentLike> optional = contentLikeRepository
+                    .findContentLikeByUserIdAndBoardId(user.getId(), board.getId());
             if(optional.isPresent()) {
                 throw new ContentLikeAlreadyExistException(board.getId());
             }
