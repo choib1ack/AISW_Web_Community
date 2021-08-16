@@ -93,7 +93,7 @@ function EditBoard({match}) {
         <div className="EditBoard">
             <Container>
                 <FinishModal show={modalShow} link={`/board`}
-                             title="게시판" body="글 게시가 완료되었습니다 !"/>
+                             title="게시판" body="글 수정이 완료되었습니다 !"/>
 
                 <Title text='게시글 수정' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
