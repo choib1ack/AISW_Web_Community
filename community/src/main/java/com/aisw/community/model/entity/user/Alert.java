@@ -53,6 +53,8 @@ public class Alert {
     @Enumerated(EnumType.STRING)
     private AlertCategory alertCategory;
 
+    private String content;
+
     @CreatedDate
     private LocalDateTime createdAt;
 

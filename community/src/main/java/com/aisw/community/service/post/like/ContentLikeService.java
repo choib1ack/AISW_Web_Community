@@ -69,6 +69,11 @@ public class ContentLikeService {
                     .setFirstCategory(comment.getBoard().getFirstCategory())
                     .setSecondCategory(comment.getBoard().getSecondCategory())
                     .setPostId(comment.getBoard().getId());
+            if(comment.getContent().length() < 20) {
+                alertApiRequest.setContent(comment.getContent());
+            } else {
+                alertApiRequest.setContent(comment.getContent().substring(0, 20));
+            }
         } else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
@@ -91,6 +96,11 @@ public class ContentLikeService {
                     .setFirstCategory(board.getFirstCategory())
                     .setSecondCategory(board.getSecondCategory())
                     .setPostId(board.getId());
+            if(board.getContent().length() < 20) {
+                alertApiRequest.setContent(board.getContent());
+            } else {
+                alertApiRequest.setContent(board.getContent().substring(0, 20));
+            }
         } else {
             throw new WrongRequestException();
         }
