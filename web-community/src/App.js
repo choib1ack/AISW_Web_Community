@@ -13,7 +13,7 @@ import JobInfo from "./components/JobInfo";
 import ContestInfo from "./components/ContestInfo";
 import Booklet from "./components/Booklet";
 import Join from "./components/Join";
-import Banner from "./components/AdminPage/Banner";
+import Banner from "./components/AdminPage/Banner/Banner";
 import GoodInfo from "./components/GoodInfo";
 import ManagerRouter from "./components/AdminPage/ManagerRouter";
 import EssentialElective from "./components/EssentialElective";

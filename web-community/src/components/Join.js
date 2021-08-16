@@ -11,17 +11,17 @@ import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
 import {join} from "../features/userSlice";
 import FinishModal from "./FinishModal";
-import {useLocation} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 
 export default function Join() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
     const phone_number = useRef();
     phone_number.current = watch("phone_number");
     const [agree, setAgree] = useState(false);
+    const history = useHistory();
 
     // redux toolkit
-    const user = useSelector(state => state.user.userData)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     // 회원가입 완료 모달
     const [modalShow, setModalShow] = useState(false);
@@ -56,7 +56,7 @@ export default function Join() {
             name: location.state.google_data.profileObj.familyName,
             provider: location.state.google_data.tokenObj.idpId,
             provider_id: location.state.google_data.profileObj.googleId,
-            phone_number: data.phone_number.replaceAll('-',''),
+            phone_number: data.phone_number.replaceAll('-', ''),
             role: `ROLE_${location.state.account_role}`,   // GENERAL, STUDENT
             student_id: data.student_id,
             university: 'COMMON',
@@ -196,7 +196,9 @@ export default function Join() {
                         </Form.Group>
 
                         <div style={{display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
-                            <Button className={classNames("select-btn", "off")} style={{width: '80px'}}>취소</Button>
+                            <Button className={classNames("select-btn", "off")} style={{width: '80px'}}
+                                    onClick={() => history.push('/')}
+                            >취소</Button>
                             <Button className={classNames("select-btn", "on")} style={{width: '80px'}}
                                     type="submit">확인</Button>
                         </div>

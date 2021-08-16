@@ -2,7 +2,7 @@ import React from "react";
 import {Route} from "react-router-dom";
 import ManageGoodInfo from "./ManageGoodInfo";
 import Manager from "./Manager";
-import Banner from "./Banner";
+import Banner from "./Banner/Banner";
 
 function ManagerRouter({match}) {
     return (

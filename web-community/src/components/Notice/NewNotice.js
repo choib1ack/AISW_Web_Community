@@ -30,7 +30,6 @@ export default function NewNotice() {
             setModalShow(true)   // 완료 모달 띄우기
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
             console.log(errorObject);
 
             alert("글 게시에 실패하였습니다.") // 실패 메시지

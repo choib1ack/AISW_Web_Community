@@ -16,7 +16,7 @@ export default function FinishModal(props) {
 
     return (
         <>
-            <Modal show={show} onHide={handleClose} animation={false}>
+            <Modal show={show} onHide={handleClose} animation={false} enforceFocus={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>{props.title}</Modal.Title>
                 </Modal.Header>

@@ -1,4 +1,4 @@
-.MyPage{
+.MyPage {
     position: fixed;
     top: 30px;
     right: 0;
@@ -8,4 +8,10 @@
     height: 100%;
     overflow: hidden;
     outline: 0;
+}
+
+@media screen and (max-width: 768px) {
+    .MyPage {
+        width: 70%;
+    }
 }

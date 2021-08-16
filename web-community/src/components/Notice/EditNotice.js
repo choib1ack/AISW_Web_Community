@@ -27,7 +27,7 @@ export default function EditNotice({match}, props) {
     const write = useSelector(state => state.write)
 
     async function sendNotice(data, path) {
-        const put_auth_url = (path === 'council' ? 'auth-council' : 'auth');
+        const put_auth_url = (path === 'council' ? 'auth-council' : 'auth-admin');
 
         await axiosApi.put(`/${put_auth_url}/notice/${path}`,
             {data: data},
