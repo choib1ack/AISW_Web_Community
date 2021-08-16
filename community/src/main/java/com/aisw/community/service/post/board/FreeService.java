@@ -147,6 +147,19 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<FreeApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
@@ -316,6 +329,19 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<FreeDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(free -> (Free) free.setViews(free.getViews() + 1))
@@ -350,6 +376,19 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<FreeDetailApiResponse> readWithCommentAndLike(Authentication authentication, Long id) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return baseRepository.findById(id)

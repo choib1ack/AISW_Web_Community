@@ -144,6 +144,19 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<JobApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
@@ -315,6 +328,19 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<JobDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(job -> (Job) job.setViews(job.getViews() + 1))
@@ -349,6 +375,19 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<JobDetailApiResponse> readWithCommentAndLike(Authentication authentication, Long id) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return baseRepository.findById(id)

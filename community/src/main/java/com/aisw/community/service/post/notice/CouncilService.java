@@ -129,6 +129,19 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "councilReadAll", allEntries = true),
+            @CacheEvict(value = "councilSearchByWriter", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitle", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
