@@ -10,4 +10,14 @@ import lombok.NoArgsConstructor;
 public class UserNotFoundException extends RuntimeException {
 
     private Long id;
+
+    private String username;
+
+    public UserNotFoundException(Long id) {
+        this.id = id;
+    }
+
+    public UserNotFoundException(String username) {
+        this.username = username;
+    }
 }

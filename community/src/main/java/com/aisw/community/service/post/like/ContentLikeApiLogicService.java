@@ -10,6 +10,7 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;
 import com.aisw.community.model.network.request.user.AlertApiRequest;
 import com.aisw.community.model.network.response.post.like.ContentLikeApiResponse;
+import com.aisw.community.model.network.response.user.AlertApiResponse;
 import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
@@ -47,8 +48,9 @@ public class ContentLikeApiLogicService {
         User user = principal.getUser();
 
         ContentLike newContentLike;
+        AlertApiRequest alertApiRequest = new AlertApiRequest();
         if(contentLikeApiRequest.getBoardId() == null) {
-            Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId())
+            Comment comment = commentRepository.findByIdFetchBoard(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
             Optional<ContentLike> optional = contentLikeRepository.findContentLikeByUserIdAndCommentId(user.getId(), comment.getId());
             if(optional.isPresent()) {
@@ -63,6 +65,11 @@ public class ContentLikeApiLogicService {
             comment.setLikes(comment.getLikes() + 1);
             commentRepository.save(comment);
             newContentLike = contentLikeRepository.save(contentLike);
+
+            alertApiRequest
+                    .setFirstCategory(comment.getBoard().getFirstCategory())
+                    .setSecondCategory(comment.getBoard().getSecondCategory())
+                    .setPostId(comment.getBoard().getId());
         } else if(contentLikeApiRequest.getCommentId() == null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
@@ -79,11 +86,16 @@ public class ContentLikeApiLogicService {
             board.setLikes(board.getLikes() + 1);
             boardRepository.save(board);
             newContentLike = contentLikeRepository.save(contentLike);
+
+            alertApiRequest
+                    .setFirstCategory(board.getFirstCategory())
+                    .setSecondCategory(board.getSecondCategory())
+                    .setPostId(board.getId());
         } else {
             throw new WrongRequestException();
         }
 
-        AlertApiRequest alertApiRequest = AlertApiRequest.builder().contentLikeId(newContentLike.getId()).build();
+        alertApiRequest.setContentLikeId(newContentLike.getId());
         alertApiService.create(authentication, alertApiRequest);
 
         return Header.OK(response(newContentLike));

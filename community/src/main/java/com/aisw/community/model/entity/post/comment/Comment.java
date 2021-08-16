@@ -63,7 +63,7 @@ public class Comment {
     private List<Comment> subComment;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", orphanRemoval = true, cascade = CascadeType.ALL)
-    private Set<ContentLike> contentLikeList;
+    private List<ContentLike> contentLikeList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "comment", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Alert> alertList;

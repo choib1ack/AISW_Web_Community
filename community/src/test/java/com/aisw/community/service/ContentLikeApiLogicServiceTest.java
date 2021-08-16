@@ -32,12 +32,11 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
     @Test
     public void createLike() {
         ContentLikeApiRequest contentLikeApiRequest = ContentLikeApiRequest.builder()
-                .userId(1L)
 //                .boardId(1L)
                 .commentId(7L)
                 .build();
 
-        User user = userRepository.findById(contentLikeApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(11L).orElseThrow(UserNotFoundException::new);
 //        Board board = boardRepository.findById(contentLikeApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
         Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId()).orElseThrow(CommentNotFoundException::new);
 
@@ -59,12 +58,11 @@ class ContentLikeApiLogicServiceTest extends CommunityApplicationTests {
     @Test
     public void deleteLike() {
         ContentLikeApiRequest contentLikeApiRequest = ContentLikeApiRequest.builder()
-                .userId(1L)
 //                .boardId(1L)
                 .commentId(7L)
                 .build();
 
-        User user = userRepository.findById(contentLikeApiRequest.getUserId()).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(11L).orElseThrow(UserNotFoundException::new);
 //        Board board = boardRepository.findById(contentLikeApiRequest.getBoardId()).orElseThrow(PostNotFoundException::new);
         Comment comment = commentRepository.findById(contentLikeApiRequest.getCommentId()).orElseThrow(CommentNotFoundException::new);
 

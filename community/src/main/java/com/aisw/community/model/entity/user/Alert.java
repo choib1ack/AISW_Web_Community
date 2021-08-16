@@ -2,6 +2,9 @@ package com.aisw.community.model.entity.user;
 
 import com.aisw.community.model.entity.post.comment.Comment;
 import com.aisw.community.model.entity.post.like.ContentLike;
+import com.aisw.community.model.enumclass.AlertCategory;
+import com.aisw.community.model.enumclass.FirstCategory;
+import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -38,6 +41,17 @@ public class Alert {
     private ContentLike contentLike;
 
     private Boolean checked;
+
+    @Enumerated(EnumType.STRING)
+    private FirstCategory firstCategory;
+
+    @Enumerated(EnumType.STRING)
+    private SecondCategory secondCategory;
+
+    private Long postId;
+
+    @Enumerated(EnumType.STRING)
+    private AlertCategory alertCategory;
 
     @CreatedDate
     private LocalDateTime createdAt;

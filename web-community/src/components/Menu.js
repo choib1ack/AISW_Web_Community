@@ -12,7 +12,6 @@ import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
 import {setOnline, logout, login, join} from "../features/userSlice";
 import axios from "axios";
-import axiosApi from "../axiosApi";
 import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 
 export default function Menu() {
@@ -52,7 +51,6 @@ export default function Menu() {
     const [modalShow, setModalShow] = useState(false);
     const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("USER_NAME")) || null);
 
-
     // 이미 있는 회원인지 확인
     async function isExistUser(username, email) {
         let result = {validation: null, account: null};
@@ -79,20 +77,26 @@ export default function Menu() {
     // 구글 연동 성공시
     async function handleLoginSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
+        const email = result.profileObj.email;
+        const isExist = await isExistUser(username, email);
 
-        await axios.post(`/login`, {
-            username: username,
-            password: 'AISW',
-        }).then((res) => {
-            window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization); // 토큰 저장
-            window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token); // 토큰 저장
-            window.localStorage.setItem("USER_NAME", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
+        if (isExist.validation === false) {
+            alert("회원가입이 필요합니다.");
+        } else {
+            await axios.post(`/login`, {
+                username: username,
+                password: 'AISW',
+            }).then((res) => {
+                window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization); // 토큰 저장
+                window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token); // 토큰 저장
+                window.localStorage.setItem("USER_NAME", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
 
-            history.push('/')   // 홈으로 가기
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생", errorObject);
-        })
+                history.push('/')   // 홈으로 가기
+            }).catch(error => {
+                let errorObject = JSON.parse(JSON.stringify(error));
+                console.log("에러 발생", errorObject);
+            })
+        }
     }
 
     // 구글 연동 실패시
@@ -109,7 +113,7 @@ export default function Menu() {
         if (isExist.validation === true) {
             alert("이미 가입된 회원입니다.")
         } else {
-            let roll = null;
+            let roll;
             if (isExist[1] === 'gachon') {
                 roll = 'STUDENT';
             } else {

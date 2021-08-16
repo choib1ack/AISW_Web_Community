@@ -3,8 +3,6 @@ import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import searchImage from "../../icon/search_black.png";
-import Table from "react-bootstrap/Table";
-import Pagination from "../PaginationCustom";
 import React, {useState} from "react";
 import MakeNoticeList from "./MakeNoticeList"
 import SelectButton from "../Button/SelectButton";
@@ -12,17 +10,26 @@ import {BlueButton} from "../Button/BlueButton";
 
 export default function NoticeList({match}) {
     const [category, setCategory] = useState(0);
-    const [searchData, setSearchData] = useState({is_search:false, search_type:"select_title", keyword:""});
-    const [pageInfo, setPageInfo] = useState({current:0, total:1});
+    const [searchData, setSearchData] = useState(
+        {
+            search: 0,
+            search_type:"select_title",
+            keyword:""
+        });
 
     window.scrollTo(0, 0);
 
     const handleSearchTextChange = (event) => {
-        setSearchData({...searchData, keyword:event.target.value});
+        setSearchData(
+            {
+                ...searchData,
+                keyword:event.target.value
+            });
         if (event.target.value === "") {
-            setSearchData({...searchData, keyword:"", is_search:false});
+            setSearchData({...searchData, keyword:"", search:0});
         }
     }
+
     const handleSearchTypeChange = (event) => {
         setSearchData({...searchData, search_type:event.target.value})
     }
@@ -31,14 +38,11 @@ export default function NoticeList({match}) {
         setCategory(category_num);
 
         // 검색 초기화
-        setSearchData({is_search:false, search_type:"select_title", keyword:""});
-
-        // 페이징 초기화
-        setPageInfo({...pageInfo, current: 0});
+        setSearchData({search:0, search_type:"select_title", keyword:""});
     }
 
     const searchContents = () => {
-        setSearchData({...searchData, is_search:true})
+        setSearchData({...searchData, search: searchData.search+1})
         // console.log("서치 활성화");
     }
 
@@ -75,33 +79,15 @@ export default function NoticeList({match}) {
                         </select>
                     </Col>
                 </Row>
-                <Table>
-                    <thead>
-                    <tr>
-                        <th style={{width: "10%"}}>no</th>
-                        <th style={{width: "55%"}}>제목</th>
-                        <th style={{width: "10%"}}>작성자</th>
-                        <th style={{width: "10%"}}>등록일</th>
-                        <th style={{width: "10%"}}>조회</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+
                     <MakeNoticeList
                         category={category}
                         match={match}
                         searchData={searchData}
                         setSearchData={setSearchData}
-                        pageInfo={pageInfo}
-                        setPageInfo={setPageInfo}
                     />
-                    </tbody>
-                </Table>
 
                 <BlueButton match={match} type={'newNotice'} title="글쓰기"/>
-
-                <Pagination
-                    pageInfo={pageInfo}
-                    setPageInfo={setPageInfo}/>
 
             </Container>
         </div>
