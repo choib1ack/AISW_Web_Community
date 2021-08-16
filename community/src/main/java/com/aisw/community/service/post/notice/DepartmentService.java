@@ -129,6 +129,19 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "departmentReadAll", allEntries = true),
+            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<DepartmentApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(department -> department.setViews(department.getViews() + 1))

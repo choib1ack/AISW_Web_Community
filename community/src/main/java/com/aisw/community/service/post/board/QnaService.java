@@ -148,6 +148,19 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "qnaReadAll", allEntries = true),
+            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<QnaApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
@@ -321,6 +334,19 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "qnaReadAll", allEntries = true),
+            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<QnaDetailApiResponse> readWithComment(Long id) {
         return baseRepository.findById(id)
                 .map(qna -> (Qna)qna.setViews(qna.getViews() + 1))
@@ -356,6 +382,19 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "qnaReadAll", allEntries = true),
+            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<QnaDetailApiResponse> readWithCommentAndLike(Authentication authentication, Long id) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return baseRepository.findById(id)

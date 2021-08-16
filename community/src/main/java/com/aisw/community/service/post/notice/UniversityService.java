@@ -131,6 +131,19 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
 
     @Override
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "universityReadAll", allEntries = true),
+            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
     public Header<UniversityApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(university -> university.setViews(university.getViews() + 1))
