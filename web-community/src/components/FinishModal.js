@@ -15,23 +15,18 @@ export default function FinishModal(props) {
     }, [props])
 
     return (
-        <>
-            <Modal show={show} onHide={handleClose} animation={false} enforceFocus={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>{props.title}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{props.body}</Modal.Body>
-                <Modal.Footer>
-                    {/*<Button variant="secondary" onClick={handleClose}>*/}
-                    {/*    Close*/}
-                    {/*</Button>*/}
-                    <Link to={props.link}>
-                        <Button variant="primary" onClick={handleClose}>
-                            확인
-                        </Button>
-                    </Link>
-                </Modal.Footer>
-            </Modal>
-        </>
+        <Modal show={show} animation={false}>
+            <Modal.Header>
+                <Modal.Title>{props.title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{props.body}</Modal.Body>
+            <Modal.Footer>
+                <Link to={props.link}>
+                    <Button variant="primary" onClick={handleClose}>
+                        확인
+                    </Button>
+                </Link>
+            </Modal.Footer>
+        </Modal>
     );
 }

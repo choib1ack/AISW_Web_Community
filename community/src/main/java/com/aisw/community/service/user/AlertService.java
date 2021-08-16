@@ -44,8 +44,12 @@ public class AlertService {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         User user = principal.getUser();
 
-        Alert alert = Alert.builder().user(user).firstCategory(alertApiRequest.getFirstCategory())
-                .secondCategory(alertApiRequest.getSecondCategory()).postId(alertApiRequest.getPostId()).build();
+        Alert alert = Alert.builder()
+                .user(user)
+                .firstCategory(alertApiRequest.getFirstCategory())
+                .secondCategory(alertApiRequest.getSecondCategory())
+                .postId(alertApiRequest.getPostId())
+                .content(alertApiRequest.getContent()).build();
 
         if(alertApiRequest.getCommentId() != null) {
             Comment comment = commentRepository.findById(alertApiRequest.getCommentId())
@@ -104,6 +108,7 @@ public class AlertService {
                 .postId(alert.getPostId())
                 .checked(alert.getChecked())
                 .createdAt(alert.getCreatedAt())
+                .content(alert.getContent())
                 .build();
         return alertApiResponse;
     }
