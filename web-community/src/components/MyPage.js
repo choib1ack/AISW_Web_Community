@@ -143,7 +143,7 @@ function MakeAlertList({history}) {
 
     if (loading) return <Loading/>;
     if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
-    if (!alertData) return <div>데이터가 없습니다.</div>;
+    if (!alertData.data) return <div>데이터가 없습니다.</div>;
 
     let style = {
         borderRadius: '10px',
