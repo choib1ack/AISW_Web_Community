@@ -1,13 +1,12 @@
 package com.aisw.community.service.post.file;
 
-import com.aisw.community.advice.exception.FileStorageException;
-import com.aisw.community.advice.exception.MyFileNotFoundException;
+import com.aisw.community.component.advice.exception.FileStorageException;
+import com.aisw.community.component.advice.exception.MyFileNotFoundException;
 import com.aisw.community.config.storage.FileStorageProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
