@@ -15,7 +15,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 
 // login 요청해서 post로 username, password 전송하면 UsernamePasswordAuthenticationFilter 동작

@@ -52,6 +52,11 @@ public class BannerService {
     public Header<BannerApiResponse> create(FileUploadToBannerRequest request) {
         BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
 
+        String url = bannerApiRequest.getLinkUrl();
+        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+            bannerApiRequest.setLinkUrl("http://" + url);
+        }
+
         Banner banner = Banner.builder()
                 .name(bannerApiRequest.getName())
                 .content(bannerApiRequest.getContent())
@@ -103,6 +108,11 @@ public class BannerService {
         banner.getFileList().stream().forEach(file -> fileRepository.delete(file));
         banner.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, banner.getId(), UploadCategory.BANNER);
+
+        String url = bannerApiRequest.getLinkUrl();
+        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+            bannerApiRequest.setLinkUrl("http://" + url);
+        }
 
         banner.setName(bannerApiRequest.getName())
                 .setContent(bannerApiRequest.getContent())
