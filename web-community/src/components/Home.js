@@ -6,7 +6,7 @@ import {Link, useHistory} from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
 import HomeSiteImageSlide from "./HomeSiteImageSlide";
-import {Carousel} from "react-bootstrap";
+import {CarouselList} from "./AdminPage/CarouselList";
 
 export default function Home() {
 
@@ -14,7 +14,6 @@ export default function Home() {
     const ToLink = (url) => {
         history.push(url);
     }
-    // console.log("여기는 홈")
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -34,10 +33,10 @@ export default function Home() {
 
 
                 await axios.get("/home")
-                    .then(res =>{
-                        setHomeData(res.data.data);
-                    }
-                );
+                    .then(res => {
+                            setHomeData(res.data.data);
+                        }
+                    );
 
             } catch (e) {
                 setError(e);
@@ -55,7 +54,7 @@ export default function Home() {
 
     return (
         <div className="Home">
-            <MakeBannerCarousel
+            <CarouselList
                 banners={homeData.banner_list}
                 page="Home"
             />
@@ -64,25 +63,25 @@ export default function Home() {
             {/*<div className="IntegratedSearch" style={{width: "70%", marginLeft: "auto", marginRight: "auto", marginTop: "30px"}}>*/}
             {/*    <IntegratedSearch/>*/}
             {/*</div>*/}
-            <div style={{width: "70%", margin: "auto"}}>
+            <div style={{margin: "auto"}} className="content">
                 <Row style={{margin: "30px 0px", textAlign: "center"}}>
                     <Col lg={4} md={4} sm={4}>
                         <Link to="/deptInfo">
-                            <div className={"pingpong"} style={{color: "#636363"}}>
+                            <div className="pingpong" style={{color: "#636363"}}>
                                 학과 커리큘럼 확인하기
                             </div>
                         </Link>
                     </Col>
                     <Col lg={4} md={4} sm={4}>
                         <Link to="/Booklet">
-                            <div className={"pingpong"} style={{color: "#636363"}}>
+                            <div className="pingpong" style={{color: "#636363"}}>
                                 학번별 학사요람 확인하기
                             </div>
                         </Link>
                     </Col>
                     <Col lg={4} md={4} sm={4}>
                         <Link to="/GraduateCondition">
-                            <div className={"pingpong"} style={{color: "#636363"}}>
+                            <div className="pingpong" style={{color: "#636363"}}>
                                 졸업 요건 확인하기
                             </div>
                         </Link>
@@ -135,34 +134,6 @@ export default function Home() {
     )
 }
 
-function MakeBannerCarousel({bannerData}) {
-    let height = window.innerHeight * 0.3;
-
-    return (
-        <>
-            <Carousel style={{
-                border: "1px solid #E3E3E3", width: "100%", height: height + 1,
-                padding: "2px", display: "flex", justifyContent: "center", alignItems: "center"
-            }}
-            >
-                {bannerData!=null ? bannerData.map((data, index) => (
-                    data.publish_status &&
-                    (
-                        <Carousel.Item interval={1000} key={index}>
-                            <a href={data.link_url}>
-                                <img className="d-block" src={data.file_api_response_list[0].file_download_uri}
-                                     alt={index}
-                                     height={height}
-                                     style={{width: "100%", objectFit: "cover"}}/>
-                            </a>
-                        </Carousel.Item>
-                    )
-                )):null}
-            </Carousel>
-        </>
-    )
-}
-
 function MakeHomeNoticeList({noticeData}) {
 
     let history = useHistory();
@@ -171,7 +142,7 @@ function MakeHomeNoticeList({noticeData}) {
     }
 
     if (!noticeData) return null;
-    if (Object.keys(noticeData).length == 0) return <p>데이터가 없습니다.</p>;
+    if (Object.keys(noticeData).length === 0) return <p>데이터가 없습니다.</p>;
 
     return (
         <>
@@ -183,9 +154,7 @@ function MakeHomeNoticeList({noticeData}) {
 
             ))}
         </>
-
     );
-
 }
 
 function MakeHomeBoardList({boardData}) {
@@ -196,7 +165,7 @@ function MakeHomeBoardList({boardData}) {
     }
 
     if (!boardData) return null;
-    if (Object.keys(boardData).length == 0) return <p>데이터가 없습니다.</p>;
+    if (Object.keys(boardData).length === 0) return <p>데이터가 없습니다.</p>;
 
     return (
         <>
@@ -205,10 +174,7 @@ function MakeHomeBoardList({boardData}) {
                    className={"clickable"}>
                     {data.title} <span style={{float: "right"}}>{data.created_at.substring(0, 10)}</span>
                 </p>
-
             ))}
         </>
-
     );
-
 }
