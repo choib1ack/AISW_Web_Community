@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileUploadToQnaRequestDto {
+public class FileUploadToQnaRequest {
 
     private QnaApiRequest qnaApiRequest;
 
