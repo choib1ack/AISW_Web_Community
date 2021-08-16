@@ -13,28 +13,28 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping()
+@RequestMapping("/auth-admin/site")
 public class SiteInformationController {
 
     @Autowired
     private SiteInformationService siteInformationService;
 
-    @PostMapping("/auth-admin/site")
+    @PostMapping("")
     public Header<SiteInformationApiResponse> create(@ModelAttribute FileUploadToSiteRequest request) {
         return siteInformationService.create(request);
     }
 
-    @GetMapping("auth-admin/site")
+    @GetMapping("")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
         return siteInformationService.readAll();
     }
 
-    @PutMapping("/auth-admin/site")
+    @PutMapping("")
     public Header<SiteInformationApiResponse> update(@ModelAttribute FileUploadToSiteRequest request) {
         return siteInformationService.update(request);
     }
 
-    @DeleteMapping("/auth-admin/site/{id}")
+    @DeleteMapping("{id}")
     public Header delete(@PathVariable Long id) {
         return siteInformationService.delete(id);
     }
