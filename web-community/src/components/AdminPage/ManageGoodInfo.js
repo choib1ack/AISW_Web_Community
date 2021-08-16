@@ -15,7 +15,7 @@ function ManageGoodInfo({match}) {
     const [siteData, setSiteData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
 
     useEffect(() => {
         const fetchSiteData = async () => {
@@ -29,6 +29,7 @@ function ManageGoodInfo({match}) {
                 }
 
                 const response = await axiosApi.get("/auth-admin/site/");
+
                 setSiteData(Object.values(response.data.data));
                 setLoading(false);
             } catch (e) {

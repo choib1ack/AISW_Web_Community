@@ -19,7 +19,6 @@ function NewBoard() {
     const [modalShow, setModalShow] = useState(false);
     const board_type = useRef();
     board_type.current = watch("board_type");
-    const [refreshToken, setRefreshToken] = useState(() => window.localStorage.getItem("REFRESH_TOKEN") || null);
 
     // redux toolkit
     const write = useSelector(state => state.write)
@@ -32,24 +31,6 @@ function NewBoard() {
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
-
-            if (error.response.data.error === "JwtTokenExpired") {
-                axiosApi.post(`/${auth}/board/` + path,
-                    {data: data},
-                    {
-                        headers: {
-                            'Refresh_Token': refreshToken
-                        }
-                    }
-                ).then((res) => {
-                    setModalShow(true)   // 완료 모달 띄우기
-                }).catch(error => {
-                    let errorObject = JSON.parse(JSON.stringify(error));
-                    console.log(errorObject);
-                })
-            } else {
-                alert("글 게시에 실패하였습니다.") // 실패 메시지
-            }
         })
     }
 
@@ -97,6 +78,7 @@ function NewBoard() {
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
                                     <option value="qna">과목별게시판</option>
+                                    <option value="job">취업게시판</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>

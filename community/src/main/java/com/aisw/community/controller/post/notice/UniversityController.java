@@ -13,8 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -85,4 +94,20 @@ public class UniversityController implements CrudInterface<UniversityApiRequest,
 
         return noticePostService.searchByTitleOrContent(title, content, pageable);
     }
+//
+//    @GetMapping("/")
+//    public ResponseEntity<String> show() {
+//        RestTemplate restTemplate = new RestTemplate();
+//        String url = "http://localhost:3000/notices/count?num={num}&type={type}";
+//
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("num", 3);
+//        params.put("type", "all");
+//        System.out.println(params);
+//        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class, params);
+//
+//        System.out.println(responseEntity.getBody());
+//
+//        return responseEntity;
+//    }
 }

@@ -7,6 +7,8 @@ import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 
 function SiteModal(props) {
+    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
+
     const mode = (!props.info) ? "add" : "update";
 
     const default_info = mode === "add" ?
@@ -149,8 +151,10 @@ function SiteModal(props) {
         //     console.log(value);
         // }
 
+
         if (mode === "add") {
             axiosApi.post("/auth-admin/site", formData).then(res => {
+
                 props.setShow(false);
                 alert('새 사이트가 등록되었습니다.')
                 props.setSiteData(null);
