@@ -45,6 +45,9 @@ export default function Menu() {
             case "faq":
                 dispatch(setActiveTab(5));
                 break;
+            case "manage_page":
+                dispatch(setActiveTab(6));
+                break;
         }
     }
 
@@ -191,7 +194,8 @@ export default function Menu() {
                                             {userName}
                                         </button>
                                         <Link to="/manager">
-                                            <button className="Menu-button">
+                                            <button className="Menu-button"  name="manage_page" onClick={handleClickTab}
+                                                    style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
                                                 관리자페이지
                                             </button>
                                         </Link>
