@@ -72,6 +72,11 @@ public class CommentService {
                 .firstCategory(board.getFirstCategory())
                 .secondCategory(board.getSecondCategory())
                 .postId(board.getId()).build();
+        if(comment.getContent().length() < 20) {
+            alertApiRequest.setContent(comment.getContent());
+        } else {
+            alertApiRequest.setContent(comment.getContent().substring(0, 20));
+        }
         alertService.create(authentication, alertApiRequest);
 
         return Header.OK(response(newComment));
