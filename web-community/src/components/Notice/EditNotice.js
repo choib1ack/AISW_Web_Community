@@ -75,7 +75,7 @@ export default function EditNotice({match}, props) {
         <div className="EditNotice">
             <Container>
                 <FinishModal show={modalShow} link={`/notice`}
-                             title="공지사항" body="글 게시가 완료되었습니다 !"/>
+                             title="공지사항" body="글 수정이 완료되었습니다 !"/>
 
                 <Title text='공지사항 수정' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
