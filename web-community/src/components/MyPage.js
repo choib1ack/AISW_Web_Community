@@ -9,6 +9,10 @@ import {useDispatch, useSelector} from "react-redux";
 import './MyPage.css';
 import {logout} from "../features/userSlice";
 import {useHistory} from "react-router-dom";
+import Loading from "./Loading";
+import axiosApi from "../axiosApi";
+import newIcon from "../icon/new_icon.png"
+import moreIcon from "../icon/more_icon.png"
 
 export default function MyPage(props) {
     const history = useHistory();
@@ -18,7 +22,9 @@ export default function MyPage(props) {
     const dispatch = useDispatch()
 
     const [show, setShow] = useState(false);
+
     const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
+
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
@@ -91,7 +97,9 @@ export default function MyPage(props) {
                             borderRadius: '10px',
                             marginBottom: '10px'
                         }}>
-                            {makeAlertList()}
+                            <MakeAlertList
+                                history={history}
+                            />
                         </div>
                     </Container>
                 </Modal.Body>
@@ -100,44 +108,136 @@ export default function MyPage(props) {
     );
 }
 
-function makeAlertList(props) {
+function MakeAlertList({history}) {
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [alertData, setAlertData] = useState(
+        {
+            data: null,
+            page_info: null
+        });
+
+    useEffect(() => {
+        const fetchMyPageData = async () => {
+
+            try {
+
+                setLoading(true);
+                setError(null);
+
+                await axiosApi.get("/auth/alert")
+                    .then(res =>{
+                        setAlertData({
+                            data:res.data.data,
+                            page_info:res.data.pagination});
+                            console.log(res);
+                        }
+                    );
+
+            } catch (e) {
+                setError(e);
+            }
+            setLoading(false);
+        };
+
+        fetchMyPageData();
+    }, []);
+
+    if (loading) return <Loading/>;
+    if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
+    if (!alertData.data) return <div>데이터가 없습니다.</div>;
+
     let style = {
         borderRadius: '10px',
         backgroundColor: '#FFFFFF',
         border: '1px solid #E3E3E3',
         margin: '10px 30px 10px 30px',
         padding: '15px',
-        height: '70px'
+        height: '70px',
+        cursor: 'pointer'
     }
-    // let data = props.data;
-    let data = [
-        {
-            location: '자유게시판',
-            contents: '새로운 답글을 확인해보세요 : 소프트웨어학과 커리큘럼...',
-            datetime: '3분전'
-        },
-        {
-            location: '과목별게시판',
-            contents: '새로운 대댓글을 확인해보세요 : 감사함다',
-            datetime: '10분전'
-        },
-        {
-            location: '자유게시판',
-            contents: '누군가가 좋아요를 눌렀습니다',
-            datetime: '1일전'
+    let style_viewed = {
+        borderRadius: '10px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E3E3E3',
+        margin: '10px 30px 10px 30px',
+        padding: '15px',
+        height: '70px',
+        cursor: 'pointer',
+        opacity: '0.6'
+    }
+
+    const returnBoardName = (category) => {
+        switch (category) {
+            case "FREE":
+                return "자유게시판";
+            case "QNA":
+                return "과목별게시판";
+            case "JOB":
+                return "취업게시판";
         }
-    ]
-    let lists = [];
-    for (let i = 0; i < Object.keys(data).length; i++) {
-        lists.push(
-            <div key={i} style={style}>
-                <p style={{float: 'right', fontSize: '11px', color: '#8C8C8C'}}>{data[i].datetime}</p>
-                <p style={{fontSize: '12px', marginBottom: '5px'}}>{data[i].location}</p>
-                <p style={{fontSize: '11px', margin: 'none', color: '#8C8C8C'}}>
-                    {data[i].contents}
-                </p>
-            </div>
-        );
     }
-    return lists;
+
+    const returnAlertType = (alert_category) => {
+        switch (alert_category) {
+            case "COMMENT":
+                return "새로운 댓글이 등록되었습니다.";
+            case "NESTED_COMMENT":
+                return "새로운 대댓글이 등록되었습니다";
+            case "LIKE_POST":
+                return "누군가 게시물에 좋아요를 눌렀습니다.";
+            case "LIKE_COMMENT":
+                return "누군가 댓글에 좋아요를 눌렀습니다.";
+        }
+    }
+
+    // 출처 : https://kdinner.tistory.com/68
+    const timeExpression = (value) => {
+        const now = new Date();
+        const timeValue = new Date(value);
+
+        const betweenTime = Math.floor((now.getTime() - timeValue.getTime()) / 1000 / 60);
+        if (betweenTime < 1) return '방금';
+        if (betweenTime < 60) {
+            return `${betweenTime}분 전`;
+        }
+
+        const betweenTimeHour = Math.floor(betweenTime / 60);
+        if (betweenTimeHour < 24) {
+            return `${betweenTimeHour}시간 전`;
+        }
+
+        const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+        if (betweenTimeDay < 365) {
+            return `${betweenTimeDay}일 전`;
+        }
+
+        return `${Math.floor(betweenTimeDay / 365)}년 전`;
+    }
+
+    const ToLink = async (data) => {
+        history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
+        await axiosApi.get("/auth/alert/"+data.id);
+    }
+
+    }
+
+
+    return (
+        <>
+            {alertData.data.map((data, index)=>(
+                <div key={index} style={!data.checked?style:style_viewed}
+                     onClick={() => ToLink(data)}
+                >
+                    <p style={{float: 'right', fontSize: '11px', color: '#8C8C8C'}}>{timeExpression(data.created_at)}</p>
+                    <p style={{fontSize: '12px', marginBottom: '5px'}}>{returnBoardName(data.second_category)}
+                    {data.checked?null:<img src={newIcon} style={{width:"12px", height:"12px", marginLeft:"5px"}}/>}</p>
+                    <p style={{fontSize: '11px', margin: 'none', color: '#8C8C8C'}}>
+                        {returnAlertType(data.alert_category)}
+                    </p>
+                </div>
+            ))}
+        </>
+    );
 }

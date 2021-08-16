@@ -58,7 +58,9 @@ export default function BoardDetail({match}) {
             case "free":
                 return '자유게시판';
             case "qna":
-                return "과목별게시판";
+                return "과목별게시판 > "+boardDetailData.subject;
+            case "job":
+                return "취업게시판";
         }
     }
 
@@ -192,10 +194,10 @@ export default function BoardDetail({match}) {
                         <div>
                             <p style={{color: "#0472FD", fontSize: '12px'}}
                                className="d-inline-block mb-1 mr-2">{Category(board_category)}</p>
-                            <p style={{color: "#0472FD", fontSize: '12px'}}
-                               className="d-inline-block mb-1 mr-2"> > </p>
-                            <p style={{color: "#0472FD", fontSize: '12px'}}
-                               className="d-inline-block mb-1">{boardDetailData.subject}</p>
+                            {/*<p style={{color: "#0472FD", fontSize: '12px'}}*/}
+                            {/*   className="d-inline-block mb-1 mr-2"> > </p>*/}
+                            {/*<p style={{color: "#0472FD", fontSize: '12px'}}*/}
+                            {/*   className="d-inline-block mb-1">{boardDetailData.subject}</p>*/}
                         </div>
 
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
