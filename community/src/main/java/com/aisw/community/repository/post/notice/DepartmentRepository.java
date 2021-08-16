@@ -1,5 +1,6 @@
 package com.aisw.community.repository.post.notice;
 
+import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -24,5 +25,5 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     Page<Department> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Department> findAllByStatusOrStatus(BulletinStatus status1, BulletinStatus status2, Pageable pageable);
+    Page<Department> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
 }

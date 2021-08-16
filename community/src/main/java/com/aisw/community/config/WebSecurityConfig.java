@@ -1,10 +1,10 @@
 package com.aisw.community.config;
 
-import com.aisw.community.advice.handler.ExceptionHandlerFilter;
+import com.aisw.community.component.advice.handler.ExceptionHandlerFilter;
 import com.aisw.community.config.jwt.JwtAuthenticationFilter;
 import com.aisw.community.config.jwt.JwtAuthorizationFilter;
-import com.aisw.community.provider.JwtTokenProvider;
-import com.aisw.community.provider.RedisProvider;
+import com.aisw.community.component.provider.JwtTokenProvider;
+import com.aisw.community.component.provider.RedisProvider;
 import com.aisw.community.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

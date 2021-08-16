@@ -9,7 +9,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.repository.post.notice.UniversityRepository;
 import com.aisw.community.repository.user.UserRepository;
-import com.aisw.community.service.post.notice.UniversityApiLogicService;
+import com.aisw.community.service.post.notice.UniversityService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,7 +23,7 @@ import java.util.Optional;
 
 public class UniversityRepositoryTest extends CommunityApplicationTests {
     @Autowired
-    UniversityApiLogicService universityApiLogicService;
+    UniversityService universityService;
 
     // Dependency Injection (DI)
     @Autowired

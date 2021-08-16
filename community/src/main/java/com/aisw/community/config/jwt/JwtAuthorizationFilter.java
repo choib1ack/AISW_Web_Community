@@ -1,12 +1,11 @@
 package com.aisw.community.config.jwt;
 
-import com.aisw.community.advice.exception.TokenException;
+import com.aisw.community.component.advice.exception.TokenException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
-import com.aisw.community.provider.JwtTokenProvider;
-import com.aisw.community.provider.RedisProvider;
+import com.aisw.community.component.provider.JwtTokenProvider;
+import com.aisw.community.component.provider.RedisProvider;
 import com.aisw.community.repository.user.UserRepository;
-import com.auth0.jwt.exceptions.InvalidClaimException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
