@@ -71,6 +71,7 @@ function EditBoard({match}) {
                     status: "GENERAL",
                     title: data.title,
                 }
+                auth = 'auth';
             } else if (data.board_type === 'qna') {
                 temp = {
                     content: data.content,
@@ -80,6 +81,7 @@ function EditBoard({match}) {
                     subject: data.subject,
                     title: data.title,
                 }
+                auth = 'auth-student';
             }
             temp.id = id;
 

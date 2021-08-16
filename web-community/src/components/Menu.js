@@ -49,7 +49,7 @@ export default function Menu() {
     }
 
     const [modalShow, setModalShow] = useState(false);
-    const [userName, setUserName] = useState(() => JSON.parse(window.localStorage.getItem("USER_NAME")) || null);
+    const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
 
     // 이미 있는 회원인지 확인
     async function isExistUser(username, email) {
@@ -90,6 +90,7 @@ export default function Menu() {
                 window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization); // 토큰 저장
                 window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token); // 토큰 저장
                 window.localStorage.setItem("USER_NAME", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
+                window.localStorage.setItem("USER_DEPARTMENT", JSON.stringify(result.profileObj.givenName)); // 유저 이름 저장
 
                 history.push('/')   // 홈으로 가기
             }).catch(error => {
@@ -140,43 +141,33 @@ export default function Menu() {
                     <Col xs={6}>
                         <Link to="/notice">
                             <button className="Menu-button" name="notice" onClick={handleClickTab}
-                                    style={{color: active_menu.active == 1 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: active_menu.active === 1 ? "#0472FD" : "dimgrey"}}>
                                 공지사항
                             </button>
                         </Link>
                         <Link to="/board">
                             <button className="Menu-button" name="board" onClick={handleClickTab}
-                                    style={{color: active_menu.active == 2 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: active_menu.active === 2 ? "#0472FD" : "dimgrey"}}>
                                 게시판
                             </button>
                         </Link>
                         <Link to="/deptInfo">
                             <button className="Menu-button" name="dept_info" onClick={handleClickTab}
-                                    style={{color: active_menu.active == 3 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: active_menu.active === 3 ? "#0472FD" : "dimgrey"}}>
                                 학과정보
                             </button>
                         </Link>
 
-                        {/*<Link to="/jobInfo">*/}
-                        {/*    <button className="Menu-button">*/}
-                        {/*        채용정보*/}
-                        {/*    </button>*/}
-                        {/*</Link>*/}
-                        {/*<Link to="/contestInfo">*/}
-                        {/*    <button className="Menu-button">*/}
-                        {/*        공모전/대외활동*/}
-                        {/*    </button>*/}
-                        {/*</Link>*/}
                         <Link to="/goodInfo">
                             <button className="Menu-button" name="site" onClick={handleClickTab}
-                                    style={{color: active_menu.active == 4 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: active_menu.active === 4 ? "#0472FD" : "dimgrey"}}>
                                 유용한사이트
                             </button>
                         </Link>
 
                         <Link to="/faq">
                             <button className="Menu-button" name="faq" onClick={handleClickTab}
-                                    style={{color: active_menu.active == 5 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: active_menu.active === 5 ? "#0472FD" : "dimgrey"}}>
                                 FAQ
                             </button>
                         </Link>

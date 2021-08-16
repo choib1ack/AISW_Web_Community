@@ -1,20 +1,33 @@
-.pingpong{
-    border : 1px solid #E3E3E3;
-    padding : 20px;
+.pingpong {
+    border: 1px solid #E3E3E3;
+    padding: 20px;
     cursor: pointer;
     transition: all ease 0.3s;
 }
-.pingpong:hover{
+
+.pingpong:hover {
     /*box-shadow: 5px 5px 5px #6fd5ea;*/
     /*border : 1px solid #508893;*/
     transform: translateY(-5px);
     transition: all ease 0.3s;
 }
-.clickable{
+
+.clickable {
     cursor: pointer;
     transition: all ease 0.1s;
 }
-.clickable:hover{
+
+.clickable:hover {
     color: #0472FD;
     transition: all ease 0.1s;
+}
+
+.content {
+    width: 70%;
+}
+
+@media screen and (max-width: 768px) {
+    .content {
+        width: 100%;
+    }
 }

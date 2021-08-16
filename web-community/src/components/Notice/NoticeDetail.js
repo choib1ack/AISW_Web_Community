@@ -81,7 +81,7 @@ export default function NoticeDetail({match}) {
     }
 
     async function handleDelete() {
-        const delete_auth_url = (notice_category === 'council' ? 'auth-council' : 'auth');
+        const delete_auth_url = (notice_category === 'council' ? 'auth-council' : 'auth-admin');
 
         await axiosApi.delete(`/${delete_auth_url}/notice/${notice_category}/${id}`)
             .then((res) => {

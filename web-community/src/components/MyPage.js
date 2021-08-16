@@ -18,6 +18,8 @@ export default function MyPage(props) {
     const dispatch = useDispatch()
 
     const [show, setShow] = useState(false);
+    const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
+
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
 
@@ -72,7 +74,7 @@ export default function MyPage(props) {
                                     <p style={{
                                         fontSize: '12px',
                                         color: '#8C8C8C'
-                                    }}>{user.userData.college_name === "IT_CONVERGENCE" ? "IT융합대학" : "??대학"} {user.userData.department_name === "SOFTWARE" ? "소프트웨어학과" : "??과"} {user.userData.student_id}</p>
+                                    }}> {department}</p>
                                 </div>
                             </Col>
                             <Col xs={3} md={3}

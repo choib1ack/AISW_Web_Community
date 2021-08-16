@@ -13,7 +13,6 @@ import {useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axiosApi from "../../axiosApi";
-import {logOut} from "../MyPage";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -143,7 +142,7 @@ export default function BoardDetail({match}) {
     }
 
     async function handleDelete() {
-        await axiosApi.delete(`/auth-student/board/${board_category}/${id}`)
+        await axiosApi.delete(`/${auth_url}/board/${board_category}/${id}`)
             .then((res) => {
                 history.push('/board')  // BoardList로 이동
             }).catch(error => {
