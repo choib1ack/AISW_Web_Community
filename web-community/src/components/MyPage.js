@@ -11,6 +11,8 @@ import {logout} from "../features/userSlice";
 import {useHistory} from "react-router-dom";
 import Loading from "./Loading";
 import axiosApi from "../axiosApi";
+import newIcon from "../icon/new_icon.png"
+import moreIcon from "../icon/more_icon.png"
 
 export default function MyPage(props) {
     const history = useHistory();
@@ -107,7 +109,11 @@ function MakeAlertList({history}) {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [alertData, setAlertData] = useState(null);
+    const [alertData, setAlertData] = useState(
+        {
+            data: null,
+            page_info: null
+        });
 
     useEffect(() => {
         const fetchMyPageData = async () => {
@@ -119,8 +125,10 @@ function MakeAlertList({history}) {
 
                 await axiosApi.get("/auth/alert")
                     .then(res =>{
-                        setAlertData(res.data.data);
-                            console.log(res.data.data);
+                        setAlertData({
+                            data:res.data.data,
+                            page_info:res.data.pagination});
+                            console.log(res);
                         }
                     );
 
@@ -143,7 +151,18 @@ function MakeAlertList({history}) {
         border: '1px solid #E3E3E3',
         margin: '10px 30px 10px 30px',
         padding: '15px',
-        height: '70px'
+        height: '70px',
+        cursor: 'pointer'
+    }
+    let style_viewed = {
+        borderRadius: '10px',
+        backgroundColor: '#FFFFFF',
+        border: '1px solid #E3E3E3',
+        margin: '10px 30px 10px 30px',
+        padding: '15px',
+        height: '70px',
+        cursor: 'pointer',
+        opacity: '0.6'
     }
 
     const returnBoardName = (category) => {
@@ -194,19 +213,23 @@ function MakeAlertList({history}) {
         return `${Math.floor(betweenTimeDay / 365)}년 전`;
     }
 
-    const ToLink = (url) => {
-        history.push(url);
+    const ToLink = async (data) => {
+        history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
+        await axiosApi.get("/auth/alert/"+data.id);
+    }
+
     }
 
 
     return (
         <>
-            {alertData.map((data, index)=>(
-                <div key={index} style={style}
-                     onClick={() => ToLink(`/board/${data.second_category.toLowerCase()}/${data.id}`)}
+            {alertData.data.map((data, index)=>(
+                <div key={index} style={!data.checked?style:style_viewed}
+                     onClick={() => ToLink(data)}
                 >
                     <p style={{float: 'right', fontSize: '11px', color: '#8C8C8C'}}>{timeExpression(data.created_at)}</p>
-                    <p style={{fontSize: '12px', marginBottom: '5px'}}>{returnBoardName(data.second_category)}</p>
+                    <p style={{fontSize: '12px', marginBottom: '5px'}}>{returnBoardName(data.second_category)}
+                    {data.checked?null:<img src={newIcon} style={{width:"12px", height:"12px", marginLeft:"5px"}}/>}</p>
                     <p style={{fontSize: '11px', margin: 'none', color: '#8C8C8C'}}>
                         {returnAlertType(data.alert_category)}
                     </p>
