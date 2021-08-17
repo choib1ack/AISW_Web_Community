@@ -26,6 +26,7 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
+import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -60,6 +61,9 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     @Caching(evict = {
             @CacheEvict(value = "qnaReadAll", allEntries = true),
@@ -81,9 +85,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(user.getName())
@@ -123,9 +125,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(user.getName())
@@ -194,8 +194,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if(qna.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -236,8 +235,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
         Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if(qna.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -275,13 +273,12 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
     })
     public Header delete(Authentication authentication, Long id) {
         Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         if (qna.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(qna.getFileList());
         baseRepository.delete(qna);
         return Header.OK();
     }

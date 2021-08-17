@@ -134,6 +134,7 @@ public class SiteInformationService {
     public Header delete(Long id) {
         SiteInformation siteInformation = siteInformationRepository.findById(id)
                 .orElseThrow(() -> new SiteInformationNotFoundException(id));
+        fileService.delete(siteInformation.getFileList());
         siteInformationRepository.delete(siteInformation);
         return Header.OK();
     }

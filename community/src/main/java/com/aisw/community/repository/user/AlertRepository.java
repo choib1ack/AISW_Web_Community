@@ -13,4 +13,6 @@ import java.util.List;
 public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     Page<Alert> findAllByUserId(Long userId, Pageable pageable);
+
+    long countAlertByUserIdAndChecked(Long userId, Boolean checked);
 }

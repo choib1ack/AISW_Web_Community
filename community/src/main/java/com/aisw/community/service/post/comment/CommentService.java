@@ -15,6 +15,7 @@ import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.comment.CustomCommentRepository;
 import com.aisw.community.service.user.AlertService;
+import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -42,13 +43,15 @@ public class CommentService {
     @Autowired
     private AlertService alertService;
 
+    @Autowired
+    private UserService userService;
+
     @Transactional
     @CacheEvict(value = "commentSearchByPost", key = "#boardId")
     public Header<CommentApiResponse> create(Authentication authentication, Long boardId, Header<CommentApiRequest> request) {
         CommentApiRequest commentApiRequest = request.getData();
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
                 () -> new PostNotFoundException(commentApiRequest.getBoardId()));
 
@@ -88,8 +91,7 @@ public class CommentService {
         Comment comment = commentRepository.findCommentByIdWithSuperComment(commentId).orElseThrow(
                 () -> new CommentNotFoundException(commentId));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (comment.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }

@@ -23,6 +23,7 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
+import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -55,6 +56,9 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     @Caching(evict = {
             @CacheEvict(value = "jobReadAll", allEntries = true),
@@ -77,9 +81,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         Job job = Job.builder()
                 .title(jobApiRequest.getTitle())
                 .writer(user.getName())
@@ -119,9 +121,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         Job job = Job.builder()
                 .title(jobApiRequest.getTitle())
                 .writer(user.getName())
@@ -191,8 +191,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
         Job job = baseRepository.findById(jobApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(jobApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -233,8 +232,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
         Job job = baseRepository.findById(jobApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(jobApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -272,12 +270,12 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
     public Header delete(Authentication authentication, Long id) {
         Job job = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(job.getFileList());
         baseRepository.delete(job);
         return Header.OK();
     }

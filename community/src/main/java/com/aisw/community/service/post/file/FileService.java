@@ -91,6 +91,10 @@ public class FileService {
         return newFile;
     }
 
+    public void delete(List<File> fileList) {
+        fileList.stream().forEach(file -> fileStorageService.deleteFile(file));
+    }
+
     @Transactional
     public ResponseEntity<Resource> download(String fileName, HttpServletRequest request) {
         Resource resource = fileStorageService.loadFileAsResource(fileName);

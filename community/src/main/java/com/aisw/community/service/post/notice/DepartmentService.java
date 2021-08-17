@@ -21,6 +21,7 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.DepartmentRepository;
 import com.aisw.community.service.post.file.FileService;
+import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -49,6 +50,9 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     @Caching(evict = {
             @CacheEvict(value = "departmentReadAll", allEntries = true),
@@ -70,8 +74,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(user.getName())
@@ -108,8 +111,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(user.getName())
@@ -175,8 +177,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
         Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if(department.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -215,8 +216,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
         Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if(department.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -253,12 +253,12 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
     public Header delete(Authentication authentication, Long id) {
         Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (department.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(department.getFileList());
         baseRepository.delete(department);
         return Header.OK();
     }

@@ -88,8 +88,7 @@ public class UserService {
 
     public Header<UserApiResponse> update(Authentication authentication, Header<UserApiRequest> request) {
         UserApiRequest userApiRequest = request.getData();
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = getUser(authentication);
 
         user
                 .setName(userApiRequest.getName())
@@ -107,10 +106,14 @@ public class UserService {
     }
 
     public Header delete(Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = getUser(authentication);
         userRepository.delete(user);
         return Header.OK();
+    }
+
+    public User getUser(Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return principal.getUser();
     }
 
     private UserApiResponse response(User user) {
