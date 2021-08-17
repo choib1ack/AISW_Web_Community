@@ -221,7 +221,7 @@ function MakeAlertList({history}) {
         await axiosApi.get("/auth/alert/"+data.id);
     }
 
-    }
+
 
 
     return (
