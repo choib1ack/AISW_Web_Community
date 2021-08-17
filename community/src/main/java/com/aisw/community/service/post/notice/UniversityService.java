@@ -262,6 +262,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(university.getFileList());
         baseRepository.delete(university);
         return Header.OK();
     }

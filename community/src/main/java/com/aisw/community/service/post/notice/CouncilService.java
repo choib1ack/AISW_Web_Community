@@ -258,6 +258,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(council.getFileList());
         baseRepository.delete(council);
         return Header.OK();
     }

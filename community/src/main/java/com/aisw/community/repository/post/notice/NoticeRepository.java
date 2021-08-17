@@ -13,6 +13,7 @@ import java.util.List;
 
 @Repository
 public interface NoticeRepository<T extends Notice> extends JpaRepository<T, Long> {
+
     Page<Notice> findAllByWriterContaining(String writer, Pageable pageable);
 
     Page<Notice> findAllByTitleContaining(String title, Pageable pageable);

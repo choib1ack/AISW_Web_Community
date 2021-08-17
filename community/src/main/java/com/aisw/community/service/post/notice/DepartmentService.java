@@ -258,6 +258,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(department.getFileList());
         baseRepository.delete(department);
         return Header.OK();
     }

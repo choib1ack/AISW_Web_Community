@@ -275,6 +275,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(job.getFileList());
         baseRepository.delete(job);
         return Header.OK();
     }

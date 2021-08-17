@@ -278,6 +278,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(qna.getFileList());
         baseRepository.delete(qna);
         return Header.OK();
     }

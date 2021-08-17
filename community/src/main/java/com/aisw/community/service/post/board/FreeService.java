@@ -276,6 +276,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             throw new NotEqualUserException(user.getId());
         }
 
+        fileService.delete(free.getFileList());
         baseRepository.delete(free);
         return Header.OK();
     }
