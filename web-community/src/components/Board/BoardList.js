@@ -92,10 +92,10 @@ function BoardList({match}) {
                         <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
                         <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
                                onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
-                        <select className={"search-type"} value={searchData.search_type} onChange={handleSearchTypeChange}>
-                            <option selected value="select_title">제목</option>
-                            <option value="select_title_content">제목+내용</option>
-                            <option value="select_writer">작성자</option>
+                        <select className={"search-type"} defaultValue={searchData.search_type} onChange={handleSearchTypeChange}>
+                            <option selected defaultValue="select_title">제목</option>
+                            <option defaultValue="select_title_content">제목+내용</option>
+                            <option defaultValue="select_writer">작성자</option>
                         </select>
                     </Col>
                 </Row>

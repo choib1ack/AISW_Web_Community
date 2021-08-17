@@ -91,6 +91,13 @@ public class ApiExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FaqNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleException(FaqNotFoundException ex) {
+        ApiErrorResponse response =
+                new ApiErrorResponse("FaqNotFound", "faq is not found with ID: " + ex.getId());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(NotEqualUserException.class)
     public ResponseEntity<ApiErrorResponse> handleException(NotEqualUserException ex) {
         ApiErrorResponse response =

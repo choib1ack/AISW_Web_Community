@@ -6,6 +6,8 @@ import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.admin.SiteCategoryApiResponse;
 import com.aisw.community.repository.admin.SiteCategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +16,10 @@ public class SiteCategoryService {
     @Autowired
     private SiteCategoryRepository siteCategoryRepository;
 
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<SiteCategoryApiResponse> create(String name) {
         SiteCategory siteCategory = SiteCategory.builder().name(name).build();
         SiteCategory newSiteCategory = siteCategoryRepository.save(siteCategory);
@@ -21,6 +27,10 @@ public class SiteCategoryService {
         return Header.OK(response(newSiteCategory));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header<SiteCategoryApiResponse> update(Long id, String name) {
         SiteCategory siteCategory = siteCategoryRepository.findById(id)
                 .orElseThrow(() -> new SiteCategoryNotFoundException(id));
@@ -31,6 +41,10 @@ public class SiteCategoryService {
         return Header.OK(response(siteCategory));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(Long id) {
         SiteCategory siteCategory = siteCategoryRepository.findById(id)
                 .orElseThrow(() -> new SiteCategoryNotFoundException(id));
