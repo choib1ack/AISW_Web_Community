@@ -50,6 +50,11 @@ public class SiteInformationService {
     public Header<SiteInformationApiResponse> create(FileUploadToSiteRequest request) {
         SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
 
+        String url = siteInformationApiRequest.getLinkUrl();
+        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+            siteInformationApiRequest.setLinkUrl("http://" + url);
+        }
+
         SiteCategory siteCategory = siteCategoryRepository.findByName(siteInformationApiRequest.getCategory())
                 .orElseThrow(() -> new SiteCategoryNameNotFoundException(siteInformationApiRequest.getCategory()));
 
@@ -106,6 +111,11 @@ public class SiteInformationService {
         siteInformation.getFileList().stream().forEach(file -> fileRepository.delete(file));
         siteInformation.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, siteInformation.getId(), UploadCategory.SITE);
+
+        String url = siteInformationApiRequest.getLinkUrl();
+        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+            siteInformationApiRequest.setLinkUrl("http://" + url);
+        }
 
         siteInformation.setName(siteInformationApiRequest.getName())
                 .setContent(siteInformationApiRequest.getContent())
