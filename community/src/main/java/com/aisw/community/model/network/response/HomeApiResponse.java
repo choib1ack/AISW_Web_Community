@@ -18,6 +18,7 @@ import java.util.List;
 @Builder
 public class HomeApiResponse {
 
+    private Long unreadAlert;
     private List<BoardApiResponse> noticeList;
     private List<BoardApiResponse> boardList;
     private List<HomeBannerAndSiteResponse> bannerList;

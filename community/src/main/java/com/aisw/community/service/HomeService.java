@@ -1,5 +1,6 @@
 package com.aisw.community.service;
 
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.admin.Banner;
 import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.entity.post.Bulletin;
@@ -16,8 +17,10 @@ import com.aisw.community.repository.post.board.FreeRepository;
 import com.aisw.community.repository.post.board.QnaRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
 import com.aisw.community.repository.post.notice.NoticeRepository;
+import com.aisw.community.service.user.AlertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +41,9 @@ public class HomeService {
     @Autowired
     private SiteInformationRepository siteInformationRepository;
 
+    @Autowired
+    private AlertService alertService;
+
     @Cacheable(value = "home")
     public Header<HomeApiResponse> main() {
         List<Notice> noticeList = noticeRepository.findTop10ByOrderByCreatedAtDesc();
@@ -50,6 +56,14 @@ public class HomeService {
                 .siteList(siteInformationRepository.findAllFetchJoinWithFile()
                         .stream().map(siteInformation -> response(siteInformation)).collect(Collectors.toList()))
                 .build();
+
+        return Header.OK(homeApiResponse);
+    }
+
+    public Header<HomeApiResponse> mainForUser(Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        HomeApiResponse homeApiResponse = main().getData();
+        homeApiResponse.setUnreadAlert(alertService.getNumberOfUnreadAlert(principal.getUser().getId()));
 
         return Header.OK(homeApiResponse);
     }

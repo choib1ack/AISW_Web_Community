@@ -51,18 +51,18 @@ public class AlertService {
                 .postId(alertApiRequest.getPostId())
                 .content(alertApiRequest.getContent()).build();
 
-        if(alertApiRequest.getCommentId() != null) {
+        if (alertApiRequest.getCommentId() != null) {
             Comment comment = commentRepository.findById(alertApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(alertApiRequest.getCommentId()));
             alert.setComment(comment);
-            if(comment.getSuperComment() == null) alert.setAlertCategory(AlertCategory.COMMENT);
+            if (comment.getSuperComment() == null) alert.setAlertCategory(AlertCategory.COMMENT);
             else alert.setAlertCategory(AlertCategory.NESTED_COMMENT);
-        } else if(alertApiRequest.getContentLikeId() != null) {
+        } else if (alertApiRequest.getContentLikeId() != null) {
             ContentLike contentLike = contentLikeRepository.findById(alertApiRequest.getContentLikeId())
                     .orElseThrow(() -> new ContentLikeNotFoundException(alertApiRequest.getContentLikeId()));
             alert.setContentLike(contentLike);
-            if(contentLike.getBoard() != null) alert.setAlertCategory(AlertCategory.LIKE_POST);
-            else if(contentLike.getComment() != null) alert.setAlertCategory(AlertCategory.LIKE_COMMENT);
+            if (contentLike.getBoard() != null) alert.setAlertCategory(AlertCategory.LIKE_POST);
+            else if (contentLike.getComment() != null) alert.setAlertCategory(AlertCategory.LIKE_COMMENT);
         }
         Alert newAlert = alertRepository.save(alert);
         return Header.OK(response(newAlert));
@@ -89,7 +89,7 @@ public class AlertService {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
 
         Alert alert = alertRepository.findById(id).orElseThrow(() -> new AlertNotFoundException(id));
-        if(alert.getUser().getId() != principal.getUser().getId()) {
+        if (alert.getUser().getId() != principal.getUser().getId()) {
             throw new NotEqualUserException(id);
         }
 
@@ -97,6 +97,10 @@ public class AlertService {
         Alert updatedAlert = alertRepository.save(alert);
 
         return Header.OK(response(updatedAlert));
+    }
+
+    public long getNumberOfUnreadAlert(Long userId) {
+        return alertRepository.countAlertByUserIdAndChecked(userId, false);
     }
 
     private AlertApiResponse response(Alert alert) {
