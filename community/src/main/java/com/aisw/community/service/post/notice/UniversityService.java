@@ -21,6 +21,7 @@ import com.aisw.community.model.network.response.post.notice.UniversityApiRespon
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
 import com.aisw.community.service.post.file.FileService;
+import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -49,6 +50,9 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     @Caching(evict = {
             @CacheEvict(value = "universityReadAll", allEntries = true),
@@ -70,8 +74,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
                 .writer(user.getName())
@@ -109,8 +112,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
                 .writer(user.getName())
@@ -177,8 +179,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if(university.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -218,8 +219,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
         University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if(university.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -257,8 +257,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
     public Header delete(Authentication authentication, Long id) {
         University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (university.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }

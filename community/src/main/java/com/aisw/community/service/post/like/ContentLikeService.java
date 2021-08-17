@@ -14,6 +14,8 @@ import com.aisw.community.repository.post.board.BoardRepository;
 import com.aisw.community.repository.post.comment.CommentRepository;
 import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.user.AlertService;
+import com.aisw.community.service.user.UserService;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -38,13 +40,14 @@ public class ContentLikeService {
     @Autowired
     private AlertService alertService;
 
+    @Autowired
+    private UserService userService;
+
     @Transactional
     public Header<ContentLikeApiResponse> pressLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
         ContentLikeApiRequest contentLikeApiRequest = request.getData();
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         ContentLike newContentLike;
         AlertApiRequest alertApiRequest = new AlertApiRequest();
         if(contentLikeApiRequest.getBoardId() == null) {
@@ -113,8 +116,7 @@ public class ContentLikeService {
 
     @Transactional
     public Header removeLike(Authentication authentication, Long id, String target) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
 
         if(target.equals("COMMENT")) {
             Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));

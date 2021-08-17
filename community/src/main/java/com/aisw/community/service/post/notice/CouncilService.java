@@ -21,6 +21,7 @@ import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.CouncilRepository;
 import com.aisw.community.service.post.file.FileService;
+import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -49,6 +50,9 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     @Caching(evict = {
             @CacheEvict(value = "councilReadAll", allEntries = true),
@@ -66,12 +70,11 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     })
     public Header<CouncilApiResponse> create(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
                 .writer(user.getName())
@@ -104,12 +107,11 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     })
     public Header<CouncilApiResponse> create(Authentication authentication, FileUploadToCouncilRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
                 .writer(user.getName())
@@ -145,7 +147,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     public Header<CouncilApiResponse> read(Long id) {
         return baseRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
-                .map(council -> baseRepository.save((Council)council))
+                .map(council -> baseRepository.save((Council) council))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -168,16 +170,15 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     })
     public Header<CouncilApiResponse> update(Authentication authentication, Header<CouncilApiRequest> request) {
         CouncilApiRequest councilApiRequest = request.getData();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
         }
 
         Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-        if(council.getUser().getId() != user.getId()) {
+        User user = userService.getUser(authentication);
+        if (council.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
@@ -208,16 +209,15 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     })
     public Header<CouncilApiResponse> update(Authentication authentication, FileUploadToCouncilRequest request) {
         CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
-        if(councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
         }
 
         Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-        if(council.getUser().getId() != user.getId()) {
+        User user = userService.getUser(authentication);
+        if (council.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
@@ -253,8 +253,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     public Header delete(Authentication authentication, Long id) {
         Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (council.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -377,10 +376,9 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
                     .views(notice.getViews())
                     .writer(notice.getWriter())
                     .build();
-            if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
+            if (noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 noticeApiNoticeResponseList.add(noticeApiResponse);
-            }
-            else if(noticeApiResponse.getStatus() == BulletinStatus.URGENT) {
+            } else if (noticeApiResponse.getStatus() == BulletinStatus.URGENT) {
                 noticeApiUrgentResponseList.add(noticeApiResponse);
             }
         });

@@ -26,6 +26,7 @@ import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
 import com.aisw.community.service.post.like.ContentLikeService;
+import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -60,6 +61,9 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
     @Autowired
     private ContentLikeService contentLikeService;
 
+    @Autowired
+    private UserService userService;
+
     @Override
     @Caching(evict = {
             @CacheEvict(value = "freeReadAll", allEntries = true),
@@ -81,9 +85,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
                 .writer(user.getName())
@@ -122,9 +124,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
         }
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-
+        User user = userService.getUser(authentication);
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
                 .writer(user.getName())
@@ -193,8 +193,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -234,8 +233,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
         Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -273,8 +271,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
     public Header delete(Authentication authentication, Long id) {
         Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        User user = principal.getUser();
+        User user = userService.getUser(authentication);
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
