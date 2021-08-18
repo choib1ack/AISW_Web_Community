@@ -7,8 +7,6 @@ import {useForm} from "react-hook-form";
 import {useDispatch, useSelector} from "react-redux";
 import {login} from "../features/userSlice";
 import axios from "axios";
-import GoogleLogin from 'react-google-login';
-import Button from "react-bootstrap/Button";
 
 export default function Login(props) {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
@@ -18,7 +16,6 @@ export default function Login(props) {
     // password.current = watch("password");
     const history = useHistory();
 
-    // redux toolkit
     const dispatch = useDispatch()
 
     async function getLoginUser(data) {

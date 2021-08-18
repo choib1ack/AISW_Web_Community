@@ -7,7 +7,6 @@ import Col from "react-bootstrap/Col";
 import PersonImage from "../image/person.svg"
 import {useDispatch, useSelector} from "react-redux";
 import './MyPage.css';
-import {logout} from "../features/userSlice";
 import {useHistory} from "react-router-dom";
 
 export default function MyPage(props) {
@@ -16,9 +15,9 @@ export default function MyPage(props) {
     // redux toolkit
     const dispatch = useDispatch();
     const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
+    const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
 
     const [show, setShow] = useState(false);
-    const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
@@ -28,7 +27,6 @@ export default function MyPage(props) {
 
         window.localStorage.clear();
 
-        dispatch(logout())
         history.push('/')   // 홈으로 가기
     }
 
