@@ -1,37 +1,58 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import axios from "axios";
+
+export const checkExist = createAsyncThunk("CHECK_EXIST", async ({username, email}) => {
+    return axios.post(`/user/verification`, {
+        data: {
+            'username': username,
+            'email': email
+        }
+    }).then((res) => {
+        return {...res.data.data, 'username': username};
+    }).catch(error => error);
+});
+
+export const login = createAsyncThunk("LOGIN", async (username) => {
+    return axios.post(`/login`, {
+        'username': username,
+        'password': 'AISW',
+    }).then((res) => {
+        window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization);
+        window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token);
+    }).catch(error => error);
+});
 
 export const userSlice = createSlice({
-    name: 'userReducer',
+    name: 'user',
     initialState: {
-        userData: [],
-        isLoading: false,
+        userData: null,
         isOnline: false,
-        error: false
+        error: '',
+        exist: [],
     },
     reducers: {
-        startLoading: (state) => {
-            state.isLoading = true;
-        },
-        hasError: (state, action) => {
-            state.error = action.payload;
-            state.isLoading = false;
-        },
-        join: (state, action) => {
-            state.isLoading = false;
-        },
-        login: (state, action) => {
+        setUserData: (state, action) => {
             state.userData = action.payload;
-            state.isOnline = true;
+        }
+    },
+    extraReducers: {
+        [checkExist.fulfilled]: (state, action) => {
+            state.exist = action.payload;
+            state.error = '';
         },
-        logout: (state) => {
-            state.isOnline = false;
+        [checkExist.rejected]: (state, action) => {
+            state.error = action.payload;
         },
-        setOnline: (state) => {
+        [login.fulfilled]: (state) => {
             state.isOnline = true;
+            state.error = '';
+        },
+        [login.rejected]: (state, action) => {
+            state.error = action.payload;
         }
     }
 })
 
-export const {startLoading, hasError, join, login, logout, setOnline} = userSlice.actions
+export const {setUserData} = userSlice.actions
 
 export default userSlice.reducer

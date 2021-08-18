@@ -20,10 +20,8 @@ export default function Join() {
     const [agree, setAgree] = useState(false);
     const history = useHistory();
 
-    // redux toolkit
     const dispatch = useDispatch();
 
-    // 회원가입 완료 모달
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
 

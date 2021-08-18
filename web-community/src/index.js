@@ -21,6 +21,7 @@ import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css';
 
 import {Provider} from "react-redux";
+import {composeWithDevTools} from "redux-devtools-extension";
 
 const persistConfig = {
     key: 'root',
@@ -28,7 +29,7 @@ const persistConfig = {
     storage
 }
 
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+const persistedReducer = persistReducer(persistConfig, rootReducer, composeWithDevTools());
 
 const store = configureStore({
     reducer: persistedReducer,
@@ -42,13 +43,11 @@ const store = configureStore({
 let persistor = persistStore(store)
 
 ReactDOM.render(
-    // <React.StrictMode>
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 <App />
             </PersistGate>
         </Provider>,
-      // </React.StrictMode>,
     document.getElementById('root')
 );
 

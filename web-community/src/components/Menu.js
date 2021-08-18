@@ -7,22 +7,25 @@ import {Link, useHistory} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./MyPage";
-import Button from "react-bootstrap/Button";
 import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
-import {setOnline, logout, login, join} from "../features/userSlice";
-import axios from "axios";
 import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
+import {checkExist, login, setUserData} from "../features/userSlice";
 
 export default function Menu() {
+    const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
+    const [modalShow, setModalShow] = useState(false);
+    const [result, setResult] = useState(null);
+    const [mode, setMode] = useState(null);
+
+    const active_menu = useSelector(state => state.menu);
+    const {userData, exist, isOnline} = useSelector(state => state.user);
+    const dispatch = useDispatch();
+
     const history = useHistory();
 
-    // redux toolkit
-    const user = useSelector(state => state.user)
-    const active_menu = useSelector(state => state.menu)
-    const dispatch = useDispatch()
-
-    // const [activeTab, setActiveTab] = useState(0);
+    const handleJoinFailure = (result) => console.log(result);
+    const handleLoginFailure = (result) => console.log(result);
 
     const handleClickTab = (event) => {
         let name = event.target.name;
@@ -51,86 +54,50 @@ export default function Menu() {
         }
     }
 
-    const [modalShow, setModalShow] = useState(false);
-    const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
+    // 구글 연동 회원가입 성공시
+    function handleJoinSuccess(result) {
+        const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
+        const email = result.profileObj.email;
+        setResult(result);
 
-    // 이미 있는 회원인지 확인
-    async function isExistUser(username, email) {
-        let result = {validation: null, account: null};
-
-        await axios.post(`/user/verification`, {
-            headers: {
-                "Content-Type": `application/json`
-            },
-            data: {
-                username: username,
-                email: email
-            }
-        }).then((res) => {
-            result.validation = res.data.data.validation === true;
-            result.account = res.data.data.account;
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생", errorObject);
-        })
-
-        return result;
+        dispatch(checkExist({username, email}));  // 서버에 user 가 등록되어 있는지 확인
+        setMode('Join');
     }
 
-    // 구글 연동 성공시
+    // 구글 연동 로그인 성공시
     async function handleLoginSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
-        const isExist = await isExistUser(username, email);
+        const userData = {
+            'name': result.profileObj.familyName,
+            'department': result.profileObj.givenName
+        };
 
-        if (isExist.validation === false) {
-            alert("회원가입이 필요합니다.");
-        } else {
-            await axios.post(`/login`, {
-                username: username,
-                password: 'AISW',
-            }).then((res) => {
-                window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization); // 토큰 저장
-                window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token); // 토큰 저장
-                window.localStorage.setItem("USER_NAME", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
-                window.localStorage.setItem("USER_DEPARTMENT", JSON.stringify(result.profileObj.givenName)); // 유저 이름 저장
-
-                history.push('/')   // 홈으로 가기
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log("에러 발생", errorObject);
-            })
-        }
+        dispatch(checkExist({username, email}));  // 서버에 user 가 등록되어 있는지 확인
+        dispatch(setUserData(userData));    // 메뉴를 위한 정보 저장
+        setMode('Login');
     }
 
-    // 구글 연동 실패시
-    const handleLoginFailure = (result) => {
-        console.log("구글 연동 실패", result)
-    }
-
-    // 구글 연동 회원가입 성공시
-    async function handleJoinSuccess(result) {
-        const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
-        const email = result.profileObj.email;
-        const isExist = await isExistUser(username, email);
-
-        if (isExist.validation === true) {
-            alert("이미 가입된 회원입니다.")
-        } else {
-            let roll;
-            if (isExist[1] === 'gachon') {
-                roll = 'STUDENT';
+    useEffect(() => {
+        if (mode === 'Join') {
+            if (exist.validation === true) {
+                alert("이미 가입된 회원입니다.");
             } else {
-                roll = 'GENERAL';
+                const roll = exist.account === 'general' ? 'GENERAL' : 'STUDENT';
+                history.push({pathname: '/join', state: {google_data: result, account_role: roll}});
             }
-            history.push({pathname: '/join', state: {google_data: result, account_role: roll}})
+        } else if (mode === 'Login') {
+            if (exist.validation === false) {
+                alert("회원가입이 필요합니다.");
+            } else {
+                dispatch(login(exist.username));
+            }
         }
-    }
+    }, [exist]);
 
-    // 구글 연동 회원가입 실패시
-    const handleJoinFailure = (result) => {
-        console.log("구글 연동 실패", result)
-    }
+    useEffect(() => {
+        setAccessToken(window.localStorage.getItem("ACCESS_TOKEN"));
+    }, [isOnline]);
 
     return (
         <div className="Menu">
@@ -138,7 +105,7 @@ export default function Menu() {
                 <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>
                         <Link to="/">
-                            <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab}/>
+                            <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
                         </Link>
                     </Col>
                     <Col xs={6}>
@@ -177,12 +144,12 @@ export default function Menu() {
                     </Col>
 
                     {
-                        (userName != null) ?
+                        (accessToken) ?
                             (
                                 <>
                                     <Col xs={3}>
                                         <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {userName}
+                                            {userData.name} {userData.department}
                                         </button>
                                         <Link to="/manager">
                                             <button className="Menu-button"  name="manage_page" onClick={handleClickTab}

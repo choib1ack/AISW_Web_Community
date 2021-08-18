@@ -11,9 +11,6 @@ const WriteEditorContainer = (props) => {
 
     const dispatch = useDispatch();
 
-    // 미리 있는 데이터 불러오기
-    // const {value} = useSelector(state => state.write);
-
     const onChangeContent = useCallback((state) => {
         const value = draftToHtml(convertToRaw(state.getCurrentContent()));
 
@@ -24,13 +21,13 @@ const WriteEditorContainer = (props) => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (props.type=="edit") {
+        if (props.type === "edit") {
             const {contentBlocks, entityMap} = htmlToDraft(props.text);
 
             const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
             const editorValueState = EditorState.createWithContent(contentState);
             setEditorState(editorValueState);
-        }else if(props.type=="new"){
+        } else if (props.type === "new") {
             const {contentBlocks, entityMap} = htmlToDraft('');
 
             const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);

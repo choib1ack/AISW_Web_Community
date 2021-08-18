@@ -7,7 +7,6 @@ import Col from "react-bootstrap/Col";
 import PersonImage from "../image/person.svg"
 import {useDispatch, useSelector} from "react-redux";
 import './MyPage.css';
-import {logout} from "../features/userSlice";
 import {useHistory} from "react-router-dom";
 import Loading from "./Loading";
 import axiosApi from "../axiosApi";
@@ -18,13 +17,11 @@ export default function MyPage(props) {
     const history = useHistory();
 
     // redux toolkit
-    const user = useSelector(state => state.user)
-    const dispatch = useDispatch()
-
-    const [show, setShow] = useState(false);
-
+    const dispatch = useDispatch();
+    const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
     const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
 
+    const [show, setShow] = useState(false);
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
@@ -34,7 +31,6 @@ export default function MyPage(props) {
 
         window.localStorage.clear();
 
-        dispatch(logout())
         history.push('/')   // 홈으로 가기
     }
 
@@ -76,7 +72,7 @@ export default function MyPage(props) {
                             <Col xs={8} md={8}>
 
                                 <div style={{marginLeft: "10px"}}>
-                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{user.userData.name}</p>
+                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{userName}</p>
                                     <p style={{
                                         fontSize: '12px',
                                         color: '#8C8C8C'
