@@ -1,12 +1,28 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import axios from "axios";
+
+export const checkUser = createAsyncThunk("CHECK_USER", async (userName, email) => {
+    return axios.post(`/user/verification`, {
+        // headers: {
+        //     "Content-Type": `application/json`
+        // },
+        data: {
+            username: userName,
+            email: email
+        }
+    })
+        .then((res) => res.data.data)
+        .catch(error => error);
+});
 
 export const userSlice = createSlice({
-    name: 'userReducer',
+    name: 'user',
     initialState: {
         userData: [],
         isLoading: false,
         isOnline: false,
-        error: false
+        error: false,
+        check: []
     },
     reducers: {
         startLoading: (state) => {
@@ -28,6 +44,14 @@ export const userSlice = createSlice({
         },
         setOnline: (state) => {
             state.isOnline = true;
+        }
+    },
+    extraReducers: {
+        [checkUser.fulfilled]: (state, action) => {
+            state.check = action.payload;
+        },
+        [checkUser.rejected]: (state, action) => {
+            state.error = action.payload;
         }
     }
 })

@@ -19,7 +19,6 @@ export default function Login(props) {
     const history = useHistory();
 
     // redux toolkit
-    const user = useSelector(state => state.user)
     const dispatch = useDispatch()
 
     async function getLoginUser(data) {

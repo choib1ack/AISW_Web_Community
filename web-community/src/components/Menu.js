@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -7,22 +7,25 @@ import {Link, useHistory} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./MyPage";
-import Button from "react-bootstrap/Button";
 import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
-import {setOnline, logout, login, join} from "../features/userSlice";
 import axios from "axios";
 import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
+import {checkUser} from "../features/userSlice";
 
 export default function Menu() {
+    const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
+    const [modalShow, setModalShow] = useState(false);
+
+    const active_menu = useSelector(state => state.menu);
+    const {check} = useSelector(state => state.user);
+    const dispatch = useDispatch();
+    console.log(check, 'check');
+
     const history = useHistory();
 
-    // redux toolkit
-    const user = useSelector(state => state.user)
-    const active_menu = useSelector(state => state.menu)
-    const dispatch = useDispatch()
-
-    // const [activeTab, setActiveTab] = useState(0);
+    const handleJoinFailure = (result) => console.log(result);
+    const handleLoginFailure = (result) => console.log(result);
 
     const handleClickTab = (event) => {
         let name = event.target.name;
@@ -48,86 +51,76 @@ export default function Menu() {
         }
     }
 
-    const [modalShow, setModalShow] = useState(false);
-    const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
-
-    // 이미 있는 회원인지 확인
-    async function isExistUser(username, email) {
-        let result = {validation: null, account: null};
-
-        await axios.post(`/user/verification`, {
-            headers: {
-                "Content-Type": `application/json`
-            },
-            data: {
-                username: username,
-                email: email
-            }
-        }).then((res) => {
-            result.validation = res.data.data.validation === true;
-            result.account = res.data.data.account;
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생", errorObject);
-        })
-
-        return result;
-    }
-
-    // 구글 연동 성공시
-    async function handleLoginSuccess(result) {
-        const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
-        const email = result.profileObj.email;
-        const isExist = await isExistUser(username, email);
-
-        if (isExist.validation === false) {
-            alert("회원가입이 필요합니다.");
-        } else {
-            await axios.post(`/login`, {
-                username: username,
-                password: 'AISW',
-            }).then((res) => {
-                window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization); // 토큰 저장
-                window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token); // 토큰 저장
-                window.localStorage.setItem("USER_NAME", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
-                window.localStorage.setItem("USER_DEPARTMENT", JSON.stringify(result.profileObj.givenName)); // 유저 이름 저장
-
-                history.push('/')   // 홈으로 가기
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log("에러 발생", errorObject);
-            })
-        }
-    }
-
-    // 구글 연동 실패시
-    const handleLoginFailure = (result) => {
-        console.log("구글 연동 실패", result)
-    }
-
     // 구글 연동 회원가입 성공시
     async function handleJoinSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
-        const isExist = await isExistUser(username, email);
 
-        if (isExist.validation === true) {
+        dispatch(checkUser(username, email));
+        // const isExist = await isExistUser(username, email);
+
+        if (check.validation === true) {
             alert("이미 가입된 회원입니다.")
         } else {
             let roll;
-            if (isExist[1] === 'gachon') {
+            console.log(check.account, 'account');
+            if (check.account === 'gachon') {
                 roll = 'STUDENT';
             } else {
                 roll = 'GENERAL';
             }
-            history.push({pathname: '/join', state: {google_data: result, account_role: roll}})
+            // history.push({pathname: '/join', state: {google_data: result, account_role: roll}})
         }
     }
 
-    // 구글 연동 회원가입 실패시
-    const handleJoinFailure = (result) => {
-        console.log("구글 연동 실패", result)
+    // 구글 연동 성공시
+    async function handleLoginSuccess(result) {
+        // const userName = result.tokenObj.idpId + '_' + result.profileObj.googleId;
+        // const email = result.profileObj.email;
+        // const isExist = await isExistUser(userName, email);
+        //
+        // if (isExist.validation === false) {
+        //     alert("회원가입이 필요합니다.");
+        // } else {
+        //     await axios.post(`/login`, {
+        //         username: username,
+        //         password: 'AISW',
+        //     }).then((res) => {
+        //         window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization); // 토큰 저장
+        //         window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token); // 토큰 저장
+        //         window.localStorage.setItem("USER_NAME", JSON.stringify(result.profileObj.familyName)); // 유저 이름 저장
+        //         window.localStorage.setItem("USER_DEPARTMENT", JSON.stringify(result.profileObj.givenName)); // 유저 이름 저장
+        //
+        //         history.push('/')   // 홈으로 가기
+        //     }).catch(error => {
+        //         let errorObject = JSON.parse(JSON.stringify(error));
+        //         console.log("에러 발생", errorObject);
+        //     })
+        // }
     }
+
+    // // 이미 있는 회원인지 확인
+    // async function isExistUser(userName, email) {
+    //     let result = {validation: null, account: null};
+    //
+    //     await axios.post(`/user/verification`, {
+    //         headers: {
+    //             "Content-Type": `application/json`
+    //         },
+    //         data: {
+    //             username: userName,
+    //             email: email
+    //         }
+    //     }).then((res) => {
+    //         result.validation = res.data.data.validation === true;
+    //         result.account = res.data.data.account;
+    //     }).catch(error => {
+    //         let errorObject = JSON.parse(JSON.stringify(error));
+    //         console.log("에러 발생", errorObject);
+    //     })
+    //
+    //     return result;
+    // }
 
     return (
         <div className="Menu">

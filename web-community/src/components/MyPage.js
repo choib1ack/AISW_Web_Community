@@ -14,8 +14,8 @@ export default function MyPage(props) {
     const history = useHistory();
 
     // redux toolkit
-    const user = useSelector(state => state.user)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
 
     const [show, setShow] = useState(false);
     const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
@@ -70,7 +70,7 @@ export default function MyPage(props) {
                             <Col xs={8} md={8}>
 
                                 <div style={{marginLeft: "10px"}}>
-                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{user.userData.name}</p>
+                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{userName}</p>
                                     <p style={{
                                         fontSize: '12px',
                                         color: '#8C8C8C'
