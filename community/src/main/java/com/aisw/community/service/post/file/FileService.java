@@ -51,7 +51,6 @@ public class FileService {
     private SiteInformationRepository siteInformationRepository;
 
     @Transactional
-    @CacheEvict(value = "getFileList", key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#category.name, #id)")
     public List<FileApiResponse> uploadFiles(MultipartFile[] multipartFiles, Long id, UploadCategory category) {
         return Arrays.asList(multipartFiles)
                 .stream()
@@ -115,7 +114,6 @@ public class FileService {
                 .body(resource);
     }
 
-    @Cacheable(value = "getFileList", key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#category.name, #id)")
     public List<FileApiResponse> getFileList(List<File> fileList, UploadCategory category, Long id) {
         return fileList.stream().map(this::response).collect(Collectors.toList());
     }
