@@ -1,13 +1,14 @@
 package com.aisw.community.service.post.file;
 
-import com.aisw.community.advice.exception.FileStorageException;
-import com.aisw.community.advice.exception.MyFileNotFoundException;
+import com.aisw.community.component.advice.exception.FileStorageException;
+import com.aisw.community.component.advice.exception.MyFileNotFoundException;
 import com.aisw.community.config.storage.FileStorageProperties;
+import com.aisw.community.model.entity.post.file.File;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Service
+@Slf4j
 public class FileStorageService {
 
     private final Path fileStorageLocation;
@@ -48,6 +50,15 @@ public class FileStorageService {
             return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file: " + fileName, ex);
+        }
+    }
+
+    public void deleteFile(File file) {
+        Path targetLocation = this.fileStorageLocation.resolve(file.getFileName());
+        try {
+            Files.deleteIfExists(targetLocation);
+        } catch (IOException ex) {
+            throw new FileStorageException("Delete file error: " + targetLocation, ex);
         }
     }
 

@@ -27,8 +27,6 @@ public class UserApiResponse {
 
     private Grade grade;
 
-    private String studentId;
-
     private LocalDateTime createdAt;
 
     private String createdBy;
@@ -40,8 +38,6 @@ public class UserApiResponse {
     private Gender gender;
 
     private String university;
-
-    private String collegeName;
 
     private String departmentName;
 

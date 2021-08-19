@@ -1,8 +1,8 @@
 package com.aisw.community.config.jwt;
 
-import com.aisw.community.model.network.request.user.LoginApiRequest;
-import com.aisw.community.provider.JwtTokenProvider;
-import com.aisw.community.provider.RedisProvider;
+import com.aisw.community.model.network.request.user.LoginRequest;
+import com.aisw.community.component.provider.JwtTokenProvider;
+import com.aisw.community.component.provider.RedisProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +15,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 
 // login 요청해서 post로 username, password 전송하면 UsernamePasswordAuthenticationFilter 동작
@@ -46,16 +46,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // request에 있는 username과 password를 파싱해서 자바 Object로 받기
         ObjectMapper om = new ObjectMapper();
-        LoginApiRequest loginApiRequest = null;
+        LoginRequest loginRequest = null;
         try {
-            loginApiRequest = om.readValue(request.getInputStream(), LoginApiRequest.class);
+            loginRequest = om.readValue(request.getInputStream(), LoginRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
         // 유저네임패스워드 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginApiRequest.getUsername(),
-                loginApiRequest.getPassword());
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword());
+
 
         System.out.println("JwtAuthenticationFilter : 토큰생성완료");
 

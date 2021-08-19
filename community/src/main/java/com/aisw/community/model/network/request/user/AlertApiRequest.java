@@ -24,4 +24,6 @@ public class AlertApiRequest {
     private SecondCategory secondCategory;
 
     private Long postId;
+
+    private String content;
 }

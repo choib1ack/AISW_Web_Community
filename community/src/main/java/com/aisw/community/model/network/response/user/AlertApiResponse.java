@@ -28,4 +28,6 @@ public class AlertApiResponse {
     private LocalDateTime createdAt;
 
     private Boolean checked;
+
+    private String content;  
 }
