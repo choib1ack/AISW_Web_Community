@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface CouncilRepository extends JpaRepository<Council, Long> {
 
     @Query("select council from Council council left join fetch council.fileList where council.id = :id")

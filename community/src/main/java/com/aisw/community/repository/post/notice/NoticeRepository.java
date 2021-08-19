@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface NoticeRepository<T extends Notice> extends JpaRepository<T, Long> {
 
     Page<Notice> findAllByWriterContaining(String writer, Pageable pageable);
