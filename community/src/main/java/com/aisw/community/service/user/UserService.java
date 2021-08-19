@@ -41,7 +41,6 @@ public class UserService {
                 .phoneNumber(userApiRequest.getPhoneNumber())
                 .grade(userApiRequest.getGrade())
                 .gender(userApiRequest.getGender())
-                .university(userApiRequest.getUniversity())
                 .departmentName(userApiRequest.getDepartmentName())
                 .role(userApiRequest.getRole())
                 .build();
@@ -86,7 +85,6 @@ public class UserService {
                 .setPhoneNumber(userApiRequest.getPhoneNumber())
                 .setGrade(userApiRequest.getGrade())
                 .setGender(userApiRequest.getGender())
-                .setUniversity(userApiRequest.getUniversity())
                 .setDepartmentName(userApiRequest.getDepartmentName());
         User newUser = userRepository.save(user);
 
@@ -113,7 +111,6 @@ public class UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .grade(user.getGrade())
                 .gender(user.getGender())
-                .university(user.getUniversity())
                 .departmentName(user.getDepartmentName())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
