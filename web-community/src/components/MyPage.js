@@ -24,16 +24,10 @@ export default function MyPage(props) {
     const [show, setShow] = useState(false);
 
 
-    const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
+    // const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
     const [currentPage, setCurrentPage] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const handleShow = () => {
-        setShow(true);
-    }
-    const handleClose = () => {
-        setShow(false);
-    }
 
     useEffect(() => {
         if (accessToken) {
