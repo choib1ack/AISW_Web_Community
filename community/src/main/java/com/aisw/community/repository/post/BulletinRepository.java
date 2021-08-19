@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface BulletinRepository<T extends Bulletin> extends JpaRepository<T, Long> {
     Page<Bulletin> findAllByWriterContaining(String writer, Pageable pageable);
 

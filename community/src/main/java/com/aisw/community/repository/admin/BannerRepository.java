@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface BannerRepository extends JpaRepository<Banner, Long> {
 
     @Query("select banner from Banner banner left join fetch banner.fileList " +
