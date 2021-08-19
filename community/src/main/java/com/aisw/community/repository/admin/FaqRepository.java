@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface FaqRepository extends JpaRepository<Faq, Long> {
 }

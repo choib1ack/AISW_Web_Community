@@ -11,7 +11,7 @@ import static com.aisw.community.model.entity.post.comment.QComment.comment;
 
 @RequiredArgsConstructor
 @Repository
-public class CommentRepositoryImpl implements CustomCommentRepository {
+public class CustomCommentRepositoryImpl implements CustomCommentRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 

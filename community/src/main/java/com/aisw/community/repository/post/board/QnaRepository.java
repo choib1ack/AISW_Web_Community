@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface QnaRepository extends JpaRepository<Qna, Long> {
 
     @Query("select qna from Qna qna left join fetch qna.fileList where qna.id = :id")

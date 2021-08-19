@@ -23,13 +23,14 @@ public class JwtTokenProvider {
     public String createToken(Authentication authentication, long expiredTime) {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
         User user = principalDetails.getUser();
-
+    
         return JWT.create()
                 .withSubject(principalDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expiredTime))
                 .withClaim("role", user.getRole())
                 .withClaim("name", user.getName())
                 .withClaim("department", user.getDepartmentName())
+                .withClaim("username", user.getUsername())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
     }
 
