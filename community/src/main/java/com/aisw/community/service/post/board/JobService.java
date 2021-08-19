@@ -2,8 +2,6 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
-import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
-import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Job;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.User;
@@ -13,24 +11,23 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.board.FileUploadToJobRequest;
 import com.aisw.community.model.network.request.post.board.JobApiRequest;
-import com.aisw.community.model.network.response.post.board.*;
+import com.aisw.community.model.network.response.post.board.BoardApiResponse;
+import com.aisw.community.model.network.response.post.board.JobApiResponse;
+import com.aisw.community.model.network.response.post.board.JobDetailApiResponse;
+import com.aisw.community.model.network.response.post.board.JobResponseDTO;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.JobRepository;
-import com.aisw.community.repository.post.file.FileRepository;
-import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
-import com.aisw.community.service.user.UserService;
+import com.aisw.community.service.post.like.ContentLikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,16 +36,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobRequest, JobResponseDTO, JobDetailApiResponse, JobApiResponse, Job> {
+public class JobService implements BoardPostService<JobApiRequest, JobApiResponse, JobResponseDTO, JobDetailApiResponse> {
 
     @Autowired
     private JobRepository jobRepository;
 
     @Autowired
-    private ContentLikeRepository contentLikeRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
+    private ContentLikeService contentLikeService;
 
     @Autowired
     private CommentService commentService;
@@ -56,8 +50,6 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private UserService userService;
 
     @Override
     @Caching(evict = {
@@ -74,14 +66,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<JobApiResponse> create(Authentication authentication, Header<JobApiRequest> request) {
-        JobApiRequest jobApiRequest = request.getData();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
-                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
-            throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<JobApiResponse> create(User user, JobApiRequest jobApiRequest) {
         Job job = Job.builder()
                 .title(jobApiRequest.getTitle())
                 .writer(user.getName())
@@ -94,7 +79,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
                 .user(user)
                 .build();
 
-        Job newJob = baseRepository.save(job);
+        Job newJob = jobRepository.save(job);
         return Header.OK(response(newJob));
     }
 
@@ -114,14 +99,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<JobApiResponse> create(Authentication authentication, FileUploadToJobRequest request) {
-        JobApiRequest jobApiRequest = request.getJobApiRequest();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
-                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
-            throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<JobApiResponse> create(User user, JobApiRequest jobApiRequest, MultipartFile[] files) {
         Job job = Job.builder()
                 .title(jobApiRequest.getTitle())
                 .writer(user.getName())
@@ -133,10 +111,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
                 .likes(0L)
                 .user(user)
                 .build();
-
-        Job newJob = baseRepository.save(job);
-
-        MultipartFile[] files = request.getFiles();
+        Job newJob = jobRepository.save(job);
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newJob.getId(), UploadCategory.POST);
 
         return Header.OK(response(newJob, fileApiResponseList));
@@ -158,9 +133,9 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
     public Header<JobApiResponse> read(Long id) {
-        return baseRepository.findById(id)
+        return jobRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
-                .map(job -> baseRepository.save((Job) job))
+                .map(job -> jobRepository.save((Job) job))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -181,17 +156,9 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<JobApiResponse> update(Authentication authentication, Header<JobApiRequest> request) {
-        JobApiRequest jobApiRequest = request.getData();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
-                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
-            throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
-        }
-
-        Job job = baseRepository.findById(jobApiRequest.getId()).orElseThrow(
+    public Header<JobApiResponse> update(User user, JobApiRequest jobApiRequest) {
+        Job job = jobRepository.findById(jobApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(jobApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -201,7 +168,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
                 .setContent(jobApiRequest.getContent())
                 .setStatus(jobApiRequest.getStatus());
         job.setIsAnonymous(jobApiRequest.getIsAnonymous());
-        baseRepository.save(job);
+        jobRepository.save(job);
 
         return Header.OK(response(job));
     }
@@ -222,23 +189,14 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<JobApiResponse> update(Authentication authentication, FileUploadToJobRequest request) {
-        JobApiRequest jobApiRequest = request.getJobApiRequest();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
-                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
-            throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
-        }
-
-        Job job = baseRepository.findById(jobApiRequest.getId()).orElseThrow(
+    public Header<JobApiResponse> update(User user, JobApiRequest jobApiRequest, MultipartFile[] files) {
+        Job job = jobRepository.findById(jobApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(jobApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        MultipartFile[] files = request.getFiles();
-        job.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        fileService.deleteFileList(job.getFileList());
         job.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, job.getId(), UploadCategory.POST);
 
@@ -247,7 +205,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
                 .setContent(jobApiRequest.getContent())
                 .setStatus(jobApiRequest.getStatus());
         job.setIsAnonymous(jobApiRequest.getIsAnonymous());
-        baseRepository.save(job);
+        jobRepository.save(job);
 
         return Header.OK(response(job, fileApiResponseList));
     }
@@ -267,16 +225,14 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header delete(Authentication authentication, Long id) {
-        Job job = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
-
-        User user = userService.getUser(authentication);
+    public Header delete(User user, Long id) {
+        Job job = jobRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         if (job.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.delete(job.getFileList());
-        baseRepository.delete(job);
+        fileService.deleteFileList(job.getFileList());
+        jobRepository.delete(job);
         return Header.OK();
     }
 
@@ -340,8 +296,9 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
     public Header<JobDetailApiResponse> readWithComment(Long id) {
-        return baseRepository.findById(id)
-                .map(job -> (Job) job.setViews(job.getViews() + 1))
+        return jobRepository.findById(id)
+                .map(job -> job.setViews(job.getViews() + 1))
+                .map(job -> jobRepository.save((Job) job))
                 .map(this::responseWithComment)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -386,12 +343,11 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<JobDetailApiResponse> readWithCommentAndLike(Authentication authentication, Long id) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        return baseRepository.findById(id)
+    public Header<JobDetailApiResponse> readWithCommentAndLike(User user, Long id) {
+        return jobRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
-                .map(job -> baseRepository.save((Job) job))
-                .map(job -> responseWithCommentAndLike(principal.getUser(), job))
+                .map(job -> jobRepository.save((Job) job))
+                .map(job -> responseWithCommentAndLike(user, job))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -419,7 +375,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
                 .commentApiResponseList(commentApiResponseList)
                 .build();
 
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByUserId(user.getId());
+        List<ContentLike> contentLikeList = contentLikeService.getContentLikeByUser(user.getId());
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {
                 if (contentLike.getBoard().getId() == job.getId()) {
@@ -448,7 +404,7 @@ public class JobService extends BoardPostService<JobApiRequest, FileUploadToJobR
     @Override
     @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
     public Header<JobResponseDTO> readAll(Pageable pageable) {
-        Page<Job> jobs = baseRepository.findAll(pageable);
+        Page<Job> jobs = jobRepository.findAll(pageable);
         Page<Job> freesByStatus = searchByStatus(pageable);
 
         return getListHeader(jobs, freesByStatus);

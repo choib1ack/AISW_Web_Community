@@ -1,9 +1,9 @@
-package com.aisw.community.ifs;
+package com.aisw.community.controller;
 
 import com.aisw.community.model.network.Header;
 import org.springframework.security.core.Authentication;
 
-public interface CrudInterface<Req, Res> {
+public interface ControllerInterface<Req, Res> {
 
     Header<Res> create(Authentication authentication, Header<Req> request);
 
