@@ -62,8 +62,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String university;
-
     private String departmentName;
 
     private String role;
