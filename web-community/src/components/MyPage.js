@@ -12,7 +12,7 @@ import {useHistory} from "react-router-dom";
 import Loading from "./Loading";
 import axiosApi from "../axiosApi";
 import newIcon from "../icon/new_icon.png"
-import moreIcon from "../icon/more_icon.png"
+
 
 export default function MyPage(props) {
     const history = useHistory();
@@ -24,10 +24,15 @@ export default function MyPage(props) {
     const [show, setShow] = useState(false);
 
     const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
+    const [currentPage, setCurrentPage] = useState(0);
+    const [loading, setLoading] = useState(false);
 
-
-    const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
+    const handleShow = () => {
+        setShow(true);
+    }
+    const handleClose = () => {
+        setShow(false);
+    }
 
     const handleLogout = () => {
         setShow(false);
@@ -36,6 +41,23 @@ export default function MyPage(props) {
 
         dispatch(logout())
         history.push('/')   // 홈으로 가기
+    }
+
+    const handleScroll = (e) => {
+
+        const scrollHeight = e.target.scrollHeight;
+        const scrollTop = e.target.scrollTop;
+        const clientHeight = e.target.clientHeight;
+
+        if (scrollTop + clientHeight >= scrollHeight-10 && loading === false && currentPage>=0) {
+            // 페이지 끝에 도달하면 추가 데이터를 받아온다
+            setCurrentPage(currentPage => currentPage + 1);
+        }
+    }
+
+    const handleMyPageClose = () => {
+        props.setMyPageShow(false);
+        setCurrentPage(0);
     }
 
     return (
@@ -57,7 +79,7 @@ export default function MyPage(props) {
                 </Modal>
             </>
 
-            <Modal {...props} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage">
+            <Modal show={props.myPageShow} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage" onHide={handleMyPageClose}>
                 <Modal.Header closeButton style={{border: 'none'}}>
                     <Modal.Title
                         id="contained-modal-title-vcenter"
@@ -88,7 +110,9 @@ export default function MyPage(props) {
                                 <p style={{cursor: 'pointer'}} onClick={handleShow}>로그아웃</p>
                             </Col>
                         </Row>
+
                         <p style={{color: '#0472FD', margin: '5px'}}>알림</p>
+
                         <div style={{
                             height: '200px',
                             backgroundColor: '#e7f1ff',
@@ -96,9 +120,13 @@ export default function MyPage(props) {
                             overflow: 'auto',
                             borderRadius: '10px',
                             marginBottom: '10px'
-                        }}>
+                        }}
+                        onScroll={handleScroll}>
                             <MakeAlertList
                                 history={history}
+                                currentPage={currentPage}
+                                setLoading={setLoading}
+                                setCurrentPage={setCurrentPage}
                             />
                         </div>
                     </Container>
@@ -108,45 +136,11 @@ export default function MyPage(props) {
     );
 }
 
-function MakeAlertList({history}) {
+function MakeAlertList(props) {
 
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [alertData, setAlertData] = useState(
-        {
-            data: null,
-            page_info: null
-        });
-
-    useEffect(() => {
-        const fetchMyPageData = async () => {
-
-            try {
-
-                setLoading(true);
-                setError(null);
-
-                await axiosApi.get("/auth/alert")
-                    .then(res =>{
-                        setAlertData({
-                            data:res.data.data,
-                            page_info:res.data.pagination});
-                            console.log(res);
-                        }
-                    );
-
-            } catch (e) {
-                setError(e);
-            }
-            setLoading(false);
-        };
-
-        fetchMyPageData();
-    }, []);
-
-    if (loading) return <Loading/>;
-    if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
-    if (!alertData.data) return <div>데이터가 없습니다.</div>;
+    const [alertList, setAlertList] = useState({list:[], page_info:null});
 
     let style = {
         borderRadius: '10px',
@@ -182,13 +176,13 @@ function MakeAlertList({history}) {
     const returnAlertType = (alert_category) => {
         switch (alert_category) {
             case "COMMENT":
-                return "새로운 댓글이 등록되었습니다.";
+                return "새로운 댓글이 등록되었습니다";
             case "NESTED_COMMENT":
                 return "새로운 대댓글이 등록되었습니다";
             case "LIKE_POST":
-                return "누군가 게시물에 좋아요를 눌렀습니다.";
+                return "누군가 게시물에 좋아요를 눌렀습니다";
             case "LIKE_COMMENT":
-                return "누군가 댓글에 좋아요를 눌렀습니다.";
+                return "누군가 댓글에 좋아요를 눌렀습니다";
         }
     }
 
@@ -217,27 +211,75 @@ function MakeAlertList({history}) {
     }
 
     const ToLink = async (data) => {
-        history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
-        await axiosApi.get("/auth/alert/"+data.id);
+        props.history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
+        await axiosApi.get("/auth/alert/" + data.id);
     }
 
+    const fetchMyPageData = async () => {
+
+        try {
+
+            if(alertList.page_info != null && props.currentPage+1 > alertList.page_info.total_pages){
+                return;
+            }
+
+            props.setLoading(true);
+            setError(null);
+
+            await axiosApi.get("/auth/alert?page=" + props.currentPage)
+                .then(res => {
+
+                        let items=[];
+                        res.data.data.map((data, index) => (
+                            items.push(
+                                <div key={index} style={!data.checked ? style : style_viewed}
+                                     onClick={() => ToLink(data)}
+                                >
+                                    <p style={{
+                                        float: 'right',
+                                        fontSize: '11px',
+                                        color: '#8C8C8C'
+                                    }}>{timeExpression(data.created_at)}</p>
+                                    <p style={{fontSize: '12px', marginBottom: '5px'}}>{returnBoardName(data.second_category)}
+                                        {data.checked ? null :
+                                            <img src={newIcon} style={{width: "12px", height: "12px", marginLeft: "5px"}}/>}</p>
+                                    <p style={{fontSize: '11px', margin: 'none', color: '#8C8C8C'}}>
+                                        {returnAlertType(data.alert_category) + "  : " + data.content}
+                                    </p>
+                                </div>
+                            ))
+                        );
+                        setAlertList({
+                            list : [alertList.list.concat(items)],
+                            page_info: res.data.pagination
+                        });
+
+                        // console.log(res);
+                    }
+                );
+
+        } catch (e) {
+            setError(e);
+        }
+        props.setLoading(false);
+    };
 
 
+    useEffect(() => {
+        fetchMyPageData();
+    }, [props.currentPage]);
+
+
+    if (props.loading) return <Loading/>;
+    if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
+    if (alertList.list.length==0) return <div>데이터가 없습니다.</div>;
 
     return (
         <>
-            {alertData.data.map((data, index)=>(
-                <div key={index} style={!data.checked?style:style_viewed}
-                     onClick={() => ToLink(data)}
-                >
-                    <p style={{float: 'right', fontSize: '11px', color: '#8C8C8C'}}>{timeExpression(data.created_at)}</p>
-                    <p style={{fontSize: '12px', marginBottom: '5px'}}>{returnBoardName(data.second_category)}
-                    {data.checked?null:<img src={newIcon} style={{width:"12px", height:"12px", marginLeft:"5px"}}/>}</p>
-                    <p style={{fontSize: '11px', margin: 'none', color: '#8C8C8C'}}>
-                        {returnAlertType(data.alert_category)}
-                    </p>
-                </div>
-            ))}
+            {alertList.list}
+
         </>
     );
 }
+
+

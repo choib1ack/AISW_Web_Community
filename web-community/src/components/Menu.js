@@ -192,7 +192,11 @@ export default function Menu() {
                                         </Link>
                                     </Col>
 
-                                    <MyPage show={modalShow} onHide={() => setModalShow(false)}/>
+                                    {modalShow?<MyPage
+                                        myPageShow={modalShow}
+                                        setMyPageShow={setModalShow}
+                                    />:null}
+
                                 </>
                             ) : (
                                 <Col xs={3}>
