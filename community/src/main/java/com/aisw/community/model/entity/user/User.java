@@ -47,8 +47,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Grade grade;
 
-    private String studentId;
-
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -65,8 +63,6 @@ public class User {
     private Gender gender;
 
     private String university;
-
-    private String collegeName;
 
     private String departmentName;
 

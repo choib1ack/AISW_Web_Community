@@ -11,7 +11,6 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sun.rmi.runtime.Log;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -39,7 +38,6 @@ public class FileStorageService {
 
     public String storeFile(MultipartFile file) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        System.out.println("fileName: " + fileName);
 
         try {
             if (fileName.contains("..")) {
@@ -47,7 +45,6 @@ public class FileStorageService {
             }
 
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            System.out.println("targetLocation: " + targetLocation);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;

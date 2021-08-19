@@ -125,12 +125,4 @@ public class ApiExceptionHandler {
                 new ApiErrorResponse("PhoneNumberNotSuitable", "phone number is not suitable: " + ex.getPhoneNumber());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
-    @ExceptionHandler(StudentIdNotSuitableException.class)
-    public ResponseEntity<ApiErrorResponse> handleException(StudentIdNotSuitableException ex) {
-        ApiErrorResponse response =
-                new ApiErrorResponse("StudentIdNotSuitable", "student id is not suitable: " + ex.getStudentId());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
 }

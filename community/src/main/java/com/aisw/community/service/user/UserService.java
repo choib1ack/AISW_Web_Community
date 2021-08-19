@@ -2,7 +2,6 @@ package com.aisw.community.service.user;
 
 import com.aisw.community.component.advice.exception.PhoneNumberNotSuitableException;
 import com.aisw.community.component.advice.exception.SignUpNotSuitableException;
-import com.aisw.community.component.advice.exception.StudentIdNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
@@ -33,8 +32,6 @@ public class UserService {
             throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
         if (!validatePhoneNumber(userApiRequest.getPhoneNumber()))
             throw new PhoneNumberNotSuitableException(userApiRequest.getPhoneNumber());
-        if (!validateStudentId(userApiRequest.getStudentId()))
-            throw new StudentIdNotSuitableException(userApiRequest.getStudentId());
 
         User user = User.builder()
                 .username(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId())
@@ -43,10 +40,8 @@ public class UserService {
                 .password(bCryptPasswordEncoder.encode("AISW"))
                 .phoneNumber(userApiRequest.getPhoneNumber())
                 .grade(userApiRequest.getGrade())
-                .studentId(userApiRequest.getStudentId())
                 .gender(userApiRequest.getGender())
                 .university(userApiRequest.getUniversity())
-                .collegeName(userApiRequest.getCollegeName())
                 .departmentName(userApiRequest.getDepartmentName())
                 .role(userApiRequest.getRole())
                 .build();
@@ -57,11 +52,6 @@ public class UserService {
     private boolean validatePhoneNumber(String phoneNumber) {
         // 숫자 & 11자리 & 앞 3글자 010
         return isNumeric(phoneNumber) && (phoneNumber.length() == 11) && phoneNumber.substring(0, 3).equals("010");
-    }
-
-    private boolean validateStudentId(String studentId) {
-        // 숫자 & 9자리
-        return isNumeric(studentId) && (studentId.length() == 9);
     }
 
     public boolean isNumeric(String str) {
@@ -95,10 +85,8 @@ public class UserService {
                 .setEmail(userApiRequest.getEmail())
                 .setPhoneNumber(userApiRequest.getPhoneNumber())
                 .setGrade(userApiRequest.getGrade())
-                .setStudentId(userApiRequest.getStudentId())
                 .setGender(userApiRequest.getGender())
                 .setUniversity(userApiRequest.getUniversity())
-                .setCollegeName(userApiRequest.getCollegeName())
                 .setDepartmentName(userApiRequest.getDepartmentName());
         User newUser = userRepository.save(user);
 
@@ -124,10 +112,8 @@ public class UserService {
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .grade(user.getGrade())
-                .studentId(user.getStudentId())
                 .gender(user.getGender())
                 .university(user.getUniversity())
-                .collegeName(user.getCollegeName())
                 .departmentName(user.getDepartmentName())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
