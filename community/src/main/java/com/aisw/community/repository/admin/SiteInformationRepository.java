@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface SiteInformationRepository extends JpaRepository<SiteInformation, Long> {
 
     @Query("select site from SiteInformation site left join fetch site.fileList")
