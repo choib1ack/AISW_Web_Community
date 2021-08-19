@@ -11,11 +11,12 @@ import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
 import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 import axios from "axios";
+import * as jwt from "jwt-simple";
 
 export default function Menu() {
     const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
     const [modalShow, setModalShow] = useState(false);
-    const [result, setResult] = useState(null);
+    const [userName, setUserName] = useState(null);
 
     const active_menu = useSelector(state => state.menu);
     const dispatch = useDispatch();
@@ -24,6 +25,13 @@ export default function Menu() {
 
     const handleJoinFailure = (result) => console.log(result);
     const handleLoginFailure = (result) => console.log(result);
+
+    useEffect(() => {
+        if (accessToken) {
+            let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
+            setUserName(decoded.name);
+        }
+    }, [accessToken]);
 
     const handleClickTab = (event) => {
         let name = event.target.name;
@@ -53,12 +61,15 @@ export default function Menu() {
     }
 
     // 구글 연동 회원가입 성공시
-    function handleJoinSuccess(result) {
+    async function handleJoinSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
-        setResult(result);
 
-        checkExist(username, email, 'join');
+        await checkExist(username, email)
+            .then(res => {
+                moveJoin(res.data.data, result);
+            })
+            .catch(() => alert("회원가입에 실패하였습니다."));
     }
 
     // 구글 연동 로그인 성공시
@@ -66,25 +77,23 @@ export default function Menu() {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
 
-        checkExist(username, email, 'login');
+        await checkExist(username, email)
+            .then(res => {
+                moveLogin(res.data.data, username);
+            }).catch(() => alert("로그인에 실패하였습니다."));
     }
 
-    function checkExist(username, email, mode) {
-        axios.post(`/user/verification`, {
+    // 존재하는 회원인지 확인
+    function checkExist(username, email) {
+        return axios.post(`/user/verification`, {
             data: {
                 'username': username,
                 'email': email
             }
-        }).then((res) => {
-            if (mode === 'join') {
-                moveJoin(res.data.data);
-            } else if (mode === 'login') {
-                moveLogin(res.data.data, username);
-            }
-        }).catch(error => error);
+        });
     }
 
-    function moveJoin(exist) {
+    function moveJoin(exist, result) {
         if (exist.validation === true) {
             alert("이미 가입된 회원입니다.");
         } else {
@@ -163,10 +172,10 @@ export default function Menu() {
                                 <>
                                     <Col xs={3}>
                                         <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {accessToken}
+                                            {userName}
                                         </button>
                                         <Link to="/manager">
-                                            <button className="Menu-button"  name="manage_page" onClick={handleClickTab}
+                                            <button className="Menu-button" name="manage_page" onClick={handleClickTab}
                                                     style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
                                                 관리자페이지
                                             </button>

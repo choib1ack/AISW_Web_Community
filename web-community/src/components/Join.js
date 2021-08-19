@@ -15,36 +15,46 @@ export default function Join() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
     const phone_number = useRef();
     phone_number.current = watch("phone_number");
+
+    const [modalShow, setModalShow] = useState(false);
     const [agree, setAgree] = useState(false);
     const history = useHistory();
 
-    const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
+    const {google_data, account_role} = location.state;
 
     function join(data) {
-        axios.post("/user/signup", {data},
-        ).then((res) => {
-            setModalShow(true)   // 완료 모달 띄우기
-        }).catch(error => {
-            alert("회원가입에 실패하였습니다.") // 실패 메시지
-        })
+        axios.post("/user/signup", {data},)
+            .then((res) => {
+                setModalShow(true)   // 완료 모달 띄우기
+            })
+            .catch(error => {
+                alert("회원가입에 실패하였습니다.") // 실패 메시지
+            })
     }
 
     const onSubmit = (data) => {
+        let name = '';
+        if (account_role === 'GENERAL') {
+            data.deparment = '기타 학과';
+            name = google_data.profileObj.name;
+        } else if (account_role === 'STUDENT') {
+            data.deparment = google_data.profileObj.givenName.split('/')[1];
+            name = google_data.profileObj.familyName;
+        }
+
         const userData = {
-            // 'college_name': data.college,
-            // 'department_name': data.department,
-            'email': location.state.google_data.profileObj.email,
+            'department_name': data.deparment,
+            'email': google_data.profileObj.email,
             'gender': data.gender,
             'grade': data.grade,
-            'name': location.state.google_data.profileObj.familyName,
-            'provider': location.state.google_data.tokenObj.idpId,
-            'provider_id': location.state.google_data.profileObj.googleId,
+            'name': name,
+            'provider': google_data.tokenObj.idpId,
+            'provider_id': google_data.profileObj.googleId,
             'phone_number': data.phone_number.replaceAll('-', ''),
-            'role': `ROLE_${location.state.account_role}`,   // GENERAL, STUDENT
-            'student_id': data.student_id,
+            'role': `ROLE_${account_role}`,   // GENERAL, STUDENT
             'university': 'COMMON',
-            'picture': location.state.google_data.profileObj.picture
+            'picture': google_data.profileObj.picture
         }
 
         if (agree) {

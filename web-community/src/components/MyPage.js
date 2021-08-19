@@ -5,23 +5,31 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PersonImage from "../image/person.svg"
-import {useDispatch, useSelector} from "react-redux";
 import './MyPage.css';
 import {useHistory} from "react-router-dom";
 import Loading from "./Loading";
 import axiosApi from "../axiosApi";
 import newIcon from "../icon/new_icon.png"
 import moreIcon from "../icon/more_icon.png"
+import * as jwt from "jwt-simple";
 
 export default function MyPage(props) {
+    const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
+    const [userName, setUserName] = useState(null);
+    const [department, setDepartment] = useState( null);
+
     const history = useHistory();
 
-    // redux toolkit
-    const dispatch = useDispatch();
-    const userName = JSON.parse(window.localStorage.getItem("USER_NAME")) || null;
-    const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
-
     const [show, setShow] = useState(false);
+
+    useEffect(() => {
+        if (accessToken) {
+            let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
+
+            setUserName(decoded.name);
+            setDepartment(decoded.department);
+        }
+    }, [accessToken]);
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
@@ -116,17 +124,16 @@ function MakeAlertList({history}) {
 
     useEffect(() => {
         const fetchMyPageData = async () => {
-
             try {
-
                 setLoading(true);
                 setError(null);
 
                 await axiosApi.get("/auth/alert")
-                    .then(res =>{
-                        setAlertData({
-                            data:res.data.data,
-                            page_info:res.data.pagination});
+                    .then(res => {
+                            setAlertData({
+                                data: res.data.data,
+                                page_info: res.data.pagination
+                            });
                             console.log(res);
                         }
                     );
@@ -214,21 +221,24 @@ function MakeAlertList({history}) {
 
     const ToLink = async (data) => {
         history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
-        await axiosApi.get("/auth/alert/"+data.id);
+        await axiosApi.get("/auth/alert/" + data.id);
     }
-
-
 
 
     return (
         <>
-            {alertData.data.map((data, index)=>(
-                <div key={index} style={!data.checked?style:style_viewed}
+            {alertData.data.map((data, index) => (
+                <div key={index} style={!data.checked ? style : style_viewed}
                      onClick={() => ToLink(data)}
                 >
-                    <p style={{float: 'right', fontSize: '11px', color: '#8C8C8C'}}>{timeExpression(data.created_at)}</p>
+                    <p style={{
+                        float: 'right',
+                        fontSize: '11px',
+                        color: '#8C8C8C'
+                    }}>{timeExpression(data.created_at)}</p>
                     <p style={{fontSize: '12px', marginBottom: '5px'}}>{returnBoardName(data.second_category)}
-                    {data.checked?null:<img src={newIcon} style={{width:"12px", height:"12px", marginLeft:"5px"}}/>}</p>
+                        {data.checked ? null :
+                            <img src={newIcon} style={{width: "12px", height: "12px", marginLeft: "5px"}}/>}</p>
                     <p style={{fontSize: '11px', margin: 'none', color: '#8C8C8C'}}>
                         {returnAlertType(data.alert_category)}
                     </p>
