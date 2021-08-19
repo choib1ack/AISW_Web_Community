@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     @Query("select department from Department department left join fetch department.fileList where department.id = :id")
