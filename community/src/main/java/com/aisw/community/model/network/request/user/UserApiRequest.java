@@ -19,13 +19,9 @@ public class UserApiRequest {
 
     private Grade grade;
 
-    private String studentId;
-
     private Gender gender;
 
     private String university;
-
-    private String collegeName;
 
     private String departmentName;
 

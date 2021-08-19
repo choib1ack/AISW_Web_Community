@@ -57,7 +57,7 @@ public class UserManagementService {
         return UserManagementApiResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
-                .studentId(user.getStudentId())
+                .email(user.getEmail())
                 .role(user.getRole())
                 .build();
     }
