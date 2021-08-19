@@ -8,8 +8,6 @@ import Row from "react-bootstrap/Row";
 import classNames from "classnames";
 import {useForm} from "react-hook-form";
 import axios from 'axios';
-import {useDispatch, useSelector} from "react-redux";
-import {join} from "../features/userSlice";
 import FinishModal from "./FinishModal";
 import {useHistory, useLocation} from "react-router-dom";
 
@@ -17,65 +15,58 @@ export default function Join() {
     const {register, handleSubmit, watch, errors, setValue} = useForm();
     const phone_number = useRef();
     phone_number.current = watch("phone_number");
+
+    const [modalShow, setModalShow] = useState(false);
     const [agree, setAgree] = useState(false);
     const history = useHistory();
 
-    // redux toolkit
-    const dispatch = useDispatch();
-
-    // 회원가입 완료 모달
-    const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
+    const {google_data, account_role} = location.state;
 
-    async function sendServer(data) {
-        await axios.post("/user/signup",
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data,
-            },
-        ).then((res) => {
-            setModalShow(true)   // 완료 모달 띄우기
-            dispatch(join())
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-
-            alert("회원가입에 실패하였습니다.") // 실패 메시지
-        })
+    function join(data) {
+        axios.post("/user/signup", {data},)
+            .then((res) => {
+                setModalShow(true)   // 완료 모달 띄우기
+            })
+            .catch(error => {
+                alert("회원가입에 실패하였습니다.") // 실패 메시지
+            })
     }
 
     const onSubmit = (data) => {
+        let name = '';
+        if (account_role === 'GENERAL') {
+            data.deparment = '기타 학과';
+            name = google_data.profileObj.name;
+        } else if (account_role === 'STUDENT') {
+            data.deparment = google_data.profileObj.givenName.split('/')[1];
+            name = google_data.profileObj.familyName;
+        }
+
         const userData = {
-            college_name: data.college,
-            department_name: data.department,
-            email: location.state.google_data.profileObj.email,
-            gender: data.gender,
-            grade: data.grade,
-            name: location.state.google_data.profileObj.familyName,
-            provider: location.state.google_data.tokenObj.idpId,
-            provider_id: location.state.google_data.profileObj.googleId,
-            phone_number: data.phone_number.replaceAll('-', ''),
-            role: `ROLE_${location.state.account_role}`,   // GENERAL, STUDENT
-            student_id: data.student_id,
-            university: 'COMMON',
-            picture: location.state.google_data.profileObj.picture
+            'department_name': data.deparment,
+            'email': google_data.profileObj.email,
+            'gender': data.gender,
+            'grade': data.grade,
+            'name': name,
+            'provider': google_data.tokenObj.idpId,
+            'provider_id': google_data.profileObj.googleId,
+            'phone_number': data.phone_number.replaceAll('-', ''),
+            'role': `ROLE_${account_role}`,   // GENERAL, STUDENT
+            'university': 'COMMON',
+            'picture': google_data.profileObj.picture
         }
 
         if (agree) {
-            sendServer(userData);   // 백엔드 체크
+            join(userData);
         } else {
-            console.log("동의해주세요.");
+            alert("개인정보 수집에 동의해주세요.");
         }
     }
 
     // 전화번호 유효성 검사
     function checkPhoneNumber(phone) {
-        if (/^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}/.test(phone)) {
-            return true;
-        }
-        return false;
+        return /^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}/.test(phone);
     }
 
     return (
@@ -143,17 +134,17 @@ export default function Join() {
                                 </Form.Control>
                             </Form.Group>
 
-                            <Form.Group as={Col}>
-                                <Form.Label>학번</Form.Label>
-                                <Form.Control required type="text" placeholder="ex) 201533662"
-                                              name="student_id"
-                                              ref={register({validate: (value) => value.length === 9})}/>
-                                {
-                                    errors.student_id &&
-                                    errors.student_id.type === "validate" && (
-                                        <p style={{color: 'red', fontSize: 12, marginTop: '5px'}}>학번이 올바르지 않습니다.</p>
-                                    )}
-                            </Form.Group>
+                            {/*<Form.Group as={Col}>*/}
+                            {/*    <Form.Label>학번</Form.Label>*/}
+                            {/*    <Form.Control required type="text" placeholder="ex) 201533662"*/}
+                            {/*                  name="student_id"*/}
+                            {/*                  ref={register({validate: (value) => value.length === 9})}/>*/}
+                            {/*    {*/}
+                            {/*        errors.student_id &&*/}
+                            {/*        errors.student_id.type === "validate" && (*/}
+                            {/*            <p style={{color: 'red', fontSize: 12, marginTop: '5px'}}>학번이 올바르지 않습니다.</p>*/}
+                            {/*        )}*/}
+                            {/*</Form.Group>*/}
 
                             <Form.Group as={Col}>
                                 <Form.Label>학년</Form.Label>
@@ -167,29 +158,29 @@ export default function Join() {
                             </Form.Group>
                         </Form.Row>
 
-                        <Form.Row>
-                            <Form.Group as={Col}>
-                                <Form.Label>단과대학</Form.Label>
-                                <Form.Control as="select"
-                                              name="college" ref={register}>
-                                    <option value="IT_CONVERGENCE">IT 융합대학</option>
-                                    <option value="BUSINESS_ADMINISTRATION">사회과학대학</option>
-                                    <option value="SOCIAL_SCIENCE">인문대학</option>
-                                    <option value="HUMANITIES">법학대학</option>
-                                    <option value="BIO_NANO">바이오나노대학</option>
-                                    <option value="ORIENTAL_MEDICINE">한의과대학</option>
-                                    <option value="ARTS_PHYSICAL">예술/체육대학</option>
-                                </Form.Control>
-                            </Form.Group>
-                            <Form.Group as={Col}>
-                                <Form.Label>학과</Form.Label>
-                                <Form.Control as="select"
-                                              name="department" ref={register}>
-                                    <option value="SOFTWARE">소프트웨어학과</option>
-                                    <option value="AI">인공지능학과</option>
-                                </Form.Control>
-                            </Form.Group>
-                        </Form.Row>
+                        {/*<Form.Row>*/}
+                        {/*    <Form.Group as={Col}>*/}
+                        {/*        <Form.Label>단과대학</Form.Label>*/}
+                        {/*        <Form.Control as="select"*/}
+                        {/*                      name="college" ref={register}>*/}
+                        {/*            <option value="IT_CONVERGENCE">IT 융합대학</option>*/}
+                        {/*            <option value="BUSINESS_ADMINISTRATION">사회과학대학</option>*/}
+                        {/*            <option value="SOCIAL_SCIENCE">인문대학</option>*/}
+                        {/*            <option value="HUMANITIES">법학대학</option>*/}
+                        {/*            <option value="BIO_NANO">바이오나노대학</option>*/}
+                        {/*            <option value="ORIENTAL_MEDICINE">한의과대학</option>*/}
+                        {/*            <option value="ARTS_PHYSICAL">예술/체육대학</option>*/}
+                        {/*        </Form.Control>*/}
+                        {/*    </Form.Group>*/}
+                        {/*    <Form.Group as={Col}>*/}
+                        {/*        <Form.Label>학과</Form.Label>*/}
+                        {/*        <Form.Control as="select"*/}
+                        {/*                      name="department" ref={register}>*/}
+                        {/*            <option value="SOFTWARE">소프트웨어학과</option>*/}
+                        {/*            <option value="AI">인공지능학과</option>*/}
+                        {/*        </Form.Control>*/}
+                        {/*    </Form.Group>*/}
+                        {/*</Form.Row>*/}
 
                         <Form.Group style={{textAlign: 'right', marginTop: '50px'}}>
                             <Form.Check type="checkbox" label="개인정보 수집에 동의합니다." onClick={() => setAgree(!agree)}/>

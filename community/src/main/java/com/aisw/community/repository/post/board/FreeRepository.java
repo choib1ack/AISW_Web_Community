@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface FreeRepository extends JpaRepository<Free, Long> {
 
     @Query("select free from Free free left join fetch free.fileList where free.id = :id")

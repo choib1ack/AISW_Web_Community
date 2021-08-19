@@ -2,6 +2,7 @@ package com.aisw.community.component.provider;
 
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.config.jwt.JwtProperties;
+import com.aisw.community.model.entity.user.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.InvalidClaimException;
@@ -21,12 +22,15 @@ public class JwtTokenProvider {
     // JWT 토큰 생성
     public String createToken(Authentication authentication, long expiredTime) {
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-
+        User user = principalDetails.getUser();
+    
         return JWT.create()
                 .withSubject(principalDetails.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expiredTime))
-                .withClaim("id", principalDetails.getUser().getId())
-                .withClaim("username", principalDetails.getUser().getUsername())
+                .withClaim("role", user.getRole())
+                .withClaim("name", user.getName())
+                .withClaim("department", user.getDepartmentName())
+                .withClaim("username", user.getUsername())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
     }
 

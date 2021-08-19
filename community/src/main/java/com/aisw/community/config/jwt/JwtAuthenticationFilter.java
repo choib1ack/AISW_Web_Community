@@ -81,13 +81,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             Authentication authResult) {
         System.out.println("login success");
         String jwtToken = jwtTokenProvider.createToken(authResult, JwtProperties.EXPIRATION_TIME);
+        System.out.println("login token: " + jwtToken);
         response.addHeader(JwtProperties.ACCESS_HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
-
         String refreshToken = jwtTokenProvider.createToken(authResult, JwtProperties.REFRESH_EXPIRATION_TIME);
-        Date pre = new Date();
         redisProvider.setDataExpire(authResult.getName(), refreshToken, JwtProperties.REFRESH_EXPIRATION_TIME);
-        Date now = new Date();
-        System.out.println(now.getTime() - pre.getTime());
         response.addHeader(JwtProperties.REFRESH_HEADER_STRING, JwtProperties.TOKEN_PREFIX + refreshToken);
     }
 }

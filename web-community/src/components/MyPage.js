@@ -5,23 +5,24 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PersonImage from "../image/person.svg"
-import {useDispatch, useSelector} from "react-redux";
 import './MyPage.css';
-import {logout} from "../features/userSlice";
 import {useHistory} from "react-router-dom";
 import Loading from "./Loading";
 import axiosApi from "../axiosApi";
 import newIcon from "../icon/new_icon.png"
+import moreIcon from "../icon/more_icon.png"
+import * as jwt from "jwt-simple";
 
 
 export default function MyPage(props) {
+    const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
+    const [userName, setUserName] = useState(null);
+    const [department, setDepartment] = useState( null);
+
     const history = useHistory();
 
-    // redux toolkit
-    const user = useSelector(state => state.user)
-    const dispatch = useDispatch()
-
     const [show, setShow] = useState(false);
+
 
     const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
     const [currentPage, setCurrentPage] = useState(0);
@@ -34,12 +35,24 @@ export default function MyPage(props) {
         setShow(false);
     }
 
+    useEffect(() => {
+        if (accessToken) {
+            let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
+
+            setUserName(decoded.name);
+            setDepartment(decoded.department);
+        }
+    }, [accessToken]);
+
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
+
+
     const handleLogout = () => {
         setShow(false);
 
         window.localStorage.clear();
 
-        dispatch(logout())
         history.push('/')   // 홈으로 가기
     }
 
@@ -98,7 +111,7 @@ export default function MyPage(props) {
                             <Col xs={8} md={8}>
 
                                 <div style={{marginLeft: "10px"}}>
-                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{user.userData.name}</p>
+                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{userName}</p>
                                     <p style={{
                                         fontSize: '12px',
                                         color: '#8C8C8C'
@@ -211,7 +224,9 @@ function MakeAlertList(props) {
     }
 
     const ToLink = async (data) => {
+
         props.history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
+
         await axiosApi.get("/auth/alert/" + data.id);
     }
 
@@ -263,6 +278,7 @@ function MakeAlertList(props) {
         }
         props.setLoading(false);
     };
+
 
 
     useEffect(() => {
