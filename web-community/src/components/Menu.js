@@ -10,16 +10,14 @@ import MyPage from "./MyPage";
 import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
 import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
-import {checkExist, login, setUserData} from "../features/userSlice";
+import axios from "axios";
 
 export default function Menu() {
     const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
     const [modalShow, setModalShow] = useState(false);
     const [result, setResult] = useState(null);
-    const [mode, setMode] = useState(null);
 
     const active_menu = useSelector(state => state.menu);
-    const {userData, exist, isOnline, error} = useSelector(state => state.user);
     const dispatch = useDispatch();
 
     const history = useHistory();
@@ -57,48 +55,60 @@ export default function Menu() {
         const email = result.profileObj.email;
         setResult(result);
 
-        dispatch(checkExist({username, email}));  // 서버에 user 가 등록되어 있는지 확인
-        setMode('Join');
+        checkExist(username, email, 'join');
     }
 
     // 구글 연동 로그인 성공시
     async function handleLoginSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
-        const userData = {
-            'name': result.profileObj.familyName,
-            'department': result.profileObj.givenName
-        };
 
-        dispatch(checkExist({username, email}));  // 서버에 user 가 등록되어 있는지 확인
-        dispatch(setUserData(userData));    // 메뉴를 위한 정보 저장
-        setMode('Login');
+        checkExist(username, email, 'login');
     }
 
-    useEffect(() => {
-        if (mode === 'Join') {
-            if (exist.validation === true) {
-                alert("이미 가입된 회원입니다.");
-            } else {
-                const roll = exist.account === 'general' ? 'GENERAL' : 'STUDENT';
-                history.push({pathname: '/join', state: {google_data: result, account_role: roll}});
+    function checkExist(username, email, mode) {
+        axios.post(`/user/verification`, {
+            data: {
+                'username': username,
+                'email': email
             }
-        } else if (mode === 'Login') {
-            if (exist.validation === false) {
-                alert("회원가입이 필요합니다.");
-            } else {
-                dispatch(login(exist.username));
+        }).then((res) => {
+            if (mode === 'join') {
+                moveJoin(res.data.data);
+            } else if (mode === 'login') {
+                moveLogin(res.data.data, username);
             }
+        }).catch(error => error);
+    }
+
+    function moveJoin(exist) {
+        if (exist.validation === true) {
+            alert("이미 가입된 회원입니다.");
+        } else {
+            const roll = exist.account === 'general' ? 'GENERAL' : 'STUDENT';
+            history.push({pathname: '/join', state: {google_data: result, account_role: roll}});
         }
-    }, [exist]);
+    }
 
-    useEffect(() => {
-        setAccessToken(window.localStorage.getItem("ACCESS_TOKEN"));
-    }, [isOnline]);
+    function moveLogin(exist, username) {
+        if (exist.validation === false) {
+            alert("회원가입이 필요합니다.");
+        } else {
+            login(username);
+        }
+    }
 
-    useEffect(()=>{
-        console.log(error);
-    },[error]);
+    function login(username) {
+        axios.post(`/login`, {
+            'username': username,
+            'password': 'AISW',
+        }).then((res) => {
+            window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization);
+            window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token);
+
+            setAccessToken(window.localStorage.getItem("ACCESS_TOKEN"));
+        }).catch(error => error);
+    }
 
     return (
         <div className="Menu">
@@ -150,7 +160,7 @@ export default function Menu() {
                                 <>
                                     <Col xs={3}>
                                         <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {userData.name} {userData.department}
+                                            {accessToken}
                                         </button>
                                         <Link to="/manager">
                                             <button className="Menu-button">
