@@ -27,8 +27,9 @@ export const userSlice = createSlice({
     initialState: {
         userData: null,
         isOnline: false,
-        error: '',
+        error: null,
         exist: [],
+        joined: false
     },
     reducers: {
         setUserData: (state, action) => {
@@ -45,11 +46,11 @@ export const userSlice = createSlice({
         },
         [login.fulfilled]: (state) => {
             state.isOnline = true;
-            state.error = '';
+            state.error = null;
         },
         [login.rejected]: (state, action) => {
             state.error = action.payload;
-        }
+        },
     }
 })
 

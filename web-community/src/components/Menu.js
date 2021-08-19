@@ -19,7 +19,7 @@ export default function Menu() {
     const [mode, setMode] = useState(null);
 
     const active_menu = useSelector(state => state.menu);
-    const {userData, exist, isOnline} = useSelector(state => state.user);
+    const {userData, exist, isOnline, error} = useSelector(state => state.user);
     const dispatch = useDispatch();
 
     const history = useHistory();
@@ -98,6 +98,10 @@ export default function Menu() {
     useEffect(() => {
         setAccessToken(window.localStorage.getItem("ACCESS_TOKEN"));
     }, [isOnline]);
+
+    useEffect(()=>{
+        console.log(error);
+    },[error]);
 
     return (
         <div className="Menu">

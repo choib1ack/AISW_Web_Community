@@ -9,7 +9,6 @@ import classNames from "classnames";
 import {useForm} from "react-hook-form";
 import axios from 'axios';
 import {useDispatch, useSelector} from "react-redux";
-import {join} from "../features/userSlice";
 import FinishModal from "./FinishModal";
 import {useHistory, useLocation} from "react-router-dom";
 
@@ -20,22 +19,13 @@ export default function Join() {
     const [agree, setAgree] = useState(false);
     const history = useHistory();
 
-    const dispatch = useDispatch();
-
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
 
     async function sendServer(data) {
-        await axios.post("/user/signup",
-            {
-                headers: {
-                    "Content-Type": `application/json`
-                },
-                data,
-            },
+        await axios.post("/user/signup", {data,},
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
-            dispatch(join())
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
@@ -64,7 +54,7 @@ export default function Join() {
         if (agree) {
             sendServer(userData);   // 백엔드 체크
         } else {
-            console.log("동의해주세요.");
+            alert("개인정보 수집에 동의해주세요.");
         }
     }
 
