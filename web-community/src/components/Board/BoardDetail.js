@@ -58,7 +58,7 @@ export default function BoardDetail({match}) {
             case "free":
                 return '자유게시판';
             case "qna":
-                return "과목별게시판 > "+boardDetailData.subject;
+                return "과목별게시판 > " + boardDetailData.subject;
             case "job":
                 return "취업게시판";
         }
@@ -112,11 +112,7 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`)
-                    .catch(error => {
-                        let errorObject = JSON.parse(JSON.stringify(error));
-                        console.log(errorObject);
-                    });
+                const response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`);
 
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
                 dispatch({
@@ -142,13 +138,13 @@ export default function BoardDetail({match}) {
         history.push({pathname: `${match.url}/edit`, state: {detail: boardDetailData, content: htmlContent}});
     }
 
-    async function handleDelete() {
-        await axiosApi.delete(`/${AUTH_BOARD_DELETE[board_category]}/board/${board_category}/${id}`)
+    function deleteBoard() {
+        axiosApi.delete(`/${AUTH_BOARD_DELETE[board_category]}/board/${board_category}/${id}`)
             .then((res) => {
-                history.push('/board')  // BoardList로 이동
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
+                history.push('/board');
+            })
+            .catch(error => {
+                console.log(error);
             })
     }
 
@@ -164,7 +160,7 @@ export default function BoardDetail({match}) {
                         <Button variant="secondary" onClick={handleClose}>
                             아니오
                         </Button>
-                        <Button variant="primary" onClick={handleDelete}>
+                        <Button variant="primary" onClick={deleteBoard}>
                             네
                         </Button>
                     </Modal.Footer>

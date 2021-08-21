@@ -21,22 +21,19 @@ function EditBoard({match}) {
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
 
-    const detail = location.state.detail;
-    const content = location.state.content;
+    const {detail, content} = location.state;
     const {board_category, id} = match.params;
 
     const write = useSelector(state => state.write)
 
-    async function sendBoard(data, path) {
-        await axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/` + path,
+    function putBoard(data, path) {
+        axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/` + path,
             {data: data},
         ).then((res) => {
-            setModalShow(true)   // 완료 모달 띄우기
+            setModalShow(true);
         }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-
-            alert("글 게시에 실패하였습니다.") // 실패 메시지
+            console.log(error);
+            alert("글 게시에 실패하였습니다.");
         })
     }
 
@@ -45,28 +42,19 @@ function EditBoard({match}) {
         data.board_type = board_category;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let temp;
-            if (data.board_type === 'free') {
-                temp = {
-                    content: data.content,
-                    id: data.id,
-                    is_anonymous: true,
-                    status: "GENERAL",
-                    title: data.title,
-                }
-            } else if (data.board_type === 'qna') {
-                temp = {
-                    content: data.content,
-                    id: data.id,
-                    is_anonymous: true,
-                    status: "GENERAL",
-                    subject: data.subject,
-                    title: data.title,
-                }
-            }
-            temp.id = id;
+            let temp = {
+                content: data.content,
+                id: id,
+                is_anonymous: true,
+                status: "GENERAL",
+                title: data.title
+            };
 
-            sendBoard(temp, data.board_type);
+            if (data.board_type === 'qna') {
+                temp.subject = data.subject;
+            }
+
+            putBoard(temp, data.board_type);
         }
     }
 
@@ -81,7 +69,8 @@ function EditBoard({match}) {
                     <Row>
                         <Col>
                             <Form.Group>
-                                <Form.Control as="select" defaultValue={board_category} id='board_category'
+                                <Form.Control as="select" defaultValue={board_category}
+                                              id='board_category'
                                               disabled={true}
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>

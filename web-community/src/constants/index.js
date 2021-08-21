@@ -3,7 +3,7 @@ export const GOOGLE_REDIRECT_URI = 'http://localhost:8080/auth/google/callback';
 
 export const ROLE = ['ROLE_GENERAL', 'ROLE_STUDENT', 'ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
 export const NOTICE_WRITE_ROLE = ['ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
-export const QNA_WRITE_ROLE = ['ROLE_STUDENT', 'ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
+export const BOARD_WRITE_ROLE = ['ROLE_STUDENT', 'ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
 
 // 공지사항
 export const AUTH_NOTICE_GET = {

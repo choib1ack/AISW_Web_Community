@@ -75,13 +75,13 @@ export default function NoticeDetail({match}) {
         history.push({pathname: `${match.url}/edit`, state: {detail: noticeDetailData, content: htmlContent}});
     }
 
-    async function handleDelete() {
-        await axiosApi.delete(`/${AUTH_NOTICE_DELETE[notice_category]}/notice/${notice_category}/${id}`)
+    function deleteNotice() {
+        axiosApi.delete(`/${AUTH_NOTICE_DELETE[notice_category]}/notice/${notice_category}/${id}`)
             .then((res) => {
-                history.push('/notice')  // BoardList로 이동
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
+                history.push('/notice');
+            })
+            .catch(error => {
+                console.log(error);
             })
     }
 
@@ -97,7 +97,7 @@ export default function NoticeDetail({match}) {
                         <Button variant="secondary" onClick={handleClose}>
                             아니오
                         </Button>
-                        <Button variant="primary" onClick={handleDelete}>
+                        <Button variant="primary" onClick={deleteNotice}>
                             네
                         </Button>
                     </Modal.Footer>

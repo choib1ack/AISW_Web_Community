@@ -21,16 +21,17 @@ function NewBoard() {
     const board_type = useRef();
     board_type.current = watch("board_type");
 
-    const write = useSelector(state => state.write)
+    const write = useSelector(state => state.write);
+    const {role} = useSelector(state => state.user.decoded);
 
-    async function postBoard(data, path) {
-        await axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/` + path,
+    function postBoard(data, path) {
+        axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/` + path,
             {data: data},
         ).then((res) => {
-            setModalShow(true)   // 완료 모달 띄우기
+            setModalShow(true)
         }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
+            console.log(error);
+            alert("글 게시에 실패하였습니다.");
         })
     }
 
@@ -38,22 +39,20 @@ function NewBoard() {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let temp;
-            if (data.board_type === 'free') {
-                temp = {
-                    content: data.content,
-                    is_anonymous: true,
-                    status: "GENERAL",
-                    title: data.title,
-                }
-            } else if (data.board_type === 'qna') {
-                temp = {
-                    content: data.content,
-                    is_anonymous: true,
-                    status: "GENERAL",
-                    subject: data.subject,
-                    title: data.title,
-                }
+            if (data.board_type !== 'free' && role === 'ROLE_GENERAL') {
+                alert('자유게시판 외에는 글을 게시할 수 없습니다!');
+                return;
+            }
+
+            let temp = {
+                content: data.content,
+                is_anonymous: true,
+                status: 'GENERAL',
+                title: data.title,
+            };
+
+            if (data.board_type === 'qna') {
+                temp.subject = data.subject;
             }
 
             postBoard(temp, data.board_type);

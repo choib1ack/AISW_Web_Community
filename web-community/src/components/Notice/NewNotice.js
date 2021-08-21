@@ -5,7 +5,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import {useSelector} from "react-redux";
 import FinishModal from "../FinishModal";
@@ -22,16 +22,14 @@ export default function NewNotice() {
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
 
-    async function sendNotice(data, path) {
-        await axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
+    function postNotice(data, path) {
+        axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
             {data: data}
         ).then((res) => {
-            setModalShow(true)   // 완료 모달 띄우기
+            setModalShow(true);
         }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-
-            alert("글 게시에 실패하였습니다.") // 실패 메시지
+            console.log(error);
+            alert("글 게시에 실패하였습니다.");
         })
     }
 
@@ -39,36 +37,22 @@ export default function NewNotice() {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
-            if (data.board_type === "university") {
-                if (role === 'ROLE_COUNCIL') {
-                    alert('학생회 카테고리 외에는 글을 게시할 수 없습니다!');
-                    return;
-                }
-                test = {
-                    'campus': "COMMON",
-                    'content': data.content,
-                    'status': "GENERAL",
-                    'title': data.title
-                }
-            } else if (data.board_type === "department") {
-                if (role === 'ROLE_COUNCIL') {
-                    alert('학생회 카테고리 외에는 글을 게시할 수 없습니다!');
-                    return;
-                }
-                test = {
-                    'content': data.content,
-                    'status': "GENERAL",
-                    'title': data.title
-                }
-            } else if (data.board_type === "council") {
-                test = {
-                    'content': data.content,
-                    'status': "GENERAL",
-                    'title': data.title
-                }
+            if (data.board_type !== 'council' && role === 'ROLE_COUNCIL') {
+                alert('학생회 카테고리 외에는 글을 게시할 수 없습니다!');
+                return;
             }
-            sendNotice(test, data.board_type);
+
+            let temp = {
+                content: data.content,
+                status: 'GENERAL',
+                title: data.title
+            };
+
+            if (data.board_type === "university") {
+                temp.campus = 'COMMON';
+            }
+
+            postNotice(temp, data.board_type);
         }
     }
 
@@ -117,7 +101,6 @@ export default function NewNotice() {
                         </Col>
                     </Row>
                 </Form>
-
 
             </Container>
         </div>
