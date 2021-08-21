@@ -14,6 +14,7 @@ import {checkContent, checkTitle} from "./NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import {useLocation} from "react-router-dom";
 import axiosApi from "../../axiosApi";
+import {AUTH_BOARD_PUT} from "../../constants";
 
 function EditBoard({match}) {
     const {register, handleSubmit} = useForm({mode: "onChange"});
@@ -23,13 +24,11 @@ function EditBoard({match}) {
     const detail = location.state.detail;
     const content = location.state.content;
     const {board_category, id} = match.params;
-    const [refreshToken, setRefreshToken] = useState(() => window.localStorage.getItem("REFRESH_TOKEN") || null);
 
-    // redux toolkit
     const write = useSelector(state => state.write)
 
-    async function sendBoard(auth, data, path) {
-        await axiosApi.put(`/${auth}/board/` + path,
+    async function sendBoard(data, path) {
+        await axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/` + path,
             {data: data},
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
@@ -37,23 +36,7 @@ function EditBoard({match}) {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
 
-            if (error.response.data.error === "JwtTokenExpired") {
-                axiosApi.put(`/${auth}/board/` + path,
-                    {data: data},
-                    {
-                        headers: {
-                            'Refresh_Token': refreshToken
-                        }
-                    }
-                ).then((res) => {
-                    setModalShow(true)   // 완료 모달 띄우기
-                }).catch(error => {
-                    let errorObject = JSON.parse(JSON.stringify(error));
-                    console.log(errorObject);
-                })
-            } else {
-                alert("글 게시에 실패하였습니다.") // 실패 메시지
-            }
+            alert("글 게시에 실패하였습니다.") // 실패 메시지
         })
     }
 
@@ -62,7 +45,7 @@ function EditBoard({match}) {
         data.board_type = board_category;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let temp, auth;
+            let temp;
             if (data.board_type === 'free') {
                 temp = {
                     content: data.content,
@@ -71,7 +54,6 @@ function EditBoard({match}) {
                     status: "GENERAL",
                     title: data.title,
                 }
-                auth = 'auth';
             } else if (data.board_type === 'qna') {
                 temp = {
                     content: data.content,
@@ -81,11 +63,10 @@ function EditBoard({match}) {
                     subject: data.subject,
                     title: data.title,
                 }
-                auth = 'auth-student';
             }
             temp.id = id;
 
-            sendBoard(auth, temp, data.board_type);
+            sendBoard(temp, data.board_type);
         }
     }
 
@@ -109,7 +90,7 @@ function EditBoard({match}) {
                             </Form.Group>
                         </Col>
                         <Col>
-                            {board_category == "qna" &&
+                            {board_category === "qna" &&
                             <Form.Control as="select" defaultValue={detail.subject} id='lecture'
                                           name="subject" ref={register}>
                                 {subject_list.map((subject, index) => {

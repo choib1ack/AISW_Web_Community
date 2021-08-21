@@ -8,6 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
 import axiosApi from "../../axiosApi";
+import {AUTH_NOTICE_DELETE, AUTH_NOTICE_GET} from "../../constants";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -48,15 +49,13 @@ export default function NoticeDetail({match}) {
     }
 
     useEffect(() => {
-        const get_auth_url = (notice_category === 'university' ? 'auth' : 'auth-student');
-
         const fetchNoticeData = async () => {
             try {
                 setError(null);
                 setNoticeDetailData(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${get_auth_url}/notice/${notice_category}/${id}`);
+                const response = await axiosApi.get(`/${AUTH_NOTICE_GET[notice_category]}/notice/${notice_category}/${id}`);
 
                 setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
                 setHtmlContent(response.data.data.content);
@@ -70,10 +69,6 @@ export default function NoticeDetail({match}) {
     }, []); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
-    if (error) return (
-        <tr>
-            <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
-        </tr>);
     if (!noticeDetailData) return null;
 
     function handleEdit() {
@@ -81,9 +76,7 @@ export default function NoticeDetail({match}) {
     }
 
     async function handleDelete() {
-        const delete_auth_url = (notice_category === 'council' ? 'auth-council' : 'auth-admin');
-
-        await axiosApi.delete(`/${delete_auth_url}/notice/${notice_category}/${id}`)
+        await axiosApi.delete(`/${AUTH_NOTICE_DELETE[notice_category]}/notice/${notice_category}/${id}`)
             .then((res) => {
                 history.push('/notice')  // BoardList로 이동
             }).catch(error => {

@@ -13,6 +13,7 @@ import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
 import FileUpload from "../FileUpload";
 import axiosApi from "../../axiosApi";
+import {AUTH_BOARD_POST} from "../../constants";
 
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
@@ -20,11 +21,10 @@ function NewBoard() {
     const board_type = useRef();
     board_type.current = watch("board_type");
 
-    // redux toolkit
     const write = useSelector(state => state.write)
 
-    async function postBoard(auth, data, path) {
-        await axiosApi.post(`/${auth}/board/` + path,
+    async function postBoard(data, path) {
+        await axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/` + path,
             {data: data},
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
@@ -38,8 +38,7 @@ function NewBoard() {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let temp, auth;
-
+            let temp;
             if (data.board_type === 'free') {
                 temp = {
                     content: data.content,
@@ -47,7 +46,6 @@ function NewBoard() {
                     status: "GENERAL",
                     title: data.title,
                 }
-                auth = 'auth';
             } else if (data.board_type === 'qna') {
                 temp = {
                     content: data.content,
@@ -56,10 +54,9 @@ function NewBoard() {
                     subject: data.subject,
                     title: data.title,
                 }
-                auth = 'auth-student';
             }
 
-            postBoard(auth, temp, data.board_type);
+            postBoard(temp, data.board_type);
         }
     }
 
@@ -83,7 +80,7 @@ function NewBoard() {
                             </Form.Group>
                         </Col>
                         <Col>
-                            {board_type.current == "qna" &&
+                            {board_type.current === "qna" &&
                             <Form.Control as="select" defaultValue="과목 선택" id='lecture'
                                           name="subject" ref={register}>
                                 {subject_list.map((subject, index) => {

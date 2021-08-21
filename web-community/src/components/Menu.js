@@ -12,12 +12,12 @@ import {setActiveTab} from "../features/menuSlice";
 import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 import axios from "axios";
 import * as jwt from "jwt-simple";
+import {setDecoded} from "../features/userSlice";
 
 export default function Menu() {
-    const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
     const [modalShow, setModalShow] = useState(false);
-    const [userName, setUserName] = useState(null);
 
+    const user = useSelector(state => state.user);
     const active_menu = useSelector(state => state.menu);
     const dispatch = useDispatch();
 
@@ -26,12 +26,17 @@ export default function Menu() {
     const handleJoinFailure = (result) => console.log(result);
     const handleLoginFailure = (result) => console.log(result);
 
-    useEffect(() => {
-        if (accessToken) {
-            let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
-            setUserName(decoded.name);
+    const decodingAccessToken = (accessToken) => {
+        try {
+            if (accessToken) {
+                let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
+                console.log(decoded);
+                dispatch(setDecoded(decoded));
+            }
+        } catch (e) {
+            console.log(e);
         }
-    }, [accessToken]);
+    }
 
     const handleClickTab = (event) => {
         let name = event.target.name;
@@ -118,7 +123,8 @@ export default function Menu() {
             window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization);
             window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token);
 
-            setAccessToken(window.localStorage.getItem("ACCESS_TOKEN"));
+            decodingAccessToken(res.headers.authorization);
+            history.push('/');
         }).catch(error => error);
     }
 
@@ -167,12 +173,12 @@ export default function Menu() {
                     </Col>
 
                     {
-                        (accessToken) ?
+                        (user.decoded) ?
                             (
                                 <>
                                     <Col xs={3}>
                                         <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {userName}
+                                            {user.decoded.name}
                                         </button>
                                         <Link to="/manager">
                                             <button className="Menu-button" name="manage_page" onClick={handleClickTab}
@@ -182,10 +188,10 @@ export default function Menu() {
                                         </Link>
                                     </Col>
 
-                                    {modalShow?<MyPage
+                                    {modalShow ? <MyPage
                                         myPageShow={modalShow}
                                         setMyPageShow={setModalShow}
-                                    />:null}
+                                    /> : null}
 
                                 </>
                             ) : (

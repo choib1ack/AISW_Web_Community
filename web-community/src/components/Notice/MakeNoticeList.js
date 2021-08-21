@@ -23,14 +23,13 @@ export default function MakeNoticeList(props) {
     );
 
     const setPagination = (now_page) => {
-
         setNoticeData({
             ...noticeData,
             normal: {
                 ...noticeData.normal,
-                page_info : {
+                page_info: {
                     ...noticeData.normal.page_info,
-                    "current_page" : now_page
+                    "current_page": now_page
                 }
             }
         })
@@ -57,8 +56,8 @@ export default function MakeNoticeList(props) {
                 url += "/council";
                 break;
         }
-        if (search_data.search>0) {
-            if (category == 0) {
+        if (search_data.search > 0) {
+            if (category === 0) {
                 url = url.substring(0, url.length - 5);
             }
             switch (search_data.search_type) {
@@ -73,7 +72,7 @@ export default function MakeNoticeList(props) {
                     break;
             }
         }
-        url += search_data.search>0 ? "" : "?page=" + (noticeData.normal.page_info.current_page);
+        url += search_data.search > 0 ? "" : "?page=" + (noticeData.normal.page_info.current_page);
         return url;
     }
 
@@ -144,7 +143,7 @@ export default function MakeNoticeList(props) {
                             data: response.data.data.notice_api_response_list
                         }
                     })
-                }else{
+                } else {
                     setNoticeData({
                         ...noticeData,
                         normal: {
@@ -168,20 +167,24 @@ export default function MakeNoticeList(props) {
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;
     if (!noticeData.normal.data || noticeData.normal.data.length === 0)
-        return (<Table>
-        <thead>
-        <tr>
-            <th style={{width: "10%"}}>no</th>
-            <th style={{width: "55%"}}>제목</th>
-            <th style={{width: "10%"}}>작성자</th>
-            <th style={{width: "10%"}}>등록일</th>
-            <th style={{width: "10%"}}>조회</th>
-        </tr>
-        </thead>
-        <tbody><tr>
-        <td colSpan={5}>데이터가 없습니다.</td>
-    </tr></tbody>
-    </Table>);
+        return (
+            <Table>
+                <thead>
+                <tr>
+                    <th style={{width: "10%"}}>no</th>
+                    <th style={{width: "55%"}}>제목</th>
+                    <th style={{width: "10%"}}>작성자</th>
+                    <th style={{width: "10%"}}>등록일</th>
+                    <th style={{width: "10%"}}>조회</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td colSpan={5}>데이터가 없습니다.</td>
+                </tr>
+                </tbody>
+            </Table>
+        );
     return (
         <>
             <Table>
@@ -195,50 +198,50 @@ export default function MakeNoticeList(props) {
                 </tr>
                 </thead>
                 <tbody>
-            {noticeData.fix_urgent !== null && props.searchData.search==0 ? noticeData.fix_urgent.map(data => (
-                <tr key={data.id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
-                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
-                    <td>{status(data.status)}</td>
-                    <td>
-                        {data.title}
-                        <img src={fileImage} style={attachment(data.attachment_file)}/>
-                    </td>
-                    <td>{data.writer}</td>
-                    <td>{data.created_at.substring(0, 10)}</td>
-                    <td>{data.views}</td>
-                </tr>
-            )) : null}
+                {noticeData.fix_urgent !== null && props.searchData.search == 0 ? noticeData.fix_urgent.map(data => (
+                    <tr key={data.id}
+                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                            data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                        <td>{status(data.status)}</td>
+                        <td>
+                            {data.title}
+                            <img src={fileImage} style={attachment(data.attachment_file)}/>
+                        </td>
+                        <td>{data.writer}</td>
+                        <td>{data.created_at.substring(0, 10)}</td>
+                        <td>{data.views}</td>
+                    </tr>
+                )) : null}
 
-            {noticeData.fix_notice !== null && props.searchData.search==0 ? noticeData.fix_notice.map(data => (
-                <tr key={data.id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
-                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
-                    <td>{status(data.status)}</td>
-                    <td>
-                        {data.title}
-                        <img src={fileImage} style={attachment(data.attachment_file)}/>
-                    </td>
-                    <td>{data.writer}</td>
-                    <td>{data.created_at.substring(0, 10)}</td>
-                    <td>{data.views}</td>
-                </tr>
-            )) : null}
+                {noticeData.fix_notice !== null && props.searchData.search == 0 ? noticeData.fix_notice.map(data => (
+                    <tr key={data.id}
+                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                            data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                        <td>{status(data.status)}</td>
+                        <td>
+                            {data.title}
+                            <img src={fileImage} style={attachment(data.attachment_file)}/>
+                        </td>
+                        <td>{data.writer}</td>
+                        <td>{data.created_at.substring(0, 10)}</td>
+                        <td>{data.views}</td>
+                    </tr>
+                )) : null}
 
-            {noticeData.normal.data.map((data, index) => (
-                <tr key={data.id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
-                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
-                    <td>{indexing(index)}</td>
-                    <td>
-                        {data.title}
-                        <img src={fileImage} style={attachment(data.attachment_file)}/>
-                    </td>
-                    <td>{data.writer}</td>
-                    <td>{data.created_at.substring(0, 10)}</td>
-                    <td>{data.views}</td>
-                </tr>
-            ))}
+                {noticeData.normal.data.map((data, index) => (
+                    <tr key={data.id}
+                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                            data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                        <td>{indexing(index)}</td>
+                        <td>
+                            {data.title}
+                            <img src={fileImage} style={attachment(data.attachment_file)}/>
+                        </td>
+                        <td>{data.writer}</td>
+                        <td>{data.created_at.substring(0, 10)}</td>
+                        <td>{data.views}</td>
+                    </tr>
+                ))}
                 </tbody>
             </Table>
             <Pagination

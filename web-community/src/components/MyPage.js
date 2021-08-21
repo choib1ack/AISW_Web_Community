@@ -11,36 +11,20 @@ import Loading from "./Loading";
 import axiosApi from "../axiosApi";
 import newIcon from "../icon/new_icon.png"
 import moreIcon from "../icon/more_icon.png"
-import * as jwt from "jwt-simple";
+import {useSelector} from "react-redux";
 
 
 export default function MyPage(props) {
-    const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
-    const [userName, setUserName] = useState(null);
-    const [department, setDepartment] = useState( null);
-
+    const [show, setShow] = useState(false);
     const history = useHistory();
 
-    const [show, setShow] = useState(false);
-
-
-    // const department = JSON.parse(window.localStorage.getItem("USER_DEPARTMENT")) || null;
     const [currentPage, setCurrentPage] = useState(0);
     const [loading, setLoading] = useState(false);
 
-
-    useEffect(() => {
-        if (accessToken) {
-            let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
-
-            setUserName(decoded.name);
-            setDepartment(decoded.department);
-        }
-    }, [accessToken]);
+    const {name, department} = useSelector(state => state.user.decoded);
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
-
 
     const handleLogout = () => {
         setShow(false);
@@ -56,7 +40,7 @@ export default function MyPage(props) {
         const scrollTop = e.target.scrollTop;
         const clientHeight = e.target.clientHeight;
 
-        if (scrollTop + clientHeight >= scrollHeight-10 && loading === false && currentPage>=0) {
+        if (scrollTop + clientHeight >= scrollHeight - 10 && loading === false && currentPage >= 0) {
             // 페이지 끝에 도달하면 추가 데이터를 받아온다
             setCurrentPage(currentPage => currentPage + 1);
         }
@@ -86,7 +70,8 @@ export default function MyPage(props) {
                 </Modal>
             </>
 
-            <Modal show={props.myPageShow} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage" onHide={handleMyPageClose}>
+            <Modal show={props.myPageShow} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage"
+                   onHide={handleMyPageClose}>
                 <Modal.Header closeButton style={{border: 'none'}}>
                     <Modal.Title
                         id="contained-modal-title-vcenter"
@@ -105,7 +90,7 @@ export default function MyPage(props) {
                             <Col xs={8} md={8}>
 
                                 <div style={{marginLeft: "10px"}}>
-                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{userName}</p>
+                                    <p style={{fontSize: '14px', marginBottom: "0px"}}>{name}</p>
                                     <p style={{
                                         fontSize: '12px',
                                         color: '#8C8C8C'
@@ -128,7 +113,7 @@ export default function MyPage(props) {
                             borderRadius: '10px',
                             marginBottom: '10px'
                         }}
-                        onScroll={handleScroll}>
+                             onScroll={handleScroll}>
                             <MakeAlertList
                                 history={history}
                                 currentPage={currentPage}
@@ -147,7 +132,7 @@ function MakeAlertList(props) {
 
     // const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [alertList, setAlertList] = useState({list:[], page_info:null});
+    const [alertList, setAlertList] = useState({list: [], page_info: null});
 
     let style = {
         borderRadius: '10px',
@@ -228,7 +213,7 @@ function MakeAlertList(props) {
 
         try {
 
-            if(alertList.page_info != null && props.currentPage+1 > alertList.page_info.total_pages){
+            if (alertList.page_info != null && props.currentPage + 1 > alertList.page_info.total_pages) {
                 return;
             }
 
@@ -238,7 +223,7 @@ function MakeAlertList(props) {
             await axiosApi.get("/auth/alert?page=" + props.currentPage)
                 .then(res => {
 
-                        let items=[];
+                        let items = [];
                         res.data.data.map((data, index) => (
                             items.push(
                                 <div key={index} style={!data.checked ? style : style_viewed}
@@ -249,9 +234,13 @@ function MakeAlertList(props) {
                                         fontSize: '11px',
                                         color: '#8C8C8C'
                                     }}>{timeExpression(data.created_at)}</p>
-                                    <p style={{fontSize: '12px', marginBottom: '5px'}}>{returnBoardName(data.second_category)}
+                                    <p style={{
+                                        fontSize: '12px',
+                                        marginBottom: '5px'
+                                    }}>{returnBoardName(data.second_category)}
                                         {data.checked ? null :
-                                            <img src={newIcon} style={{width: "12px", height: "12px", marginLeft: "5px"}}/>}</p>
+                                            <img src={newIcon}
+                                                 style={{width: "12px", height: "12px", marginLeft: "5px"}}/>}</p>
                                     <p style={{fontSize: '11px', margin: 'none', color: '#8C8C8C'}}>
                                         {returnAlertType(data.alert_category) + "  : " + data.content}
                                     </p>
@@ -259,7 +248,7 @@ function MakeAlertList(props) {
                             ))
                         );
                         setAlertList({
-                            list : [alertList.list.concat(items)],
+                            list: [alertList.list.concat(items)],
                             page_info: res.data.pagination
                         });
 
@@ -274,7 +263,6 @@ function MakeAlertList(props) {
     };
 
 
-
     useEffect(() => {
         fetchMyPageData();
     }, [props.currentPage]);
@@ -282,7 +270,7 @@ function MakeAlertList(props) {
 
     if (props.loading) return <Loading/>;
     if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
-    if (alertList.list.length==0) return <div>데이터가 없습니다.</div>;
+    if (alertList.list.length == 0) return <div>데이터가 없습니다.</div>;
 
     return (
         <>

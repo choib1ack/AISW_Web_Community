@@ -13,6 +13,7 @@ import {useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axiosApi from "../../axiosApi";
+import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -23,7 +24,6 @@ export default function BoardDetail({match}) {
     const [likeState, dispatch] = useReducer(reducer, {"press": false, "num": 0});
     const [show, setShow] = useState(false);
     const {board_category, id} = match.params;
-    const auth_url = (board_category === 'qna' ? 'auth-student' : 'auth');
     let history = useHistory();
 
     const handleShow = () => setShow(true);
@@ -112,7 +112,7 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${auth_url}/board/${board_category}/comment&like/${id}`)
+                const response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`)
                     .catch(error => {
                         let errorObject = JSON.parse(JSON.stringify(error));
                         console.log(errorObject);
@@ -136,7 +136,6 @@ export default function BoardDetail({match}) {
     }, [refresh]); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
-    if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
     if (!boardDetailData) return null;
 
     function handleEdit() {
@@ -144,7 +143,7 @@ export default function BoardDetail({match}) {
     }
 
     async function handleDelete() {
-        await axiosApi.delete(`/${auth_url}/board/${board_category}/${id}`)
+        await axiosApi.delete(`/${AUTH_BOARD_DELETE[board_category]}/board/${board_category}/${id}`)
             .then((res) => {
                 history.push('/board')  // BoardList로 이동
             }).catch(error => {

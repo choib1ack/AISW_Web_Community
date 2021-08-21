@@ -13,6 +13,7 @@ import {checkContent, checkTitle} from "../Board/NewBoard";
 import {useLocation} from "react-router-dom";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
+import {AUTH_NOTICE_PUT} from "../../constants";
 
 export default function EditNotice({match}, props) {
     const {register, handleSubmit} = useForm({mode: "onChange"});
@@ -23,13 +24,10 @@ export default function EditNotice({match}, props) {
     const content = location.state.content;
     const {notice_category, id} = match.params;
 
-    // redux toolkit
     const write = useSelector(state => state.write)
 
     async function sendNotice(data, path) {
-        const put_auth_url = (path === 'council' ? 'auth-council' : 'auth-admin');
-
-        await axiosApi.put(`/${put_auth_url}/notice/${path}`,
+        await axiosApi.put(`/${AUTH_NOTICE_PUT[path]}/notice/${path}`,
             {data: data},
         ).then((res) => {
             setModalShow(true)   // 완료 모달 띄우기
