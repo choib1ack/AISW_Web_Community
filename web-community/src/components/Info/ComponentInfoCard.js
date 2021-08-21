@@ -1,6 +1,5 @@
 import React from "react";
 import Card from "react-bootstrap/Card";
-import defaultImage from "../image/defaultImage.svg"
 
 function ContestInfoCard(props) {
     return (

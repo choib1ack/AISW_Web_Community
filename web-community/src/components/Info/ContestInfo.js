@@ -2,10 +2,10 @@ import React from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import contestImage1 from "../image/contest1.svg";
+import contestImage1 from "../../image/contest1.svg";
 import ContestInfoCard from "./ComponentInfoCard";
-import Pagination from "./PaginationCustom";
-import Title from "./Title";
+import Pagination from "../PaginationCustom";
+import Title from "../Title";
 
 function ContestInfo() {
     window.scrollTo(0, 0);

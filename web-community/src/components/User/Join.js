@@ -8,7 +8,7 @@ import Row from "react-bootstrap/Row";
 import classNames from "classnames";
 import {useForm} from "react-hook-form";
 import axios from 'axios';
-import FinishModal from "./FinishModal";
+import FinishModal from "../FinishModal";
 import {useHistory, useLocation} from "react-router-dom";
 
 export default function Join() {

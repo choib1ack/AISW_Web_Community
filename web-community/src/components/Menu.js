@@ -6,7 +6,7 @@ import Grid from "@material-ui/core/Grid";
 import {Link, useHistory} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
-import MyPage from "./MyPage";
+import MyPage from "./User/MyPage";
 import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
 import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
@@ -130,8 +130,8 @@ export default function Menu() {
 
     return (
         <div className="Menu">
-            <Grid>
-                <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
+            <Grid className="navBar">
+                <Row className="navBar_menus" style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
                     <Col xs={3}>
                         <Link to="/">
                             <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>

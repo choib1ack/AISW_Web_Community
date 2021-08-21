@@ -3,11 +3,10 @@ import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import searchImage from "../../icon/search_black.png";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import MakeNoticeList from "./MakeNoticeList"
 import SelectButton from "../Button/SelectButton";
 import {BlueButton} from "../Button/BlueButton";
-import * as jwt from "jwt-simple";
 import {NOTICE_WRITE_ROLE} from "../../constants";
 import {useSelector} from "react-redux";
 
@@ -20,8 +19,7 @@ export default function NoticeList({match}) {
             keyword: ""
         });
 
-    const user = useSelector(state => state.user);
-    const role = user.decoded.role;
+    const {role} = useSelector(state => state.user.decoded);
 
     window.scrollTo(0, 0);
 

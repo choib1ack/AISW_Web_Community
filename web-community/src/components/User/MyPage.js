@@ -4,15 +4,15 @@ import Modal from "react-bootstrap/Modal";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import PersonImage from "../image/person.svg"
+import PersonImage from "../../image/person.svg"
 import './MyPage.css';
 import {useHistory} from "react-router-dom";
-import Loading from "./Loading";
-import axiosApi from "../axiosApi";
-import newIcon from "../icon/new_icon.png"
-import moreIcon from "../icon/more_icon.png"
+import Loading from "../Loading";
+import axiosApi from "../../axiosApi";
+import newIcon from "../../icon/new_icon.png"
+import moreIcon from "../../icon/more_icon.png"
 import {useDispatch, useSelector} from "react-redux";
-import {resetDecoded} from "../features/userSlice";
+import {resetDecoded} from "../../features/userSlice";
 
 
 export default function MyPage(props) {

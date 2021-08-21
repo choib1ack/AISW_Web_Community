@@ -3,15 +3,15 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import classNames from "classnames";
-import jobLogo from "../image/Kakao.png";
-import jobLogo2 from "../image/naver.png";
-import searchImage from "../icon/search.svg"
+import jobLogo from "../../image/Kakao.png";
+import jobLogo2 from "../../image/naver.png";
+import searchImage from "../../icon/search.svg"
 import React from "react";
 import Card from "react-bootstrap/Card";
-import placeImage from "../icon/place.svg";
-import monitorImage from "../icon/monitor.svg";
-import Pagination from "./PaginationCustom";
-import Title from "./Title";
+import placeImage from "../../icon/place.svg";
+import monitorImage from "../../icon/monitor.svg";
+import Pagination from "../PaginationCustom";
+import Title from "../Title";
 import JobCard from "./JobCard";
 
 export default function JobInfo() {

@@ -2,10 +2,10 @@ import React, {useEffect, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Title from "./Title";
+import Title from "../Title";
 import Card from "react-bootstrap/Card";
-import Loading from "./Loading";
-import axiosApi from "../axiosApi";
+import Loading from "../Loading";
+import axiosApi from "../../axiosApi";
 
 function GoodInfo() {
     const [siteData, setSiteData] = useState(null);

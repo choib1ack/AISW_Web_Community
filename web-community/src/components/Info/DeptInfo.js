@@ -1,11 +1,11 @@
 import React from "react";
 import Container from "react-bootstrap/Container";
-import AICur from "../image/AI_curriculum.svg";
-import SWCur from "../image/SW_curriculum.svg";
-import culturalStudies from "../image/cultural_studies.svg";
-import Title from "./Title";
-import FAQ from "./FAQ";
-import MakeNoticeList from "./Notice/MakeNoticeList";
+import AICur from "../../image/AI_curriculum.svg";
+import SWCur from "../../image/SW_curriculum.svg";
+import culturalStudies from "../../image/cultural_studies.svg";
+import Title from "../Title";
+import FAQ from "../FAQ";
+import MakeNoticeList from "../Notice/MakeNoticeList";
 import Table from "react-bootstrap/Table";
 import {useHistory} from "react-router-dom";
 import Button from "react-bootstrap/Button";
@@ -104,7 +104,7 @@ function DeptInfo() {
 
                 {/*<Title text='자주 묻는 질문' type='1'/>*/}
                 {/*<FAQ/>*/}
-                
+
             </Container>
         </div>
     );
