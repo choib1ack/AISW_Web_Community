@@ -47,7 +47,7 @@ export default function EditNotice({match}) {
                 id: id
             };
 
-            if (notice_category === "university") {
+            if (notice_category === 'university') {
                 temp.campus = 'COMMON';
             }
 

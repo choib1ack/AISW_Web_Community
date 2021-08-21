@@ -15,6 +15,7 @@ import * as jwt from "jwt-simple";
 import {setDecoded} from "../features/userSlice";
 
 export default function Menu() {
+    const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN'));
     const [modalShow, setModalShow] = useState(false);
 
     const user = useSelector(state => state.user);
@@ -30,8 +31,8 @@ export default function Menu() {
         try {
             if (accessToken) {
                 let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
-                console.log(decoded);
                 dispatch(setDecoded(decoded));
+                history.push('/');
             }
         } catch (e) {
             console.log(e);
@@ -124,7 +125,6 @@ export default function Menu() {
             window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token);
 
             decodingAccessToken(res.headers.authorization);
-            history.push('/');
         }).catch(error => error);
     }
 
@@ -173,7 +173,7 @@ export default function Menu() {
                     </Col>
 
                     {
-                        (user.decoded) ?
+                        (accessToken) ?
                             (
                                 <>
                                     <Col xs={3}>

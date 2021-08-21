@@ -37,12 +37,26 @@ export const AUTH_BOARD_POST = {
     'free': 'auth',
     'qna': 'auth-student',
     'job': 'auth'
-};export const AUTH_BOARD_PUT = {
+};
+export const AUTH_BOARD_PUT = {
     'free': 'auth',
     'qna': 'auth-student',
     'job': 'auth'
-};export const AUTH_BOARD_DELETE = {
+};
+export const AUTH_BOARD_DELETE = {
     'free': 'auth',
     'qna': 'auth-student',
     'job': 'auth'
+};
+
+// 파일 업로드
+export const NOTICE_FILE_API ={
+    university: 'universityApiRequest',
+    council: 'councilApiRequest',
+    department: 'departmentApiRequest'
+};
+export const BOARD_FILE_API = {
+    free: 'freeApiRequest',
+    qna: 'qnaApiRequest',
+    job: 'jobApiRequest'
 };

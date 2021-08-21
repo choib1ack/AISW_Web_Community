@@ -167,27 +167,24 @@ function BannerModal(props) {
         }
     }
 
-    async function sendData(formData) {
+    function sendData(formData) {
         if (mode === "add") {
-            await axiosApi.post("/auth-admin/banner", formData).then((res) => {
+            axiosApi.post("/auth-admin/banner", formData).then((res) => {
                 alert("새 배너 등록 완료!")
                 window.location.reload();
             }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
-                alert("새 배너 등록에 실패하였습니다."); // 실패 메시지
+                console.log(error);
+                alert("새 배너 등록에 실패하였습니다.");
             })
         } else {
-            await axiosApi.put("/auth-admin/banner", formData).then((res) => {
+            axiosApi.put("/auth-admin/banner", formData).then((res) => {
                 alert("배너 수정 완료!")
                 window.location.reload();
             }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
-                alert("배너 수정에 실패하였습니다."); // 실패 메시지
+                console.log(error);
+                alert("배너 수정에 실패하였습니다.");
             })
         }
-
     }
 
     // Date to String

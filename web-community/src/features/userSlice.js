@@ -36,6 +36,9 @@ export const userSlice = createSlice({
         },
         setDecoded: (state, action) => {
             state.decoded = action.payload;
+        },
+        resetDecoded: (state) => {
+            state.decoded = null;
         }
     },
     extraReducers: {
@@ -56,6 +59,6 @@ export const userSlice = createSlice({
     }
 })
 
-export const {setUserData, setDecoded} = userSlice.actions
+export const {setUserData, setDecoded, resetDecoded} = userSlice.actions
 
 export default userSlice.reducer

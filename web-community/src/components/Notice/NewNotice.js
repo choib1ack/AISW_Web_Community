@@ -11,9 +11,8 @@ import {useSelector} from "react-redux";
 import FinishModal from "../FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
-import FileUpload from "../FileUpload";
 import axiosApi from "../../axiosApi";
-import {AUTH_NOTICE_POST} from "../../constants";
+import {AUTH_NOTICE_POST, NOTICE_FILE_API} from "../../constants";
 
 export default function NewNotice() {
     const {register, handleSubmit} = useForm({mode: "onChange"});
@@ -22,37 +21,64 @@ export default function NewNotice() {
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
 
-    function postNotice(data, path) {
-        axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
-            {data: data}
-        ).then((res) => {
-            setModalShow(true);
-        }).catch(error => {
-            console.log(error);
-            alert("글 게시에 실패하였습니다.");
-        })
+    function postNotice(data, path, type) {
+        if (type === 'file') {
+            axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}/upload`, data)
+                .then((res) => {
+                    setModalShow(true);
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert("글 게시에 실패하였습니다.");
+                })
+        } else {
+            axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
+                {data: data}
+            ).then((res) => {
+                setModalShow(true);
+            }).catch(error => {
+                console.log(error);
+                alert("글 게시에 실패하였습니다.");
+            })
+        }
     }
 
     const onSubmit = (data) => {
         data.content = write.value;
 
-        if (checkTitle(data.title) && checkContent(data.content)) {
-            if (data.board_type !== 'council' && role === 'ROLE_COUNCIL') {
-                alert('학생회 카테고리 외에는 글을 게시할 수 없습니다!');
-                return;
+        if (data.file.length === 0) {   // 파일이 없을 경우
+            if (checkTitle(data.title) && checkContent(data.content)) {
+                if (data.board_type !== 'council' && role === 'ROLE_COUNCIL') {
+                    alert('학생회 카테고리 외에는 글을 게시할 수 없습니다!');
+                    return;
+                }
+
+                let temp = {
+                    content: data.content,
+                    status: 'GENERAL',
+                    title: data.title
+                };
+
+                if (data.board_type === 'university') {
+                    temp.campus = 'COMMON';
+                }
+
+                postNotice(temp, data.board_type, null);
             }
+        } else {
+            const apiRequest = NOTICE_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
-            let temp = {
-                content: data.content,
-                status: 'GENERAL',
-                title: data.title
-            };
+            let formData = new FormData();
+            formData.append('files', data.file[0]);
+            formData.append(`${apiRequest}.content`, data.content);
+            formData.append(`${apiRequest}.isAnonymous`, true);
+            formData.append(`${apiRequest}.status`, 'GENERAL');
+            formData.append(`${apiRequest}.title`, data.title);
 
-            if (data.board_type === "university") {
-                temp.campus = 'COMMON';
+            if (data.board_type === 'university') {
+                formData.append(`${apiRequest}.campus`, 'COMMON');
             }
-
-            postNotice(temp, data.board_type);
+            postNotice(formData, data.board_type, 'file');
         }
     }
 
@@ -90,7 +116,7 @@ export default function NewNotice() {
                         </Col>
                     </Row>
 
-                    <FileUpload/>
+                    <input ref={register} type="file" name="file"/>
 
                     <Row>
                         <Col>

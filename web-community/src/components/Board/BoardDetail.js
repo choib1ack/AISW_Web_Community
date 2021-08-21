@@ -115,6 +115,8 @@ export default function BoardDetail({match}) {
                 const response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`);
 
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
+                console.log(response.data.data);
+
                 dispatch({
                     type: 'INITIALIZE',
                     value_likes: response.data.data.likes,

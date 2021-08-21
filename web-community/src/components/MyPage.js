@@ -11,7 +11,8 @@ import Loading from "./Loading";
 import axiosApi from "../axiosApi";
 import newIcon from "../icon/new_icon.png"
 import moreIcon from "../icon/more_icon.png"
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {resetDecoded} from "../features/userSlice";
 
 
 export default function MyPage(props) {
@@ -22,6 +23,7 @@ export default function MyPage(props) {
     const [loading, setLoading] = useState(false);
 
     const {name, department} = useSelector(state => state.user.decoded);
+    const dispatch = useDispatch();
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
