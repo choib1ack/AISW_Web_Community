@@ -198,7 +198,7 @@ export default function MakeNoticeList(props) {
                 </tr>
                 </thead>
                 <tbody>
-                {noticeData.fix_urgent !== null && props.searchData.search == 0 ? noticeData.fix_urgent.map(data => (
+                {noticeData.fix_urgent !== null && props.searchData.search === 0 ? noticeData.fix_urgent.map(data => (
                     <tr key={data.id}
                         onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
@@ -213,7 +213,7 @@ export default function MakeNoticeList(props) {
                     </tr>
                 )) : null}
 
-                {noticeData.fix_notice !== null && props.searchData.search == 0 ? noticeData.fix_notice.map(data => (
+                {noticeData.fix_notice !== null && props.searchData.search === 0 ? noticeData.fix_notice.map(data => (
                     <tr key={data.id}
                         onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>

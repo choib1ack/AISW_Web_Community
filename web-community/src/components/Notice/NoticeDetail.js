@@ -23,6 +23,8 @@ export default function NoticeDetail({match}) {
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
 
+    console.log(noticeDetailData);
+
     window.scrollTo(0, 0);
 
     const Category = (c) => {
@@ -131,7 +133,7 @@ export default function NoticeDetail({match}) {
                         <p style={{color: "#0472FD", fontSize: '12px'}}
                            className="mb-1">{Category(notice_category)}></p>
                         <p style={{fontSize: '16x'}} className="d-inline-block mr-1">{noticeDetailData.title}</p>
-                        {noticeDetailData.attachment_file == null ? "" :
+                        {noticeDetailData.file_api_response_list[0] == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}
 
                         <div>
@@ -145,7 +147,7 @@ export default function NoticeDetail({match}) {
                     </div>
 
                     <div className="p-3" style={{minHeight: "100px"}} dangerouslySetInnerHTML={{__html: htmlContent}}/>
-                    {AttachmentFile(noticeDetailData.attachment_file)}
+                    {AttachmentFile(noticeDetailData.file_api_response_list[0].file_name)}
                 </div>
 
                 <ListButton/>

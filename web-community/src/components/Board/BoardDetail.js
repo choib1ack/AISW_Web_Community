@@ -198,7 +198,7 @@ export default function BoardDetail({match}) {
                         </div>
 
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
-                        {boardDetailData.attachment_file == null ? "" :
+                        {boardDetailData.file_api_response_list[0] == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}
                         <div>
                             <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
@@ -226,7 +226,7 @@ export default function BoardDetail({match}) {
                         <div style={{minHeight: "100px"}}
                              dangerouslySetInnerHTML={{__html: htmlContent}}/>
                     </div>
-                    {AttachmentFile(boardDetailData.attachment_file)}
+                    {AttachmentFile(boardDetailData.file_api_response_list[0].file_name)}
                     <hr/>
 
                     <div className="p-3">
