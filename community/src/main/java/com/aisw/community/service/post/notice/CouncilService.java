@@ -229,7 +229,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
     }
 
     private CouncilApiResponse response(Council council) {
-        CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
+        return CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())
                 .writer(council.getWriter())
@@ -242,11 +242,6 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
                 .build();
-        if (council.getFileList() != null) {
-            councilApiResponse.setFileApiResponseList(fileService.getFileList(council.getFileList(), UploadCategory.POST, council.getId()));
-        }
-
-        return councilApiResponse;
     }
 
     private CouncilApiResponse response(User user, Council council) {
@@ -272,7 +267,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
     }
 
     private CouncilApiResponse response(Council council, List<FileApiResponse> fileApiResponseList) {
-        CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
+        return CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())
                 .writer(council.getWriter())
@@ -286,8 +281,6 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .updatedBy(council.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return councilApiResponse;
     }
 
     @Override

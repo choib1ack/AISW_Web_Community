@@ -136,7 +136,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         return freeRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
                 .map(free -> freeRepository.save((Free) free))
-                .map(this::responseWithComment)
+                .map(free -> responseWithComment(free))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -306,7 +306,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     }
 
     private FreeDetailApiResponse responseWithComment(Free free) {
-        FreeDetailApiResponse freeWithCommentApiResponse = FreeDetailApiResponse.builder()
+        return FreeDetailApiResponse.builder()
                 .id(free.getId())
                 .title(free.getTitle())
                 .writer(free.getWriter())
@@ -325,13 +325,9 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .fileApiResponseList(fileService.getFileList(free.getFileList(), UploadCategory.POST, free.getId()))
                 .commentApiResponseList(commentService.searchByPost(free.getId()))
                 .build();
-
-        return freeWithCommentApiResponse;
     }
 
     private FreeDetailApiResponse responseWithCommentAndLike(User user, Free free) {
-        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(free.getId());
-
         FreeDetailApiResponse freeDetailApiResponse = FreeDetailApiResponse.builder()
                 .id(free.getId())
                 .title(free.getTitle())
@@ -349,9 +345,9 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .checkLike(false)
                 .userId(free.getUser().getId())
                 .fileApiResponseList(fileService.getFileList(free.getFileList(), UploadCategory.POST, free.getId()))
-                .commentApiResponseList(commentApiResponseList)
                 .build();
 
+        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(user, free.getId());
         List<ContentLike> contentLikeList = contentLikeService.getContentLikeByUser(user.getId());
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {

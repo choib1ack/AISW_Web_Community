@@ -233,7 +233,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
     }
 
     private UniversityApiResponse response(University university) {
-        UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
+        return UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
                 .writer(university.getWriter())
@@ -247,11 +247,6 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
                 .build();
-        if (university.getFileList() != null) {
-            universityApiResponse.setFileApiResponseList(fileService.getFileList(university.getFileList(), UploadCategory.POST, university.getId()));
-        }
-
-        return universityApiResponse;
     }
 
     private UniversityApiResponse response(User user, University university) {
@@ -278,7 +273,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
     }
 
     private UniversityApiResponse response(University university, List<FileApiResponse> fileApiResponseList) {
-        UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
+        return UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
                 .writer(university.getWriter())
@@ -293,8 +288,6 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                 .updatedBy(university.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return universityApiResponse;
     }
 
     @Override

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class JobController implements BoardControllerInterface<JobApiRequest, JobApiResponse, JobDetailApiResponse, JobResponseDTO> {
+public class JobController implements BoardPostController<JobApiRequest, JobApiResponse, JobDetailApiResponse, JobResponseDTO> {
 
     @Autowired
     private JobService jobService;

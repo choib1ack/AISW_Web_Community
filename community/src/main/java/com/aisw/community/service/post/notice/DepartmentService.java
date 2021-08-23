@@ -228,7 +228,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
     }
 
     private DepartmentApiResponse response(Department department) {
-        DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
+        return DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())
                 .writer(department.getWriter())
@@ -241,11 +241,6 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
                 .build();
-        if (department.getFileList() != null) {
-            departmentApiResponse.setFileApiResponseList(fileService.getFileList(department.getFileList(), UploadCategory.POST, department.getId()));
-        }
-
-        return departmentApiResponse;
     }
 
     private DepartmentApiResponse response(User user, Department department) {
@@ -271,7 +266,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
     }
 
     private DepartmentApiResponse response(Department department, List<FileApiResponse> fileApiResponseList) {
-        DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
+        return DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())
                 .writer(department.getWriter())
@@ -285,8 +280,6 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .updatedBy(department.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return departmentApiResponse;
     }
 
     @Override

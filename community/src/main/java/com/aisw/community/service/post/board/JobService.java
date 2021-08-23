@@ -136,7 +136,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         return jobRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
                 .map(job -> jobRepository.save((Job) job))
-                .map(this::responseWithComment)
+                .map(job -> responseWithComment(job))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -305,7 +305,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     }
 
     private JobDetailApiResponse responseWithComment(Job job) {
-        JobDetailApiResponse jobDetailApiResponse = JobDetailApiResponse.builder()
+        return JobDetailApiResponse.builder()
                 .id(job.getId())
                 .title(job.getTitle())
                 .writer(job.getWriter())
@@ -324,13 +324,9 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .fileApiResponseList(fileService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()))
                 .commentApiResponseList(commentService.searchByPost(job.getId()))
                 .build();
-
-        return jobDetailApiResponse;
     }
 
     private JobDetailApiResponse responseWithCommentAndLike(User user, Job job) {
-        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(job.getId());
-
         JobDetailApiResponse jobDetailApiResponse = JobDetailApiResponse.builder()
                 .id(job.getId())
                 .title(job.getTitle())
@@ -348,9 +344,9 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .checkLike(false)
                 .userId(job.getUser().getId())
                 .fileApiResponseList(fileService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()))
-                .commentApiResponseList(commentApiResponseList)
                 .build();
 
+        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(user, job.getId());
         List<ContentLike> contentLikeList = contentLikeService.getContentLikeByUser(user.getId());
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {

@@ -147,7 +147,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         return qnaRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
                 .map(qna -> qnaRepository.save((Qna) qna))
-                .map(this::responseWithComment)
+                .map(qna -> responseWithComment(qna))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -171,7 +171,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         return qnaRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
                 .map(qna -> qnaRepository.save((Qna) qna))
-                .map(qna -> responseWithCommentAndLike(user, qna))
+                .map(qna -> (user == null) ? responseWithComment(qna) : responseWithCommentAndLike(user, qna))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -320,7 +320,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     }
 
     private QnaDetailApiResponse responseWithComment(Qna qna) {
-        QnaDetailApiResponse qnaWithCommentApiResponse = QnaDetailApiResponse.builder()
+        return QnaDetailApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
                 .writer(qna.getWriter())
@@ -340,13 +340,9 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .fileApiResponseList(fileService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()))
                 .commentApiResponseList(commentService.searchByPost(qna.getId()))
                 .build();
-
-        return qnaWithCommentApiResponse;
     }
 
     private QnaDetailApiResponse responseWithCommentAndLike(User user, Qna qna) {
-        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(qna.getId());
-
         QnaDetailApiResponse qnaDetailApiResponse = QnaDetailApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
@@ -365,9 +361,9 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .userId(qna.getUser().getId())
                 .checkLike(false)
                 .fileApiResponseList(fileService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()))
-                .commentApiResponseList(commentApiResponseList)
                 .build();
 
+        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(user, qna.getId());
         List<ContentLike> contentLikeList = contentLikeService.getContentLikeByUser(user.getId());
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {
@@ -390,6 +386,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             }
         });
         qnaDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
+        qnaDetailApiResponse.setIsWriter((user.getId() == qna.getUser().getId()) ? true : false);
 
         return qnaDetailApiResponse;
     }

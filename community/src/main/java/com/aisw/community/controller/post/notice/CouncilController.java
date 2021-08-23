@@ -2,7 +2,6 @@ package com.aisw.community.controller.post.notice;
 
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.controller.post.board.BoardControllerInterface;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class CouncilController implements NoticeControllerInterface<CouncilApiRequest, CouncilApiResponse> {
+public class CouncilController implements NoticePostController<CouncilApiRequest, CouncilApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private CouncilService councilService;

@@ -37,6 +37,8 @@ public class CommentApiResponse {
 
     private Long boardId;
 
+    private Boolean isWriter;
+
     private List<CommentApiResponse> subComment = new ArrayList<>();
 
     public CommentApiResponse(Long id, String writer, String content, LocalDateTime createdAt, Boolean isAnonymous, Long likes, Long boardId, Long userId) {

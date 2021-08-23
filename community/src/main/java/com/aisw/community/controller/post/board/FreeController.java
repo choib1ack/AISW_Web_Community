@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class FreeController implements BoardControllerInterface<FreeApiRequest, FreeApiResponse, FreeDetailApiResponse, BoardResponseDTO> {
+public class FreeController implements BoardPostController<FreeApiRequest, FreeApiResponse, FreeDetailApiResponse, BoardResponseDTO> {
 
     @Autowired
     private FreeService freeService;

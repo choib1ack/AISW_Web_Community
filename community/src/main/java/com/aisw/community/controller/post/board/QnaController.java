@@ -22,7 +22,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class QnaController implements BoardControllerInterface<QnaApiRequest, QnaApiResponse, QnaDetailApiResponse, BoardResponseDTO> {
+public class QnaController implements BoardPostController<QnaApiRequest, QnaApiResponse, QnaDetailApiResponse, BoardResponseDTO> {
 
     @Autowired
     private QnaService qnaService;
