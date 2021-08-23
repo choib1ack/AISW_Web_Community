@@ -22,28 +22,16 @@ import java.util.regex.Pattern;
 public class UserService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
     private final UserRepository userRepository;
 
-    public Header<UserApiResponse> signup(UserApiRequest userApiRequest) {
 
+    public Header<UserApiResponse> signup(UserApiRequest userApiRequest) {
         if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
             throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
         if (!validatePhoneNumber(userApiRequest.getPhoneNumber()))
             throw new PhoneNumberNotSuitableException(userApiRequest.getPhoneNumber());
-
         return Header.OK(response(userRepository.save(userApiRequest.toEntity(bCryptPasswordEncoder))));
     }
-
-    private boolean validatePhoneNumber(String phoneNumber) {
-        // 숫자 & 11자리 & 앞 3글자 010
-        return isNumeric(phoneNumber) && (phoneNumber.length() == 11) && phoneNumber.substring(0, 3).equals("010");
-    }
-
-    public boolean isNumeric(String str) {
-        return Pattern.matches("^[0-9]*$", str);
-    }
-
     public Header<VerificationApiResponse> verification(VerificationRequest verificationRequest) {
         User user = userRepository.findByUsername(verificationRequest.getUsername());
         VerificationApiResponse response = new VerificationApiResponse();
@@ -60,24 +48,30 @@ public class UserService {
 
         return Header.OK(response);
     }
-
     public Header<UserApiResponse> update(Authentication authentication, UserApiRequest userApiRequest) {
         User user = getUser(authentication);
         user.update(userApiRequest.getName(), userApiRequest.getEmail(), userApiRequest.getPhoneNumber(), userApiRequest.getGrade(), userApiRequest.getGender(), userApiRequest.getDepartmentName());
         return Header.OK(response(userRepository.save(user)));
     }
-
     public Header delete(Authentication authentication) {
         User user = getUser(authentication);
         userRepository.delete(user);
         return Header.OK();
     }
 
+
+    private boolean validatePhoneNumber(String phoneNumber) {
+        // 숫자 & 11자리 & 앞 3글자 010
+        return isNumeric(phoneNumber) && (phoneNumber.length() == 11) && phoneNumber.substring(0, 3).equals("010");
+    }
+    public boolean isNumeric(String str) {
+        return Pattern.matches("^[0-9]*$", str);
+    }
+
     public User getUser(Authentication authentication) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return principal.getUser();
     }
-
     private UserApiResponse response(User user) {
 
         return UserApiResponse.builder()
