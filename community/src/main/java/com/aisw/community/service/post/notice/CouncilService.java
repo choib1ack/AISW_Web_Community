@@ -39,19 +39,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CouncilService extends NoticePostService<CouncilApiRequest, FileUploadToCouncilRequest, NoticeResponseDTO, CouncilApiResponse, Council> {
+public class CouncilService implements NoticePostService<CouncilApiRequest, CouncilApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private CouncilRepository councilRepository;
 
     @Autowired
-    private FileRepository fileRepository;
-
-    @Autowired
     private FileService fileService;
-
-    @Autowired
-    private UserService userService;
 
     @Override
     @Caching(evict = {
@@ -68,13 +62,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<CouncilApiResponse> create(Authentication authentication, Header<CouncilApiRequest> request) {
-        CouncilApiRequest councilApiRequest = request.getData();
-        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<CouncilApiResponse> create(User user, CouncilApiRequest councilApiRequest) {
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
                 .writer(user.getName())
@@ -85,7 +73,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
                 .user(user)
                 .build();
 
-        Council newCouncil = baseRepository.save(council);
+        Council newCouncil = councilRepository.save(council);
         return Header.OK(response(newCouncil));
     }
 
@@ -105,13 +93,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<CouncilApiResponse> create(Authentication authentication, FileUploadToCouncilRequest request) {
-        CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
-        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<CouncilApiResponse> create(User user, CouncilApiRequest councilApiRequest, MultipartFile[] files) {
         Council council = Council.builder()
                 .title(councilApiRequest.getTitle())
                 .writer(user.getName())
@@ -121,9 +103,8 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
                 .secondCategory(SecondCategory.COUNCIL)
                 .user(user)
                 .build();
-        Council newCouncil = baseRepository.save(council);
+        Council newCouncil = councilRepository.save(council);
 
-        MultipartFile[] files = request.getFiles();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newCouncil.getId(), UploadCategory.POST);
 
         return Header.OK(response(newCouncil, fileApiResponseList));
@@ -145,9 +126,9 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
     public Header<CouncilApiResponse> read(Long id) {
-        return baseRepository.findById(id)
+        return councilRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
-                .map(council -> baseRepository.save((Council) council))
+                .map(council -> councilRepository.save((Council) council))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -168,16 +149,9 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<CouncilApiResponse> update(Authentication authentication, Header<CouncilApiRequest> request) {
-        CouncilApiRequest councilApiRequest = request.getData();
-        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
-        }
-
-        Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
+    public Header<CouncilApiResponse> update(User user, CouncilApiRequest councilApiRequest) {
+        Council council = councilRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if (council.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -186,7 +160,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
                 .setTitle(councilApiRequest.getTitle())
                 .setContent(councilApiRequest.getContent())
                 .setStatus(councilApiRequest.getStatus());
-        baseRepository.save(council);
+        councilRepository.save(council);
 
         return Header.OK(response(council));
     }
@@ -207,22 +181,14 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<CouncilApiResponse> update(Authentication authentication, FileUploadToCouncilRequest request) {
-        CouncilApiRequest councilApiRequest = request.getCouncilApiRequest();
-        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
-        }
-
-        Council council = baseRepository.findById(councilApiRequest.getId()).orElseThrow(
+    public Header<CouncilApiResponse> update(User user, CouncilApiRequest councilApiRequest, MultipartFile[] files) {
+        Council council = councilRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if (council.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        MultipartFile[] files = request.getFiles();
-        council.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        fileService.deleteFileList(council.getFileList());
         council.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, council.getId(), UploadCategory.POST);
 
@@ -230,7 +196,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
                 .setTitle(councilApiRequest.getTitle())
                 .setContent(councilApiRequest.getContent())
                 .setStatus(councilApiRequest.getStatus());
-        baseRepository.save(council);
+        councilRepository.save(council);
 
         return Header.OK(response(council, fileApiResponseList));
     }
@@ -250,16 +216,15 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header delete(Authentication authentication, Long id) {
-        Council council = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+    public Header delete(User user, Long id) {
+        Council council = councilRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        User user = userService.getUser(authentication);
         if (council.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.delete(council.getFileList());
-        baseRepository.delete(council);
+        fileService.deleteFileList(council.getFileList());
+        councilRepository.delete(council);
         return Header.OK();
     }
 
@@ -306,7 +271,7 @@ public class CouncilService extends NoticePostService<CouncilApiRequest, FileUpl
     @Override
     @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
-        Page<Council> councils = baseRepository.findAll(pageable);
+        Page<Council> councils = councilRepository.findAll(pageable);
         Page<Council> councilsByStatus = searchByStatus(pageable);
 
         return getListHeader(councils, councilsByStatus);

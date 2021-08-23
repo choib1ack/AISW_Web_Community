@@ -4,6 +4,7 @@ import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
+import com.aisw.community.model.entity.post.board.QJob;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.User;
@@ -23,9 +24,9 @@ import com.aisw.community.model.network.response.post.comment.CommentApiResponse
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.QnaRepository;
 import com.aisw.community.repository.post.file.FileRepository;
-import com.aisw.community.repository.post.like.ContentLikeRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
+import com.aisw.community.service.post.like.ContentLikeService;
 import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -44,25 +45,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaRequest, BoardResponseDTO, QnaDetailApiResponse, QnaApiResponse, Qna> {
+public class QnaService implements BoardPostService<QnaApiRequest, QnaApiResponse, BoardResponseDTO, QnaDetailApiResponse> {
 
     @Autowired
     private QnaRepository qnaRepository;
 
     @Autowired
-    private ContentLikeRepository contentLikeRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
+    private ContentLikeService contentLikeService;
 
     @Autowired
     private CommentService commentService;
 
     @Autowired
     private FileService fileService;
-
-    @Autowired
-    private UserService userService;
 
     @Override
     @Caching(evict = {
@@ -79,13 +74,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<QnaApiResponse> create(Authentication authentication, Header<QnaApiRequest> request) {
-        QnaApiRequest qnaApiRequest = request.getData();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<QnaApiResponse> create(User user, QnaApiRequest qnaApiRequest) {
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(user.getName())
@@ -99,7 +88,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
                 .user(user)
                 .build();
 
-        Qna newQna = baseRepository.save(qna);
+        Qna newQna = qnaRepository.save(qna);
         return Header.OK(response(newQna));
     }
 
@@ -119,13 +108,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<QnaApiResponse> create(Authentication authentication, FileUploadToQnaRequest request) {
-        QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<QnaApiResponse> create(User user, QnaApiRequest qnaApiRequest, MultipartFile[] files) {
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
                 .writer(user.getName())
@@ -138,9 +121,8 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
                 .likes(0L)
                 .user(user)
                 .build();
-        Qna newQna = baseRepository.save(qna);
+        Qna newQna = qnaRepository.save(qna);
 
-        MultipartFile[] files = request.getFiles();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newQna.getId(), UploadCategory.POST);
 
         return Header.OK(response(newQna, fileApiResponseList));
@@ -162,9 +144,9 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
     public Header<QnaApiResponse> read(Long id) {
-        return baseRepository.findById(id)
+        return qnaRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
-                .map(qna -> baseRepository.save((Qna) qna))
+                .map(qna -> qnaRepository.save((Qna) qna))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -185,16 +167,9 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<QnaApiResponse> update(Authentication authentication, Header<QnaApiRequest> request) {
-        QnaApiRequest qnaApiRequest = request.getData();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
-        }
-
-        Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
+    public Header<QnaApiResponse> update(User user, QnaApiRequest qnaApiRequest) {
+        Qna qna = qnaRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if(qna.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -205,7 +180,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
                 .setStatus(qnaApiRequest.getStatus());
         qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
         qna.setSubject(qnaApiRequest.getSubject());
-        baseRepository.save(qna);
+        qnaRepository.save(qna);
 
         return Header.OK(response(qna));
     }
@@ -226,22 +201,14 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<QnaApiResponse> update(Authentication authentication, FileUploadToQnaRequest request) {
-        QnaApiRequest qnaApiRequest = request.getQnaApiRequest();
-        if(qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
-        }
-
-        Qna qna = baseRepository.findById(qnaApiRequest.getId()).orElseThrow(
+    public Header<QnaApiResponse> update(User user, QnaApiRequest qnaApiRequest, MultipartFile[] files) {
+        Qna qna = qnaRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if(qna.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        MultipartFile[] files = request.getFiles();
-        qna.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        fileService.deleteFileList(qna.getFileList());
         qna.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, qna.getId(), UploadCategory.POST);
 
@@ -251,7 +218,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
                 .setStatus(qnaApiRequest.getStatus());
         qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
         qna.setSubject(qnaApiRequest.getSubject());
-        baseRepository.save(qna);
+        qnaRepository.save(qna);
 
         return Header.OK(response(qna, fileApiResponseList));
     }
@@ -271,15 +238,14 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header delete(Authentication authentication, Long id) {
-        Qna qna = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
-        User user = userService.getUser(authentication);
+    public Header delete(User user, Long id) {
+        Qna qna = qnaRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         if (qna.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.delete(qna.getFileList());
-        baseRepository.delete(qna);
+        fileService.deleteFileList(qna.getFileList());
+        qnaRepository.delete(qna);
         return Header.OK();
     }
 
@@ -345,8 +311,9 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
     public Header<QnaDetailApiResponse> readWithComment(Long id) {
-        return baseRepository.findById(id)
-                .map(qna -> (Qna)qna.setViews(qna.getViews() + 1))
+        return qnaRepository.findById(id)
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> qnaRepository.save((Qna) qna))
                 .map(this::responseWithComment)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -392,12 +359,11 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<QnaDetailApiResponse> readWithCommentAndLike(Authentication authentication, Long id) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        return baseRepository.findById(id)
+    public Header<QnaDetailApiResponse> readWithCommentAndLike(User user, Long id) {
+        return qnaRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
-                .map(qna -> baseRepository.save((Qna) qna))
-                .map(qna -> responseWithCommentAndLike(principal.getUser(), qna))
+                .map(qna -> qnaRepository.save((Qna) qna))
+                .map(qna -> responseWithCommentAndLike(user, qna))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -426,7 +392,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
                 .commentApiResponseList(commentApiResponseList)
                 .build();
 
-        List<ContentLike> contentLikeList = contentLikeRepository.findAllByUserId(user.getId());
+        List<ContentLike> contentLikeList = contentLikeService.getContentLikeByUser(user.getId());
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {
                 if (contentLike.getBoard().getId() == qna.getId()) {
@@ -455,7 +421,7 @@ public class QnaService extends BoardPostService<QnaApiRequest, FileUploadToQnaR
     @Override
     @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
-        Page<Qna> qnas = baseRepository.findAll(pageable);
+        Page<Qna> qnas = qnaRepository.findAll(pageable);
         Page<Qna> qnasByStatus = searchByStatus(pageable);
 
         return getListHeader(qnas, qnasByStatus);

@@ -1,6 +1,6 @@
 import Card from "react-bootstrap/Card";
-import placeImage from "../icon/place.svg";
-import monitorImage from "../icon/monitor.svg";
+import placeImage from "../../icon/place.svg";
+import monitorImage from "../../icon/monitor.svg";
 import Button from "react-bootstrap/Button";
 import React from "react";
 

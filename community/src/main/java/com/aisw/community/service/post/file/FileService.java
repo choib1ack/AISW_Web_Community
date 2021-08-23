@@ -90,10 +90,6 @@ public class FileService {
         return newFile;
     }
 
-    public void delete(List<File> fileList) {
-        fileList.stream().forEach(file -> fileStorageService.deleteFile(file));
-    }
-
     @Transactional
     public ResponseEntity<Resource> download(String fileName, HttpServletRequest request) {
         Resource resource = fileStorageService.loadFileAsResource(fileName);
@@ -116,6 +112,10 @@ public class FileService {
 
     public List<FileApiResponse> getFileList(List<File> fileList, UploadCategory category, Long id) {
         return fileList.stream().map(this::response).collect(Collectors.toList());
+    }
+
+    public void deleteFileList(List<File> fileList) {
+        fileList.stream().forEach(file -> fileStorageService.deleteFile(file));
     }
 
     public FileApiResponse response(File file) {

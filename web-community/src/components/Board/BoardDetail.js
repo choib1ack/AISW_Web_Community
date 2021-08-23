@@ -13,6 +13,7 @@ import {useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axiosApi from "../../axiosApi";
+import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -23,7 +24,6 @@ export default function BoardDetail({match}) {
     const [likeState, dispatch] = useReducer(reducer, {"press": false, "num": 0});
     const [show, setShow] = useState(false);
     const {board_category, id} = match.params;
-    const auth_url = (board_category === 'qna' ? 'auth-student' : 'auth');
     let history = useHistory();
 
     const handleShow = () => setShow(true);
@@ -58,7 +58,7 @@ export default function BoardDetail({match}) {
             case "free":
                 return '자유게시판';
             case "qna":
-                return "과목별게시판 > "+boardDetailData.subject;
+                return "과목별게시판 > " + boardDetailData.subject;
             case "job":
                 return "취업게시판";
         }
@@ -112,13 +112,11 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${auth_url}/board/${board_category}/comment&like/${id}`)
-                    .catch(error => {
-                        let errorObject = JSON.parse(JSON.stringify(error));
-                        console.log(errorObject);
-                    });
+                const response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`);
 
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
+                console.log(response.data.data);
+
                 dispatch({
                     type: 'INITIALIZE',
                     value_likes: response.data.data.likes,
@@ -136,20 +134,19 @@ export default function BoardDetail({match}) {
     }, [refresh]); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
-    if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
     if (!boardDetailData) return null;
 
     function handleEdit() {
         history.push({pathname: `${match.url}/edit`, state: {detail: boardDetailData, content: htmlContent}});
     }
 
-    async function handleDelete() {
-        await axiosApi.delete(`/${auth_url}/board/${board_category}/${id}`)
+    function deleteBoard() {
+        axiosApi.delete(`/${AUTH_BOARD_DELETE[board_category]}/board/${board_category}/${id}`)
             .then((res) => {
-                history.push('/board')  // BoardList로 이동
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
+                history.push('/board');
+            })
+            .catch(error => {
+                console.log(error);
             })
     }
 
@@ -165,7 +162,7 @@ export default function BoardDetail({match}) {
                         <Button variant="secondary" onClick={handleClose}>
                             아니오
                         </Button>
-                        <Button variant="primary" onClick={handleDelete}>
+                        <Button variant="primary" onClick={deleteBoard}>
                             네
                         </Button>
                     </Modal.Footer>
@@ -201,7 +198,7 @@ export default function BoardDetail({match}) {
                         </div>
 
                         <p style={{fontSize: '16px'}} className="d-inline-block mr-1">{boardDetailData.title}</p>
-                        {boardDetailData.attachment_file == null ? "" :
+                        {boardDetailData.file_api_response_list[0] == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}
                         <div>
                             <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
@@ -229,7 +226,7 @@ export default function BoardDetail({match}) {
                         <div style={{minHeight: "100px"}}
                              dangerouslySetInnerHTML={{__html: htmlContent}}/>
                     </div>
-                    {AttachmentFile(boardDetailData.attachment_file)}
+                    {AttachmentFile(boardDetailData.file_api_response_list[0].file_name)}
                     <hr/>
 
                     <div className="p-3">

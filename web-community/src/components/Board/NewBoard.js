@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import classNames from 'classnames';
@@ -11,8 +11,8 @@ import FinishModal from "../FinishModal";
 import {useSelector} from "react-redux";
 import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
-import FileUpload from "../FileUpload";
 import axiosApi from "../../axiosApi";
+import {AUTH_BOARD_POST, BOARD_FILE_API} from "../../constants";
 
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
@@ -20,46 +20,68 @@ function NewBoard() {
     const board_type = useRef();
     board_type.current = watch("board_type");
 
-    // redux toolkit
-    const write = useSelector(state => state.write)
+    const write = useSelector(state => state.write);
+    const {role} = useSelector(state => state.user.decoded);
 
-    async function postBoard(auth, data, path) {
-        await axiosApi.post(`/${auth}/board/` + path,
-            {data: data},
-        ).then((res) => {
-            setModalShow(true)   // 완료 모달 띄우기
-        }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-        })
+    function postBoard(data, path, type) {
+        if (type === 'file') {
+            axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}/upload`, data)
+                .then((res) => {
+                    setModalShow(true)
+                })
+                .catch(error => {
+                    console.log(error);
+                    alert("글 게시에 실패하였습니다.");
+                })
+        } else {
+            axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`,
+                {data: data},
+            ).then((res) => {
+                setModalShow(true)
+            }).catch(error => {
+                console.log(error);
+                alert("글 게시에 실패하였습니다.");
+            })
+        }
+
     }
 
     const onSubmit = (data) => {
         data.content = write.value;
 
-        if (checkTitle(data.title) && checkContent(data.content)) {
-            let temp, auth;
+        if (data.file.length === 0) {   // 파일이 없을 경우
+            if (checkTitle(data.title) && checkContent(data.content)) {
+                if (data.board_type !== 'free' && role === 'ROLE_GENERAL') {
+                    alert('자유게시판 외에는 글을 게시할 수 없습니다!');
+                    return;
+                }
 
-            if (data.board_type === 'free') {
-                temp = {
+                let temp = {
                     content: data.content,
                     is_anonymous: true,
-                    status: "GENERAL",
+                    status: 'GENERAL',
                     title: data.title,
+                };
+
+                if (data.board_type === 'qna') {
+                    temp.subject = data.subject;
                 }
-                auth = 'auth';
-            } else if (data.board_type === 'qna') {
-                temp = {
-                    content: data.content,
-                    is_anonymous: true,
-                    status: "GENERAL",
-                    subject: data.subject,
-                    title: data.title,
-                }
-                auth = 'auth-student';
+                postBoard(temp, data.board_type, null);
             }
+        } else {
+            const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
-            postBoard(auth, temp, data.board_type);
+            let formData = new FormData();
+            formData.append('files', data.file[0]);
+            formData.append(`${apiRequest}.content`, data.content);
+            formData.append(`${apiRequest}.isAnonymous`, true);
+            formData.append(`${apiRequest}.status`, 'GENERAL');
+            formData.append(`${apiRequest}.title`, data.title);
+
+            if (data.board_type === 'qna') {
+                formData.append(`${apiRequest}.subject`, data.subject);
+            }
+            postBoard(formData, data.board_type, 'file');
         }
     }
 
@@ -83,7 +105,7 @@ function NewBoard() {
                             </Form.Group>
                         </Col>
                         <Col>
-                            {board_type.current == "qna" &&
+                            {board_type.current === "qna" &&
                             <Form.Control as="select" defaultValue="과목 선택" id='lecture'
                                           name="subject" ref={register}>
                                 {subject_list.map((subject, index) => {
@@ -107,7 +129,7 @@ function NewBoard() {
                         </Col>
                     </Row>
 
-                    <FileUpload/>
+                    <input ref={register} type="file" name="file"/>
 
                     <Row>
                         <Col>

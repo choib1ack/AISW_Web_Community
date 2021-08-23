@@ -57,9 +57,15 @@ const axiosApi = () => {
                 }
             }
 
-            // 접근권한 없을 때
+            // 접근 권한 없을 때
             if (err.response.status === 403) {
                 if (!alert('접근 권한이 없습니다!')) {
+                    window.history.back();
+                }
+            }
+
+            if (err.response.status === 404 && err.response.data.error === 'PostNotFound') {
+                if (!alert('해당 게시물을 찾을 수 없습니다.')) {
                     window.history.back();
                 }
             }
