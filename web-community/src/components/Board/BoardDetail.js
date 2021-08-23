@@ -14,6 +14,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
+import {useSelector} from "react-redux";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -28,6 +29,8 @@ export default function BoardDetail({match}) {
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
+
+    const {decoded} = useSelector(state => state.user);
 
     window.scrollTo(0, 0);
 
@@ -112,7 +115,12 @@ export default function BoardDetail({match}) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`);
+                let response;
+                if (decoded) {
+                    response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`);
+                } else {
+                    response = await axiosApi.get(`/board/${board_category}/comment/${id}`);
+                }
 
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
                 console.log(response.data.data);

@@ -19,7 +19,7 @@ export default function NoticeList({match}) {
             keyword: ""
         });
 
-    const {role} = useSelector(state => state.user.decoded);
+    const {decoded} = useSelector((state) => state.user);
 
     window.scrollTo(0, 0);
 
@@ -92,7 +92,7 @@ export default function NoticeList({match}) {
                     setSearchData={setSearchData}
                 />
 
-                {NOTICE_WRITE_ROLE.includes(role) ?
+                {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
                     <BlueButton match={match} type={'newNotice'} title="글쓰기"/>
                     : null
                 }

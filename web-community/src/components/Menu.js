@@ -15,7 +15,7 @@ import * as jwt from "jwt-simple";
 import {setDecoded} from "../features/userSlice";
 
 export default function Menu() {
-    const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN'));
+    const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN') || null);
     const [modalShow, setModalShow] = useState(false);
 
     const user = useSelector(state => state.user);
@@ -173,7 +173,7 @@ export default function Menu() {
                     </Col>
 
                     {
-                        (accessToken) ?
+                        (accessToken && user.decoded) ?
                             (
                                 <>
                                     <Col xs={3}>
