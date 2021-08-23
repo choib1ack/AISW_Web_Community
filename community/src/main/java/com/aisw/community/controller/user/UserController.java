@@ -28,7 +28,7 @@ class UserController {
     private AlertService alertService;
 
     @PostMapping("/user/signup")
-    public Header<UserApiResponse> signup(@RequestBody Header<@Valid UserApiRequest> request) {
+    public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
         return userService.signup(request);
     }
 
