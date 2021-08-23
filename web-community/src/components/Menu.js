@@ -13,13 +13,15 @@ import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 import axios from "axios";
 import * as jwt from "jwt-simple";
 import {setDecoded} from "../features/userSlice";
+import Badge from 'react-bootstrap/Badge'
+import transitions from "@material-ui/core/styles/transitions";
 
 export default function Menu() {
     const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN'));
     const [modalShow, setModalShow] = useState(false);
 
     const user = useSelector(state => state.user);
-    const active_menu = useSelector(state => state.menu);
+    const menu = useSelector(state => state.menu);
     const dispatch = useDispatch();
 
     const history = useHistory();
@@ -135,54 +137,56 @@ export default function Menu() {
                     <Col xs={3}>
                         <Link to="/">
                             <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
+
                         </Link>
                     </Col>
                     <Col xs={6}>
                         <Link to="/notice">
                             <button className="Menu-button" name="notice" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 1 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: menu.active === 1 ? "#0472FD" : "dimgrey"}}>
                                 공지사항
                             </button>
                         </Link>
                         <Link to="/board">
                             <button className="Menu-button" name="board" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 2 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: menu.active === 2 ? "#0472FD" : "dimgrey"}}>
                                 게시판
                             </button>
                         </Link>
                         <Link to="/deptInfo">
                             <button className="Menu-button" name="dept_info" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 3 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: menu.active === 3 ? "#0472FD" : "dimgrey"}}>
                                 학과정보
                             </button>
                         </Link>
 
                         <Link to="/goodInfo">
                             <button className="Menu-button" name="site" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 4 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: menu.active === 4 ? "#0472FD" : "dimgrey"}}>
                                 유용한사이트
                             </button>
                         </Link>
 
                         <Link to="/faq">
                             <button className="Menu-button" name="faq" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 5 ? "#0472FD" : "dimgrey"}}>
+                                    style={{color: menu.active === 5 ? "#0472FD" : "dimgrey"}}>
                                 FAQ
                             </button>
                         </Link>
                     </Col>
 
                     {
-                        (accessToken) ?
+                        (accessToken && user.decoded) ?
                             (
                                 <>
                                     <Col xs={3}>
-                                        <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {user.decoded.name}
-                                        </button>
+                                            <button className="Menu-button" onClick={() => setModalShow(true)} style={{overflow:'visible'}}>
+                                                {user.decoded.name}
+                                                <Badge variant="primary" pill style={{padding:"5px", transform:'translate(0px, -10px)'}}>{menu.unread_alert}</Badge>
+                                            </button>
                                         <Link to="/manager">
                                             <button className="Menu-button" name="manage_page" onClick={handleClickTab}
-                                                    style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
+                                                    style={{color: menu.active == 6 ? "#0472FD" : "dimgrey"}}>
                                                 관리자페이지
                                             </button>
                                         </Link>
