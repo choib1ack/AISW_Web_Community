@@ -47,5 +47,7 @@ public class CouncilApiResponse {
 
     private String updatedBy;
 
+    private Boolean isWriter;
+
     private List<FileApiResponse> fileApiResponseList;
 }

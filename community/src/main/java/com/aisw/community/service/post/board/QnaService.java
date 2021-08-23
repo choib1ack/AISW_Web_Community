@@ -143,11 +143,35 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<QnaApiResponse> read(Long id) {
+    public Header<QnaDetailApiResponse> read(Long id) {
         return qnaRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
                 .map(qna -> qnaRepository.save((Qna) qna))
-                .map(this::response)
+                .map(this::responseWithComment)
+                .map(Header::OK)
+                .orElseThrow(() -> new PostNotFoundException(id));
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "qnaReadAll", allEntries = true),
+            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
+    public Header<QnaDetailApiResponse> read(User user, Long id) {
+        return qnaRepository.findById(id)
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> qnaRepository.save((Qna) qna))
+                .map(qna -> responseWithCommentAndLike(user, qna))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -295,30 +319,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         return qnaApiResponse;
     }
 
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<QnaDetailApiResponse> readWithComment(Long id) {
-        return qnaRepository.findById(id)
-                .map(qna -> qna.setViews(qna.getViews() + 1))
-                .map(qna -> qnaRepository.save((Qna) qna))
-                .map(this::responseWithComment)
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
     private QnaDetailApiResponse responseWithComment(Qna qna) {
         QnaDetailApiResponse qnaWithCommentApiResponse = QnaDetailApiResponse.builder()
                 .id(qna.getId())
@@ -342,30 +342,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .build();
 
         return qnaWithCommentApiResponse;
-    }
-
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<QnaDetailApiResponse> readWithCommentAndLike(User user, Long id) {
-        return qnaRepository.findById(id)
-                .map(qna -> qna.setViews(qna.getViews() + 1))
-                .map(qna -> qnaRepository.save((Qna) qna))
-                .map(qna -> responseWithCommentAndLike(user, qna))
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private QnaDetailApiResponse responseWithCommentAndLike(User user, Qna qna) {

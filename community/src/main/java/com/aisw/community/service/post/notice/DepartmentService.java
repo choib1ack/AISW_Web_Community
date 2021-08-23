@@ -47,9 +47,6 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private UserService userService;
-
     @Override
     @Caching(evict = {
             @CacheEvict(value = "departmentReadAll", allEntries = true),
@@ -128,11 +125,11 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<DepartmentApiResponse> read(Long id) {
+    public Header<DepartmentApiResponse> read(User user, Long id) {
         return departmentRepository.findById(id)
                 .map(department -> department.setViews(department.getViews() + 1))
                 .map(department -> departmentRepository.save((Department)department))
-                .map(this::response)
+                .map(department -> response(user, department))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -243,6 +240,28 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .createdBy(department.getCreatedBy())
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
+                .build();
+        if (department.getFileList() != null) {
+            departmentApiResponse.setFileApiResponseList(fileService.getFileList(department.getFileList(), UploadCategory.POST, department.getId()));
+        }
+
+        return departmentApiResponse;
+    }
+
+    private DepartmentApiResponse response(User user, Department department) {
+        DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
+                .id(department.getId())
+                .title(department.getTitle())
+                .writer(department.getWriter())
+                .content(department.getContent())
+                .status(department.getStatus())
+                .views(department.getViews())
+                .category(department.getCategory())
+                .createdAt(department.getCreatedAt())
+                .createdBy(department.getCreatedBy())
+                .updatedAt(department.getUpdatedAt())
+                .updatedBy(department.getUpdatedBy())
+                .isWriter((user.getId() == department.getUser().getId()) ? true : false)
                 .build();
         if (department.getFileList() != null) {
             departmentApiResponse.setFileApiResponseList(fileService.getFileList(department.getFileList(), UploadCategory.POST, department.getId()));

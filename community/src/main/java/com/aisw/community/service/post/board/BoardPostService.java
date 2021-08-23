@@ -2,23 +2,24 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.service.ServiceInterface;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-public interface BoardPostService<Req, Res, ListRes, DetailRes> extends ServiceInterface<Req, Res> {
+public interface BoardPostService<Req, Res, ListRes, DetailRes> {
+
+    Header<Res> create(User user, Req request);
 
     Header<Res> create(User user, Req request, MultipartFile[] files);
 
+    Header<DetailRes> read(Long id);
+
+    Header<DetailRes> read(User user, Long id);
+
+    Header<Res> update(User user, Req request);
+
     Header<Res> update(User user, Req request, MultipartFile[] files);
 
-    Header<DetailRes> readWithComment(Long id);
-
-    Header<DetailRes> readWithCommentAndLike(User user, Long id);
+    Header delete(User user, Long id);
 
     Header<ListRes> readAll(Pageable pageable);
 

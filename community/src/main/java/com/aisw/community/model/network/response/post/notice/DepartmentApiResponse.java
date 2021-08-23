@@ -47,5 +47,7 @@ public class DepartmentApiResponse {
 
     private String updatedBy;
 
+    private Boolean isWriter;
+
     private List<FileApiResponse> fileApiResponseList;
 }

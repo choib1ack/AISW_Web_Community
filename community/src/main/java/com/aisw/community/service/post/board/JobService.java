@@ -132,11 +132,35 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<JobApiResponse> read(Long id) {
+    public Header<JobDetailApiResponse> read(Long id) {
         return jobRepository.findById(id)
                 .map(job -> job.setViews(job.getViews() + 1))
                 .map(job -> jobRepository.save((Job) job))
-                .map(this::response)
+                .map(this::responseWithComment)
+                .map(Header::OK)
+                .orElseThrow(() -> new PostNotFoundException(id));
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
+    public Header<JobDetailApiResponse> read(User user, Long id) {
+        return jobRepository.findById(id)
+                .map(job -> job.setViews(job.getViews() + 1))
+                .map(job -> jobRepository.save((Job) job))
+                .map(job -> responseWithCommentAndLike(user, job))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -280,30 +304,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         return jobApiResponse;
     }
 
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "jobReadAll", allEntries = true),
-            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<JobDetailApiResponse> readWithComment(Long id) {
-        return jobRepository.findById(id)
-                .map(job -> job.setViews(job.getViews() + 1))
-                .map(job -> jobRepository.save((Job) job))
-                .map(this::responseWithComment)
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
     private JobDetailApiResponse responseWithComment(Job job) {
         JobDetailApiResponse jobDetailApiResponse = JobDetailApiResponse.builder()
                 .id(job.getId())
@@ -326,30 +326,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .build();
 
         return jobDetailApiResponse;
-    }
-
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "jobReadAll", allEntries = true),
-            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<JobDetailApiResponse> readWithCommentAndLike(User user, Long id) {
-        return jobRepository.findById(id)
-                .map(job -> job.setViews(job.getViews() + 1))
-                .map(job -> jobRepository.save((Job) job))
-                .map(job -> responseWithCommentAndLike(user, job))
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private JobDetailApiResponse responseWithCommentAndLike(User user, Job job) {

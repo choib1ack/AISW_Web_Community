@@ -80,8 +80,8 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .user(user)
                 .build();
 
-        Free newFree = freeRepository.save(free);
-        return Header.OK(response(newFree));
+        freeRepository.save(free);
+        return Header.OK();
     }
 
     @Override
@@ -132,11 +132,35 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<FreeApiResponse> read(Long id) {
+    public Header<FreeDetailApiResponse> read(Long id) {
         return freeRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
                 .map(free -> freeRepository.save((Free) free))
-                .map(this::response)
+                .map(this::responseWithComment)
+                .map(Header::OK)
+                .orElseThrow(() -> new PostNotFoundException(id));
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
+    public Header<FreeDetailApiResponse> read(User user, Long id) {
+        return freeRepository.findById(id)
+                .map(free -> free.setViews(free.getViews() + 1))
+                .map(free -> freeRepository.save((Free) free))
+                .map(free -> responseWithCommentAndLike(user, free))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -281,30 +305,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         return freeApiResponse;
     }
 
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "freeReadAll", allEntries = true),
-            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<FreeDetailApiResponse> readWithComment(Long id) {
-        return freeRepository.findById(id)
-                .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> freeRepository.save((Free) free))
-                .map(this::responseWithComment)
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
     private FreeDetailApiResponse responseWithComment(Free free) {
         FreeDetailApiResponse freeWithCommentApiResponse = FreeDetailApiResponse.builder()
                 .id(free.getId())
@@ -327,30 +327,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .build();
 
         return freeWithCommentApiResponse;
-    }
-
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "freeReadAll", allEntries = true),
-            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<FreeDetailApiResponse> readWithCommentAndLike(User user, Long id) {
-        return freeRepository.findById(id)
-                .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> freeRepository.save((Free) free))
-                .map(free -> responseWithCommentAndLike(user, free))
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private FreeDetailApiResponse responseWithCommentAndLike(User user, Free free) {

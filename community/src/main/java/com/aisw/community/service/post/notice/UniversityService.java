@@ -47,9 +47,6 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private UserService userService;
-
     @Override
     @Caching(evict = {
             @CacheEvict(value = "universityReadAll", allEntries = true),
@@ -130,11 +127,11 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<UniversityApiResponse> read(Long id) {
+    public Header<UniversityApiResponse> read(User user, Long id) {
         return universityRepository.findById(id)
                 .map(university -> university.setViews(university.getViews() + 1))
                 .map(university -> universityRepository.save((University) university))
-                .map(this::response)
+                .map(university -> response(user, university))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -249,6 +246,29 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                 .createdBy(university.getCreatedBy())
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
+                .build();
+        if (university.getFileList() != null) {
+            universityApiResponse.setFileApiResponseList(fileService.getFileList(university.getFileList(), UploadCategory.POST, university.getId()));
+        }
+
+        return universityApiResponse;
+    }
+
+    private UniversityApiResponse response(User user, University university) {
+        UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
+                .id(university.getId())
+                .title(university.getTitle())
+                .writer(university.getWriter())
+                .content(university.getContent())
+                .status(university.getStatus())
+                .views(university.getViews())
+                .campus(university.getCampus())
+                .category(university.getCategory())
+                .createdAt(university.getCreatedAt())
+                .createdBy(university.getCreatedBy())
+                .updatedAt(university.getUpdatedAt())
+                .updatedBy(university.getUpdatedBy())
+                .isWriter((user.getId() == university.getUser().getId()) ? true : false)
                 .build();
         if (university.getFileList() != null) {
             universityApiResponse.setFileApiResponseList(fileService.getFileList(university.getFileList(), UploadCategory.POST, university.getId()));

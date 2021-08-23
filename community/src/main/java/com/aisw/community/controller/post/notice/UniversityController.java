@@ -2,15 +2,13 @@ package com.aisw.community.controller.post.notice;
 
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.controller.ControllerInterface;
-import com.aisw.community.model.entity.post.notice.University;
+import com.aisw.community.controller.post.board.BoardControllerInterface;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.notice.FileUploadToUniversityRequest;
 import com.aisw.community.model.network.request.post.notice.UniversityApiRequest;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
-import com.aisw.community.service.post.notice.NoticePostService;
 import com.aisw.community.service.post.notice.UniversityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class UniversityController implements ControllerInterface<UniversityApiRequest, UniversityApiResponse> {
+public class UniversityController implements NoticeControllerInterface<UniversityApiRequest, UniversityApiResponse> {
 
     @Autowired
     private UniversityService universityService;
@@ -49,8 +47,9 @@ public class UniversityController implements ControllerInterface<UniversityApiRe
 
     @Override
     @GetMapping("/auth/notice/university/{id}")
-    public Header<UniversityApiResponse> read(@PathVariable Long id) {
-        return universityService.read(id);
+    public Header<UniversityApiResponse> read(Authentication authentication, @PathVariable Long id) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return universityService.read(principal.getUser(), id);
     }
 
     @Override

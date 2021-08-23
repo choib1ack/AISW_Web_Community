@@ -2,8 +2,7 @@ package com.aisw.community.controller.post.notice;
 
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.controller.ControllerInterface;
-import com.aisw.community.model.entity.post.notice.Department;
+import com.aisw.community.controller.post.board.BoardControllerInterface;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
@@ -11,7 +10,6 @@ import com.aisw.community.model.network.request.post.notice.FileUploadToDepartme
 import com.aisw.community.model.network.response.post.notice.DepartmentApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.service.post.notice.DepartmentService;
-import com.aisw.community.service.post.notice.NoticePostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class DepartmentController implements ControllerInterface<DepartmentApiRequest, DepartmentApiResponse> {
+public class DepartmentController implements NoticeControllerInterface<DepartmentApiRequest, DepartmentApiResponse> {
 
     @Autowired
     private DepartmentService departmentService;
@@ -49,8 +47,9 @@ public class DepartmentController implements ControllerInterface<DepartmentApiRe
 
     @Override
     @GetMapping("/auth-student/notice/department/{id}")
-    public Header<DepartmentApiResponse> read(@PathVariable Long id) {
-        return departmentService.read(id);
+    public Header<DepartmentApiResponse> read(Authentication authentication, @PathVariable Long id) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return departmentService.read(principal.getUser(), id);
     }
 
     @Override

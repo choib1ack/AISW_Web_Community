@@ -125,11 +125,11 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<CouncilApiResponse> read(Long id) {
+    public Header<CouncilApiResponse> read(User user, Long id) {
         return councilRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
                 .map(council -> councilRepository.save((Council) council))
-                .map(this::response)
+                .map(council -> response(user, council))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -241,6 +241,28 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .createdBy(council.getCreatedBy())
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
+                .build();
+        if (council.getFileList() != null) {
+            councilApiResponse.setFileApiResponseList(fileService.getFileList(council.getFileList(), UploadCategory.POST, council.getId()));
+        }
+
+        return councilApiResponse;
+    }
+
+    private CouncilApiResponse response(User user, Council council) {
+        CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
+                .id(council.getId())
+                .title(council.getTitle())
+                .writer(council.getWriter())
+                .content(council.getContent())
+                .status(council.getStatus())
+                .views(council.getViews())
+                .category(council.getCategory())
+                .createdAt(council.getCreatedAt())
+                .createdBy(council.getCreatedBy())
+                .updatedAt(council.getUpdatedAt())
+                .updatedBy(council.getUpdatedBy())
+                .isWriter((user.getId() == council.getUser().getId()) ? true : false)
                 .build();
         if (council.getFileList() != null) {
             councilApiResponse.setFileApiResponseList(fileService.getFileList(council.getFileList(), UploadCategory.POST, council.getId()));
