@@ -2,8 +2,6 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
-import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
-import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.User;
@@ -13,7 +11,6 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.board.FileUploadToFreeRequest;
 import com.aisw.community.model.network.request.post.board.FreeApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
@@ -22,18 +19,15 @@ import com.aisw.community.model.network.response.post.board.FreeDetailApiRespons
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.FreeRepository;
-import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
 import com.aisw.community.service.post.like.ContentLikeService;
-import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,13 +38,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFreeRequest, BoardResponseDTO, FreeDetailApiResponse, FreeApiResponse, Free> {
+public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResponse, BoardResponseDTO, FreeDetailApiResponse> {
 
     @Autowired
     private FreeRepository freeRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
 
     @Autowired
     private CommentService commentService;
@@ -60,9 +51,6 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
 
     @Autowired
     private ContentLikeService contentLikeService;
-
-    @Autowired
-    private UserService userService;
 
     @Override
     @Caching(evict = {
@@ -79,13 +67,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<FreeApiResponse> create(Authentication authentication, Header<FreeApiRequest> request) {
-        FreeApiRequest freeApiRequest = request.getData();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<FreeApiResponse> create(User user, FreeApiRequest freeApiRequest) {
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
                 .writer(user.getName())
@@ -98,7 +80,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
                 .user(user)
                 .build();
 
-        Free newFree = baseRepository.save(free);
+        Free newFree = freeRepository.save(free);
         return Header.OK(response(newFree));
     }
 
@@ -118,30 +100,20 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<FreeApiResponse> create(Authentication authentication, FileUploadToFreeRequest request) {
-        FreeApiRequest freeApiRequest = request.getFreeApiRequest();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<FreeApiResponse> create(User user, FreeApiRequest request, MultipartFile[] files) {
         Free free = Free.builder()
-                .title(freeApiRequest.getTitle())
+                .title(request.getTitle())
                 .writer(user.getName())
-                .content(freeApiRequest.getContent())
-                .status(freeApiRequest.getStatus())
-                .isAnonymous(freeApiRequest.getIsAnonymous())
+                .content(request.getContent())
+                .status(request.getStatus())
+                .isAnonymous(request.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .likes(0L)
                 .user(user)
                 .build();
-
-        Free newFree = baseRepository.save(free);
-
-        MultipartFile[] files = request.getFiles();
+        Free newFree = freeRepository.save(free);
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newFree.getId(), UploadCategory.POST);
-
         return Header.OK(response(newFree, fileApiResponseList));
     }
 
@@ -161,9 +133,9 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
     public Header<FreeApiResponse> read(Long id) {
-        return baseRepository.findById(id)
+        return freeRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save((Free) free))
+                .map(free -> freeRepository.save((Free) free))
                 .map(this::response)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -184,16 +156,9 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<FreeApiResponse> update(Authentication authentication, Header<FreeApiRequest> request) {
-        FreeApiRequest freeApiRequest = request.getData();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
-        }
-
-        Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
+    public Header<FreeApiResponse> update(User user, FreeApiRequest freeApiRequest) {
+        Free free = freeRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -203,7 +168,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
                 .setContent(freeApiRequest.getContent())
                 .setStatus(freeApiRequest.getStatus());
         free.setIsAnonymous(freeApiRequest.getIsAnonymous());
-        baseRepository.save(free);
+        freeRepository.save(free);
 
         return Header.OK(response(free));
     }
@@ -224,22 +189,15 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<FreeApiResponse> update(Authentication authentication, FileUploadToFreeRequest request) {
-        FreeApiRequest freeApiRequest = request.getFreeApiRequest();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
-        }
-
-        Free free = baseRepository.findById(freeApiRequest.getId()).orElseThrow(
+    public Header<FreeApiResponse> update(User user, FreeApiRequest freeApiRequest, MultipartFile[] files) {
+        Free free = freeRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
 
-        User user = userService.getUser(authentication);
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        MultipartFile[] files = request.getFiles();
-        free.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        fileService.deleteFileList(free.getFileList());
         free.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, free.getId(), UploadCategory.POST);
 
@@ -248,7 +206,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
                 .setContent(freeApiRequest.getContent())
                 .setStatus(freeApiRequest.getStatus());
         free.setIsAnonymous(freeApiRequest.getIsAnonymous());
-        baseRepository.save(free);
+        freeRepository.save(free);
 
         return Header.OK(response(free, fileApiResponseList));
     }
@@ -268,16 +226,14 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header delete(Authentication authentication, Long id) {
-        Free free = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
-
-        User user = userService.getUser(authentication);
+    public Header delete(User user, Long id) {
+        Free free = freeRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
         if (free.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.delete(free.getFileList());
-        baseRepository.delete(free);
+        fileService.deleteFileList(free.getFileList());
+        freeRepository.delete(free);
         return Header.OK();
     }
 
@@ -341,8 +297,9 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
     public Header<FreeDetailApiResponse> readWithComment(Long id) {
-        return baseRepository.findById(id)
-                .map(free -> (Free) free.setViews(free.getViews() + 1))
+        return freeRepository.findById(id)
+                .map(free -> free.setViews(free.getViews() + 1))
+                .map(free -> freeRepository.save((Free) free))
                 .map(this::responseWithComment)
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
@@ -387,12 +344,11 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<FreeDetailApiResponse> readWithCommentAndLike(Authentication authentication, Long id) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        return baseRepository.findById(id)
+    public Header<FreeDetailApiResponse> readWithCommentAndLike(User user, Long id) {
+        return freeRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
-                .map(free -> baseRepository.save((Free) free))
-                .map(free -> responseWithCommentAndLike(principal.getUser(), free))
+                .map(free -> freeRepository.save((Free) free))
+                .map(free -> responseWithCommentAndLike(user, free))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -441,6 +397,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
             }
         });
         freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
+        freeDetailApiResponse.setIsWriter((user.getId() == free.getUser().getId()) ? true : false);
 
         return freeDetailApiResponse;
     }
@@ -449,7 +406,7 @@ public class FreeService extends BoardPostService<FreeApiRequest, FileUploadToFr
     @Override
     @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
-        Page<Free> frees = baseRepository.findAll(pageable);
+        Page<Free> frees = freeRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
         return getListHeader(frees, freesByStatus);
