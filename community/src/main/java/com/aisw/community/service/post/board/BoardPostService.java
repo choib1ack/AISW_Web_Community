@@ -1,25 +1,30 @@
 package com.aisw.community.service.post.board;
 
-import com.aisw.community.ifs.CrudInterface;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
+import com.aisw.community.service.ServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-@Component
-public abstract class BoardPostService<Req, FileReq, ListRes, DetailRes, BaseRes, Entity> implements CrudInterface<Req, BaseRes> {
+public interface BoardPostService<Req, Res, ListRes, DetailRes> extends ServiceInterface<Req, Res> {
 
-    @Autowired(required = false)
-    protected JpaRepository<Entity, Long> baseRepository;
+    Header<Res> create(User user, Req request, MultipartFile[] files);
 
-    public abstract Header<BaseRes> create(Authentication authentication, FileReq request);
-    public abstract Header<BaseRes> update(Authentication authentication, FileReq request);
-    public abstract Header<DetailRes> readWithComment(Long id);
-    public abstract Header<DetailRes> readWithCommentAndLike(Authentication authentication, Long id);
-    public abstract Header<ListRes> readAll(Pageable pageable);
-    public abstract Header<ListRes> searchByWriter(String writer, Pageable pageable);
-    public abstract Header<ListRes> searchByTitle(String title, Pageable pageable);
-    public abstract Header<ListRes> searchByTitleOrContent(String title, String content, Pageable pageable);
+    Header<Res> update(User user, Req request, MultipartFile[] files);
+
+    Header<DetailRes> readWithComment(Long id);
+
+    Header<DetailRes> readWithCommentAndLike(User user, Long id);
+
+    Header<ListRes> readAll(Pageable pageable);
+
+    Header<ListRes> searchByWriter(String writer, Pageable pageable);
+
+    Header<ListRes> searchByTitle(String title, Pageable pageable);
+
+    Header<ListRes> searchByTitleOrContent(String title, String content, Pageable pageable);
 }

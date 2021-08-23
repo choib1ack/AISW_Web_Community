@@ -132,7 +132,7 @@ public class BannerService {
     })
     public Header delete(Long id) {
         Banner banner = bannerRepository.findById(id).orElseThrow(() -> new BannerNotFoundException(id));
-        fileService.delete(banner.getFileList());
+        fileService.deleteFileList(banner.getFileList());
         bannerRepository.delete(banner);
         return Header.OK();
     }
