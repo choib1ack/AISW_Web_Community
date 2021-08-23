@@ -25,28 +25,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public Header<UserApiResponse> signup(Header<UserApiRequest> request) {
-        UserApiRequest userApiRequest = request.getData();
-        System.out.println("hellp");
+    public Header<UserApiResponse> signup(UserApiRequest userApiRequest) {
 
         if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
             throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
         if (!validatePhoneNumber(userApiRequest.getPhoneNumber()))
             throw new PhoneNumberNotSuitableException(userApiRequest.getPhoneNumber());
 
-        User user = User.builder()
-                .username(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId())
-                .name(userApiRequest.getName())
-                .email(userApiRequest.getEmail())
-                .password(bCryptPasswordEncoder.encode("AISW"))
-                .phoneNumber(userApiRequest.getPhoneNumber())
-                .grade(userApiRequest.getGrade())
-                .gender(userApiRequest.getGender())
-                .departmentName(userApiRequest.getDepartmentName())
-                .role(userApiRequest.getRole())
-                .build();
-        User newUser = userRepository.save(user);
-        return Header.OK(response(newUser));
+        return Header.OK(response(userRepository.save(userApiRequest.toEntity(bCryptPasswordEncoder))));
     }
 
     private boolean validatePhoneNumber(String phoneNumber) {
@@ -58,8 +44,7 @@ public class UserService {
         return Pattern.matches("^[0-9]*$", str);
     }
 
-    public Header<VerificationApiResponse> verification(Header<VerificationRequest> request) {
-        VerificationRequest verificationRequest = request.getData();
+    public Header<VerificationApiResponse> verification(VerificationRequest verificationRequest) {
         User user = userRepository.findByUsername(verificationRequest.getUsername());
         VerificationApiResponse response = new VerificationApiResponse();
         if (user != null) {
@@ -76,20 +61,10 @@ public class UserService {
         return Header.OK(response);
     }
 
-    public Header<UserApiResponse> update(Authentication authentication, Header<UserApiRequest> request) {
-        UserApiRequest userApiRequest = request.getData();
+    public Header<UserApiResponse> update(Authentication authentication, UserApiRequest userApiRequest) {
         User user = getUser(authentication);
-
-        user
-                .setName(userApiRequest.getName())
-                .setEmail(userApiRequest.getEmail())
-                .setPhoneNumber(userApiRequest.getPhoneNumber())
-                .setGrade(userApiRequest.getGrade())
-                .setGender(userApiRequest.getGender())
-                .setDepartmentName(userApiRequest.getDepartmentName());
-        User newUser = userRepository.save(user);
-
-        return Header.OK(response(newUser));
+        user.update(userApiRequest.getName(), userApiRequest.getEmail(), userApiRequest.getPhoneNumber(), userApiRequest.getGrade(), userApiRequest.getGender(), userApiRequest.getDepartmentName());
+        return Header.OK(response(userRepository.save(user)));
     }
 
     public Header delete(Authentication authentication) {
@@ -104,7 +79,8 @@ public class UserService {
     }
 
     private UserApiResponse response(User user) {
-        UserApiResponse userApiResponse = UserApiResponse.builder()
+
+        return UserApiResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .name(user.getName())
@@ -119,7 +95,5 @@ public class UserService {
                 .updatedAt(user.getUpdatedAt())
                 .updatedBy(user.getUpdatedBy())
                 .build();
-
-        return userApiResponse;
     }
 }

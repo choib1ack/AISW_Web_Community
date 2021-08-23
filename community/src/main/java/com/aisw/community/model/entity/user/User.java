@@ -77,4 +77,16 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Alert> alertList;
+
+
+    public void update(String name, String email, String phoneNumber, Grade grade, Gender gender, String departmentName) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.grade = grade;
+        this.gender = gender;
+        this.departmentName = departmentName;
+    }
+
+
 }

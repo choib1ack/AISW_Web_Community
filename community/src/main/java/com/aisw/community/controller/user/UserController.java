@@ -29,17 +29,17 @@ class UserController {
 
     @PostMapping("/user/signup")
     public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
-        return userService.signup(request);
+        return userService.signup(request.getData());
     }
 
     @PostMapping("/user/verification")
     public Header<VerificationApiResponse> verification(@RequestBody Header<VerificationRequest> request) {
-        return userService.verification(request);
+        return userService.verification(request.getData());
     }
 
     @PutMapping("/auth/user")
     public Header<UserApiResponse> update(Authentication authentication, @RequestBody Header<UserApiRequest> request) {
-        return userService.update(authentication, request);
+        return userService.update(authentication, request.getData());
     }
 
     @DeleteMapping("/auth/user")
