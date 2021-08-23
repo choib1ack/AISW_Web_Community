@@ -344,7 +344,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-
     public Header<FreeDetailApiResponse> readWithCommentAndLike(User user, Long id) {
         return freeRepository.findById(id)
                 .map(free -> free.setViews(free.getViews() + 1))
@@ -398,6 +397,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             }
         });
         freeDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
+        freeDetailApiResponse.setIsWriter((user.getId() == free.getUser().getId()) ? true : false);
 
         return freeDetailApiResponse;
     }

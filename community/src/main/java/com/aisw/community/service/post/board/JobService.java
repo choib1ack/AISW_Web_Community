@@ -396,6 +396,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             }
         });
         jobDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
+        jobDetailApiResponse.setIsWriter((user.getId() == job.getUser().getId()) ? true : false);
 
         return jobDetailApiResponse;
     }
