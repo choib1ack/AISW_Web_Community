@@ -15,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -27,7 +28,7 @@ class UserController {
     private AlertService alertService;
 
     @PostMapping("/user/signup")
-    public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
+    public Header<UserApiResponse> signup(@RequestBody Header<@Valid UserApiRequest> request) {
         return userService.signup(request);
     }
 

@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -26,7 +27,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     public Header<UserApiResponse> signup(Header<UserApiRequest> request) {
-        UserApiRequest userApiRequest = request.getData();
+        @Valid UserApiRequest userApiRequest = request.getData();
+        System.out.println("hellp");
 
         if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
             throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());

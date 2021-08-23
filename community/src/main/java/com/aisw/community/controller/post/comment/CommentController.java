@@ -25,7 +25,8 @@ public class CommentController {
     public Header<CommentApiResponse> createAtQna(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
         return commentService.create(authentication, boardId, request);
 
-    }    @PostMapping("/auth/job/{boardId}/comment")
+    }
+    @PostMapping("/auth/job/{boardId}/comment")
     public Header<CommentApiResponse> createAtJob(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
         return commentService.create(authentication, boardId, request);
     }
