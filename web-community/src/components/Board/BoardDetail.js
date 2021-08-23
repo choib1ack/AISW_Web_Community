@@ -95,12 +95,12 @@ export default function BoardDetail({match}) {
 
     // 첨부파일이 있을 때만 보여줌
     const AttachmentFile = (att) => {
-        if (att == null) return null;
+        if (att.length === 0) return null;
         return (
             <div className="p-3">
                 <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
                 <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
-                <p style={{fontSize: '14px'}} className="d-inline-block">{att}</p>
+                <p style={{fontSize: '14px'}} className="d-inline-block">{att[0].file_name}</p>
             </div>
         );
     }
@@ -185,12 +185,14 @@ export default function BoardDetail({match}) {
 
             <Container>
                 <Title text='게시판' type='1'/>
+                {boardDetailData.is_writer &&
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
                     <p style={{cursor: 'pointer', marginLeft: "10px"}}
                        onClick={handleShow}>삭제</p>
                 </div>
+                }
 
                 <div className="text-left mb-4"
 
@@ -234,7 +236,7 @@ export default function BoardDetail({match}) {
                         <div style={{minHeight: "100px"}}
                              dangerouslySetInnerHTML={{__html: htmlContent}}/>
                     </div>
-                    {AttachmentFile(boardDetailData.file_api_response_list[0].file_name)}
+                    {AttachmentFile(boardDetailData.file_api_response_list)}
                     <hr/>
 
                     <div className="p-3">

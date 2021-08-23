@@ -4,6 +4,7 @@ export const GOOGLE_REDIRECT_URI = 'http://localhost:8080/auth/google/callback';
 export const ROLE = ['ROLE_GENERAL', 'ROLE_STUDENT', 'ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
 export const NOTICE_WRITE_ROLE = ['ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
 export const BOARD_WRITE_ROLE = ['ROLE_STUDENT', 'ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
+export const ADMIN_ROLE = ['ROLE_ADMIN', 'ROLE_DEVELOPER'];
 
 // 공지사항
 export const AUTH_NOTICE_GET = {
@@ -50,7 +51,7 @@ export const AUTH_BOARD_DELETE = {
 };
 
 // 파일 업로드
-export const NOTICE_FILE_API ={
+export const NOTICE_FILE_API = {
     university: 'universityApiRequest',
     council: 'councilApiRequest',
     department: 'departmentApiRequest'

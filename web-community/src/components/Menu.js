@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -9,14 +9,20 @@ import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./User/MyPage";
 import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
-import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
+import {ADMIN_ROLE, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 import axios from "axios";
 import * as jwt from "jwt-simple";
 import {setDecoded} from "../features/userSlice";
+import {useMediaQuery} from "react-responsive";
+import Hamburger from 'hamburger-react';
+import {Nav, Navbar, NavDropdown} from "react-bootstrap";
+import Container from "react-bootstrap/Container";
 
 export default function Menu() {
+    const isTabletOrMobile = useMediaQuery({query: "(max-width: 767px)"});
     const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN') || null);
     const [modalShow, setModalShow] = useState(false);
+    const [isOpen, setOpen] = useState(false);
 
     const user = useSelector(state => state.user);
     const active_menu = useSelector(state => state.menu);
@@ -130,14 +136,21 @@ export default function Menu() {
 
     return (
         <div className="Menu">
-            <Grid className="navBar">
-                <Row className="navBar_menus" style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
-                    <Col xs={3}>
-                        <Link to="/">
-                            <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
-                        </Link>
-                    </Col>
-                    <Col xs={6}>
+            <div style={{
+                borderBottom: 'solid 1px #d0d0d0',
+                padding: '15px',
+                display: 'flex',
+                justifyContent: 'space-between'
+            }}>
+                <div className="align-self-center">
+                    <Link to="/">
+                        <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
+                    </Link>
+                </div>
+
+                {isTabletOrMobile ?
+                    <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded/> :
+                    <div className="align-self-center">
                         <Link to="/notice">
                             <button className="Menu-button" name="notice" onClick={handleClickTab}
                                     style={{color: active_menu.active === 1 ? "#0472FD" : "dimgrey"}}>
@@ -170,32 +183,37 @@ export default function Menu() {
                                 FAQ
                             </button>
                         </Link>
-                    </Col>
+                    </div>
+                }
 
-                    {
+                {
+                    !isTabletOrMobile && (
                         (accessToken && user.decoded) ?
                             (
-                                <>
-                                    <Col xs={3}>
-                                        <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {user.decoded.name}
-                                        </button>
-                                        <Link to="/manager">
-                                            <button className="Menu-button" name="manage_page" onClick={handleClickTab}
-                                                    style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
-                                                관리자페이지
-                                            </button>
-                                        </Link>
-                                    </Col>
+                                <div className="align-self-center">
+                                    <button className="Menu-button" onClick={() => setModalShow(true)}>
+                                        {user.decoded.name}
+                                    </button>
+                                    {
+                                        ADMIN_ROLE.includes(user.decoded.role) ?
+                                            <Link to="/manager">
+                                                <button className="Menu-button" name="manage_page"
+                                                        onClick={handleClickTab}
+                                                        style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
+                                                    관리자페이지
+                                                </button>
+                                            </Link>
+                                            :
+                                            null
+                                    }
 
                                     {modalShow ? <MyPage
                                         myPageShow={modalShow}
                                         setMyPageShow={setModalShow}
                                     /> : null}
-
-                                </>
+                                </div>
                             ) : (
-                                <Col xs={3}>
+                                <div className="align-self-center">
                                     <GoogleLogin
                                         clientId={GOOGLE_CLIENT_ID}
                                         render={renderProps => (
@@ -220,11 +238,11 @@ export default function Menu() {
                                         cookiePolicy={'single_host_origin'}
                                         // uxMode='redirect'
                                     />
-                                </Col>
+                                </div>
                             )
-                    }
-                </Row>
-            </Grid>
+                    )
+                }
+            </div>
         </div>
     );
 }
