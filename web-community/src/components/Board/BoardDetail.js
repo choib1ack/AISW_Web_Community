@@ -9,12 +9,13 @@ import WriteComment from "./WriteComment";
 import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
 import Loading from '../Loading';
-import {useHistory} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
 import {useSelector} from "react-redux";
+import downloadFile from '../../features/downloadFile';
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -100,7 +101,10 @@ export default function BoardDetail({match}) {
             <div className="p-3">
                 <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
                 <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
-                <p style={{fontSize: '14px'}} className="d-inline-block">{att[0].file_name}</p>
+                <a className="d-inline-block filename-style"
+                   onClick={() => downloadFile(att[0])}>
+                    {att[0].file_name}
+                </a>
             </div>
         );
     }
@@ -122,8 +126,8 @@ export default function BoardDetail({match}) {
                     response = await axiosApi.get(`/board/${board_category}/comment/${id}`);
                 }
 
-                setBoardDetailData(response.data.data); // 데이터는 response.data 안에
                 console.log(response.data.data);
+                setBoardDetailData(response.data.data); // 데이터는 response.data 안에
 
                 dispatch({
                     type: 'INITIALIZE',
@@ -185,7 +189,7 @@ export default function BoardDetail({match}) {
 
             <Container>
                 <Title text='게시판' type='1'/>
-                {boardDetailData.is_writer &&
+                {boardDetailData && boardDetailData.is_writer &&
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>

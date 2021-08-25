@@ -9,6 +9,7 @@ import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
 import axiosApi from "../../axiosApi";
 import {AUTH_NOTICE_DELETE, AUTH_NOTICE_GET} from "../../constants";
+import downloadFile from "../../features/downloadFile";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -45,7 +46,10 @@ export default function NoticeDetail({match}) {
             <div className="p-3">
                 <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
                 <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
-                <p style={{fontSize: '14px'}} className="d-inline-block">{att[0].file_name}</p>
+                <a className="d-inline-block filename-style"
+                   onClick={() => downloadFile(att[0])}>
+                    {att[0].file_name}
+                </a>
             </div>
         );
     }
@@ -115,7 +119,7 @@ export default function NoticeDetail({match}) {
             <Container>
                 <Title text='공지사항' type='1'/>
 
-                {noticeDetailData &&
+                {noticeDetailData && noticeDetailData.is_writer &&
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
