@@ -59,45 +59,49 @@ export default function NoticeList({match}) {
 
     return (
         <div className="Notice">
-            <Container>
-                <Title text='공지사항' type='1'/>
-                <Row style={{marginBottom: '1rem', marginTop: '2rem', alignItems: 'center'}}>
-                    <Col lg={6} md={6} sm={12}>
-                        <SelectButton id={0} title='전체' active={category}
-                                      onClick={() => handleCategoryChange(0)}/>
-                        <SelectButton id={1} title='학교 홈페이지' active={category}
-                                      onClick={() => handleCategoryChange(1)}/>
-                        <SelectButton id={2} title='학과사무실' active={category}
-                                      onClick={() => handleCategoryChange(2)}/>
-                        <SelectButton id={3} title='학생회' active={category}
-                                      onClick={() => handleCategoryChange(3)}/>
-                    </Col>
-                    <Col lg={6} md={6} sm={12}>
-                        <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
-                        <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
-                               onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
-                        <select className={"search-type"} value={searchData.search_type}
-                                onChange={handleSearchTypeChange}>
-                            <option value="select_title">제목</option>
-                            <option value="select_title_content">제목+내용</option>
-                            <option value="select_writer">작성자</option>
-                        </select>
-                    </Col>
-                </Row>
+            <Title text='공지사항' type='1'/>
+            <Row style={{
+                marginBottom: '1rem',
+                marginTop: '2rem',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0px 10px'
+            }}>
+                <div>
+                    <SelectButton id={0} title='전체' active={category}
+                                  onClick={() => handleCategoryChange(0)}/>
+                    <SelectButton id={1} title='학교 홈페이지' active={category}
+                                  onClick={() => handleCategoryChange(1)}/>
+                    <SelectButton id={2} title='학과사무실' active={category}
+                                  onClick={() => handleCategoryChange(2)}/>
+                    <SelectButton id={3} title='학생회' active={category}
+                                  onClick={() => handleCategoryChange(3)}/>
+                </div>
+                <div style={{marginRight: '10px', alignSelf: 'center'}}>
+                    <img src={searchImage} className="search-icon" onClick={searchContents}/>
+                    <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
+                           onKeyPress={searchEnterPress} className="search-box" placeholder='검색'/>
+                    <select className="search-type" value={searchData.search_type}
+                            onChange={handleSearchTypeChange}>
+                        <option value="select_title">제목</option>
+                        <option value="select_title_content">제목+내용</option>
+                        <option value="select_writer">작성자</option>
+                    </select>
+                </div>
+            </Row>
 
-                <MakeNoticeList
-                    category={category}
-                    match={match}
-                    searchData={searchData}
-                    setSearchData={setSearchData}
-                />
+            <MakeNoticeList
+                category={category}
+                match={match}
+                searchData={searchData}
+                setSearchData={setSearchData}
+            />
 
-                {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
-                    <BlueButton match={match} type={'newNotice'} title="글쓰기"/>
-                    : null
-                }
+            {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
+                <BlueButton match={match} type='newNotice' title="글쓰기"/>
+                : null
+            }
 
-            </Container>
         </div>
     );
 }

@@ -1,3 +1,8 @@
+.Menu {
+    display: flex;
+    justify-content: space-between;
+}
+
 .Menu-logo {
     padding: 7px 30px;
     background-color: Transparent;
@@ -36,5 +41,7 @@
 
 @media screen and (max-width: 767px) {
     /* 모바일 CSS */
-
+    .Menu-button {
+        padding: 10px 30px;
+    }
 }

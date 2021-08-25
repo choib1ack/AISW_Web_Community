@@ -1,8 +1,5 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './Menu.css';
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Grid from "@material-ui/core/Grid";
 import {Link, useHistory} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
@@ -15,8 +12,6 @@ import * as jwt from "jwt-simple";
 import {setDecoded} from "../features/userSlice";
 import {useMediaQuery} from "react-responsive";
 import Hamburger from 'hamburger-react';
-import {Nav, Navbar, NavDropdown} from "react-bootstrap";
-import Container from "react-bootstrap/Container";
 
 export default function Menu() {
     const isTabletOrMobile = useMediaQuery({query: "(max-width: 767px)"});
@@ -134,14 +129,15 @@ export default function Menu() {
         }).catch(error => error);
     }
 
+    useEffect(() => {
+        if (!isTabletOrMobile) {
+            setOpen(false);
+        }
+    }, [isTabletOrMobile]);
+
     return (
-        <div className="Menu">
-            <div style={{
-                borderBottom: 'solid 1px #d0d0d0',
-                padding: '15px',
-                display: 'flex',
-                justifyContent: 'space-between'
-            }}>
+        <div>
+            <div className="Menu p-lg-3 p-sm-2">
                 <div className="align-self-center">
                     <Link to="/">
                         <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
@@ -149,100 +145,207 @@ export default function Menu() {
                 </div>
 
                 {isTabletOrMobile ?
-                    <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded/> :
-                    <div className="align-self-center">
-                        <Link to="/notice">
-                            <button className="Menu-button" name="notice" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 1 ? "#0472FD" : "dimgrey"}}>
-                                공지사항
-                            </button>
-                        </Link>
-                        <Link to="/board">
-                            <button className="Menu-button" name="board" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 2 ? "#0472FD" : "dimgrey"}}>
-                                게시판
-                            </button>
-                        </Link>
-                        <Link to="/deptInfo">
-                            <button className="Menu-button" name="dept_info" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 3 ? "#0472FD" : "dimgrey"}}>
-                                학과정보
-                            </button>
-                        </Link>
+                    <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded/>
+                    :
+                    <>
+                        <div className="align-self-center">
+                            <Link to="/notice">
+                                <button className="Menu-button" name="notice" onClick={handleClickTab}
+                                        style={{color: active_menu.active === 1 ? "#0472FD" : "dimgrey"}}>
+                                    공지사항
+                                </button>
+                            </Link>
+                            <Link to="/board">
+                                <button className="Menu-button" name="board" onClick={handleClickTab}
+                                        style={{color: active_menu.active === 2 ? "#0472FD" : "dimgrey"}}>
+                                    게시판
+                                </button>
+                            </Link>
+                            <Link to="/deptInfo">
+                                <button className="Menu-button" name="dept_info" onClick={handleClickTab}
+                                        style={{color: active_menu.active === 3 ? "#0472FD" : "dimgrey"}}>
+                                    학과정보
+                                </button>
+                            </Link>
+                            <Link to="/goodInfo">
+                                <button className="Menu-button" name="site" onClick={handleClickTab}
+                                        style={{color: active_menu.active === 4 ? "#0472FD" : "dimgrey"}}>
+                                    유용한사이트
+                                </button>
+                            </Link>
+                            <Link to="/faq">
+                                <button className="Menu-button" name="faq" onClick={handleClickTab}
+                                        style={{color: active_menu.active === 5 ? "#0472FD" : "dimgrey"}}>
+                                    FAQ
+                                </button>
+                            </Link>
+                        </div>
 
-                        <Link to="/goodInfo">
-                            <button className="Menu-button" name="site" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 4 ? "#0472FD" : "dimgrey"}}>
-                                유용한사이트
-                            </button>
-                        </Link>
+                        {
+                            (accessToken && user.decoded) ?
+                                (
+                                    <div className="align-self-center">
+                                        <button className="Menu-button" onClick={() => setModalShow(true)}>
+                                            {user.decoded.name}
+                                        </button>
+                                        {
+                                            ADMIN_ROLE.includes(user.decoded.role) ?
+                                                <Link to="/manager">
+                                                    <button className="Menu-button" name="manage_page"
+                                                            onClick={handleClickTab}
+                                                            style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
+                                                        관리자페이지
+                                                    </button>
+                                                </Link>
+                                                :
+                                                null
+                                        }
 
-                        <Link to="/faq">
-                            <button className="Menu-button" name="faq" onClick={handleClickTab}
-                                    style={{color: active_menu.active === 5 ? "#0472FD" : "dimgrey"}}>
-                                FAQ
-                            </button>
-                        </Link>
-                    </div>
-                }
-
-                {
-                    !isTabletOrMobile && (
-                        (accessToken && user.decoded) ?
-                            (
-                                <div className="align-self-center">
-                                    <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                        {user.decoded.name}
-                                    </button>
-                                    {
-                                        ADMIN_ROLE.includes(user.decoded.role) ?
-                                            <Link to="/manager">
-                                                <button className="Menu-button" name="manage_page"
-                                                        onClick={handleClickTab}
-                                                        style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
-                                                    관리자페이지
-                                                </button>
-                                            </Link>
-                                            :
-                                            null
-                                    }
-
-                                    {modalShow ? <MyPage
-                                        myPageShow={modalShow}
-                                        setMyPageShow={setModalShow}
-                                    /> : null}
-                                </div>
-                            ) : (
-                                <div className="align-self-center">
-                                    <GoogleLogin
-                                        clientId={GOOGLE_CLIENT_ID}
-                                        render={renderProps => (
-                                            <button className="Menu-button" onClick={renderProps.onClick}
-                                                    disabled={renderProps.disabled}>로그인</button>
-                                        )}
-                                        onSuccess={result => handleLoginSuccess(result)}
-                                        onFailure={result => handleLoginFailure(result)}
-                                        redirectUri={GOOGLE_REDIRECT_URI}
-                                        cookiePolicy={'single_host_origin'}
-                                        // uxMode='redirect'
-                                    />
-                                    <GoogleLogin
-                                        clientId={GOOGLE_CLIENT_ID}
-                                        render={renderProps => (
-                                            <button className="Menu-button blue-button" onClick={renderProps.onClick}
-                                                    disabled={renderProps.disabled}>회원가입</button>
-                                        )}
-                                        onSuccess={result => handleJoinSuccess(result)}
-                                        onFailure={result => handleJoinFailure(result)}
-                                        redirectUri={GOOGLE_REDIRECT_URI}
-                                        cookiePolicy={'single_host_origin'}
-                                        // uxMode='redirect'
-                                    />
-                                </div>
-                            )
-                    )
+                                        {modalShow ? <MyPage
+                                            myPageShow={modalShow}
+                                            setMyPageShow={setModalShow}
+                                        /> : null}
+                                    </div>
+                                ) : (
+                                    <div className="align-self-center">
+                                        <GoogleLogin
+                                            clientId={GOOGLE_CLIENT_ID}
+                                            render={renderProps => (
+                                                <button className="Menu-button" onClick={renderProps.onClick}
+                                                        disabled={renderProps.disabled}>로그인</button>
+                                            )}
+                                            onSuccess={result => handleLoginSuccess(result)}
+                                            onFailure={result => handleLoginFailure(result)}
+                                            redirectUri={GOOGLE_REDIRECT_URI}
+                                            cookiePolicy={'single_host_origin'}
+                                            // uxMode='redirect'
+                                        />
+                                        <GoogleLogin
+                                            clientId={GOOGLE_CLIENT_ID}
+                                            render={renderProps => (
+                                                <button className="Menu-button blue-button" onClick={renderProps.onClick}
+                                                        disabled={renderProps.disabled}>회원가입</button>
+                                            )}
+                                            onSuccess={result => handleJoinSuccess(result)}
+                                            onFailure={result => handleJoinFailure(result)}
+                                            redirectUri={GOOGLE_REDIRECT_URI}
+                                            cookiePolicy={'single_host_origin'}
+                                            // uxMode='redirect'
+                                        />
+                                    </div>
+                                )
+                        }
+                    </>
                 }
             </div>
+
+            {
+                isOpen && isTabletOrMobile && (
+                    <div>
+                        <div>
+                            <Link to="/notice">
+                                <button className="Menu-button" name="notice" onClick={handleClickTab}>
+                                    공지사항
+                                </button>
+                            </Link>
+                        </div>
+                        <div>
+                            <Link to="/board">
+                                <button className="Menu-button" name="board" onClick={handleClickTab}>
+                                    게시판
+                                </button>
+                            </Link>
+                        </div>
+                        <div>
+                            <Link to="/deptInfo">
+                                <button className="Menu-button" name="dept_info" onClick={handleClickTab}>
+                                    학과정보
+                                </button>
+                            </Link>
+                        </div>
+                        <div>
+                            <Link to="/goodInfo">
+                                <button className="Menu-button" name="site" onClick={handleClickTab}>
+                                    유용한사이트
+                                </button>
+                            </Link>
+                        </div>
+                        <div>
+                            <Link to="/faq">
+                                <button className="Menu-button" name="faq" onClick={handleClickTab}>
+                                    FAQ
+                                </button>
+                            </Link>
+                        </div>
+
+                        {
+                            (accessToken && user.decoded) ?
+                                (
+                                    <div className="align-self-center">
+                                        <div>
+                                            <button className="Menu-button" onClick={() => setModalShow(true)}>
+                                                {user.decoded.name}
+                                            </button>
+                                        </div>
+                                        {
+                                            ADMIN_ROLE.includes(user.decoded.role) ?
+                                                <div>
+                                                    <Link to="/manager">
+                                                        <button className="Menu-button" name="manage_page"
+                                                                onClick={handleClickTab}
+                                                                style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
+                                                            관리자페이지
+                                                        </button>
+                                                    </Link>
+                                                </div>
+                                                :
+                                                null
+                                        }
+
+                                        {modalShow ? <MyPage
+                                            myPageShow={modalShow}
+                                            setMyPageShow={setModalShow}
+                                        /> : null}
+                                    </div>
+                                ) : (
+                                    <div className="align-self-center">
+                                        <div>
+                                            <GoogleLogin
+                                                clientId={GOOGLE_CLIENT_ID}
+                                                render={renderProps => (
+                                                    <button className="Menu-button" onClick={renderProps.onClick}
+                                                            disabled={renderProps.disabled}>로그인</button>
+                                                )}
+                                                onSuccess={result => handleLoginSuccess(result)}
+                                                onFailure={result => handleLoginFailure(result)}
+                                                redirectUri={GOOGLE_REDIRECT_URI}
+                                                cookiePolicy={'single_host_origin'}
+                                                // uxMode='redirect'
+                                            />
+                                        </div>
+                                        <div>
+                                            <GoogleLogin
+                                                clientId={GOOGLE_CLIENT_ID}
+                                                render={renderProps => (
+                                                    <button className="Menu-button"
+                                                            onClick={renderProps.onClick}
+                                                            disabled={renderProps.disabled}>회원가입</button>
+                                                )}
+                                                onSuccess={result => handleJoinSuccess(result)}
+                                                onFailure={result => handleJoinFailure(result)}
+                                                redirectUri={GOOGLE_REDIRECT_URI}
+                                                cookiePolicy={'single_host_origin'}
+                                                // uxMode='redirect'
+                                            />
+                                        </div>
+                                    </div>
+                                )
+                        }
+
+                    </div>
+                )
+            }
+            <hr className="mt-0"/>
         </div>
     );
 }

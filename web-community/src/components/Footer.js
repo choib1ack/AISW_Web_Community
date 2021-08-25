@@ -9,12 +9,9 @@ export default function Footer() {
         <Grid className="Footer">
             <Row style={{backgroundColor: '#F5F5F5', padding: '15px'}}>
                 <Col xs={3} className="col-align">
-                    <img src={logo} style={{width:"120px"}}/>
-                    {/*<button className="Menu-logo">*/}
-                    {/*    가천대학교 AI&소프트웨어학부*/}
-                    {/*</button>*/}
+                    <img src={logo} style={{width:"120px"}} alt="..."/>
                 </Col>
-                <Col className="col-align">
+                <Col className="col-align ml-5">
                     <p className="Footer-p">
                         경기도 성남시 수정구 성남대로 1342 / 010-1234-5678 / AI_Sw@gachon.ac.kr
                     </p>

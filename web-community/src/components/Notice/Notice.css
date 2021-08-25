@@ -1,47 +1,55 @@
-table{
+table {
     font-size: 14px;
 }
-thead tr{
+
+thead tr {
     background-color: #e7f1ff;
 }
-thead tr th{
+
+thead tr th {
     border: 0px !important;
     color: #656565;
 }
-tbody tr>td:nth-child(2) {
+
+tbody tr > td:nth-child(2) {
     text-align: left;
     padding-left: 40px !important;
 }
-tbody.english_table>tr>td:nth-child(2) {
+
+tbody.english_table > tr > td:nth-child(2) {
     text-align: center;
     padding-left: 0px !important;;
 }
-tbody tr td{
+
+tbody tr td {
     padding: 15px 0px !important;
     border-top: 0px !important;
     border-bottom: 1px solid #dee2e6;
 }
-tbody tr:hover{
+
+tbody tr:hover {
     cursor: pointer;
     background-color: #f6f6f6;
     transition: all ease 0.2s;
 }
-td.middle{
+
+td.middle {
     vertical-align: middle;
 }
+
 div#banner > table > tbody > tr > td:nth-child(2) {
     text-align: center;
     padding-left: 0px !important;
 }
 
-.title{
+.title {
     font-size: 18px;
     text-align: left;
     margin-top: 3rem;
     font-weight: bold;
 }
 
-.search-box{
+.search-box {
     float: right;
     padding: 5px 10px;
     max-width: 150px;
@@ -49,7 +57,8 @@ div#banner > table > tbody > tr > td:nth-child(2) {
     border: 1px solid #0472fd !important;
     outline: none !important;
 }
-.search-type{
+
+.search-type {
     float: right;
     padding: 5px 10px;
     max-width: 130px;
@@ -57,20 +66,35 @@ div#banner > table > tbody > tr > td:nth-child(2) {
     border: 1px solid #0472FD !important;
     outline: none !important;
 }
-.search-icon{
+
+.search-icon {
     float: right;
     margin-left: 5px;
     height: 25px;
-    cursor:pointer;
+    cursor: pointer;
     opacity: 0.3;
     padding: 1px;
     transition: all ease 0.1s;
 }
-.search-icon:hover{
+
+.search-icon:hover {
     opacity: 0.7;
     transition: all ease 0.1s;
 }
-input::placeholder{
-    color:#D4D4D4;
+
+input::placeholder {
+    color: #D4D4D4;
     font-size: 14px;
+}
+
+.Notice {
+    width: 70%;
+    margin: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .Notice {
+        width: 100%;
+        padding: 0 20px;
+    }
 }

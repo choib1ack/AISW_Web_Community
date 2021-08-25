@@ -124,9 +124,8 @@ export default function Home() {
                         {/*</div>*/}
                     </Col>
                 </Row>
-                <div style={{marginBottom: "100px"}}></div>
+                <div style={{marginBottom: "100px"}}/>
             </div>
-
         </div>
     )
 }

@@ -17,3 +17,15 @@
 .recomment-style:hover{
     color: #404040;
 }
+
+.Board {
+    width: 70%;
+    margin: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .Board {
+        width: 100%;
+        padding: 0 20px;
+    }
+}
