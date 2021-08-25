@@ -18,6 +18,7 @@
     - OAuth2.0, JWT, Querydsl
     - MySQL 8.0.22, Redis 6.2.1
     - Docker 20.10.7
+
 - Frontend
 
 ---
