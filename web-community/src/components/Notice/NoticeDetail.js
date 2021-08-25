@@ -8,6 +8,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
 import axiosApi from "../../axiosApi";
+import {AUTH_NOTICE_DELETE, AUTH_NOTICE_GET} from "../../constants";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -21,6 +22,8 @@ export default function NoticeDetail({match}) {
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
+
+    console.log(noticeDetailData);
 
     window.scrollTo(0, 0);
 
@@ -37,26 +40,24 @@ export default function NoticeDetail({match}) {
 
     // 첨부파일이 있을 때만 보여줌
     const AttachmentFile = (att) => {
-        if (att == null) return null;
+        if (att.length === 0) return null;
         return (
             <div className="p-3">
                 <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
                 <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
-                <p style={{fontSize: '14px'}} className="d-inline-block">{att}</p>
+                <p style={{fontSize: '14px'}} className="d-inline-block">{att[0].file_name}</p>
             </div>
         );
     }
 
     useEffect(() => {
-        const get_auth_url = (notice_category === 'university' ? 'auth' : 'auth-student');
-
         const fetchNoticeData = async () => {
             try {
                 setError(null);
                 setNoticeDetailData(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${get_auth_url}/notice/${notice_category}/${id}`);
+                const response = await axiosApi.get(`/${AUTH_NOTICE_GET[notice_category]}/notice/${notice_category}/${id}`);
 
                 setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
                 setHtmlContent(response.data.data.content);
@@ -70,25 +71,19 @@ export default function NoticeDetail({match}) {
     }, []); // 여기 빈배열 안써주면 무한루프,,
 
     if (loading) return <Loading/>;
-    if (error) return (
-        <tr>
-            <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
-        </tr>);
     if (!noticeDetailData) return null;
 
     function handleEdit() {
         history.push({pathname: `${match.url}/edit`, state: {detail: noticeDetailData, content: htmlContent}});
     }
 
-    async function handleDelete() {
-        const delete_auth_url = (notice_category === 'council' ? 'auth-council' : 'auth-admin');
-
-        await axiosApi.delete(`/${delete_auth_url}/notice/${notice_category}/${id}`)
+    function deleteNotice() {
+        axiosApi.delete(`/${AUTH_NOTICE_DELETE[notice_category]}/notice/${notice_category}/${id}`)
             .then((res) => {
-                history.push('/notice')  // BoardList로 이동
-            }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
+                history.push('/notice');
+            })
+            .catch(error => {
+                console.log(error);
             })
     }
 
@@ -104,7 +99,7 @@ export default function NoticeDetail({match}) {
                         <Button variant="secondary" onClick={handleClose}>
                             아니오
                         </Button>
-                        <Button variant="primary" onClick={handleDelete}>
+                        <Button variant="primary" onClick={deleteNotice}>
                             네
                         </Button>
                     </Modal.Footer>
@@ -119,12 +114,15 @@ export default function NoticeDetail({match}) {
 
             <Container>
                 <Title text='공지사항' type='1'/>
+
+                {noticeDetailData &&
                 <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
                     <p style={{cursor: 'pointer', marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
                     <p style={{cursor: 'pointer', marginLeft: "10px"}}
                        onClick={handleShow}>삭제</p>
                 </div>
+                }
 
                 <div className="text-left mb-4"
                      style={{borderTop: 'solid 2px #0472FD', borderBottom: 'solid 2px #0472FD'}}>
@@ -138,7 +136,7 @@ export default function NoticeDetail({match}) {
                         <p style={{color: "#0472FD", fontSize: '12px'}}
                            className="mb-1">{Category(notice_category)}></p>
                         <p style={{fontSize: '16x'}} className="d-inline-block mr-1">{noticeDetailData.title}</p>
-                        {noticeDetailData.attachment_file == null ? "" :
+                        {noticeDetailData.file_api_response_list[0] == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}
 
                         <div>
@@ -152,7 +150,7 @@ export default function NoticeDetail({match}) {
                     </div>
 
                     <div className="p-3" style={{minHeight: "100px"}} dangerouslySetInnerHTML={{__html: htmlContent}}/>
-                    {AttachmentFile(noticeDetailData.attachment_file)}
+                    {AttachmentFile(noticeDetailData.file_api_response_list)}
                 </div>
 
                 <ListButton/>

@@ -7,15 +7,19 @@ import React, {useState} from "react";
 import MakeNoticeList from "./MakeNoticeList"
 import SelectButton from "../Button/SelectButton";
 import {BlueButton} from "../Button/BlueButton";
+import {NOTICE_WRITE_ROLE} from "../../constants";
+import {useSelector} from "react-redux";
 
 export default function NoticeList({match}) {
     const [category, setCategory] = useState(0);
     const [searchData, setSearchData] = useState(
         {
             search: 0,
-            search_type:"select_title",
-            keyword:""
+            search_type: "select_title",
+            keyword: ""
         });
+
+    const {decoded} = useSelector((state) => state.user);
 
     window.scrollTo(0, 0);
 
@@ -23,26 +27,26 @@ export default function NoticeList({match}) {
         setSearchData(
             {
                 ...searchData,
-                keyword:event.target.value
+                keyword: event.target.value
             });
         if (event.target.value === "") {
-            setSearchData({...searchData, keyword:"", search:0});
+            setSearchData({...searchData, keyword: "", search: 0});
         }
     }
 
     const handleSearchTypeChange = (event) => {
-        setSearchData({...searchData, search_type:event.target.value})
+        setSearchData({...searchData, search_type: event.target.value})
     }
 
     const handleCategoryChange = (category_num) => {
         setCategory(category_num);
 
         // 검색 초기화
-        setSearchData({search:0, search_type:"select_title", keyword:""});
+        setSearchData({search: 0, search_type: "select_title", keyword: ""});
     }
 
     const searchContents = () => {
-        setSearchData({...searchData, search: searchData.search+1})
+        setSearchData({...searchData, search: searchData.search + 1})
         // console.log("서치 활성화");
     }
 
@@ -72,7 +76,8 @@ export default function NoticeList({match}) {
                         <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
                         <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
                                onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
-                        <select className={"search-type"} value={searchData.search_type} onChange={handleSearchTypeChange}>
+                        <select className={"search-type"} value={searchData.search_type}
+                                onChange={handleSearchTypeChange}>
                             <option value="select_title">제목</option>
                             <option value="select_title_content">제목+내용</option>
                             <option value="select_writer">작성자</option>
@@ -80,14 +85,17 @@ export default function NoticeList({match}) {
                     </Col>
                 </Row>
 
-                    <MakeNoticeList
-                        category={category}
-                        match={match}
-                        searchData={searchData}
-                        setSearchData={setSearchData}
-                    />
+                <MakeNoticeList
+                    category={category}
+                    match={match}
+                    searchData={searchData}
+                    setSearchData={setSearchData}
+                />
 
-                <BlueButton match={match} type={'newNotice'} title="글쓰기"/>
+                {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
+                    <BlueButton match={match} type={'newNotice'} title="글쓰기"/>
+                    : null
+                }
 
             </Container>
         </div>

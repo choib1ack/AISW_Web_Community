@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import './Menu.css';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -6,26 +6,44 @@ import Grid from "@material-ui/core/Grid";
 import {Link, useHistory} from "react-router-dom";
 import logo from "../image/logo3.png";
 import {useDispatch, useSelector} from "react-redux";
-import MyPage from "./MyPage";
+import MyPage from "./User/MyPage";
 import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
-import {GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
-import {checkExist, login, setUserData} from "../features/userSlice";
+import {ADMIN_ROLE, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
+import axios from "axios";
+import * as jwt from "jwt-simple";
+import {setDecoded} from "../features/userSlice";
+import {useMediaQuery} from "react-responsive";
+import Hamburger from 'hamburger-react';
+import {Nav, Navbar, NavDropdown} from "react-bootstrap";
+import Container from "react-bootstrap/Container";
 
 export default function Menu() {
-    const [accessToken, setAccessToken] = useState(window.localStorage.getItem("ACCESS_TOKEN") || null);
+    const isTabletOrMobile = useMediaQuery({query: "(max-width: 767px)"});
+    const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN') || null);
     const [modalShow, setModalShow] = useState(false);
-    const [result, setResult] = useState(null);
-    const [mode, setMode] = useState(null);
+    const [isOpen, setOpen] = useState(false);
 
+    const user = useSelector(state => state.user);
     const active_menu = useSelector(state => state.menu);
-    const {userData, exist, isOnline, error} = useSelector(state => state.user);
     const dispatch = useDispatch();
 
     const history = useHistory();
 
     const handleJoinFailure = (result) => console.log(result);
     const handleLoginFailure = (result) => console.log(result);
+
+    const decodingAccessToken = (accessToken) => {
+        try {
+            if (accessToken) {
+                let decoded = jwt.decode(accessToken.split(' ')[1], 'AISW', false, 'HS512');
+                dispatch(setDecoded(decoded));
+                history.push('/');
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const handleClickTab = (event) => {
         let name = event.target.name;
@@ -55,64 +73,84 @@ export default function Menu() {
     }
 
     // 구글 연동 회원가입 성공시
-    function handleJoinSuccess(result) {
+    async function handleJoinSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
-        setResult(result);
 
-        dispatch(checkExist({username, email}));  // 서버에 user 가 등록되어 있는지 확인
-        setMode('Join');
+        await checkExist(username, email)
+            .then(res => {
+                moveJoin(res.data.data, result);
+            })
+            .catch(() => alert("회원가입에 실패하였습니다."));
     }
 
     // 구글 연동 로그인 성공시
     async function handleLoginSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
-        const userData = {
-            'name': result.profileObj.familyName,
-            'department': result.profileObj.givenName
-        };
 
-        dispatch(checkExist({username, email}));  // 서버에 user 가 등록되어 있는지 확인
-        dispatch(setUserData(userData));    // 메뉴를 위한 정보 저장
-        setMode('Login');
+        await checkExist(username, email)
+            .then(res => {
+                moveLogin(res.data.data, username);
+            }).catch(() => alert("로그인에 실패하였습니다."));
     }
 
-    useEffect(() => {
-        if (mode === 'Join') {
-            if (exist.validation === true) {
-                alert("이미 가입된 회원입니다.");
-            } else {
-                const roll = exist.account === 'general' ? 'GENERAL' : 'STUDENT';
-                history.push({pathname: '/join', state: {google_data: result, account_role: roll}});
+    // 존재하는 회원인지 확인
+    function checkExist(username, email) {
+        return axios.post(`/user/verification`, {
+            data: {
+                'username': username,
+                'email': email
             }
-        } else if (mode === 'Login') {
-            if (exist.validation === false) {
-                alert("회원가입이 필요합니다.");
-            } else {
-                dispatch(login(exist.username));
-            }
+        });
+    }
+
+    function moveJoin(exist, result) {
+        if (exist.validation === true) {
+            alert("이미 가입된 회원입니다.");
+        } else {
+            const roll = exist.account === 'general' ? 'GENERAL' : 'STUDENT';
+            history.push({pathname: '/join', state: {google_data: result, account_role: roll}});
         }
-    }, [exist]);
+    }
 
-    useEffect(() => {
-        setAccessToken(window.localStorage.getItem("ACCESS_TOKEN"));
-    }, [isOnline]);
+    function moveLogin(exist, username) {
+        if (exist.validation === false) {
+            alert("회원가입이 필요합니다.");
+        } else {
+            login(username);
+        }
+    }
 
-    useEffect(()=>{
-        console.log(error);
-    },[error]);
+    function login(username) {
+        axios.post(`/login`, {
+            'username': username,
+            'password': 'AISW',
+        }).then((res) => {
+            window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization);
+            window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token);
+
+            decodingAccessToken(res.headers.authorization);
+        }).catch(error => error);
+    }
 
     return (
         <div className="Menu">
-            <Grid>
-                <Row style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
-                    <Col xs={3}>
-                        <Link to="/">
-                            <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
-                        </Link>
-                    </Col>
-                    <Col xs={6}>
+            <div style={{
+                borderBottom: 'solid 1px #d0d0d0',
+                padding: '15px',
+                display: 'flex',
+                justifyContent: 'space-between'
+            }}>
+                <div className="align-self-center">
+                    <Link to="/">
+                        <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
+                    </Link>
+                </div>
+
+                {isTabletOrMobile ?
+                    <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded/> :
+                    <div className="align-self-center">
                         <Link to="/notice">
                             <button className="Menu-button" name="notice" onClick={handleClickTab}
                                     style={{color: active_menu.active === 1 ? "#0472FD" : "dimgrey"}}>
@@ -145,28 +183,37 @@ export default function Menu() {
                                 FAQ
                             </button>
                         </Link>
-                    </Col>
+                    </div>
+                }
 
-                    {
-                        (accessToken) ?
+                {
+                    !isTabletOrMobile && (
+                        (accessToken && user.decoded) ?
                             (
-                                <>
-                                    <Col xs={3}>
-                                        <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                            {userData.name} {userData.department}
-                                        </button>
-                                        <Link to="/manager">
-                                            <button className="Menu-button"  name="manage_page" onClick={handleClickTab}
-                                                    style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
-                                                관리자페이지
-                                            </button>
-                                        </Link>
-                                    </Col>
+                                <div className="align-self-center">
+                                    <button className="Menu-button" onClick={() => setModalShow(true)}>
+                                        {user.decoded.name}
+                                    </button>
+                                    {
+                                        ADMIN_ROLE.includes(user.decoded.role) ?
+                                            <Link to="/manager">
+                                                <button className="Menu-button" name="manage_page"
+                                                        onClick={handleClickTab}
+                                                        style={{color: active_menu.active == 6 ? "#0472FD" : "dimgrey"}}>
+                                                    관리자페이지
+                                                </button>
+                                            </Link>
+                                            :
+                                            null
+                                    }
 
-                                    <MyPage show={modalShow} onHide={() => setModalShow(false)}/>
-                                </>
+                                    {modalShow ? <MyPage
+                                        myPageShow={modalShow}
+                                        setMyPageShow={setModalShow}
+                                    /> : null}
+                                </div>
                             ) : (
-                                <Col xs={3}>
+                                <div className="align-self-center">
                                     <GoogleLogin
                                         clientId={GOOGLE_CLIENT_ID}
                                         render={renderProps => (
@@ -191,11 +238,11 @@ export default function Menu() {
                                         cookiePolicy={'single_host_origin'}
                                         // uxMode='redirect'
                                     />
-                                </Col>
+                                </div>
                             )
-                    }
-                </Row>
-            </Grid>
+                    )
+                }
+            </div>
         </div>
     );
 }

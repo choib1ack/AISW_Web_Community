@@ -7,8 +7,6 @@ import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 
 function SiteModal(props) {
-    const [auth, setAuth] = useState(() => window.localStorage.getItem("auth") || null);
-
     const mode = (!props.info) ? "add" : "update";
 
     const default_info = mode === "add" ?

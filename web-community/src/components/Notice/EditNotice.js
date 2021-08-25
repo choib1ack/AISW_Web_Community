@@ -13,31 +13,26 @@ import {checkContent, checkTitle} from "../Board/NewBoard";
 import {useLocation} from "react-router-dom";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
+import {AUTH_NOTICE_PUT} from "../../constants";
 
-export default function EditNotice({match}, props) {
+export default function EditNotice({match}) {
     const {register, handleSubmit} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
 
-    const detail = location.state.detail;
-    const content = location.state.content;
+    const {detail, content} = location.state;
     const {notice_category, id} = match.params;
 
-    // redux toolkit
     const write = useSelector(state => state.write)
 
-    async function sendNotice(data, path) {
-        const put_auth_url = (path === 'council' ? 'auth-council' : 'auth-admin');
-
-        await axiosApi.put(`/${put_auth_url}/notice/${path}`,
+    function putNotice(data, path) {
+        axiosApi.put(`/${AUTH_NOTICE_PUT[path]}/notice/${path}`,
             {data: data},
         ).then((res) => {
-            setModalShow(true)   // 완료 모달 띄우기
+            setModalShow(true);
         }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-
-            alert("글 게시에 실패하였습니다.") // 실패 메시지
+            console.log(error);
+            alert("글 게시에 실패하였습니다.");
         })
     }
 
@@ -45,29 +40,18 @@ export default function EditNotice({match}, props) {
         data.content = write.value;
 
         if (checkTitle(data.title) && checkContent(data.content)) {
-            let test;
-            if (notice_category === "university") {
-                test = {
-                    campus: "COMMON",
-                    content: data.content,
-                    status: "GENERAL",
-                    title: data.title,
-                }
-            } else if (notice_category === "department") {
-                test = {
-                    content: data.content,
-                    status: "GENERAL",
-                    title: data.title,
-                }
-            } else if (notice_category === "council") {
-                test = {
-                    content: data.content,
-                    status: "GENERAL",
-                    title: data.title,
-                }
+            let temp = {
+                content: data.content,
+                status: "GENERAL",
+                title: data.title,
+                id: id
+            };
+
+            if (notice_category === 'university') {
+                temp.campus = 'COMMON';
             }
-            test.id = id
-            sendNotice(test, notice_category)
+
+            putNotice(temp, notice_category);
         }
     }
 

@@ -17,7 +17,7 @@ function Title(props) {
             fontWeight: 'bold',
             color: '#0472FD'
         }
-    }else if (props.type === "3") {
+    } else if (props.type === "3") {
         style = {
             fontSize: '14px',
             textAlign: 'left',

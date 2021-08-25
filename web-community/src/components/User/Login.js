@@ -4,8 +4,6 @@ import './Login.css';
 import Container from "react-bootstrap/Container";
 import {Link, useHistory} from "react-router-dom";
 import {useForm} from "react-hook-form";
-import {useDispatch, useSelector} from "react-redux";
-import {login} from "../features/userSlice";
 import axios from "axios";
 
 export default function Login(props) {
@@ -16,19 +14,16 @@ export default function Login(props) {
     // password.current = watch("password");
     const history = useHistory();
 
-    const dispatch = useDispatch()
-
     async function getLoginUser(data) {
         await axios.get(`/user/login?email=${data.email}&password=${data.password}`).then((res) => {
             if (res.data.data == null) {
                 alert("회원이 존재하지 않습니다.")
             } else {
-                dispatch(login(res.data.data))   // 리덕스에 로그인한 유저 정보 저장
+                // dispatch(login(res.data.data))   // 리덕스에 로그인한 유저 정보 저장
                 history.push('/')   // 홈으로 가기
             }
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log("에러 발생");
             console.log(errorObject);
 
             alert("로그인에 실패하였습니다.") // 로그인 실패 메시지

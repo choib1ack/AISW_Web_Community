@@ -21,16 +21,13 @@ export default function Home() {
 
     useEffect(() => {
         const fetchHomeData = async () => {
-
             try {
-
                 if (homeData != null) {
                     return;
                 }
 
                 setLoading(true);
                 setError(null);
-
 
                 await axios.get("/home")
                     .then(res => {
@@ -151,7 +148,6 @@ function MakeHomeNoticeList({noticeData}) {
                    className={"clickable"}>
                     {data.title} <span style={{float: "right"}}>{data.created_at.substring(0, 10)}</span>
                 </p>
-
             ))}
         </>
     );
