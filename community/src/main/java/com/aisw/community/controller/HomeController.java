@@ -1,5 +1,6 @@
 package com.aisw.community.controller;
 
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.HomeApiResponse;
 import com.aisw.community.service.HomeService;
@@ -22,6 +23,7 @@ public class HomeController {
 
     @GetMapping("/auth/home")
     public Header<HomeApiResponse> mainForUser(Authentication authentication) {
-        return homeService.mainForUser(authentication);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return homeService.mainForUser(principal.getUser());
     }
 }

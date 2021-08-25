@@ -157,4 +157,22 @@ public class CommentService {
         });
         return commentApiResponseList;
     }
+
+    public List<CommentApiResponse> searchByPost(User user, Long id) {
+        List<Comment> comments = customCommentRepository.findCommentByBoardId(id);
+
+        List<CommentApiResponse> commentApiResponseList = new ArrayList<>();
+        Map<Long, CommentApiResponse> map = new HashMap<>();
+        comments.stream().forEach(comment -> {
+            CommentApiResponse commentApiResponse = CommentApiResponse.convertCommentToDto(comment);
+            commentApiResponse.setIsWriter((user.getId() == comment.getUser().getId()) ? true : false);
+            if(comment.getSuperComment() == null) {
+                map.put(commentApiResponse.getId(), commentApiResponse);
+                commentApiResponseList.add(commentApiResponse);
+            } else {
+                map.get(comment.getSuperComment().getId()).getSubComment().add(commentApiResponse);
+            }
+        });
+        return commentApiResponseList;
+    }
 }
