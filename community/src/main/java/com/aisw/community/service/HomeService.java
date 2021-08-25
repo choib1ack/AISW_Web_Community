@@ -6,6 +6,7 @@ import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.entity.post.Bulletin;
 import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.notice.Notice;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.response.HomeApiResponse;
 import com.aisw.community.model.network.response.admin.HomeBannerAndSiteResponse;
@@ -60,10 +61,9 @@ public class HomeService {
         return Header.OK(homeApiResponse);
     }
 
-    public Header<HomeApiResponse> mainForUser(Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+    public Header<HomeApiResponse> mainForUser(User user) {
         HomeApiResponse homeApiResponse = main().getData();
-        homeApiResponse.setUnreadAlert(alertService.getNumberOfUnreadAlert(principal.getUser().getId()));
+        homeApiResponse.setUnreadAlert(alertService.getNumberOfUnreadAlert(user.getId()));
 
         return Header.OK(homeApiResponse);
     }

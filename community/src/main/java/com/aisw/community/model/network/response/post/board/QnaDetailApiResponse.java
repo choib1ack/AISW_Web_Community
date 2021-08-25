@@ -49,6 +49,8 @@ public class QnaDetailApiResponse {
 
     private Boolean checkLike = false;
 
+    private Boolean isWriter;
+
     private List<FileApiResponse> fileApiResponseList;
 
     private List<CommentApiResponse> commentApiResponseList;

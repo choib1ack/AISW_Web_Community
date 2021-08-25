@@ -2,7 +2,6 @@ package com.aisw.community.controller.post.board;
 
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.controller.ControllerInterface;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.board.FileUploadToFreeRequest;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class FreeController implements ControllerInterface<FreeApiRequest, FreeApiResponse> {
+public class FreeController implements BoardPostController<FreeApiRequest, FreeApiResponse, FreeDetailApiResponse, BoardResponseDTO> {
 
     @Autowired
     private FreeService freeService;
@@ -47,9 +46,16 @@ public class FreeController implements ControllerInterface<FreeApiRequest, FreeA
     }
 
     @Override
-    @GetMapping("/board/free/{id}")
-    public Header<FreeApiResponse> read(@PathVariable Long id) {
+    @GetMapping("/board/free/comment/{id}")
+    public Header<FreeDetailApiResponse> read(@PathVariable Long id) {
         return freeService.read(id);
+    }
+
+    @Override
+    @GetMapping("/auth/board/free/comment&like/{id}")
+    public Header<FreeDetailApiResponse> read(Authentication authentication, @PathVariable Long id) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return freeService.read(principal.getUser(), id);
     }
 
     @Override
@@ -79,22 +85,13 @@ public class FreeController implements ControllerInterface<FreeApiRequest, FreeA
         return freeService.delete(principal.getUser(), id);
     }
 
-    @GetMapping("/board/free/comment/{id}")
-    public Header<FreeDetailApiResponse> readWithComment(@PathVariable Long id) {
-        return freeService.readWithComment(id);
-    }
-
-    @GetMapping("/auth/board/free/comment&like/{id}")
-    public Header<FreeDetailApiResponse> readWithCommentAndLike(Authentication authentication, @PathVariable Long id) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        return freeService.readWithCommentAndLike(principal.getUser(), id);
-    }
-
+    @Override
     @GetMapping("/board/free")
     public Header<BoardResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return freeService.readAll(pageable);
     }
 
+    @Override
     @GetMapping("/board/free/search/writer")
     public Header<BoardResponseDTO> searchByWriter(
             @RequestParam String writer,
@@ -102,6 +99,7 @@ public class FreeController implements ControllerInterface<FreeApiRequest, FreeA
         return freeService.searchByWriter(writer, pageable);
     }
 
+    @Override
     @GetMapping("/board/free/search/title")
     public Header<BoardResponseDTO> searchByTitle(
             @RequestParam String title,
@@ -109,6 +107,7 @@ public class FreeController implements ControllerInterface<FreeApiRequest, FreeA
         return freeService.searchByTitle(title, pageable);
     }
 
+    @Override
     @GetMapping("/board/free/search/title&content")
     public Header<BoardResponseDTO> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,

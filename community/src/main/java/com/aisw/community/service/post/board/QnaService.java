@@ -143,11 +143,35 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<QnaApiResponse> read(Long id) {
+    public Header<QnaDetailApiResponse> read(Long id) {
         return qnaRepository.findById(id)
                 .map(qna -> qna.setViews(qna.getViews() + 1))
                 .map(qna -> qnaRepository.save((Qna) qna))
-                .map(this::response)
+                .map(qna -> responseWithComment(qna))
+                .map(Header::OK)
+                .orElseThrow(() -> new PostNotFoundException(id));
+    }
+
+    @Override
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(value = "qnaReadAll", allEntries = true),
+            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
+    })
+    public Header<QnaDetailApiResponse> read(User user, Long id) {
+        return qnaRepository.findById(id)
+                .map(qna -> qna.setViews(qna.getViews() + 1))
+                .map(qna -> qnaRepository.save((Qna) qna))
+                .map(qna -> (user == null) ? responseWithComment(qna) : responseWithCommentAndLike(user, qna))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -295,32 +319,8 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         return qnaApiResponse;
     }
 
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<QnaDetailApiResponse> readWithComment(Long id) {
-        return qnaRepository.findById(id)
-                .map(qna -> qna.setViews(qna.getViews() + 1))
-                .map(qna -> qnaRepository.save((Qna) qna))
-                .map(this::responseWithComment)
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
     private QnaDetailApiResponse responseWithComment(Qna qna) {
-        QnaDetailApiResponse qnaWithCommentApiResponse = QnaDetailApiResponse.builder()
+        return QnaDetailApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
                 .writer(qna.getWriter())
@@ -340,37 +340,9 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .fileApiResponseList(fileService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()))
                 .commentApiResponseList(commentService.searchByPost(qna.getId()))
                 .build();
-
-        return qnaWithCommentApiResponse;
-    }
-
-    @Override
-    @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
-    })
-    public Header<QnaDetailApiResponse> readWithCommentAndLike(User user, Long id) {
-        return qnaRepository.findById(id)
-                .map(qna -> qna.setViews(qna.getViews() + 1))
-                .map(qna -> qnaRepository.save((Qna) qna))
-                .map(qna -> responseWithCommentAndLike(user, qna))
-                .map(Header::OK)
-                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
     private QnaDetailApiResponse responseWithCommentAndLike(User user, Qna qna) {
-        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(qna.getId());
-
         QnaDetailApiResponse qnaDetailApiResponse = QnaDetailApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
@@ -389,9 +361,9 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .userId(qna.getUser().getId())
                 .checkLike(false)
                 .fileApiResponseList(fileService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()))
-                .commentApiResponseList(commentApiResponseList)
                 .build();
 
+        List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(user, qna.getId());
         List<ContentLike> contentLikeList = contentLikeService.getContentLikeByUser(user.getId());
         contentLikeList.stream().forEach(contentLike -> {
             if (contentLike.getBoard() != null) {
@@ -414,6 +386,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             }
         });
         qnaDetailApiResponse.setCommentApiResponseList(commentApiResponseList);
+        qnaDetailApiResponse.setIsWriter((user.getId() == qna.getUser().getId()) ? true : false);
 
         return qnaDetailApiResponse;
     }

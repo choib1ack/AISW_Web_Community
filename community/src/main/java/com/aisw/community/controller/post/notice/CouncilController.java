@@ -2,8 +2,6 @@ package com.aisw.community.controller.post.notice;
 
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.controller.ControllerInterface;
-import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.notice.CouncilApiRequest;
@@ -11,7 +9,6 @@ import com.aisw.community.model.network.request.post.notice.FileUploadToCouncilR
 import com.aisw.community.model.network.response.post.notice.CouncilApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.service.post.notice.CouncilService;
-import com.aisw.community.service.post.notice.NoticePostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class CouncilController implements ControllerInterface<CouncilApiRequest, CouncilApiResponse> {
+public class CouncilController implements NoticePostController<CouncilApiRequest, CouncilApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private CouncilService councilService;
@@ -49,8 +46,9 @@ public class CouncilController implements ControllerInterface<CouncilApiRequest,
 
     @Override
     @GetMapping("/auth-student/notice/council/{id}")
-    public Header<CouncilApiResponse> read(@PathVariable Long id) {
-        return councilService.read(id);
+    public Header<CouncilApiResponse> read(Authentication authentication, @PathVariable Long id) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return councilService.read(principal.getUser(), id);
     }
 
     @Override
