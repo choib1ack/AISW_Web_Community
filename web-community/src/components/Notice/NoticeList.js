@@ -77,7 +77,7 @@ export default function NoticeList({match}) {
                     <SelectButton id={3} title='학생회' active={category}
                                   onClick={() => handleCategoryChange(3)}/>
                 </div>
-                <div style={{marginRight: '10px', alignSelf: 'center'}}>
+                <div className="mr-2 ml-2 align-self-center">
                     <img src={searchImage} className="search-icon" onClick={searchContents}/>
                     <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
                            onKeyPress={searchEnterPress} className="search-box" placeholder='검색'/>

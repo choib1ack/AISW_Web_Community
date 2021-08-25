@@ -72,7 +72,7 @@ function BoardList({match}) {
                 marginTop: '2rem',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                padding: '0px 20px'
+                padding: '0px 10px'
             }}>
                 <div>
                     <SelectButton
@@ -92,7 +92,7 @@ function BoardList({match}) {
                         onClick={() => handleCategoryChange(3)}
                     />
                 </div>
-                <div>
+                <div className="mr-2 ml-2 align-self-center">
                     <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
                     <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
                            onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
