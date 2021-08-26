@@ -33,7 +33,7 @@ tbody tr:hover {
     transition: all ease 0.2s;
 }
 
-tbody.faq tr:hover {
+tbody.type2 tr:hover {
     cursor: default;
     background-color: #FFFFFF;
 }

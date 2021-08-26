@@ -81,7 +81,7 @@ function ManageFAQ() {
                         </tr>
                         </thead>
 
-                        <tbody className={'english_table faq'}>
+                        <tbody className={'english_table type2'}>
 
                         {faqData!=null?faqData.map(data=>(
                             <FaqManageItem
@@ -91,7 +91,7 @@ function ManageFAQ() {
                                 setFaqData={setFaqData}
                                 Refresh={Refresh}
                                 />
-                        )):null}
+                        )):<div>데이터가 없습니다</div>}
                         </tbody>
                     </Table>
                 </div>
