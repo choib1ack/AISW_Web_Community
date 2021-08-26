@@ -18,6 +18,7 @@ import com.aisw.community.model.network.response.post.board.FreeApiResponse;
 import com.aisw.community.model.network.response.post.board.FreeDetailApiResponse;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
+import com.aisw.community.repository.post.board.CustomFreeRepository;
 import com.aisw.community.repository.post.board.FreeRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
@@ -42,6 +43,9 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
 
     @Autowired
     private FreeRepository freeRepository;
+
+    @Autowired
+    private CustomFreeRepository customFreeRepository;
 
     @Autowired
     private CommentService commentService;
@@ -70,18 +74,17 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     public Header<FreeApiResponse> create(User user, FreeApiRequest freeApiRequest) {
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
-                .writer(user.getName())
+                .writer((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .content(freeApiRequest.getContent())
                 .status(freeApiRequest.getStatus())
-                .isAnonymous(freeApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .likes(0L)
                 .user(user)
                 .build();
 
-        freeRepository.save(free);
-        return Header.OK();
+        Free newFree = freeRepository.save(free);
+        return Header.OK(response(newFree));
     }
 
     @Override
@@ -100,13 +103,12 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<FreeApiResponse> create(User user, FreeApiRequest request, MultipartFile[] files) {
+    public Header<FreeApiResponse> create(User user, FreeApiRequest freeApiRequest, MultipartFile[] files) {
         Free free = Free.builder()
-                .title(request.getTitle())
-                .writer(user.getName())
-                .content(request.getContent())
-                .status(request.getStatus())
-                .isAnonymous(request.getIsAnonymous())
+                .title(freeApiRequest.getTitle())
+                .writer((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
+                .content(freeApiRequest.getContent())
+                .status(freeApiRequest.getStatus())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .likes(0L)
@@ -188,10 +190,10 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         }
 
         free
+                .setWriter((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(freeApiRequest.getTitle())
                 .setContent(freeApiRequest.getContent())
                 .setStatus(freeApiRequest.getStatus());
-        free.setIsAnonymous(freeApiRequest.getIsAnonymous());
         freeRepository.save(free);
 
         return Header.OK(response(free));
@@ -226,10 +228,10 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, free.getId(), UploadCategory.POST);
 
         free
+                .setWriter((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(freeApiRequest.getTitle())
                 .setContent(freeApiRequest.getContent())
                 .setStatus(freeApiRequest.getStatus());
-        free.setIsAnonymous(freeApiRequest.getIsAnonymous());
         freeRepository.save(free);
 
         return Header.OK(response(free, fileApiResponseList));
@@ -274,7 +276,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .build();
         if (free.getFileList() != null) {
@@ -297,7 +298,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
@@ -318,7 +318,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .userId(free.getUser().getId())
                 .checkLike(false)
@@ -340,7 +339,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .checkLike(false)
                 .userId(free.getUser().getId())
@@ -378,7 +376,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     @Override
     @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
-        Page<Free> frees = freeRepository.findAll(pageable);
+        Page<Free> frees = customFreeRepository.findAll(pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
         return getListHeader(frees, freesByStatus);
@@ -388,7 +386,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     @Cacheable(value = "freeSearchByWriter",
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
-        Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
+        Page<Free> frees = customFreeRepository.findAllByWriterContaining(writer, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
         return getListHeader(frees, freesByStatus);
@@ -398,7 +396,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     @Cacheable(value = "freeSearchByTitle",
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
-        Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
+        Page<Free> frees = customFreeRepository.findAllByTitleContaining(title, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
         return getListHeader(frees, freesByStatus);
@@ -408,7 +406,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     @Cacheable(value = "freeSearchByTitleOrContent",
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
-        Page<Free> frees = freeRepository
+        Page<Free> frees = customFreeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Free> freesByStatus = searchByStatus(pageable);
 
@@ -416,7 +414,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     }
 
     public Page<Free> searchByStatus(Pageable pageable) {
-        Page<Free> frees = freeRepository.findAllByStatusIn(
+        Page<Free> frees = customFreeRepository.findAllByStatus(
                 Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
 
         return frees;
