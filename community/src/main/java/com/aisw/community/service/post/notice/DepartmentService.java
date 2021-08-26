@@ -39,19 +39,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class DepartmentService extends NoticePostService<DepartmentApiRequest, FileUploadToDepartmentRequest, NoticeResponseDTO, DepartmentApiResponse, Department> {
+public class DepartmentService implements NoticePostService<DepartmentApiRequest, DepartmentApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private DepartmentRepository departmentRepository;
 
     @Autowired
-    private FileRepository fileRepository;
-
-    @Autowired
     private FileService fileService;
-
-    @Autowired
-    private UserService userService;
 
     @Override
     @Caching(evict = {
@@ -68,13 +62,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<DepartmentApiResponse> create(Authentication authentication, Header<DepartmentApiRequest> request) {
-        DepartmentApiRequest departmentApiRequest = request.getData();
-        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<DepartmentApiResponse> create(User user, DepartmentApiRequest departmentApiRequest) {
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(user.getName())
@@ -85,7 +73,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
                 .user(user)
                 .build();
 
-        Department newDepartment = baseRepository.save(department);
+        Department newDepartment = departmentRepository.save(department);
         return Header.OK(response(newDepartment));
     }
 
@@ -105,13 +93,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<DepartmentApiResponse> create(Authentication authentication, FileUploadToDepartmentRequest request) {
-        DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
-        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<DepartmentApiResponse> create(User user, DepartmentApiRequest departmentApiRequest, MultipartFile[] files) {
         Department department = Department.builder()
                 .title(departmentApiRequest.getTitle())
                 .writer(user.getName())
@@ -121,9 +103,8 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
                 .secondCategory(SecondCategory.DEPARTMENT)
                 .user(user)
                 .build();
-        Department newDepartment = baseRepository.save(department);
+        Department newDepartment = departmentRepository.save(department);
 
-        MultipartFile[] files = request.getFiles();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newDepartment.getId(), UploadCategory.POST);
 
         return Header.OK(response(newDepartment, fileApiResponseList));
@@ -144,11 +125,11 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<DepartmentApiResponse> read(Long id) {
-        return baseRepository.findById(id)
+    public Header<DepartmentApiResponse> read(User user, Long id) {
+        return departmentRepository.findById(id)
                 .map(department -> department.setViews(department.getViews() + 1))
-                .map(department -> baseRepository.save((Department)department))
-                .map(this::response)
+                .map(department -> departmentRepository.save((Department)department))
+                .map(department -> response(user, department))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -168,16 +149,9 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<DepartmentApiResponse> update(Authentication authentication, Header<DepartmentApiRequest> request) {
-        DepartmentApiRequest departmentApiRequest = request.getData();
-        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
-        }
-
-        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
+    public Header<DepartmentApiResponse> update(User user, DepartmentApiRequest departmentApiRequest) {
+        Department department = departmentRepository.findById(departmentApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if(department.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -186,7 +160,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
                 .setTitle(departmentApiRequest.getTitle())
                 .setContent(departmentApiRequest.getContent())
                 .setStatus(departmentApiRequest.getStatus());
-        baseRepository.save(department);
+        departmentRepository.save(department);
 
         return Header.OK(response(department));
     }
@@ -207,22 +181,13 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<DepartmentApiResponse> update(Authentication authentication, FileUploadToDepartmentRequest request) {
-        DepartmentApiRequest departmentApiRequest = request.getDepartmentApiRequest();
-        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
-        }
-
-        Department department = baseRepository.findById(departmentApiRequest.getId()).orElseThrow(
+    public Header<DepartmentApiResponse> update(User user, DepartmentApiRequest departmentApiRequest, MultipartFile[] files) {
+        Department department = departmentRepository.findById(departmentApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if(department.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
-
-        MultipartFile[] files = request.getFiles();
-        department.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        fileService.deleteFileList(department.getFileList());
         department.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, department.getId(), UploadCategory.POST);
 
@@ -230,7 +195,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
                 .setTitle(departmentApiRequest.getTitle())
                 .setContent(departmentApiRequest.getContent())
                 .setStatus(departmentApiRequest.getStatus());
-        baseRepository.save(department);
+        departmentRepository.save(department);
 
         return Header.OK(response(department, fileApiResponseList));
     }
@@ -250,21 +215,20 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header delete(Authentication authentication, Long id) {
-        Department department = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+    public Header delete(User user, Long id) {
+        Department department = departmentRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        User user = userService.getUser(authentication);
         if (department.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.delete(department.getFileList());
-        baseRepository.delete(department);
+        fileService.deleteFileList(department.getFileList());
+        departmentRepository.delete(department);
         return Header.OK();
     }
 
     private DepartmentApiResponse response(Department department) {
-        DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
+        return DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())
                 .writer(department.getWriter())
@@ -277,6 +241,23 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
                 .updatedAt(department.getUpdatedAt())
                 .updatedBy(department.getUpdatedBy())
                 .build();
+    }
+
+    private DepartmentApiResponse response(User user, Department department) {
+        DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
+                .id(department.getId())
+                .title(department.getTitle())
+                .writer(department.getWriter())
+                .content(department.getContent())
+                .status(department.getStatus())
+                .views(department.getViews())
+                .category(department.getCategory())
+                .createdAt(department.getCreatedAt())
+                .createdBy(department.getCreatedBy())
+                .updatedAt(department.getUpdatedAt())
+                .updatedBy(department.getUpdatedBy())
+                .isWriter((user.getId() == department.getUser().getId()) ? true : false)
+                .build();
         if (department.getFileList() != null) {
             departmentApiResponse.setFileApiResponseList(fileService.getFileList(department.getFileList(), UploadCategory.POST, department.getId()));
         }
@@ -285,7 +266,7 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
     }
 
     private DepartmentApiResponse response(Department department, List<FileApiResponse> fileApiResponseList) {
-        DepartmentApiResponse departmentApiResponse = DepartmentApiResponse.builder()
+        return DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())
                 .writer(department.getWriter())
@@ -299,14 +280,12 @@ public class DepartmentService extends NoticePostService<DepartmentApiRequest, F
                 .updatedBy(department.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return departmentApiResponse;
     }
 
     @Override
     @Cacheable(value = "departmentReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
-        Page<Department> departments = baseRepository.findAll(pageable);
+        Page<Department> departments = departmentRepository.findAll(pageable);
         Page<Department> departmentsByStatus = searchByStatus(pageable);
 
         return getListHeader(departments, departmentsByStatus);

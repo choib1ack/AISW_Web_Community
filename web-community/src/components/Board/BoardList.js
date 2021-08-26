@@ -1,4 +1,3 @@
-import Container from "react-bootstrap/Container";
 import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -15,8 +14,8 @@ function BoardList({match}) {
     const [searchData, setSearchData] = useState(
         {
             search: 0,
-            search_type:"select_title",
-            keyword:""
+            search_type: "select_title",
+            keyword: ""
         });
 
     window.scrollTo(0, 0);
@@ -25,29 +24,29 @@ function BoardList({match}) {
         setSearchData(
             {
                 ...searchData,
-                keyword:event.target.value
+                keyword: event.target.value
             });
         if (event.target.value === "") {
-            setSearchData({...searchData, keyword:"", search:0});
+            setSearchData({...searchData, keyword: "", search: 0});
         }
     }
 
     const handleSearchTypeChange = (event) => {
-        setSearchData({...searchData, search_type:event.target.value})
+        setSearchData({...searchData, search_type: event.target.value})
     }
 
     const handleCategoryChange = (category_num) => {
         setCategory(category_num);
 
         // 검색 초기화
-        setSearchData({is_search:false, search_type:"select_title", keyword:""});
-        
+        setSearchData({is_search: false, search_type: "select_title", keyword: ""});
+
         // 과목별 게시판 선택한 과목 초기화
         setSelectedSubject([]);
     }
 
     const searchContents = () => {
-        setSearchData({...searchData, search: searchData.search+1})
+        setSearchData({...searchData, search: searchData.search + 1})
         // console.log("서치 활성화");
     }
 
@@ -67,61 +66,66 @@ function BoardList({match}) {
 
     return (
         <div className="Board">
-            <Container>
-                <Title text='게시판' type='1'/>
-                <Row style={{marginBottom: '1rem', marginTop: '2rem', alignItems: 'center'}}>
-                    <Col lg={6} md={6} sm={12}>
-                        <SelectButton
-                            id={0} title='전체' active={category}
-                            onClick={() => handleCategoryChange(0)}
-                        />
-                        <SelectButton
-                            id={1} title='자유게시판' active={category}
-                            onClick={() => handleCategoryChange(1)}
-                        />
-                        <SelectButton
-                            id={2} title='과목별게시판' active={category}
-                            onClick={() => handleCategoryChange(2)}
-                        />
-                        <SelectButton
-                            id={3} title='취업게시판' active={category}
-                            onClick={() => handleCategoryChange(3)}
-                        />
-                    </Col>
-                    <Col lg={6} md={6} sm={12}>
-                        <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
-                        <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
-                               onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
-                        <select className={"search-type"} defaultValue={searchData.search_type} onChange={handleSearchTypeChange}>
-                            <option selected defaultValue="select_title">제목</option>
-                            <option defaultValue="select_title_content">제목+내용</option>
-                            <option defaultValue="select_writer">작성자</option>
-                        </select>
-                    </Col>
-                </Row>
-
-                <Row style={{marginBottom: '1rem'}}>
-                    <Col lg={12} md={12} sm={12}>
-                        {category === 2 ?
-                            <SubjectList
-                                handleSelectSubject={handleSelectSubject}
-                                handleRemoveSubject={handleRemoveSubject}
-                            />
-                            : null}
-                    </Col>
-                </Row>
-
-                    <MakeBoardList
-                        category={category}
-                        match={match}
-                        searchData={searchData}
-                        setSearchData={setSearchData}
-                        selected_subject_list={selectedSubject}
+            <Title text='게시판' type='1'/>
+            <Row style={{
+                marginBottom: '1rem',
+                marginTop: '2rem',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0px 10px'
+            }}>
+                <div>
+                    <SelectButton
+                        id={0} title='전체' active={category}
+                        onClick={() => handleCategoryChange(0)}
                     />
+                    <SelectButton
+                        id={1} title='자유게시판' active={category}
+                        onClick={() => handleCategoryChange(1)}
+                    />
+                    <SelectButton
+                        id={2} title='과목별게시판' active={category}
+                        onClick={() => handleCategoryChange(2)}
+                    />
+                    <SelectButton
+                        id={3} title='취업게시판' active={category}
+                        onClick={() => handleCategoryChange(3)}
+                    />
+                </div>
+                <div className="mr-2 ml-2 align-self-center">
+                    <img src={searchImage} className={"search-icon"} onClick={searchContents}/>
+                    <input type="text" value={searchData.keyword} onChange={handleSearchTextChange}
+                           onKeyPress={searchEnterPress} className={"search-box"} placeholder={'검색'}/>
+                    <select className={"search-type"} defaultValue={searchData.search_type}
+                            onChange={handleSearchTypeChange}>
+                        <option selected defaultValue="select_title">제목</option>
+                        <option defaultValue="select_title_content">제목+내용</option>
+                        <option defaultValue="select_writer">작성자</option>
+                    </select>
+                </div>
+            </Row>
 
-                <BlueButton match={match} type={'newBoard'} title="글쓰기"/>
+            {category === 2 ?
+                <Row className="mb-3">
+                    <Col>
+                        <SubjectList
+                            handleSelectSubject={handleSelectSubject}
+                            handleRemoveSubject={handleRemoveSubject}
+                        />
 
-            </Container>
+                    </Col>
+                </Row>
+                : null}
+
+            <MakeBoardList
+                category={category}
+                match={match}
+                searchData={searchData}
+                setSearchData={setSearchData}
+                selected_subject_list={selectedSubject}
+            />
+
+            <BlueButton match={match} type='newBoard' title="글쓰기"/>
         </div>
     );
 }

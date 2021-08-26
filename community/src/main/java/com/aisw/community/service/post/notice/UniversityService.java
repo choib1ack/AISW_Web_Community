@@ -39,19 +39,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UniversityService extends NoticePostService<UniversityApiRequest, FileUploadToUniversityRequest, NoticeResponseDTO, UniversityApiResponse, University> {
+public class UniversityService implements NoticePostService<UniversityApiRequest, UniversityApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private UniversityRepository universityRepository;
 
     @Autowired
-    private FileRepository fileRepository;
-
-    @Autowired
     private FileService fileService;
-
-    @Autowired
-    private UserService userService;
 
     @Override
     @Caching(evict = {
@@ -68,13 +62,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<UniversityApiResponse> create(Authentication authentication, Header<UniversityApiRequest> request) {
-        UniversityApiRequest universityApiRequest = request.getData();
-        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<UniversityApiResponse> create(User user, UniversityApiRequest universityApiRequest) {
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
                 .writer(user.getName())
@@ -86,7 +74,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
                 .user(user)
                 .build();
 
-        University newUniversity = baseRepository.save(university);
+        University newUniversity = universityRepository.save(university);
         return Header.OK(response(newUniversity));
     }
 
@@ -106,13 +94,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<UniversityApiResponse> create(Authentication authentication, FileUploadToUniversityRequest request) {
-        UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
-        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
-        }
-
-        User user = userService.getUser(authentication);
+    public Header<UniversityApiResponse> create(User user, UniversityApiRequest universityApiRequest, MultipartFile[] files) {
         University university = University.builder()
                 .title(universityApiRequest.getTitle())
                 .writer(user.getName())
@@ -123,9 +105,8 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
                 .secondCategory(SecondCategory.UNIVERSITY)
                 .user(user)
                 .build();
-        University newUniversity = baseRepository.save(university);
+        University newUniversity = universityRepository.save(university);
 
-        MultipartFile[] files = request.getFiles();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newUniversity.getId(), UploadCategory.POST);
 
         return Header.OK(response(newUniversity, fileApiResponseList));
@@ -146,11 +127,11 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<UniversityApiResponse> read(Long id) {
-        return baseRepository.findById(id)
+    public Header<UniversityApiResponse> read(User user, Long id) {
+        return universityRepository.findById(id)
                 .map(university -> university.setViews(university.getViews() + 1))
-                .map(university -> baseRepository.save((University) university))
-                .map(this::response)
+                .map(university -> universityRepository.save((University) university))
+                .map(university -> response(user, university))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -170,16 +151,9 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<UniversityApiResponse> update(Authentication authentication, Header<UniversityApiRequest> request) {
-        UniversityApiRequest universityApiRequest = request.getData();
-        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
-        }
-
-        University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
+    public Header<UniversityApiResponse> update(User user, UniversityApiRequest universityApiRequest) {
+        University university = universityRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if(university.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
@@ -189,7 +163,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
                 .setContent(universityApiRequest.getContent())
                 .setStatus(universityApiRequest.getStatus());
         university.setCampus(universityApiRequest.getCampus());
-        baseRepository.save(university);
+        universityRepository.save(university);
 
         return Header.OK(response(university));
     }
@@ -210,22 +184,14 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<UniversityApiResponse> update(Authentication authentication, FileUploadToUniversityRequest request) {
-        UniversityApiRequest universityApiRequest = request.getUniversityApiRequest();
-        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
-        }
-
-        University university = baseRepository.findById(universityApiRequest.getId()).orElseThrow(
+    public Header<UniversityApiResponse> update(User user, UniversityApiRequest universityApiRequest, MultipartFile[] files) {
+        University university = universityRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
-
-        User user = userService.getUser(authentication);
         if(university.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        MultipartFile[] files = request.getFiles();
-        university.getFileList().stream().forEach(file -> fileRepository.delete(file));
+        fileService.deleteFileList(university.getFileList());
         university.getFileList().clear();
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, university.getId(), UploadCategory.POST);
 
@@ -234,7 +200,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
                 .setContent(universityApiRequest.getContent())
                 .setStatus(universityApiRequest.getStatus());
         university.setCampus(universityApiRequest.getCampus());
-        baseRepository.save(university);
+        universityRepository.save(university);
 
         return Header.OK(response(university, fileApiResponseList));
     }
@@ -254,21 +220,20 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header delete(Authentication authentication, Long id) {
-        University university = baseRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
+    public Header delete(User user, Long id) {
+        University university = universityRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
 
-        User user = userService.getUser(authentication);
         if (university.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.delete(university.getFileList());
-        baseRepository.delete(university);
+        fileService.deleteFileList(university.getFileList());
+        universityRepository.delete(university);
         return Header.OK();
     }
 
     private UniversityApiResponse response(University university) {
-        UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
+        return UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
                 .writer(university.getWriter())
@@ -282,6 +247,24 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
                 .updatedAt(university.getUpdatedAt())
                 .updatedBy(university.getUpdatedBy())
                 .build();
+    }
+
+    private UniversityApiResponse response(User user, University university) {
+        UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
+                .id(university.getId())
+                .title(university.getTitle())
+                .writer(university.getWriter())
+                .content(university.getContent())
+                .status(university.getStatus())
+                .views(university.getViews())
+                .campus(university.getCampus())
+                .category(university.getCategory())
+                .createdAt(university.getCreatedAt())
+                .createdBy(university.getCreatedBy())
+                .updatedAt(university.getUpdatedAt())
+                .updatedBy(university.getUpdatedBy())
+                .isWriter((user.getId() == university.getUser().getId()) ? true : false)
+                .build();
         if (university.getFileList() != null) {
             universityApiResponse.setFileApiResponseList(fileService.getFileList(university.getFileList(), UploadCategory.POST, university.getId()));
         }
@@ -290,7 +273,7 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
     }
 
     private UniversityApiResponse response(University university, List<FileApiResponse> fileApiResponseList) {
-        UniversityApiResponse universityApiResponse = UniversityApiResponse.builder()
+        return UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())
                 .writer(university.getWriter())
@@ -305,14 +288,12 @@ public class UniversityService extends NoticePostService<UniversityApiRequest, F
                 .updatedBy(university.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return universityApiResponse;
     }
 
     @Override
     @Cacheable(value = "universityReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
-        Page<University> universities = baseRepository.findAll(pageable);
+        Page<University> universities = universityRepository.findAll(pageable);
         Page<University> universitiesByStatus = searchByStatus(pageable);
 
         return getListHeader(universities, universitiesByStatus);

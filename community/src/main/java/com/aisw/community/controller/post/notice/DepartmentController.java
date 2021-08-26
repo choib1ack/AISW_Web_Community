@@ -1,13 +1,14 @@
 package com.aisw.community.controller.post.notice;
 
-import com.aisw.community.ifs.CrudInterface;
-import com.aisw.community.model.entity.post.notice.Department;
+import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
+import com.aisw.community.config.auth.PrincipalDetails;
+import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.notice.DepartmentApiRequest;
 import com.aisw.community.model.network.request.post.notice.FileUploadToDepartmentRequest;
 import com.aisw.community.model.network.response.post.notice.DepartmentApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
-import com.aisw.community.service.post.notice.NoticePostService;
+import com.aisw.community.service.post.notice.DepartmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -18,71 +19,88 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class DepartmentController implements CrudInterface<DepartmentApiRequest, DepartmentApiResponse> {
+public class DepartmentController implements NoticePostController<DepartmentApiRequest, DepartmentApiResponse, NoticeResponseDTO> {
 
-    @Autowired(required = false)
-    protected NoticePostService<DepartmentApiRequest, FileUploadToDepartmentRequest, NoticeResponseDTO, DepartmentApiResponse, Department> noticePostService;
+    @Autowired
+    private DepartmentService departmentService;
 
     @Override
     @PostMapping("/auth-admin/notice/department")
     public Header<DepartmentApiResponse> create(Authentication authentication, @RequestBody Header<DepartmentApiRequest> request) {
-        return noticePostService.create(authentication, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        DepartmentApiRequest departmentApiRequest = request.getData();
+        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
+        }
+        return departmentService.create(principal.getUser(), departmentApiRequest);
     }
 
     @PostMapping("/auth-admin/notice/department/upload")
     public Header<DepartmentApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToDepartmentRequest request) {
-        return noticePostService.create(authentication, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        if(request.getDepartmentApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(request.getDepartmentApiRequest().getStatus().getTitle());
+        }
+        return departmentService.create(principal.getUser(), request.getDepartmentApiRequest(), request.getFiles());
     }
 
     @Override
     @GetMapping("/auth-student/notice/department/{id}")
-    public Header<DepartmentApiResponse> read(@PathVariable Long id) {
-        return noticePostService.read(id);
+    public Header<DepartmentApiResponse> read(Authentication authentication, @PathVariable Long id) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return departmentService.read(principal.getUser(), id);
     }
 
     @Override
     @PutMapping("/auth-admin/notice/department")
     public Header<DepartmentApiResponse> update(Authentication authentication, @RequestBody Header<DepartmentApiRequest> request) {
-        return noticePostService.update(authentication, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        DepartmentApiRequest departmentApiRequest = request.getData();
+        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
+        }
+        return departmentService.update(principal.getUser(), departmentApiRequest);
     }
 
     @PutMapping("/auth-admin/notice/department/upload")
     public Header<DepartmentApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToDepartmentRequest request) {
-        return noticePostService.update(authentication, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        if(request.getDepartmentApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
+            throw new PostStatusNotSuitableException(request.getDepartmentApiRequest().getStatus().getTitle());
+        }
+        return departmentService.update(principal.getUser(), request.getDepartmentApiRequest(), request.getFiles());
     }
 
     @Override
     @DeleteMapping("/auth-admin/notice/department/{id}")
     public Header delete(Authentication authentication, @PathVariable Long id) {
-        return noticePostService.delete(authentication, id);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return departmentService.delete(principal.getUser(), id);
     }
 
     @GetMapping("/notice/department")
     public Header<NoticeResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return noticePostService.readAll(pageable);
+        return departmentService.readAll(pageable);
     }
 
     @GetMapping("/notice/department/search/writer")
     public Header<NoticeResponseDTO> searchByWriter(
             @RequestParam String writer,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        return noticePostService.searchByWriter(writer, pageable);
+        return departmentService.searchByWriter(writer, pageable);
     }
 
     @GetMapping("/notice/department/search/title")
     public Header<NoticeResponseDTO> searchByTitle(
             @RequestParam String title,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        return noticePostService.searchByTitle(title, pageable);
+        return departmentService.searchByTitle(title, pageable);
     }
 
     @GetMapping("/notice/department/search/title&content")
     public Header<NoticeResponseDTO> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-
-        return noticePostService.searchByTitleOrContent(title, content, pageable);
+        return departmentService.searchByTitleOrContent(title, content, pageable);
     }
 }

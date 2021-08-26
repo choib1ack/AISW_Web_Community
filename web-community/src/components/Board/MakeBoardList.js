@@ -254,7 +254,8 @@ export default function MakeBoardList(props) {
             </Table>
             <Pagination
                 pageInfo={boardData.normal.page_info}
-                setPagination={setPagination}/>
+                setPagination={setPagination}
+            />
         </>
     );
 }

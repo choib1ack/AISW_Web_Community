@@ -1,19 +1,44 @@
-.delete-style{
-    float : right;
+.Board {
+    width: 70%;
+    margin: auto;
+}
+
+.delete-style {
+    float: right;
     font-size: 11px;
     color: #cdcdcd;
     cursor: pointer;
 }
-.delete-style:hover{
+
+.delete-style:hover {
     color: #ff6262;
 }
 
-.recomment-style{
-    float : right;
+.recomment-style {
+    float: right;
     font-size: 11px;
     color: #cdcdcd;
     cursor: pointer;
 }
-.recomment-style:hover{
+
+.recomment-style:hover {
     color: #404040;
+}
+
+.filename-style {
+    font-size: 13px;
+    color: #404040;
+    cursor: pointer;
+}
+
+.filename-style:hover {
+    color: #404040;
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 768px) {
+    .Board {
+        width: 100%;
+        padding: 0 20px;
+    }
 }
