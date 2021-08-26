@@ -1,8 +1,13 @@
 package com.aisw.community.controller.post;
 
 import com.aisw.community.model.network.Header;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import javax.servlet.http.HttpServletRequest;
 
 public interface PostController<Req, Res, ListRes> {
 
@@ -19,4 +24,6 @@ public interface PostController<Req, Res, ListRes> {
     Header<ListRes> searchByTitle(String title, Pageable pageable);
 
     Header<ListRes> searchByTitleOrContent(String title, String content, Pageable pageable);
+
+    ResponseEntity<Resource> download(String fileName, HttpServletRequest request);
 }
