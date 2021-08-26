@@ -39,9 +39,4 @@ public class Board extends Bulletin {
         this.likes = likes;
         this.category = secondCategory;
     }
-
-//    @PrePersist
-//    public void prePersist() {
-//        likes = likes == null ? 0L : likes;
-//    }
 }
