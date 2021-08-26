@@ -70,7 +70,8 @@ public class BannerService {
         Banner newBanner = bannerRepository.save(banner);
 
         MultipartFile[] files = request.getFiles();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newBanner.getId(), UploadCategory.BANNER);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, null, newBanner.getId(), UploadCategory.BANNER);
 
         return Header.OK(response(newBanner, fileApiResponseList));
     }
@@ -107,7 +108,8 @@ public class BannerService {
 
         banner.getFileList().stream().forEach(file -> fileRepository.delete(file));
         banner.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, banner.getId(), UploadCategory.BANNER);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, null, banner.getId(), UploadCategory.BANNER);
 
         String url = bannerApiRequest.getLinkUrl();
         if (!url.startsWith("http://") || !url.startsWith("https://")) {

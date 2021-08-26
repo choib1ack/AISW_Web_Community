@@ -115,7 +115,8 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .user(user)
                 .build();
         Free newFree = freeRepository.save(free);
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newFree.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/board/free", newFree.getId(), UploadCategory.POST);
         return Header.OK(response(newFree, fileApiResponseList));
     }
 
@@ -225,7 +226,8 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
 
         fileService.deleteFileList(free.getFileList());
         free.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, free.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/board/free", free.getId(), UploadCategory.POST);
 
         free
                 .setWriter((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())

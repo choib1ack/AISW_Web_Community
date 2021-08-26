@@ -107,7 +107,8 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                 .build();
         University newUniversity = universityRepository.save(university);
 
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newUniversity.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth/notice/university", newUniversity.getId(), UploadCategory.POST);
 
         return Header.OK(response(newUniversity, fileApiResponseList));
     }
@@ -193,7 +194,8 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
 
         fileService.deleteFileList(university.getFileList());
         university.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, university.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth/notice/university", university.getId(), UploadCategory.POST);
 
         university
                 .setTitle(universityApiRequest.getTitle())

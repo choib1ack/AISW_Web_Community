@@ -8,14 +8,19 @@ import com.aisw.community.model.network.request.post.notice.FileUploadToUniversi
 import com.aisw.community.model.network.request.post.notice.UniversityApiRequest;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
+import com.aisw.community.service.post.file.FileService;
 import com.aisw.community.service.post.notice.UniversityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -23,6 +28,9 @@ public class UniversityController implements NoticePostController<UniversityApiR
 
     @Autowired
     private UniversityService universityService;
+
+    @Autowired
+    private FileService fileService;
 
     @Override
     @PostMapping("/auth-admin/notice/university")
@@ -102,5 +110,11 @@ public class UniversityController implements NoticePostController<UniversityApiR
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return universityService.searchByTitleOrContent(title, content, pageable);
+    }
+
+    @Override
+    @GetMapping("/auth/notice/university/file/download/{fileName:.+}")
+    public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
+        return fileService.download(fileName, request);
     }
 }
