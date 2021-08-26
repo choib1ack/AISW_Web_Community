@@ -35,7 +35,6 @@ function ManageFAQ() {
                 await axios.get("/faq")
                     .then((res)=>{
                         setFaqData(res.data.data);
-                        console.log(res.data.data)
                     });
 
             } catch (e) {
@@ -85,7 +84,7 @@ function ManageFAQ() {
                         <tbody className={'english_table faq'}>
 
                         {faqData!=null?faqData.map(data=>(
-                            <FaqItem
+                            <FaqManageItem
                                 id={data.id}
                                 question={data.question}
                                 answer={data.answer}
@@ -102,7 +101,7 @@ function ManageFAQ() {
 
 }export default ManageFAQ;
 
-function FaqItem({question, answer, id, Refresh}){
+function FaqManageItem({question, answer, id, Refresh}){
 
     const [updateModalShow, setUpdateModalShow] = useState(false);
 
