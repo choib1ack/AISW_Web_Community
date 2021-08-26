@@ -113,7 +113,7 @@ public class DepartmentController implements NoticePostController<DepartmentApiR
     }
 
     @Override
-    @GetMapping("/auth-student/notice/department/download/{fileName:.+}")
+    @GetMapping("/auth-student/notice/department/file/download/{fileName:.+}")
     public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
         return fileService.download(fileName, request);
     }

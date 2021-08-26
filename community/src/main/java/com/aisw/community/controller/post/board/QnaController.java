@@ -135,7 +135,7 @@ public class QnaController implements BoardPostController<QnaApiRequest, QnaApiR
     }
 
     @Override
-    @GetMapping("/auth-studnet/board/qna/download/{fileName:.+}")
+    @GetMapping("/auth-studnet/board/qna/file/download/{fileName:.+}")
     public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
         return fileService.download(fileName, request);
     }

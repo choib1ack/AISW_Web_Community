@@ -113,7 +113,7 @@ public class CouncilController implements NoticePostController<CouncilApiRequest
     }
 
     @Override
-    @GetMapping("/auth-student/notice/council/download/{fileName:.+}")
+    @GetMapping("/auth-student/notice/council/file/download/{fileName:.+}")
     public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
         return fileService.download(fileName, request);
     }

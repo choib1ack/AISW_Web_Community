@@ -124,7 +124,7 @@ public class FreeController implements BoardPostController<FreeApiRequest, FreeA
     }
 
     @Override
-    @GetMapping("/board/free/download/{fileName:.+}")
+    @GetMapping("/board/free/file/download/{fileName:.+}")
     public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
         return fileService.download(fileName, request);
     }

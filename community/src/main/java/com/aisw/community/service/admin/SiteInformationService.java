@@ -68,7 +68,8 @@ public class SiteInformationService {
         SiteInformation newSiteInformation = siteInformationRepository.save(siteInformation);
 
         MultipartFile[] files = request.getFiles();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newSiteInformation.getId(), UploadCategory.SITE);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, null, newSiteInformation.getId(), UploadCategory.SITE);
 
         return Header.OK(response(newSiteInformation, fileApiResponseList));
     }
@@ -110,7 +111,8 @@ public class SiteInformationService {
 
         siteInformation.getFileList().stream().forEach(file -> fileRepository.delete(file));
         siteInformation.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, siteInformation.getId(), UploadCategory.SITE);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, null, siteInformation.getId(), UploadCategory.SITE);
 
         String url = siteInformationApiRequest.getLinkUrl();
         if (!url.startsWith("http://") || !url.startsWith("https://")) {

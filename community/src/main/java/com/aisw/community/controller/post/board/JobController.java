@@ -131,7 +131,7 @@ public class JobController implements BoardPostController<JobApiRequest, JobApiR
     }
 
     @Override
-    @GetMapping("/board/job/download/{fileName:.+}")
+    @GetMapping("/board/job/file/download/{fileName:.+}")
     public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
         return fileService.download(fileName, request);
     }
