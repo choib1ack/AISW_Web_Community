@@ -50,7 +50,8 @@ public class ContentLikeService {
         User user = userService.getUser(authentication);
         ContentLike newContentLike;
         AlertApiRequest alertApiRequest = new AlertApiRequest();
-        if(contentLikeApiRequest.getBoardId() == null) {
+        boolean me = false;
+        if(contentLikeApiRequest.getCommentId() != null) {
             Comment comment = commentRepository.findByIdFetchBoard(contentLikeApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(contentLikeApiRequest.getCommentId()));
             Optional<ContentLike> optional = contentLikeRepository
@@ -68,16 +69,18 @@ public class ContentLikeService {
             commentRepository.save(comment);
             newContentLike = contentLikeRepository.save(contentLike);
 
-            alertApiRequest
-                    .setFirstCategory(comment.getBoard().getFirstCategory())
-                    .setSecondCategory(comment.getBoard().getSecondCategory())
-                    .setPostId(comment.getBoard().getId());
-            if(comment.getContent().length() < 20) {
-                alertApiRequest.setContent(comment.getContent());
-            } else {
-                alertApiRequest.setContent(comment.getContent().substring(0, 20));
-            }
-        } else if(contentLikeApiRequest.getCommentId() == null) {
+            if(user.getId() != comment.getUser().getId()) {
+                alertApiRequest
+                        .setFirstCategory(comment.getBoard().getFirstCategory())
+                        .setSecondCategory(comment.getBoard().getSecondCategory())
+                        .setPostId(comment.getBoard().getId());
+                if(comment.getContent().length() < 20) {
+                    alertApiRequest.setContent(comment.getContent());
+                } else {
+                    alertApiRequest.setContent(comment.getContent().substring(0, 20));
+                }
+            } else me = true;
+        } else if(contentLikeApiRequest.getBoardId() != null) {
             Board board = boardRepository.findById(contentLikeApiRequest.getBoardId())
                     .orElseThrow(() -> new PostNotFoundException(contentLikeApiRequest.getBoardId()));
             Optional<ContentLike> optional = contentLikeRepository
@@ -95,21 +98,25 @@ public class ContentLikeService {
             boardRepository.save(board);
             newContentLike = contentLikeRepository.save(contentLike);
 
-            alertApiRequest
-                    .setFirstCategory(board.getFirstCategory())
-                    .setSecondCategory(board.getSecondCategory())
-                    .setPostId(board.getId());
-            if(board.getContent().length() < 20) {
-                alertApiRequest.setContent(board.getContent());
-            } else {
-                alertApiRequest.setContent(board.getContent().substring(0, 20));
-            }
+            if(user.getId() != board.getUser().getId()) {
+                alertApiRequest
+                        .setFirstCategory(board.getFirstCategory())
+                        .setSecondCategory(board.getSecondCategory())
+                        .setPostId(board.getId());
+                if(board.getContent().length() < 20) {
+                    alertApiRequest.setContent(board.getContent());
+                } else {
+                    alertApiRequest.setContent(board.getContent().substring(0, 20));
+                }
+            } else me = true;
         } else {
             throw new WrongRequestException();
         }
 
-        alertApiRequest.setContentLikeId(newContentLike.getId());
-        alertService.create(authentication, alertApiRequest);
+        if(!me) {
+            alertApiRequest.setContentLikeId(newContentLike.getId());
+            alertService.create(authentication, alertApiRequest);
+        }
 
         return Header.OK(response(newContentLike));
     }
