@@ -77,11 +77,10 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     public Header<QnaApiResponse> create(User user, QnaApiRequest qnaApiRequest) {
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
-                .writer(user.getName())
+                .writer((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .content(qnaApiRequest.getContent())
                 .status(qnaApiRequest.getStatus())
                 .subject(qnaApiRequest.getSubject())
-                .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
                 .likes(0L)
@@ -111,11 +110,10 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     public Header<QnaApiResponse> create(User user, QnaApiRequest qnaApiRequest, MultipartFile[] files) {
         Qna qna = Qna.builder()
                 .title(qnaApiRequest.getTitle())
-                .writer(user.getName())
+                .writer((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .content(qnaApiRequest.getContent())
                 .status(qnaApiRequest.getStatus())
                 .subject(qnaApiRequest.getSubject())
-                .isAnonymous(qnaApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)
                 .likes(0L)
@@ -123,7 +121,8 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .build();
         Qna newQna = qnaRepository.save(qna);
 
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newQna.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
 
         return Header.OK(response(newQna, fileApiResponseList));
     }
@@ -199,10 +198,10 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         }
 
         qna
+                .setWriter((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(qnaApiRequest.getTitle())
                 .setContent(qnaApiRequest.getContent())
                 .setStatus(qnaApiRequest.getStatus());
-        qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
         qna.setSubject(qnaApiRequest.getSubject());
         qnaRepository.save(qna);
 
@@ -234,13 +233,14 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
 
         fileService.deleteFileList(qna.getFileList());
         qna.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, qna.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
 
         qna
+                .setWriter((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(qnaApiRequest.getTitle())
                 .setContent(qnaApiRequest.getContent())
                 .setStatus(qnaApiRequest.getStatus());
-        qna.setIsAnonymous(qnaApiRequest.getIsAnonymous());
         qna.setSubject(qnaApiRequest.getSubject());
         qnaRepository.save(qna);
 
@@ -286,7 +286,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .updatedBy(qna.getUpdatedBy())
                 .views(qna.getViews())
                 .likes(qna.getLikes())
-                .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .build();
@@ -310,7 +309,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .updatedBy(qna.getUpdatedBy())
                 .views(qna.getViews())
                 .likes(qna.getLikes())
-                .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .fileApiResponseList(fileApiResponseList)
@@ -332,7 +330,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .updatedBy(qna.getUpdatedBy())
                 .views(qna.getViews())
                 .likes(qna.getLikes())
-                .isAnonymous(qna.getIsAnonymous())
                 .subject(qna.getSubject())
                 .category(qna.getCategory())
                 .userId(qna.getUser().getId())
@@ -356,7 +353,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .views(qna.getViews())
                 .likes(qna.getLikes())
                 .subject(qna.getSubject())
-                .isAnonymous(qna.getIsAnonymous())
                 .category(qna.getCategory())
                 .userId(qna.getUser().getId())
                 .checkLike(false)
