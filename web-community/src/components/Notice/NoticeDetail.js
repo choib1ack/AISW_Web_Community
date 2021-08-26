@@ -120,10 +120,12 @@ export default function NoticeDetail({match}) {
                 <Title text='공지사항' type='1'/>
 
                 {noticeDetailData && noticeDetailData.is_writer &&
-                <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
-                    <p style={{cursor: 'pointer', marginLeft: "auto"}}
+                <div style={{display: "flex"}}>
+                    <p className="edit-btn"
+                       style={{marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
-                    <p style={{cursor: 'pointer', marginLeft: "10px"}}
+                    <p className="delete-btn"
+                       style={{marginLeft: "10px"}}
                        onClick={handleShow}>삭제</p>
                 </div>
                 }

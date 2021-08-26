@@ -218,7 +218,7 @@ export default function BoardDetail({match}) {
                             <img src={fileImage} className="d-inline-block"/>}
                         <div>
                             <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
-                                {boardDetailData.is_anonymous ? "익명" : boardDetailData.created_by}
+                                {boardDetailData.writer}
                             </p>
                             <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
                                 {boardDetailData.created_at.substring(0, 10)} {boardDetailData.created_at.substring(11, 19)}

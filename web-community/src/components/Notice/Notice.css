@@ -119,3 +119,25 @@ thead tr > th:nth-child(2) {
         width: 30%;
     }
 }
+
+.edit-btn {
+    float: right;
+    font-size: 14px;
+    color: #cdcdcd;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    color: #0472FD;
+}
+
+.delete-btn {
+    float: right;
+    font-size: 14px;
+    color: #cdcdcd;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    color: #ff6262;
+}
