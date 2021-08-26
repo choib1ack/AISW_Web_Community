@@ -25,6 +25,7 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
+@ToString(exclude = {"fileList"})
 public class Banner {
 
     @Id

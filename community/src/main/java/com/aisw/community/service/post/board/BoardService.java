@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
 
     @Autowired
-    private BoardRepository boardRepository;
+    private BoardRepository<Board> boardRepository;
 
     @Cacheable(value = "boardReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
@@ -82,6 +82,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
                                 .status(board.getStatus())
                                 .views(board.getViews())
                                 .writer(board.getWriter())
+                                .hasFile((board.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -96,6 +97,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
                     .status(board.getStatus())
                     .views(board.getViews())
                     .writer(board.getWriter())
+                    .hasFile((board.getFileList().size() != 0) ? true : false)
                     .build();
             if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);
