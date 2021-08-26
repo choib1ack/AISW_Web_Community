@@ -412,7 +412,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     }
 
     public Page<Free> searchByStatus(Pageable pageable) {
-        Page<Free> frees = freeRepository.findAllByStatus(
+        Page<Free> frees = freeRepository.findAllByStatusIn(
                 Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
 
         return frees;

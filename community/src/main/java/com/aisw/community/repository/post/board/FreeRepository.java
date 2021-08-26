@@ -25,5 +25,5 @@ public interface FreeRepository extends JpaRepository<Free, Long> {
 
     Page<Free> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Free> findAllByStatus(List<BulletinStatus> statusList, Pageable pageable);
+    Page<Free> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
 }
