@@ -3,8 +3,9 @@ import axios from "axios";
 import {Link, useHistory} from "react-router-dom";
 import fileImage from "../../icon/file.svg";
 import Loading from "../Loading";
-import Table from "react-bootstrap/Table";
 import Pagination from "../PaginationCustom";
+import './Board.css';
+import '../Notice/Notice.css';
 
 export default function MakeBoardList(props) {
 
@@ -30,9 +31,9 @@ export default function MakeBoardList(props) {
             ...boardData,
             normal: {
                 ...boardData.normal,
-                page_info : {
+                page_info: {
                     ...boardData.normal.page_info,
-                    "current_page" : now_page
+                    "current_page": now_page
                 }
             }
         })
@@ -56,7 +57,7 @@ export default function MakeBoardList(props) {
                 url += "/job";
                 break;
         }
-        if (search_data.search>0) {
+        if (search_data.search > 0) {
             if (category == 0) {
                 url = url.substring(0, url.length - 5);
             }
@@ -76,7 +77,7 @@ export default function MakeBoardList(props) {
         if (props.selected_subject_list.length !== 0) {
             url += "/subject";
         }
-        url += search_data.search>0 ? "" : "?page=" + (boardData.normal.page_info.current_page);
+        url += search_data.search > 0 ? "" : "?page=" + (boardData.normal.page_info.current_page);
         if (props.selected_subject_list.length !== 0) {
             // console.log("서브젝트");
             url += "&subject=" + props.selected_subject_list.join(",");
@@ -152,7 +153,7 @@ export default function MakeBoardList(props) {
                             data: response.data.data.board_api_response_list
                         }
                     })
-                }else{
+                } else {
                     setBoardData({
                         ...boardData,
                         normal: {
@@ -178,68 +179,42 @@ export default function MakeBoardList(props) {
         </tr>
     );
     if (!boardData.normal.data || boardData.normal.data.length === 0)
-        return (<Table>
-            <thead>
-            <tr>
-                <th style={{width: "10%"}}>no</th>
-                <th style={{width: "55%"}}>제목</th>
-                <th style={{width: "10%"}}>작성자</th>
-                <th style={{width: "10%"}}>등록일</th>
-                <th style={{width: "10%"}}>조회</th>
-            </tr>
-            </thead>
-            <tbody><tr>
-                <td colSpan={5}>데이터가 없습니다.</td>
-            </tr></tbody>
-        </Table>);
-
-    return (
-        <>
-            <Table>
+        return (
+            <table className="table-style">
                 <thead>
                 <tr>
-                    <th style={{width: "10%"}}>no</th>
-                    <th style={{width: "55%"}}>제목</th>
-                    <th style={{width: "10%"}}>작성자</th>
-                    <th style={{width: "10%"}}>등록일</th>
-                    <th style={{width: "10%"}}>조회</th>
+                    <th>no</th>
+                    <th className="table-title">제목</th>
+                    <th>작성자</th>
+                    <th>등록일</th>
+                    <th>조회</th>
                 </tr>
                 </thead>
                 <tbody>
-            {boardData.fix_urgent !== null && props.searchData.search==0  ? boardData.fix_urgent.map(data => (
-                <tr key={data.id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
-                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
-                    <td>{status(data.status)}</td>
-                    <td>
-                        {data.title}
-                        <img src={fileImage} style={attachment(data.attachment_file)}/>
-                    </td>
-                    <td>{data.writer}</td>
-                    <td>{data.created_at.substring(0, 10)}</td>
-                    <td>{data.views}</td>
+                <tr>
+                    <td colSpan={5}>데이터가 없습니다.</td>
                 </tr>
-            )) : null}
-            {boardData.fix_notice !== null && props.searchData.search==0  ? boardData.fix_notice.map(data => (
-                <tr key={data.id}
-                    onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
-                        data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
-                    <td>{status(data.status)}</td>
-                    <td>
-                        {data.title}
-                        <img src={fileImage} style={attachment(data.attachment_file)}/>
-                    </td>
-                    <td>{data.writer}</td>
-                    <td>{data.created_at.substring(0, 10)}</td>
-                    <td>{data.views}</td>
+                </tbody>
+            </table>
+        );
+    return (
+        <>
+            <table className="table-style">
+                <thead>
+                <tr>
+                    <th>no</th>
+                    <th className="table-title">제목</th>
+                    <th>작성자</th>
+                    <th>등록일</th>
+                    <th>조회</th>
                 </tr>
-            )) : null}
-            {boardData.normal.data.map((data, index) =>
-                (
+                </thead>
+                <tbody>
+                {boardData.fix_urgent !== null && props.searchData.search == 0 ? boardData.fix_urgent.map(data => (
                     <tr key={data.id}
                         onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
-                        <td>{indexing(index)}</td>
+                        <td>{status(data.status)}</td>
                         <td>
                             {data.title}
                             <img src={fileImage} style={attachment(data.attachment_file)}/>
@@ -248,10 +223,39 @@ export default function MakeBoardList(props) {
                         <td>{data.created_at.substring(0, 10)}</td>
                         <td>{data.views}</td>
                     </tr>
+                )) : null}
+                {boardData.fix_notice !== null && props.searchData.search == 0 ? boardData.fix_notice.map(data => (
+                    <tr key={data.id}
+                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                            data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                        <td>{status(data.status)}</td>
+                        <td>
+                            {data.title}
+                            <img src={fileImage} style={attachment(data.attachment_file)}/>
+                        </td>
+                        <td>{data.writer}</td>
+                        <td>{data.created_at.substring(0, 10)}</td>
+                        <td>{data.views}</td>
+                    </tr>
+                )) : null}
+                {boardData.normal.data.map((data, index) =>
+                    (
+                        <tr key={data.id}
+                            onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                                data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                            <td>{indexing(index)}</td>
+                            <td>
+                                {data.title}
+                                <img src={fileImage} style={attachment(data.attachment_file)}/>
+                            </td>
+                            <td>{data.writer}</td>
+                            <td>{data.created_at.substring(0, 10)}</td>
+                            <td>{data.views}</td>
+                        </tr>
 
-                ))}
+                    ))}
                 </tbody>
-            </Table>
+            </table>
             <Pagination
                 pageInfo={boardData.normal.page_info}
                 setPagination={setPagination}

@@ -36,9 +36,32 @@
     text-decoration: underline;
 }
 
+.edit-btn {
+    float: right;
+    font-size: 14px;
+    color: #cdcdcd;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    color: #0472FD;
+}
+
+.delete-btn {
+    float: right;
+    font-size: 14px;
+    color: #cdcdcd;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    color: #ff6262;
+}
+
 @media screen and (max-width: 768px) {
     .Board {
         width: 100%;
         padding: 0 20px;
     }
 }
+

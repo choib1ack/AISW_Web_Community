@@ -148,7 +148,7 @@ export default function BoardDetail({match}) {
     if (loading) return <Loading/>;
     if (!boardDetailData) return null;
 
-    function handleEdit() {
+    const handleEdit = () => {
         history.push({pathname: `${match.url}/edit`, state: {detail: boardDetailData, content: htmlContent}});
     }
 
@@ -190,10 +190,12 @@ export default function BoardDetail({match}) {
             <Container>
                 <Title text='게시판' type='1'/>
                 {boardDetailData && boardDetailData.is_writer &&
-                <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
-                    <p style={{cursor: 'pointer', marginLeft: "auto"}}
+                <div style={{display: "flex"}}>
+                    <p className="edit-btn"
+                       style={{marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
-                    <p style={{cursor: 'pointer', marginLeft: "10px"}}
+                    <p className="delete-btn"
+                       style={{marginLeft: "10px"}}
                        onClick={handleShow}>삭제</p>
                 </div>
                 }
