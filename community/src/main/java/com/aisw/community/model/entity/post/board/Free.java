@@ -23,7 +23,7 @@ public class Free extends Board {
 
     @Builder
     public Free(Long id, String title, String writer, String content, BulletinStatus status, Long views,
-                FirstCategory firstCategory, SecondCategory secondCategory, User user, Long likes, Boolean isAnonymous) {
-        super(id, title, writer, content, status, views, firstCategory, secondCategory, user, likes, isAnonymous);
+                FirstCategory firstCategory, SecondCategory secondCategory, User user, Long likes) {
+        super(id, title, writer, content, status, views, firstCategory, secondCategory, user, likes);
     }
 }

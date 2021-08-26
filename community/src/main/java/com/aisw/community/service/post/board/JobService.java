@@ -69,10 +69,9 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     public Header<JobApiResponse> create(User user, JobApiRequest jobApiRequest) {
         Job job = Job.builder()
                 .title(jobApiRequest.getTitle())
-                .writer(user.getName())
+                .writer((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .content(jobApiRequest.getContent())
                 .status(jobApiRequest.getStatus())
-                .isAnonymous(jobApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.JOB)
                 .likes(0L)
@@ -102,10 +101,9 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     public Header<JobApiResponse> create(User user, JobApiRequest jobApiRequest, MultipartFile[] files) {
         Job job = Job.builder()
                 .title(jobApiRequest.getTitle())
-                .writer(user.getName())
+                .writer((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .content(jobApiRequest.getContent())
                 .status(jobApiRequest.getStatus())
-                .isAnonymous(jobApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.JOB)
                 .likes(0L)
@@ -188,10 +186,10 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         }
 
         job
+                .setWriter((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(jobApiRequest.getTitle())
                 .setContent(jobApiRequest.getContent())
                 .setStatus(jobApiRequest.getStatus());
-        job.setIsAnonymous(jobApiRequest.getIsAnonymous());
         jobRepository.save(job);
 
         return Header.OK(response(job));
@@ -225,10 +223,10 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, job.getId(), UploadCategory.POST);
 
         job
+                .setWriter((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(jobApiRequest.getTitle())
                 .setContent(jobApiRequest.getContent())
                 .setStatus(jobApiRequest.getStatus());
-        job.setIsAnonymous(jobApiRequest.getIsAnonymous());
         jobRepository.save(job);
 
         return Header.OK(response(job, fileApiResponseList));
@@ -273,7 +271,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .updatedBy(job.getUpdatedBy())
                 .views(job.getViews())
                 .likes(job.getLikes())
-                .isAnonymous(job.getIsAnonymous())
                 .category(job.getCategory())
                 .build();
         if (job.getFileList() != null) {
@@ -296,7 +293,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .updatedBy(job.getUpdatedBy())
                 .views(job.getViews())
                 .likes(job.getLikes())
-                .isAnonymous(job.getIsAnonymous())
                 .category(job.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
@@ -317,7 +313,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .updatedBy(job.getUpdatedBy())
                 .views(job.getViews())
                 .likes(job.getLikes())
-                .isAnonymous(job.getIsAnonymous())
                 .category(job.getCategory())
                 .userId(job.getUser().getId())
                 .checkLike(false)
@@ -339,7 +334,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .updatedBy(job.getUpdatedBy())
                 .views(job.getViews())
                 .likes(job.getLikes())
-                .isAnonymous(job.getIsAnonymous())
                 .category(job.getCategory())
                 .checkLike(false)
                 .userId(job.getUser().getId())
