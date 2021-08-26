@@ -17,11 +17,13 @@ public interface FreeRepository extends JpaRepository<Free, Long> {
     @Query("select free from Free free left join fetch free.fileList where free.id = :id")
     Optional<Free> findById(Long id);
 
+    Page<Free> findAll(Pageable pageable);
+
     Page<Free> findAllByWriterContaining(String writer, Pageable pageable);
 
     Page<Free> findAllByTitleContaining(String title, Pageable pageable);
 
     Page<Free> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Free> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
+    Page<Free> findAllByStatus(List<BulletinStatus> statusList, Pageable pageable);
 }
