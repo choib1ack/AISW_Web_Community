@@ -31,7 +31,7 @@
 
 </br>
 
-> ### API (수정 必)
+> ### API
 
 <details>
   <summary><b>사용자 페이지</b></summary>
@@ -196,5 +196,12 @@
 </br>
 
 > ### Usage (수정 必)
+
+
+---
+
+</br>
+
+> ### Test (수정 必)
 
 </br>
