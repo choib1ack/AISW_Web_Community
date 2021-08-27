@@ -116,16 +116,19 @@ export default function NewNotice() {
                         </Col>
                     </Row>
 
-                    <input ref={register} type="file" name="file"/>
+                    <div style={{justifyContent: 'space-between'}}>
+                        <input ref={register} type="file" name="file" style={{float: 'left'}}/>
 
-                    <Row>
-                        <Col>
-                            <Button variant="primary" type="submit" style={{float: 'right'}}
-                                    className={classNames("select-btn", "on")}>
+                        <div style={{float: "right"}}>
+                            <Button variant="secondary" className="mr-2"
+                                    onClick={() => history.goBack()}>
+                                취소하기
+                            </Button>
+                            <Button variant="primary" type="submit">
                                 등록하기
                             </Button>
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
                 </Form>
 
             </Container>
