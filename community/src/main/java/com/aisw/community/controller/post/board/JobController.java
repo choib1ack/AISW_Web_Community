@@ -2,7 +2,6 @@ package com.aisw.community.controller.post.board;
 
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.controller.ControllerInterface;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.board.FileUploadToJobRequest;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-public class JobController implements ControllerInterface<JobApiRequest, JobApiResponse> {
+public class JobController implements BoardPostController<JobApiRequest, JobApiResponse, JobDetailApiResponse, JobResponseDTO> {
 
     @Autowired
     private JobService jobService;
@@ -47,9 +46,16 @@ public class JobController implements ControllerInterface<JobApiRequest, JobApiR
     }
 
     @Override
-    @GetMapping("/board/job/{id}")
-    public Header<JobApiResponse> read(@PathVariable Long id) {
+    @GetMapping("/board/job/comment/{id}")
+    public Header<JobDetailApiResponse> read(@PathVariable Long id) {
         return jobService.read(id);
+    }
+
+    @Override
+    @GetMapping("/auth/board/job/comment&like/{id}")
+    public Header<JobDetailApiResponse> read(Authentication authentication, @PathVariable Long id) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return jobService.read(principal.getUser(), id);
     }
 
     @Override
@@ -82,22 +88,13 @@ public class JobController implements ControllerInterface<JobApiRequest, JobApiR
         return jobService.delete(principal.getUser(), id);
     }
 
-    @GetMapping("/board/job/comment/{id}")
-    public Header<JobDetailApiResponse> readWithComment(@PathVariable Long id) {
-        return jobService.readWithComment(id);
-    }
-
-    @GetMapping("/auth/board/job/comment&like/{id}")
-    public Header<JobDetailApiResponse> readWithCommentAndLike(Authentication authentication, @PathVariable Long id) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        return jobService.readWithCommentAndLike(principal.getUser(), id);
-    }
-
+    @Override
     @GetMapping("/board/job")
     public Header<JobResponseDTO> readAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return jobService.readAll(pageable);
     }
 
+    @Override
     @GetMapping("/board/job/search/writer")
     public Header<JobResponseDTO> searchByWriter(
             @RequestParam String writer,
@@ -106,6 +103,7 @@ public class JobController implements ControllerInterface<JobApiRequest, JobApiR
         return jobService.searchByWriter(writer, pageable);
     }
 
+    @Override
     @GetMapping("/board/job/search/title")
     public Header<JobResponseDTO> searchByTitle(
             @RequestParam String title,
@@ -114,6 +112,7 @@ public class JobController implements ControllerInterface<JobApiRequest, JobApiR
         return jobService.searchByTitle(title, pageable);
     }
 
+    @Override
     @GetMapping("/board/job/search/title&content")
     public Header<JobResponseDTO> searchByTitleOrContent(
             @RequestParam String title, @RequestParam String content,

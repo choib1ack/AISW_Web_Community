@@ -1,3 +1,8 @@
+.Menu {
+    display: flex;
+    justify-content: space-between;
+}
+
 .Menu-logo {
     padding: 7px 30px;
     background-color: Transparent;
@@ -7,7 +12,6 @@
     overflow: hidden;
     outline: none !important;
     font-size: 16px;
-    color: lightgrey;
     font-weight: bold;
 }
 
@@ -30,19 +34,14 @@
     transition: all ease 0.1s;
 }
 
-@media screen and (min-width:768px) and (max-width: 1023px) {
+@media screen and (min-width: 768px) and (max-width: 1023px) {
     /* 테블릿 CSS */
-    .navBar {
-        justify-content: space-between;
-    }
-    .navBar_menus{
-        display:none;
-    }
 
 }
 
-@media screen and (max-width:767px){
-
+@media screen and (max-width: 767px) {
     /* 모바일 CSS */
-
+    .Menu-button {
+        padding: 10px 30px;
+    }
 }

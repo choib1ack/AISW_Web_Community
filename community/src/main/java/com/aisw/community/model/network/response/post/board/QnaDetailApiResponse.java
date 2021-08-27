@@ -30,9 +30,6 @@ public class QnaDetailApiResponse {
 
     private Long likes;
 
-    // 익명 true, 비익명 false
-    private Boolean isAnonymous;
-
     private String subject;
 
     private SecondCategory category;
@@ -48,6 +45,8 @@ public class QnaDetailApiResponse {
     private Long userId;
 
     private Boolean checkLike = false;
+
+    private Boolean isWriter;
 
     private List<FileApiResponse> fileApiResponseList;
 

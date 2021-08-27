@@ -125,11 +125,11 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
             @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true)
     })
-    public Header<CouncilApiResponse> read(Long id) {
+    public Header<CouncilApiResponse> read(User user, Long id) {
         return councilRepository.findById(id)
                 .map(council -> council.setViews(council.getViews() + 1))
                 .map(council -> councilRepository.save((Council) council))
-                .map(this::response)
+                .map(council -> response(user, council))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
@@ -229,7 +229,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
     }
 
     private CouncilApiResponse response(Council council) {
-        CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
+        return CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())
                 .writer(council.getWriter())
@@ -242,6 +242,23 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .updatedAt(council.getUpdatedAt())
                 .updatedBy(council.getUpdatedBy())
                 .build();
+    }
+
+    private CouncilApiResponse response(User user, Council council) {
+        CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
+                .id(council.getId())
+                .title(council.getTitle())
+                .writer(council.getWriter())
+                .content(council.getContent())
+                .status(council.getStatus())
+                .views(council.getViews())
+                .category(council.getCategory())
+                .createdAt(council.getCreatedAt())
+                .createdBy(council.getCreatedBy())
+                .updatedAt(council.getUpdatedAt())
+                .updatedBy(council.getUpdatedBy())
+                .isWriter((user.getId() == council.getUser().getId()) ? true : false)
+                .build();
         if (council.getFileList() != null) {
             councilApiResponse.setFileApiResponseList(fileService.getFileList(council.getFileList(), UploadCategory.POST, council.getId()));
         }
@@ -250,7 +267,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
     }
 
     private CouncilApiResponse response(Council council, List<FileApiResponse> fileApiResponseList) {
-        CouncilApiResponse councilApiResponse = CouncilApiResponse.builder()
+        return CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())
                 .writer(council.getWriter())
@@ -264,8 +281,6 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .updatedBy(council.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return councilApiResponse;
     }
 
     @Override

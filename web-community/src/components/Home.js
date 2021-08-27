@@ -7,6 +7,9 @@ import axios from "axios";
 import Loading from "./Loading";
 import HomeSiteImageSlide from "./HomeSiteImageSlide";
 import {CarouselList} from "./AdminPage/CarouselList";
+import {useDispatch, useSelector} from "react-redux";
+import {setUnreadAlert} from "../features/menuSlice";
+import axiosApi from "../axiosApi";
 
 export default function Home() {
 
@@ -19,6 +22,10 @@ export default function Home() {
     const [error, setError] = useState(null);
     const [homeData, setHomeData] = useState(null);
 
+    const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN'));
+    const user = useSelector(state => state.user);
+    const dispatch = useDispatch();
+
     useEffect(() => {
         const fetchHomeData = async () => {
             try {
@@ -29,11 +36,22 @@ export default function Home() {
                 setLoading(true);
                 setError(null);
 
-                await axios.get("/home")
-                    .then(res => {
-                            setHomeData(res.data.data);
-                        }
-                    );
+                if(accessToken && user.decoded){ // 로그인했으면
+                    await axiosApi.get("/auth/home")
+                        .then(res => {
+                                setHomeData(res.data.data);
+                                dispatch(setUnreadAlert(res.data.data.unread_alert));
+                            }
+                        );
+                }else{
+                    await axios.get("/home")
+                        .then(res => {
+                                setHomeData(res.data.data);
+                            }
+                        );
+                }
+
+
 
             } catch (e) {
                 setError(e);
@@ -124,9 +142,8 @@ export default function Home() {
                         {/*</div>*/}
                     </Col>
                 </Row>
-                <div style={{marginBottom: "100px"}}></div>
+                <div style={{marginBottom: "100px"}}/>
             </div>
-
         </div>
     )
 }

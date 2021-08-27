@@ -21,7 +21,7 @@ function PaginationCustom(props){
         );
     }
     return(
-        <Pagination size="sm" className="align-self-center justify-content-center" style={{marginBottom: '3rem'}}>{items}</Pagination>
+        <Pagination size="sm" className="align-self-center justify-content-center">{items}</Pagination>
     );
 }
 

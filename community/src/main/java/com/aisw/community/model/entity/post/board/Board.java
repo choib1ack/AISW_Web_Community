@@ -27,8 +27,6 @@ public class Board extends Bulletin {
     @ColumnDefault("0")
     private Long likes;
 
-    private Boolean isAnonymous;
-
     @Enumerated(EnumType.STRING)
     private SecondCategory category;
 
@@ -36,16 +34,9 @@ public class Board extends Bulletin {
     private List<Comment> commentList;
 
     public Board(Long id, String title, String writer, String content, BulletinStatus status, Long views,
-                 FirstCategory firstCategory, SecondCategory secondCategory, User user, Long likes,
-                 Boolean isAnonymous) {
+                 FirstCategory firstCategory, SecondCategory secondCategory, User user, Long likes) {
         super(id, title, writer, content, status, views, firstCategory, secondCategory, user);
         this.likes = likes;
-        this.isAnonymous = isAnonymous;
         this.category = secondCategory;
     }
-
-//    @PrePersist
-//    public void prePersist() {
-//        likes = likes == null ? 0L : likes;
-//    }
 }

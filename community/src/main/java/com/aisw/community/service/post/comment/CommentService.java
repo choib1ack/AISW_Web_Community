@@ -54,11 +54,19 @@ public class CommentService {
         User user = userService.getUser(authentication);
         Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
                 () -> new PostNotFoundException(commentApiRequest.getBoardId()));
+        List<Comment> commentList = board.getCommentList();
+        long cnt = 1;
+        for(int i = commentList.size() - 1; i >= 0; i--) {
+            if(commentList.get(i).getWriter().startsWith("익명")) {
+                cnt = Long.parseLong(commentList.get(i).getWriter().substring(2)) + 1;
+                break;
+            }
+        }
 
         Comment superComment = commentApiRequest.getSuperCommentId() != null ?
                 getRootComment(commentApiRequest.getSuperCommentId()) : null;
         Comment comment = Comment.builder()
-                .writer(user.getName())
+                .writer((commentApiRequest.getIsAnonymous() == true) ? "익명" + cnt : user.getName())
                 .content(commentApiRequest.getContent())
                 .isAnonymous(commentApiRequest.getIsAnonymous())
                 .isDeleted(false)
@@ -148,6 +156,24 @@ public class CommentService {
         Map<Long, CommentApiResponse> map = new HashMap<>();
         comments.stream().forEach(comment -> {
             CommentApiResponse commentApiResponse = CommentApiResponse.convertCommentToDto(comment);
+            if(comment.getSuperComment() == null) {
+                map.put(commentApiResponse.getId(), commentApiResponse);
+                commentApiResponseList.add(commentApiResponse);
+            } else {
+                map.get(comment.getSuperComment().getId()).getSubComment().add(commentApiResponse);
+            }
+        });
+        return commentApiResponseList;
+    }
+
+    public List<CommentApiResponse> searchByPost(User user, Long id) {
+        List<Comment> comments = customCommentRepository.findCommentByBoardId(id);
+
+        List<CommentApiResponse> commentApiResponseList = new ArrayList<>();
+        Map<Long, CommentApiResponse> map = new HashMap<>();
+        comments.stream().forEach(comment -> {
+            CommentApiResponse commentApiResponse = CommentApiResponse.convertCommentToDto(comment);
+            commentApiResponse.setIsWriter((user.getId() == comment.getUser().getId()) ? true : false);
             if(comment.getSuperComment() == null) {
                 map.put(commentApiResponse.getId(), commentApiResponse);
                 commentApiResponseList.add(commentApiResponse);

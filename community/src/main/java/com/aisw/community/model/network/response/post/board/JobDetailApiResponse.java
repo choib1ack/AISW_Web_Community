@@ -30,9 +30,6 @@ public class JobDetailApiResponse {
 
     private Long likes;
 
-    // 익명 true, 비익명 false
-    private Boolean isAnonymous;
-
     private SecondCategory category;
 
     private LocalDateTime createdAt;

@@ -8,10 +8,10 @@ import React from "react";
 export function BlueButton(props) {
     return (
         <Row>
-            <Col lg={12} md={12} sm={12}>
+            <Col>
                 <Link to={`${props.match.url}/${props.type}`}>
-                    <Button className={classNames("select-btn", "on")}
-                            style={{float: 'right'}}>
+                    <Button className="Menu-button blue-button"
+                            style={{float: 'right', marginBottom: '3rem'}}>
                         {props.title}
                     </Button>
                 </Link>

@@ -33,9 +33,6 @@ public class JobApiResponse {
 
     private Long likes;
 
-    // 익명 true, 비익명 false
-    private Boolean isAnonymous;
-
     private SecondCategory category;
 
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
