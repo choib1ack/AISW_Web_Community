@@ -10,7 +10,7 @@ import {useForm} from "react-hook-form";
 import {useSelector} from "react-redux";
 import FinishModal from "../FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
-import {useLocation} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
 import {AUTH_NOTICE_PUT} from "../../constants";
@@ -19,6 +19,7 @@ export default function EditNotice({match}) {
     const {register, handleSubmit} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
+    const history = useHistory();
 
     const {detail, content} = location.state;
     const {notice_category, id} = match.params;
@@ -90,14 +91,20 @@ export default function EditNotice({match}) {
                             <WriteEditorContainer type="edit" text={content}/>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col>
-                            <Button variant="primary" type="submit" style={{float: 'right'}}
-                                    className={classNames("select-btn", "on")}>
+
+                    <div style={{justifyContent: 'space-between'}}>
+                        <input ref={register} type="file" name="file" style={{float: 'left'}}/>
+
+                        <div style={{float: "right"}}>
+                            <Button variant="secondary" className="mr-2"
+                                    onClick={() => history.goBack()}>
+                                취소하기
+                            </Button>
+                            <Button variant="primary" type="submit">
                                 수정하기
                             </Button>
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
                 </Form>
 
             </Container>

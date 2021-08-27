@@ -4,7 +4,6 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
-import classNames from "classnames";
 import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import {useSelector} from "react-redux";
@@ -13,10 +12,12 @@ import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
 import {AUTH_NOTICE_POST, NOTICE_FILE_API} from "../../constants";
+import {useHistory} from "react-router-dom";
 
 export default function NewNotice() {
     const {register, handleSubmit} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
+    const history = useHistory();
 
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
@@ -69,9 +70,10 @@ export default function NewNotice() {
             const apiRequest = NOTICE_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
             let formData = new FormData();
-            formData.append('files', data.file[0]);
+            for (let i = 0; i < data.file.length; i++) {
+                formData.append('files', data.file[i]);
+            }
             formData.append(`${apiRequest}.content`, data.content);
-            formData.append(`${apiRequest}.isAnonymous`, true);
             formData.append(`${apiRequest}.status`, 'GENERAL');
             formData.append(`${apiRequest}.title`, data.title);
 
@@ -117,7 +119,7 @@ export default function NewNotice() {
                     </Row>
 
                     <div style={{justifyContent: 'space-between'}}>
-                        <input ref={register} type="file" name="file" style={{float: 'left'}}/>
+                        <input multiple ref={register} type="file" name="file" style={{float: 'left'}}/>
 
                         <div style={{float: "right"}}>
                             <Button variant="secondary" className="mr-2"

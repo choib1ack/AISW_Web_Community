@@ -24,6 +24,7 @@ function EditBoard({match}) {
     const {detail, content} = location.state;
     const {board_category, id} = match.params;
     const write = useSelector(state => state.write)
+    console.log(detail);
 
     function putBoard(data, path) {
         axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/` + path,
@@ -103,7 +104,8 @@ function EditBoard({match}) {
                     </Row>
 
                     <div style={{justifyContent: 'space-between'}}>
-                        <input ref={register} type="file" name="file" style={{float: 'left'}}/>
+                        <input ref={register} type="file" name="file" style={{float: 'left'}}
+                        />
 
                         <div style={{float: "right"}}>
                             <Button variant="secondary" className="mr-2"
