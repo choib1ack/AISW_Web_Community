@@ -39,21 +39,6 @@ export default function NoticeDetail({match}) {
         }
     }
 
-    // 첨부파일이 있을 때만 보여줌
-    const AttachmentFile = (att) => {
-        if (att.length === 0) return null;
-        return (
-            <div className="p-3">
-                <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
-                <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
-                <a className="d-inline-block filename-style"
-                   onClick={() => downloadFile(att[0])}>
-                    {att[0].file_name}
-                </a>
-            </div>
-        );
-    }
-
     useEffect(() => {
         const fetchNoticeData = async () => {
             try {
@@ -161,6 +146,25 @@ export default function NoticeDetail({match}) {
 
                 <ListButton/>
             </Container>
+        </div>
+    );
+}
+
+// 첨부파일이 있을 때만 보여줌
+export const AttachmentFile = (att) => {
+    if (att.length === 0) return null;
+    return (
+        <div className="p-3">
+            <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
+            {att.map(data => (
+                <div>
+                    <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
+                    <a className="d-inline-block filename-style"
+                       onClick={() => downloadFile(data)}>
+                        {data.file_name}
+                    </a>
+                </div>
+            ))}
         </div>
     );
 }

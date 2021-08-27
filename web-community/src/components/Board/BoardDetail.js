@@ -16,6 +16,7 @@ import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
 import {useSelector} from "react-redux";
 import downloadFile from '../../features/downloadFile';
+import {AttachmentFile} from "../Notice/NoticeDetail";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -92,21 +93,6 @@ export default function BoardDetail({match}) {
                 let errorObject = JSON.parse(JSON.stringify(error));
                 alert("좋아요 취소 에러!" + errorObject);
             })
-    }
-
-    // 첨부파일이 있을 때만 보여줌
-    const AttachmentFile = (att) => {
-        if (att.length === 0) return null;
-        return (
-            <div className="p-3">
-                <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
-                <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
-                <a className="d-inline-block filename-style"
-                   onClick={() => downloadFile(att[0])}>
-                    {att[0].file_name}
-                </a>
-            </div>
-        );
     }
 
     const Refresh = () => {

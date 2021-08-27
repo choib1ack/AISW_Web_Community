@@ -17,12 +17,12 @@ import {useHistory} from "react-router-dom";
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
+    const history = useHistory();
     const board_type = useRef();
     board_type.current = watch("board_type");
 
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
-    const history = useHistory();
 
     function postBoard(data, path, type) {
         if (type === 'file') {
@@ -73,9 +73,11 @@ function NewBoard() {
             const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
             let formData = new FormData();
-            formData.append('files', data.file[0]);
+            for (let i = 0; i < data.file.length; i++) {
+                formData.append('files', data.file[i]);
+            }
             formData.append(`${apiRequest}.content`, data.content);
-            formData.append(`${apiRequest}.isAnonymous`, true);
+            formData.append(`${apiRequest}.isAnonymous`, data.anonymous);
             formData.append(`${apiRequest}.status`, 'GENERAL');
             formData.append(`${apiRequest}.title`, data.title);
 
@@ -97,6 +99,7 @@ function NewBoard() {
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>
                         <Form.Check type="checkbox" className="ml-4 mb-3" label="익명"
+                                    defaultValue={false}
                                     name="anonymous" ref={register}
                         />
                     </Row>
@@ -138,7 +141,7 @@ function NewBoard() {
                     </Row>
 
                     <div style={{justifyContent: 'space-between'}}>
-                        <input ref={register} type="file" name="file" style={{float: 'left'}}/>
+                        <input multiple ref={register} type="file" name="file" style={{float: 'left'}}/>
 
                         <div style={{float: "right"}}>
                             <Button variant="secondary" className="mr-2"
