@@ -17,6 +17,8 @@ public interface FreeRepository extends JpaRepository<Free, Long> {
     @Query("select free from Free free left join fetch free.fileList where free.id = :id")
     Optional<Free> findById(Long id);
 
+    Page<Free> findAll(Pageable pageable);
+
     Page<Free> findAllByWriterContaining(String writer, Pageable pageable);
 
     Page<Free> findAllByTitleContaining(String title, Pageable pageable);

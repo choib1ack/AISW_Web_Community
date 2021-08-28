@@ -16,6 +16,7 @@ import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
 import {useSelector} from "react-redux";
 import downloadFile from '../../features/downloadFile';
+import {AttachmentFile} from "../Notice/NoticeDetail";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -94,21 +95,6 @@ export default function BoardDetail({match}) {
             })
     }
 
-    // 첨부파일이 있을 때만 보여줌
-    const AttachmentFile = (att) => {
-        if (att.length === 0) return null;
-        return (
-            <div className="p-3">
-                <p style={{color: "#0472FD", fontSize: '14px'}} className="mb-1">첨부파일</p>
-                <img src={fileImage} style={{marginLeft: '5px'}} className="d-inline-block mr-1"/>
-                <a className="d-inline-block filename-style"
-                   onClick={() => downloadFile(att[0])}>
-                    {att[0].file_name}
-                </a>
-            </div>
-        );
-    }
-
     const Refresh = () => {
         setRefresh(refresh + 1);
     }
@@ -148,7 +134,7 @@ export default function BoardDetail({match}) {
     if (loading) return <Loading/>;
     if (!boardDetailData) return null;
 
-    function handleEdit() {
+    const handleEdit = () => {
         history.push({pathname: `${match.url}/edit`, state: {detail: boardDetailData, content: htmlContent}});
     }
 
@@ -190,10 +176,12 @@ export default function BoardDetail({match}) {
             <Container>
                 <Title text='게시판' type='1'/>
                 {boardDetailData && boardDetailData.is_writer &&
-                <div style={{display: "flex", fontSize: '14px', color: '#8C8C8C'}}>
-                    <p style={{cursor: 'pointer', marginLeft: "auto"}}
+                <div style={{display: "flex"}}>
+                    <p className="edit-btn"
+                       style={{marginLeft: "auto"}}
                        onClick={handleEdit}>수정</p>
-                    <p style={{cursor: 'pointer', marginLeft: "10px"}}
+                    <p className="delete-btn"
+                       style={{marginLeft: "10px"}}
                        onClick={handleShow}>삭제</p>
                 </div>
                 }
@@ -216,7 +204,7 @@ export default function BoardDetail({match}) {
                             <img src={fileImage} className="d-inline-block"/>}
                         <div>
                             <p className="d-inline-block mr-3 mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
-                                {boardDetailData.is_anonymous ? "익명" : boardDetailData.created_by}
+                                {boardDetailData.writer}
                             </p>
                             <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '13px'}}>
                                 {boardDetailData.created_at.substring(0, 10)} {boardDetailData.created_at.substring(11, 19)}

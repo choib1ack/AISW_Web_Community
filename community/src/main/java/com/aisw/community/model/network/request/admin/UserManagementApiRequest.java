@@ -13,7 +13,7 @@ public class UserManagementApiRequest {
 
     private String name;
 
-    private String studentId;
+    private String email;
 
     private String role;
 }

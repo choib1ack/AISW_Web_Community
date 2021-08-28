@@ -70,18 +70,17 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     public Header<FreeApiResponse> create(User user, FreeApiRequest freeApiRequest) {
         Free free = Free.builder()
                 .title(freeApiRequest.getTitle())
-                .writer(user.getName())
+                .writer((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .content(freeApiRequest.getContent())
                 .status(freeApiRequest.getStatus())
-                .isAnonymous(freeApiRequest.getIsAnonymous())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .likes(0L)
                 .user(user)
                 .build();
 
-        freeRepository.save(free);
-        return Header.OK();
+        Free newFree = freeRepository.save(free);
+        return Header.OK(response(newFree));
     }
 
     @Override
@@ -100,20 +99,20 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<FreeApiResponse> create(User user, FreeApiRequest request, MultipartFile[] files) {
+    public Header<FreeApiResponse> create(User user, FreeApiRequest freeApiRequest, MultipartFile[] files) {
         Free free = Free.builder()
-                .title(request.getTitle())
-                .writer(user.getName())
-                .content(request.getContent())
-                .status(request.getStatus())
-                .isAnonymous(request.getIsAnonymous())
+                .title(freeApiRequest.getTitle())
+                .writer((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
+                .content(freeApiRequest.getContent())
+                .status(freeApiRequest.getStatus())
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .likes(0L)
                 .user(user)
                 .build();
         Free newFree = freeRepository.save(free);
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newFree.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/board/free", newFree.getId(), UploadCategory.POST);
         return Header.OK(response(newFree, fileApiResponseList));
     }
 
@@ -188,10 +187,10 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         }
 
         free
+                .setWriter((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(freeApiRequest.getTitle())
                 .setContent(freeApiRequest.getContent())
                 .setStatus(freeApiRequest.getStatus());
-        free.setIsAnonymous(freeApiRequest.getIsAnonymous());
         freeRepository.save(free);
 
         return Header.OK(response(free));
@@ -223,13 +222,14 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
 
         fileService.deleteFileList(free.getFileList());
         free.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, free.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/board/free", free.getId(), UploadCategory.POST);
 
         free
+                .setWriter((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(freeApiRequest.getTitle())
                 .setContent(freeApiRequest.getContent())
                 .setStatus(freeApiRequest.getStatus());
-        free.setIsAnonymous(freeApiRequest.getIsAnonymous());
         freeRepository.save(free);
 
         return Header.OK(response(free, fileApiResponseList));
@@ -274,7 +274,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .build();
         if (free.getFileList() != null) {
@@ -297,7 +296,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
@@ -318,7 +316,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .userId(free.getUser().getId())
                 .checkLike(false)
@@ -340,7 +337,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .updatedBy(free.getUpdatedBy())
                 .views(free.getViews())
                 .likes(free.getLikes())
-                .isAnonymous(free.getIsAnonymous())
                 .category(free.getCategory())
                 .checkLike(false)
                 .userId(free.getUser().getId())

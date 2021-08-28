@@ -1,5 +1,7 @@
 table {
     font-size: 14px;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 thead tr {
@@ -9,6 +11,7 @@ thead tr {
 thead tr th {
     border: 0px !important;
     color: #656565;
+    padding: 10px;
 }
 
 tbody tr > td:nth-child(2) {
@@ -31,6 +34,11 @@ tbody tr:hover {
     cursor: pointer;
     background-color: #f6f6f6;
     transition: all ease 0.2s;
+}
+
+tbody.type2 tr:hover {
+    cursor: default;
+    background-color: #FFFFFF;
 }
 
 td.middle {
@@ -92,9 +100,55 @@ input::placeholder {
     margin: auto;
 }
 
+thead tr > th:nth-child(2) {
+    width: 70%;
+}
+
+@media screen and (max-width: 1132px) {
+    thead tr > th:nth-child(2) {
+        width: 50%;
+    }
+}
+
 @media screen and (max-width: 768px) {
     .Notice {
         width: 100%;
         padding: 0 20px;
     }
+
+    thead tr > th:nth-child(2) {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    table {
+        font-size: 12px;
+    }
+
+    thead tr > th:nth-child(2) {
+        width: 30%;
+    }
+}
+
+.edit-btn {
+    float: right;
+    font-size: 14px;
+    color: #cdcdcd;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    color: #0472FD;
+}
+
+.delete-btn {
+    float: right;
+    font-size: 14px;
+    color: #cdcdcd;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    color: #ff6262;
 }

@@ -14,6 +14,6 @@ public interface SiteInformationRepository extends JpaRepository<SiteInformation
     @Query("select site from SiteInformation site left join fetch site.fileList")
     List<SiteInformation> findAllFetchJoinWithFile();
 
-    @Query("select banner from Banner banner left join fetch banner.fileList where banner.id = :id")
+    @Query("select site from SiteInformation site left join fetch site.fileList where site.id = :id")
     Optional<SiteInformation> findById(Long id);
 }

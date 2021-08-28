@@ -88,7 +88,7 @@ public class CommentService {
         } else {
             alertApiRequest.setContent(comment.getContent().substring(0, 20));
         }
-        alertService.create(authentication, alertApiRequest);
+        if(user.getId() != board.getUser().getId()) alertService.create(authentication, alertApiRequest);
 
         return Header.OK(response(newComment));
     }

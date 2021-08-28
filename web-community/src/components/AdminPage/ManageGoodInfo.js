@@ -46,7 +46,7 @@ function ManageGoodInfo({match}) {
     if (!siteData) return null;
 
     return (
-        <div className='Manager'>
+        <div className='ManageSiteInfo'>
             <Container>
                 <Title text='관리자' type='1'/>
                 <Title text='유용한 사이트' type='2'/>

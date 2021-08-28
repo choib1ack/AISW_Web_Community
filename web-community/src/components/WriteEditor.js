@@ -1,5 +1,5 @@
 import React from 'react';
-import { Editor } from 'react-draft-wysiwyg';
+import {Editor} from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import styled from 'styled-components';
 import draftToHtml from "draftjs-to-html";
@@ -7,11 +7,12 @@ import {convertToRaw} from "draft-js";
 
 const WriteEditorWrapper = styled.div`
   margin-top: 1rem;
-  
+
   .wrapper-class {
     width: 100%;
     margin: 0 auto 2rem;
   }
+
   //.toolbar {
   //  padding: 6px 5px;
   //  box-shadow: rgba(0, 0, 0, 0.04) 0 0 5px 0;
@@ -20,7 +21,7 @@ const WriteEditorWrapper = styled.div`
     height: 300px !important;
     border: 1px solid #f1f1f1 !important;
     padding: 5px !important;
-    border-radius: 2px !important; 
+    border-radius: 2px !important;
   }
 `;
 
@@ -40,27 +41,26 @@ function uploadImageCallBack(file) {
         (resolve, reject) => {
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'https://api.imgur.com/3/image');
-            xhr.setRequestHeader('Authorization', 'Client-ID XXXXX');
+            xhr.setRequestHeader('Authorization', 'Client-ID hyj9829');
+
             const data = new FormData();
             data.append('image', file);
             xhr.send(data);
             xhr.addEventListener('load', () => {
                 const response = JSON.parse(xhr.responseText);
                 console.log(response)
-
                 resolve(response);
             });
             xhr.addEventListener('error', () => {
                 const error = JSON.parse(xhr.responseText);
                 console.log(error)
-
                 reject(error);
             });
         }
     );
 }
 
-const WriteEditor = ({ editorState, onChange }) => {
+const WriteEditor = ({editorState, onChange}) => {
     // editorState의 현재 contentState 값을 원시 JS 구조로 변환시킨뒤, HTML 태그로 변환시켜준다.
     const editorToHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
 
@@ -80,11 +80,16 @@ const WriteEditor = ({ editorState, onChange }) => {
                     }}
                     toolbar={{
                         inline: {inDropdown: true},
-                        list: { inDropdown: true },
-                        textAlign: { inDropdown: true },
-                        link: { inDropdown: true },
-                        history: { inDropdown: true },
-                        image: { uploadCallback: uploadImageCallBack, alt: { present: true, mandatory: true },previewImage: true },
+                        list: {inDropdown: true},
+                        textAlign: {inDropdown: true},
+                        link: {inDropdown: true},
+                        history: {inDropdown: true},
+                        image: {
+                            uploadCallback: uploadImageCallBack,
+                            previewImage: true,
+                            alt: {present: true, mandatory: false},
+                            inputAccept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
+                        },
                     }}
                 />
             </WriteEditorWrapper>

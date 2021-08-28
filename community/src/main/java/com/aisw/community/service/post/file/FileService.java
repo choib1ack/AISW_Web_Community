@@ -51,20 +51,20 @@ public class FileService {
     private SiteInformationRepository siteInformationRepository;
 
     @Transactional
-    public List<FileApiResponse> uploadFiles(MultipartFile[] multipartFiles, Long id, UploadCategory category) {
+    public List<FileApiResponse> uploadFiles(MultipartFile[] multipartFiles, String prefix, Long id, UploadCategory category) {
         return Arrays.asList(multipartFiles)
                 .stream()
-                .map(file -> upload(file, id, category))
+                .map(file -> upload(file, prefix, id, category))
                 .map(file -> response(file))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public File upload(MultipartFile multipartFile, Long id, UploadCategory category) {
+    public File upload(MultipartFile multipartFile, String prefix, Long id, UploadCategory category) {
         String fileName = fileStorageService.storeFile(multipartFile);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/file/download/")
+                .path(prefix + "/file/download/")
                 .path(fileName)
                 .toUriString();
 

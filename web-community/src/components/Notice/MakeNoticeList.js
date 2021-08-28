@@ -4,7 +4,7 @@ import fileImage from "../../icon/file.svg";
 import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 import Pagination from "../PaginationCustom";
-import Table from "react-bootstrap/Table";
+import './Notice.css';
 
 export default function MakeNoticeList(props) {
 
@@ -168,14 +168,14 @@ export default function MakeNoticeList(props) {
     </tr>;
     if (!noticeData.normal.data || noticeData.normal.data.length === 0)
         return (
-            <Table>
+            <table className="table-style">
                 <thead>
                 <tr>
-                    <th style={{width: "10%"}}>no</th>
-                    <th style={{width: "55%"}}>제목</th>
-                    <th style={{width: "10%"}}>작성자</th>
-                    <th style={{width: "10%"}}>등록일</th>
-                    <th style={{width: "10%"}}>조회</th>
+                    <th>no</th>
+                    <th className="table-title">제목</th>
+                    <th>작성자</th>
+                    <th>등록일</th>
+                    <th>조회</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -183,18 +183,18 @@ export default function MakeNoticeList(props) {
                     <td colSpan={5}>데이터가 없습니다.</td>
                 </tr>
                 </tbody>
-            </Table>
+            </table>
         );
     return (
         <>
-            <Table>
+            <table className="table-style">
                 <thead>
                 <tr>
-                    <th style={{width: "10%"}}>no</th>
-                    <th style={{width: "55%"}}>제목</th>
-                    <th style={{width: "10%"}}>작성자</th>
-                    <th style={{width: "10%"}}>등록일</th>
-                    <th style={{width: "10%"}}>조회</th>
+                    <th>no</th>
+                    <th className="table-title">제목</th>
+                    <th>작성자</th>
+                    <th>등록일</th>
+                    <th>조회</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -243,7 +243,7 @@ export default function MakeNoticeList(props) {
                     </tr>
                 ))}
                 </tbody>
-            </Table>
+            </table>
             <Pagination
                 pageInfo={noticeData.normal.page_info}
                 setPagination={setPagination}/>

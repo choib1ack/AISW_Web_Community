@@ -1,7 +1,6 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useRef, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import classNames from 'classnames';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
@@ -13,10 +12,12 @@ import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_POST, BOARD_FILE_API} from "../../constants";
+import {useHistory} from "react-router-dom";
 
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
+    const history = useHistory();
     const board_type = useRef();
     board_type.current = watch("board_type");
 
@@ -58,7 +59,7 @@ function NewBoard() {
 
                 let temp = {
                     content: data.content,
-                    is_anonymous: true,
+                    is_anonymous: data.anonymous,
                     status: 'GENERAL',
                     title: data.title,
                 };
@@ -72,9 +73,11 @@ function NewBoard() {
             const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
             let formData = new FormData();
-            formData.append('files', data.file[0]);
+            for (let i = 0; i < data.file.length; i++) {
+                formData.append('files', data.file[i]);
+            }
             formData.append(`${apiRequest}.content`, data.content);
-            formData.append(`${apiRequest}.isAnonymous`, true);
+            formData.append(`${apiRequest}.isAnonymous`, data.anonymous);
             formData.append(`${apiRequest}.status`, 'GENERAL');
             formData.append(`${apiRequest}.title`, data.title);
 
@@ -92,7 +95,14 @@ function NewBoard() {
                              title="게시판" body="글 게시가 완료되었습니다 !"/>
 
                 <Title text='새 게시글 작성' type='1'/>
+
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
+                    <Row>
+                        <Form.Check type="checkbox" className="ml-4 mb-3" label="익명"
+                                    defaultValue={false}
+                                    name="anonymous" ref={register}
+                        />
+                    </Row>
                     <Row>
                         <Col>
                             <Form.Group>
@@ -105,13 +115,14 @@ function NewBoard() {
                             </Form.Group>
                         </Col>
                         <Col>
-                            {board_type.current === "qna" &&
-                            <Form.Control as="select" defaultValue="과목 선택" id='lecture'
-                                          name="subject" ref={register}>
-                                {subject_list.map((subject, index) => {
-                                    return <option value={subject} key={index}>{subject}</option>
-                                })}
-                            </Form.Control>
+                            {board_type.current === "qna" ?
+                                <Form.Control as="select" defaultValue="과목 선택" id='lecture'
+                                              name="subject" ref={register}>
+                                    {subject_list.map((subject, index) => {
+                                        return <option value={subject} key={index}>{subject}</option>
+                                    })}
+                                </Form.Control>
+                                : null
                             }
                         </Col>
                     </Row>
@@ -129,16 +140,20 @@ function NewBoard() {
                         </Col>
                     </Row>
 
-                    <input ref={register} type="file" name="file"/>
+                    <div style={{justifyContent: 'space-between'}}>
+                        <input multiple ref={register} type="file" name="file" style={{float: 'left'}}/>
 
-                    <Row>
-                        <Col>
-                            <Button variant="primary" type="submit" style={{float: 'right'}}
-                                    className={classNames("select-btn", "on")}>
+                        <div style={{float: "right"}}>
+                            <Button variant="secondary" className="mr-2"
+                                    onClick={() => history.goBack()}>
+                                취소하기
+                            </Button>
+                            <Button variant="primary" type="submit">
                                 등록하기
                             </Button>
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
+
                 </Form>
             </Container>
         </div>

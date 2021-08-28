@@ -10,13 +10,18 @@ import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
 import com.aisw.community.model.network.response.post.board.FreeApiResponse;
 import com.aisw.community.model.network.response.post.board.FreeDetailApiResponse;
 import com.aisw.community.service.post.board.FreeService;
+import com.aisw.community.service.post.file.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -24,6 +29,9 @@ public class FreeController implements BoardPostController<FreeApiRequest, FreeA
 
     @Autowired
     private FreeService freeService;
+
+    @Autowired
+    private FileService fileService;
 
     @Override
     @PostMapping("/auth/board/free")
@@ -113,5 +121,11 @@ public class FreeController implements BoardPostController<FreeApiRequest, FreeA
             @RequestParam String title, @RequestParam String content,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return freeService.searchByTitleOrContent(title, content, pageable);
+    }
+
+    @Override
+    @GetMapping("/board/free/file/download/{fileName:.+}")
+    public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
+        return fileService.download(fileName, request);
     }
 }

@@ -105,7 +105,8 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .build();
         Department newDepartment = departmentRepository.save(department);
 
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newDepartment.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth-student/notice/department", newDepartment.getId(), UploadCategory.POST);
 
         return Header.OK(response(newDepartment, fileApiResponseList));
     }
@@ -189,7 +190,8 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
         }
         fileService.deleteFileList(department.getFileList());
         department.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, department.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth-student/notice/department", department.getId(), UploadCategory.POST);
 
         department
                 .setTitle(departmentApiRequest.getTitle())

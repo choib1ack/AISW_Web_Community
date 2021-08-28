@@ -16,15 +16,25 @@ function Manager({match}) {
         <div className='Manager'>
             <Container>
                 <Title text='관리자' type='1'/>
-                <Row style={{marginTop: '2rem'}}>
-                    <Col lg={6} md={6} sm={6} onClick={()=>ToLink(`${match.url}/banner`)}>
-                        <div className={"pingpong"} style={{color: "#636363", backgroundColor:"#EFF7F9"}}>
+                <Row>
+                    <Col lg={6} md={6} sm={6} onClick={()=>ToLink(`${match.url}/banner`)} style={{marginTop: '2rem'}}>
+                        <div className={"pingpong"} style={{color: "#636363", backgroundColor:"#e7f1ff"}}>
                             배너 관리
                         </div>
                     </Col>
-                    <Col lg={6} md={6} sm={6} onClick={()=>ToLink(`${match.url}/goodInfo`)}>
-                        <div className={"pingpong"} style={{color: "#636363", backgroundColor:"#EFF7F9"}}>
+                    <Col lg={6} md={6} sm={6} onClick={()=>ToLink(`${match.url}/goodInfo`)} style={{marginTop: '2rem'}}>
+                        <div className={"pingpong"} style={{color: "#636363", backgroundColor:"#e7f1ff"}}>
                             유용한 사이트 관리
+                        </div>
+                    </Col>
+                    <Col lg={6} md={6} sm={6} onClick={()=>ToLink(`${match.url}/faq`)} style={{marginTop: '2rem'}}>
+                        <div className={"pingpong"} style={{color: "#636363", backgroundColor:"#e7f1ff"}}>
+                            자주 묻는 질문 관리
+                        </div>
+                    </Col>
+                    <Col lg={6} md={6} sm={6} onClick={()=>ToLink(`${match.url}/userAuth`)} style={{marginTop: '2rem'}}>
+                        <div className={"pingpong"} style={{color: "#636363", backgroundColor:"#e7f1ff"}}>
+                            회원 관리
                         </div>
                     </Col>
                 </Row>

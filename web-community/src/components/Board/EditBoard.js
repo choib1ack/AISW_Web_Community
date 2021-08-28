@@ -1,6 +1,6 @@
 import {useForm} from "react-hook-form";
 import React, {useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import Container from "react-bootstrap/Container";
 import FinishModal from "../FinishModal";
 import Title from "../Title";
@@ -9,10 +9,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import {subject_list} from "./SubjectList";
 import Button from "react-bootstrap/Button";
-import classNames from "classnames";
 import {checkContent, checkTitle} from "./NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
-import {useLocation} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_PUT} from "../../constants";
 
@@ -20,11 +19,12 @@ function EditBoard({match}) {
     const {register, handleSubmit} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
+    const history = useHistory();
 
     const {detail, content} = location.state;
     const {board_category, id} = match.params;
-
     const write = useSelector(state => state.write)
+    console.log(detail);
 
     function putBoard(data, path) {
         axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/` + path,
@@ -45,7 +45,7 @@ function EditBoard({match}) {
             let temp = {
                 content: data.content,
                 id: id,
-                is_anonymous: true,
+                is_anonymous: detail.writer === '익명',
                 status: "GENERAL",
                 title: data.title
             };
@@ -102,14 +102,21 @@ function EditBoard({match}) {
                             <WriteEditorContainer type="edit" text={content}/>
                         </Col>
                     </Row>
-                    <Row>
-                        <Col>
-                            <Button variant="primary" type="submit" style={{float: 'right'}}
-                                    className={classNames("select-btn", "on")}>
+
+                    <div style={{justifyContent: 'space-between'}}>
+                        <input ref={register} type="file" name="file" style={{float: 'left'}}
+                        />
+
+                        <div style={{float: "right"}}>
+                            <Button variant="secondary" className="mr-2"
+                                    onClick={() => history.goBack()}>
+                                취소하기
+                            </Button>
+                            <Button variant="primary" type="submit">
                                 수정하기
                             </Button>
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
                 </Form>
 
             </Container>

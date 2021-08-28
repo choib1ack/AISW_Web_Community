@@ -8,13 +8,18 @@ import com.aisw.community.model.network.request.post.board.FileUploadToJobReques
 import com.aisw.community.model.network.request.post.board.JobApiRequest;
 import com.aisw.community.model.network.response.post.board.*;
 import com.aisw.community.service.post.board.JobService;
+import com.aisw.community.service.post.file.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -22,6 +27,10 @@ public class JobController implements BoardPostController<JobApiRequest, JobApiR
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private FileService fileService;
+
     @Override
     @PostMapping("/auth/board/job")
     public Header<JobApiResponse> create(Authentication authentication, @RequestBody Header<JobApiRequest> request) {
@@ -119,5 +128,11 @@ public class JobController implements BoardPostController<JobApiRequest, JobApiR
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return jobService.searchByTitleOrContent(title, content, pageable);
+    }
+
+    @Override
+    @GetMapping("/board/job/file/download/{fileName:.+}")
+    public ResponseEntity<Resource> download(@PathVariable String fileName, HttpServletRequest request) {
+        return fileService.download(fileName, request);
     }
 }

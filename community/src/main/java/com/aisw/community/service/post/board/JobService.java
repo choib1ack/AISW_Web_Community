@@ -110,7 +110,8 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .user(user)
                 .build();
         Job newJob = jobRepository.save(job);
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newJob.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/board/job", newJob.getId(), UploadCategory.POST);
 
         return Header.OK(response(newJob, fileApiResponseList));
     }
@@ -220,7 +221,8 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
 
         fileService.deleteFileList(job.getFileList());
         job.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, job.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/board/job", job.getId(), UploadCategory.POST);
 
         job
                 .setWriter((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())

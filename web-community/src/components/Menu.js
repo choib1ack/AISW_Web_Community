@@ -248,8 +248,13 @@ export default function Menu() {
                             (accessToken && user.decoded) ?
                                 (
                                     <div className="align-self-center">
-                                        <button className="Menu-button" onClick={() => setModalShow(true)}>
+                                        <button className="Menu-button" onClick={() => setModalShow(true)}
+                                                style={{overflow: 'visible'}}>
                                             {user.decoded.name}
+                                            <Badge variant="primary" pill style={{
+                                                padding: "5px",
+                                                transform: 'translate(0px, -10px)'
+                                            }}>{menu.unread_alert}</Badge>
                                         </button>
                                         {
                                             ADMIN_ROLE.includes(user.decoded.role) ?
@@ -348,7 +353,7 @@ export default function Menu() {
                                         <div>
                                             <button className="Menu-button" onClick={() => setModalShow(true)}>
                                                 {user.decoded.name}
-{/*>>>>>>> main*/}
+                                                {/*>>>>>>> main*/}
                                             </button>
                                         </div>
                                         {

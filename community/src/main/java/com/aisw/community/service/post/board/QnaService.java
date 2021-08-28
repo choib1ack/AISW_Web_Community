@@ -121,7 +121,8 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .build();
         Qna newQna = qnaRepository.save(qna);
 
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, newQna.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
 
         return Header.OK(response(newQna, fileApiResponseList));
     }
@@ -232,7 +233,8 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
 
         fileService.deleteFileList(qna.getFileList());
         qna.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList = fileService.uploadFiles(files, qna.getId(), UploadCategory.POST);
+        List<FileApiResponse> fileApiResponseList =
+                fileService.uploadFiles(files, "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
 
         qna
                 .setWriter((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
