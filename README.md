@@ -26,6 +26,106 @@
 </br>
 
 > ### Function (수정 必)
+<details>
+  <summary><b>사용자 페이지</b></summary>
+  
+- 메인페이지: 배너, 사이트, 공지사항, 게시판 목록을 확인할 수 있습니다.
+   
+- 사용자 관리
+    
+   - 회원가입: 구글, 가천대학교 계정으로 회원가입 가능합니다.
+
+   - 로그인: 구글 계정으로 로그인할 시 접근 제한되는 서비스가 있습니다.
+
+   - 회원 정보 수정
+
+   - 회원 탈퇴
+    
+   - 댓글/좋아요 알림
+      - 댓글과 대댓글, 게시물과 댓글에 대한 좋아요 알림을 확인할 수 있습니다.
+      - 읽지 않은 알림을 확인할 수 있습니다.
+
+- 공지사항(학교 / 학과 / 학생회)
+    
+   - 공지사항 목록 조회
+    
+   - 게시물 키워드 검색(제목, 작성자, 작성자+내용)
+
+   - 게시물 작성
+    
+   - 게시물 조회
+    
+   - 게시물 수정
+    
+   - 게시물 삭제
+    
+- 게시판(자유 / 질문 / 취업)
+    
+   - 게시판 목록 조회
+
+   - 게시물 키워드 검색(제목, 작성자, 작성자+내용)
+    
+   - 게시물 작성
+    
+   - 게시물 조회
+    
+   - 게시물 수정
+    
+   - 게시물 삭제
+    
+   - 댓글 작성
+   
+   - 게시물/댓글 좋아요
+    
+- FAQ
+    
+   - FAQ 목록 조회 
+    
+</details>
+<details>
+  <summary><b>관리자 페이지</b></summary>
+    
+- FAQ 관리
+    
+   - FAQ 등록
+    
+   - FAQ 수정
+   
+   - FAQ 삭제
+    
+- 배너 관리
+    
+   - 배너 등록
+   
+   - 배너 목록 조회
+    
+   - 배너 수정
+   
+   - 배너 삭제
+   
+- 유용한 사이트 관리
+    
+   - 카테고리 등록
+    
+   - 카테고리 수정
+    
+   - 카테고리 삭제
+    
+   - 사이트 등록
+    
+   - 사이트 목록 조회
+    
+   - 사이트 수정
+    
+   - 사이트 삭제
+
+- 사용자 권한 관리
+    
+   - 사용자 목록 조회
+    
+   - 사용자 권한 수정
+    
+</details>
 
 ---
 
@@ -158,10 +258,7 @@
           - 좋아요 취소: DELETE /like/remove/{id}
   
   - FaqController (FAQ)
-     - FAQ 작성: POST /auth-admin/faq
-     - FAQ 조회: GET /faq
-     - FAQ 수정: PUT /auth-admin/faq
-     - FAQ 삭제: DELETE /auth-admin/faq/{id}
+     - FAQ 목록 조회: GET /faq
   
 </details>
 
@@ -171,7 +268,13 @@
   - UserManagementController (사용자 관리)
      - 사용자 권한 수정 : PUT /auth-admin/user
      - 사용자 권한 조회: GET /auth-admin/users
-  
+
+  - FaqController (FAQ)
+     - FAQ 작성: POST /auth-admin/faq
+     - FAQ 목록 조회: GET /faq
+     - FAQ 수정: PUT /auth-admin/faq
+     - FAQ 삭제: DELETE /auth-admin/faq/{id}
+    
   - BannerController (배너)
      - 배너 등록: POST /auth-admin/banner
      - 배너 조회: GET /auth-admin/banner
