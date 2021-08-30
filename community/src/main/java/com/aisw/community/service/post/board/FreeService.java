@@ -111,9 +111,15 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .user(user)
                 .build();
         Free newFree = freeRepository.save(free);
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/board/free", newFree.getId(), UploadCategory.POST);
-        return Header.OK(response(newFree, fileApiResponseList));
+
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/board/free", newFree.getId(), UploadCategory.POST);
+
+            return Header.OK(response(newFree, fileApiResponseList));
+        } else {
+            return Header.OK(response(newFree));
+        }
     }
 
     @Override
@@ -220,11 +226,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.deleteFileList(free.getFileList());
-        free.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/board/free", free.getId(), UploadCategory.POST);
-
         free
                 .setWriter((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(freeApiRequest.getTitle())
@@ -232,7 +233,17 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .setStatus(freeApiRequest.getStatus());
         freeRepository.save(free);
 
-        return Header.OK(response(free, fileApiResponseList));
+        if(free.getFileList() != null) {
+            fileService.deleteFileList(free.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/board/free", free.getId(), UploadCategory.POST);
+
+            return Header.OK(response(free, fileApiResponseList));
+        } else {
+            return Header.OK(response(free));
+        }
     }
 
     @Override

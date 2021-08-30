@@ -24,7 +24,7 @@ public class FaqController {
 
     @PostMapping("/auth-admin/faq")
     public Header<FaqApiResponse> create(@RequestBody Header<FaqApiRequest> request) {
-        return faqService.create(request);
+        return faqService.create(request.getData());
     }
 
     @GetMapping("/faq")
@@ -34,7 +34,7 @@ public class FaqController {
 
     @PutMapping("/auth-admin/faq")
     public Header<FaqApiResponse> update(@RequestBody Header<FaqApiRequest> request) {
-        return faqService.update(request);
+        return faqService.update(request.getData());
     }
 
     @DeleteMapping("/auth-admin/faq/{id}")

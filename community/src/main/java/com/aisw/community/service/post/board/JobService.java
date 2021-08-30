@@ -110,10 +110,14 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .user(user)
                 .build();
         Job newJob = jobRepository.save(job);
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/board/job", newJob.getId(), UploadCategory.POST);
+        if (files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/board/job", newJob.getId(), UploadCategory.POST);
 
-        return Header.OK(response(newJob, fileApiResponseList));
+            return Header.OK(response(newJob, fileApiResponseList));
+        } else {
+            return Header.OK(response(newJob));
+        }
     }
 
     @Override
@@ -219,11 +223,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.deleteFileList(job.getFileList());
-        job.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/board/job", job.getId(), UploadCategory.POST);
-
         job
                 .setWriter((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(jobApiRequest.getTitle())
@@ -231,7 +230,17 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .setStatus(jobApiRequest.getStatus());
         jobRepository.save(job);
 
-        return Header.OK(response(job, fileApiResponseList));
+        if(job.getFileList() != null) {
+            fileService.deleteFileList(job.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/board/job", job.getId(), UploadCategory.POST);
+
+            return Header.OK(response(job, fileApiResponseList));
+        } else {
+            return Header.OK(response(job));
+        }
     }
 
     @Override

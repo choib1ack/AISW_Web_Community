@@ -45,7 +45,6 @@ public class QnaRepositoryTest extends CommunityApplicationTests {
                 .status(status)
                 .views(views)
                 .likes(likes)
-                .isAnonymous(isAnonymous)
                 .subject(subject)
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.QNA)

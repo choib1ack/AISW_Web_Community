@@ -23,7 +23,7 @@ public class BannerController {
 
     @PostMapping("")
     public Header<BannerApiResponse> create(@ModelAttribute FileUploadToBannerRequest request) {
-        return bannerService.create(request);
+        return bannerService.create(request.getBannerApiRequest(), request.getFiles());
     }
 
     @GetMapping("")
@@ -33,7 +33,7 @@ public class BannerController {
 
     @PutMapping("")
     public Header<BannerApiResponse> update(@ModelAttribute FileUploadToBannerRequest request) {
-        return bannerService.update(request);
+        return bannerService.update(request.getBannerApiRequest(), request.getFiles());
     }
 
     @DeleteMapping("{id}")

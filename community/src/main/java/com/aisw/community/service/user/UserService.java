@@ -25,9 +25,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public Header<UserApiResponse> signup(Header<UserApiRequest> request) {
-        UserApiRequest userApiRequest = request.getData();
-
+    public Header<UserApiResponse> signup(UserApiRequest userApiRequest) {
         if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
             throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
         if (!validatePhoneNumber(userApiRequest.getPhoneNumber()))
@@ -57,8 +55,7 @@ public class UserService {
         return Pattern.matches("^[0-9]*$", str);
     }
 
-    public Header<VerificationApiResponse> verification(Header<VerificationRequest> request) {
-        VerificationRequest verificationRequest = request.getData();
+    public Header<VerificationApiResponse> verification(VerificationRequest verificationRequest) {
         User user = userRepository.findByUsername(verificationRequest.getUsername());
         VerificationApiResponse response = new VerificationApiResponse();
         if (user != null) {
@@ -75,10 +72,7 @@ public class UserService {
         return Header.OK(response);
     }
 
-    public Header<UserApiResponse> update(Authentication authentication, Header<UserApiRequest> request) {
-        UserApiRequest userApiRequest = request.getData();
-        User user = getUser(authentication);
-
+    public Header<UserApiResponse> update(User user, UserApiRequest userApiRequest) {
         user
                 .setName(userApiRequest.getName())
                 .setEmail(userApiRequest.getEmail())
@@ -91,8 +85,7 @@ public class UserService {
         return Header.OK(response(newUser));
     }
 
-    public Header delete(Authentication authentication) {
-        User user = getUser(authentication);
+    public Header delete(User user) {
         userRepository.delete(user);
         return Header.OK();
     }

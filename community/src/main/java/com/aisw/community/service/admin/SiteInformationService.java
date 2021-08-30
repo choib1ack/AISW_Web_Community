@@ -47,9 +47,7 @@ public class SiteInformationService {
             @CacheEvict(value = "readSite", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<SiteInformationApiResponse> create(FileUploadToSiteRequest request) {
-        SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
-
+    public Header<SiteInformationApiResponse> create(SiteInformationApiRequest siteInformationApiRequest, MultipartFile[] files) {
         String url = siteInformationApiRequest.getLinkUrl();
         if (!url.startsWith("http://") || !url.startsWith("https://")) {
             siteInformationApiRequest.setLinkUrl("http://" + url);
@@ -67,11 +65,14 @@ public class SiteInformationService {
                 .build();
         SiteInformation newSiteInformation = siteInformationRepository.save(siteInformation);
 
-        MultipartFile[] files = request.getFiles();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, null, newSiteInformation.getId(), UploadCategory.SITE);
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, null, newSiteInformation.getId(), UploadCategory.SITE);
 
-        return Header.OK(response(newSiteInformation, fileApiResponseList));
+            return Header.OK(response(newSiteInformation, fileApiResponseList));
+        } else {
+            return Header.OK(response(newSiteInformation));
+        }
     }
 
     @Cacheable(value = "readSite")
@@ -100,33 +101,36 @@ public class SiteInformationService {
             @CacheEvict(value = "readSite", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<SiteInformationApiResponse> update(FileUploadToSiteRequest request) {
-        SiteInformationApiRequest siteInformationApiRequest = request.getSiteInformationApiRequest();
-        MultipartFile[] files = request.getFiles();
-
+    public Header<SiteInformationApiResponse> update(SiteInformationApiRequest siteInformationApiRequest, MultipartFile[] files) {
         SiteInformation siteInformation = siteInformationRepository.findById(siteInformationApiRequest.getId())
                 .orElseThrow(() -> new SiteInformationNotFoundException(siteInformationApiRequest.getId()));
         SiteCategory siteCategory = siteCategoryRepository.findByName(siteInformationApiRequest.getCategory())
                 .orElseThrow(() -> new SiteCategoryNameNotFoundException(siteInformationApiRequest.getCategory()));
-
-        siteInformation.getFileList().stream().forEach(file -> fileRepository.delete(file));
-        siteInformation.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, null, siteInformation.getId(), UploadCategory.SITE);
 
         String url = siteInformationApiRequest.getLinkUrl();
         if (!url.startsWith("http://") || !url.startsWith("https://")) {
             siteInformationApiRequest.setLinkUrl("http://" + url);
         }
 
-        siteInformation.setName(siteInformationApiRequest.getName())
+        siteInformation
+                .setName(siteInformationApiRequest.getName())
                 .setContent(siteInformationApiRequest.getContent())
                 .setLinkUrl(siteInformationApiRequest.getLinkUrl())
                 .setPublishStatus(siteInformationApiRequest.getPublishStatus())
                 .setSiteCategory(siteCategory);
         siteInformationRepository.save(siteInformation);
 
-        return Header.OK(response(siteInformation, fileApiResponseList));
+        if(siteInformation.getFileList() != null) {
+            fileService.deleteFileList(siteInformation.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, null, siteInformation.getId(), UploadCategory.SITE);
+
+            return Header.OK(response(siteInformation, fileApiResponseList));
+        } else {
+            return Header.OK(response(siteInformation));
+        }
     }
 
     @Caching(evict = {

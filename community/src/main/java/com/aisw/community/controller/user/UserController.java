@@ -1,5 +1,6 @@
 package com.aisw.community.controller.user;
 
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.UserApiRequest;
 import com.aisw.community.model.network.request.user.VerificationRequest;
@@ -28,33 +29,37 @@ class UserController {
 
     @PostMapping("/user/signup")
     public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
-        return userService.signup(request);
+        return userService.signup(request.getData());
     }
 
     @PostMapping("/user/verification")
     public Header<VerificationApiResponse> verification(@RequestBody Header<VerificationRequest> request) {
-        return userService.verification(request);
+        return userService.verification(request.getData());
     }
 
     @PutMapping("/auth/user")
     public Header<UserApiResponse> update(Authentication authentication, @RequestBody Header<UserApiRequest> request) {
-        return userService.update(authentication, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return userService.update(principal.getUser(), request.getData());
     }
 
     @DeleteMapping("/auth/user")
     public Header delete(Authentication authentication) {
-        return userService.delete(authentication);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return userService.delete(principal.getUser());
     }
 
     @GetMapping("/auth/alert")
     public Header<List<AlertApiResponse>> readAllAlert(Authentication authentication,
                                                        @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return alertService.readAllAlert(authentication, pageable);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return alertService.readAllAlert(principal.getUser(), pageable);
     }
 
     @GetMapping("/auth/alert/{id}")
     public Header<AlertApiResponse> checkAlert(Authentication authentication, @PathVariable Long id) {
-        return alertService.checkAlert(authentication, id);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return alertService.checkAlert(principal.getUser(), id);
     }
 
     @GetMapping("/auth/refresh")

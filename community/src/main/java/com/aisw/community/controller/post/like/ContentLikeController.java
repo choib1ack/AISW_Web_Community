@@ -1,5 +1,6 @@
 package com.aisw.community.controller.post.like;
 
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.like.ContentLikeApiRequest;
 import com.aisw.community.model.network.response.post.like.ContentLikeApiResponse;
@@ -19,11 +20,13 @@ public class ContentLikeController {
 
     @PostMapping("/press")
     public Header<ContentLikeApiResponse> pressLike(Authentication authentication, @RequestBody Header<ContentLikeApiRequest> request) {
-        return contentLikeService.pressLike(authentication, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return contentLikeService.pressLike(principal.getUser(), request.getData());
     }
 
     @DeleteMapping("remove/{id}")
     public Header removeLike(Authentication authentication, @PathVariable Long id, @RequestParam String target) {
-        return contentLikeService.removeLike(authentication, id, target);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return contentLikeService.removeLike(principal.getUser(), id, target);
     }
 }

@@ -37,9 +37,7 @@ public class FaqService {
     @Autowired
     private FaqRepository faqRepository;
 
-    public Header<FaqApiResponse> create(Header<FaqApiRequest> request) {
-        FaqApiRequest faqApiRequest = request.getData();
-
+    public Header<FaqApiResponse> create(FaqApiRequest faqApiRequest) {
         Faq faq = Faq.builder()
                 .question(faqApiRequest.getQuestion())
                 .answer(faqApiRequest.getAnswer())
@@ -55,9 +53,7 @@ public class FaqService {
         return Header.OK(faqApiResponseList);
     }
 
-    public Header<FaqApiResponse> update(Header<FaqApiRequest> request) {
-        FaqApiRequest faqApiRequest = request.getData();
-
+    public Header<FaqApiResponse> update(FaqApiRequest faqApiRequest) {
         Faq faq = faqRepository.findById(faqApiRequest.getId())
                 .orElseThrow(() -> new FaqNotFoundException(faqApiRequest.getId()));
 

@@ -1,5 +1,6 @@
 package com.aisw.community.controller.post.comment;
 
+import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.post.comment.CommentApiRequest;
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
@@ -18,30 +19,38 @@ public class CommentController {
 
     @PostMapping("/auth/free/{boardId}/comment")
     public Header<CommentApiResponse> createAtFree(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
-        return commentService.create(authentication, boardId, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return commentService.create(principal.getUser(), boardId, request.getData());
     }
 
     @PostMapping("/auth-student/qna/{boardId}/comment")
     public Header<CommentApiResponse> createAtQna(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
-        return commentService.create(authentication, boardId, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return commentService.create(principal.getUser(), boardId, request.getData());
 
-    }    @PostMapping("/auth/job/{boardId}/comment")
+    }
+
+    @PostMapping("/auth/job/{boardId}/comment")
     public Header<CommentApiResponse> createAtJob(Authentication authentication, @PathVariable Long boardId, @RequestBody Header<CommentApiRequest> request) {
-        return commentService.create(authentication, boardId, request);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return commentService.create(principal.getUser(), boardId, request.getData());
     }
 
     @DeleteMapping("/auth/free/{boardId}/comment/{commentId}")
     public Header deleteAtFree(Authentication authentication, @PathVariable Long boardId, @PathVariable Long commentId) {
-        return commentService.delete(authentication, boardId, commentId);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return commentService.delete(principal.getUser(), boardId, commentId);
     }
 
     @DeleteMapping("/auth-student/qna/{boardId}/comment/{commentId}")
     public Header deleteAtQna(Authentication authentication, @PathVariable Long boardId, @PathVariable Long commentId) {
-        return commentService.delete(authentication, boardId, commentId);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return commentService.delete(principal.getUser(), boardId, commentId);
     }
 
     @DeleteMapping("/auth/job/{boardId}/comment/{commentId}")
     public Header deleteAtJob(Authentication authentication, @PathVariable Long boardId, @PathVariable Long commentId) {
-        return commentService.delete(authentication, boardId, commentId);
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        return commentService.delete(principal.getUser(), boardId, commentId);
     }
 }
