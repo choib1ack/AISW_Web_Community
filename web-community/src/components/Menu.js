@@ -9,10 +9,8 @@ import {setActiveTab} from "../features/menuSlice";
 import {ADMIN_ROLE, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
 import axios from "axios";
 import * as jwt from "jwt-simple";
-import {setDecoded} from "../features/userSlice";
-
+import {setImageUrl, setDecoded} from "../features/userSlice";
 import Badge from 'react-bootstrap/Badge'
-import transitions from "@material-ui/core/styles/transitions";
 import {useMediaQuery} from "react-responsive";
 import Hamburger from 'hamburger-react';
 import Row from "react-bootstrap/Row";
@@ -90,6 +88,8 @@ export default function Menu() {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
         const email = result.profileObj.email;
 
+        dispatch(setImageUrl(result.profileObj.imageUrl));
+
         await checkExist(username, email)
             .then(res => {
                 moveLogin(res.data.data, username);
@@ -141,6 +141,10 @@ export default function Menu() {
         }
     }, [isTabletOrMobile]);
 
+    useEffect(() => {
+        console.log(user.imageUrl);
+    }, [user.imageUrl]);
+
     return (
         <div>
             <div className="Menu p-lg-3 p-sm-2">
@@ -154,18 +158,28 @@ export default function Menu() {
                     <Row>
                         {(accessToken && user.decoded) ?
                             (
-                                <div className="align-self-center">
-                                    <div>
-                                        <button className="Menu-button" onClick={handleModalShow}>
-                                            {user.decoded.name}
-                                        </button>
-                                    </div>
+                                <>
+                                    <div className="align-self-center">
+                                        <div>
+                                            <button className="Menu-button" onClick={handleModalShow}
+                                                    style={{overflow: 'visible'}}>
+                                                <img className="align-self-center" width={22} src={user.imageUrl}
+                                                     style={{borderRadius: 50, marginRight: 10}}
+                                                     alt="..."/>
+                                                {user.decoded.name}
+                                                <Badge variant="primary" pill style={{
+                                                    padding: "5px",
+                                                    transform: 'translate(0px, -10px)'
+                                                }}>{menu.unread_alert}</Badge>
+                                            </button>
+                                        </div>
 
-                                    {modalShow ? <MyPage
-                                        myPageShow={modalShow}
-                                        setMyPageShow={handleModalShow}
-                                    /> : null}
-                                </div>
+                                        {modalShow ? <MyPage
+                                            myPageShow={modalShow}
+                                            setMyPageShow={handleModalShow}
+                                        /> : null}
+                                    </div>
+                                </>
                             ) : null}
                         <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded
                                    style={{justifyContent: 'right'}}/>
@@ -211,6 +225,9 @@ export default function Menu() {
                                     <div className="align-self-center">
                                         <button className="Menu-button" onClick={handleModalShow}
                                                 style={{overflow: 'visible'}}>
+                                            <img className="align-self-center" width={22} src={user.imageUrl}
+                                                 style={{borderRadius: 50, marginRight: 10}}
+                                                 alt="..."/>
                                             {user.decoded.name}
                                             <Badge variant="primary" pill style={{
                                                 padding: "5px",

@@ -10,7 +10,7 @@ import {useHistory} from "react-router-dom";
 import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 import newIcon from "../../icon/new_icon.png"
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 
 
 export default function MyPage(props) {
@@ -20,6 +20,7 @@ export default function MyPage(props) {
     const [currentPage, setCurrentPage] = useState(0);
     const [loading, setLoading] = useState(false);
 
+    const user = useSelector(state => state.user);
     const {name, department} = useSelector(state => state.user.decoded);
 
     const handleShow = () => setShow(true);
@@ -70,7 +71,7 @@ export default function MyPage(props) {
 
             <Modal show={props.myPageShow} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage"
                    onHide={handleMyPageClose}>
-                <Modal.Header closeButton style={{border: 'none'}}>
+                <Modal.Header closeButton style={{border: 'none', paddingBottom: 10}}>
                     <Modal.Title
                         id="contained-modal-title-vcenter"
                         style={{fontSize: '16px'}}
@@ -80,10 +81,10 @@ export default function MyPage(props) {
                 </Modal.Header>
                 <Modal.Body className="show-grid" style={{padding: "0px"}}>
                     <Container style={{padding: 'none'}}>
-                        <Row className="ml-auto mt-3 mb-3">
-                            <Col xs={1} md={1}>
-                                <img src={PersonImage} alt="..."/>
-                            </Col>
+                        <Row className="ml-auto mt-3 mb-4">
+                            <img className="align-self-center" width={40} src={user.imageUrl}
+                                 style={{borderRadius: 50, marginLeft: 10}}
+                                 alt="..."/>
                             <Col style={{display: 'flex', justifyContent: 'space-between'}}>
                                 <div style={{marginLeft: "10px"}}>
                                     <p style={{fontSize: '14px', marginBottom: "0px"}}>{name}</p>
@@ -96,10 +97,9 @@ export default function MyPage(props) {
                                     <p onClick={handleShow} className="logout-btn">로그아웃</p>
                                 </div>
                             </Col>
-
                         </Row>
 
-                        <p style={{color: '#0472FD', margin: '5px'}}>알림</p>
+                        <p style={{color: '#0472FD', margin: 10}}>알림</p>
 
                         <div style={{
                             height: '200px',
