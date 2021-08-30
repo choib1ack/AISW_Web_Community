@@ -37,8 +37,6 @@ public class UserApiResponse {
 
     private Gender gender;
 
-    private String university;
-
     private String departmentName;
 
     private String role;

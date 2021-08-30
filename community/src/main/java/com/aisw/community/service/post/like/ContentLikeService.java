@@ -44,10 +44,7 @@ public class ContentLikeService {
     private UserService userService;
 
     @Transactional
-    public Header<ContentLikeApiResponse> pressLike(Authentication authentication, Header<ContentLikeApiRequest> request) {
-        ContentLikeApiRequest contentLikeApiRequest = request.getData();
-
-        User user = userService.getUser(authentication);
+    public Header<ContentLikeApiResponse> pressLike(User user, ContentLikeApiRequest contentLikeApiRequest) {
         ContentLike newContentLike;
         AlertApiRequest alertApiRequest = new AlertApiRequest();
         boolean me = false;
@@ -115,16 +112,14 @@ public class ContentLikeService {
 
         if(!me) {
             alertApiRequest.setContentLikeId(newContentLike.getId());
-            alertService.create(authentication, alertApiRequest);
+            alertService.create(user, alertApiRequest);
         }
 
         return Header.OK(response(newContentLike));
     }
 
     @Transactional
-    public Header removeLike(Authentication authentication, Long id, String target) {
-        User user = userService.getUser(authentication);
-
+    public Header removeLike(User user, Long id, String target) {
         if(target.equals("COMMENT")) {
             Comment comment = commentRepository.findById(id).orElseThrow(() -> new CommentNotFoundException(id));
             return contentLikeRepository

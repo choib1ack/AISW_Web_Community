@@ -27,6 +27,6 @@ public class UserManagementController {
 
     @PutMapping("/user")
     public Header<UserManagementApiResponse> changeRole(@RequestBody Header<UserManagementApiRequest> request) {
-        return userManagementService.changeRole(request);
+        return userManagementService.changeRole(request.getData());
     }
 }

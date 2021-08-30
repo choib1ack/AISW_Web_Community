@@ -45,7 +45,6 @@ public class FreeRepositoryTest extends CommunityApplicationTests {
                 .status(status)
                 .views(views)
                 .likes(likes)
-                .isAnonymous(isAnonymous)
                 .firstCategory(FirstCategory.BOARD)
                 .secondCategory(SecondCategory.FREE)
                 .user(userId)

@@ -20,6 +20,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,9 +50,7 @@ public class BannerService {
             @CacheEvict(value = "bannerRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<BannerApiResponse> create(FileUploadToBannerRequest request) {
-        BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
-
+    public Header<BannerApiResponse> create(BannerApiRequest bannerApiRequest, MultipartFile[] files) {
         String url = bannerApiRequest.getLinkUrl();
         if (!url.startsWith("http://") || !url.startsWith("https://")) {
             bannerApiRequest.setLinkUrl("http://" + url);
@@ -69,11 +68,14 @@ public class BannerService {
 
         Banner newBanner = bannerRepository.save(banner);
 
-        MultipartFile[] files = request.getFiles();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, null, newBanner.getId(), UploadCategory.BANNER);
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, null, newBanner.getId(), UploadCategory.BANNER);
 
-        return Header.OK(response(newBanner, fileApiResponseList));
+            return Header.OK(response(newBanner, fileApiResponseList));
+        } else {
+            return Header.OK(response(newBanner));
+        }
     }
 
     @Cacheable(value = "bannerRead", key = "#pageable.pageNumber")
@@ -99,17 +101,9 @@ public class BannerService {
             @CacheEvict(value = "bannerRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<BannerApiResponse> update(FileUploadToBannerRequest request) {
-        BannerApiRequest bannerApiRequest = request.getBannerApiRequest();
-        MultipartFile[] files = request.getFiles();
-
+    public Header<BannerApiResponse> update(BannerApiRequest bannerApiRequest, MultipartFile[] files) {
         Banner banner = bannerRepository.findById(bannerApiRequest.getId()).orElseThrow(
                 () -> new BannerNotFoundException(bannerApiRequest.getId()));
-
-        banner.getFileList().stream().forEach(file -> fileRepository.delete(file));
-        banner.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, null, banner.getId(), UploadCategory.BANNER);
 
         String url = bannerApiRequest.getLinkUrl();
         if (!url.startsWith("http://") || !url.startsWith("https://")) {
@@ -123,9 +117,19 @@ public class BannerService {
                 .setEndDate(LocalDate.parse(bannerApiRequest.getEndDate(),
                         DateTimeFormatter.ofPattern("yyyy-MM-dd")))
                 .setLinkUrl(bannerApiRequest.getLinkUrl());
-        Banner updateBanner = bannerRepository.save(banner);
+        bannerRepository.save(banner);
 
-        return Header.OK(response(updateBanner, fileApiResponseList));
+        if(banner.getFileList() != null) {
+            fileService.deleteFileList(banner.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, null, banner.getId(), UploadCategory.BANNER);
+
+            return Header.OK(response(banner, fileApiResponseList));
+        } else {
+            return Header.OK(response(banner));
+        }
     }
 
     @Caching(evict = {

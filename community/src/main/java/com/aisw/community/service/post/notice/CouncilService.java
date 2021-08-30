@@ -105,10 +105,14 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .build();
         Council newCouncil = councilRepository.save(council);
 
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth-student/notice/council", newCouncil.getId(), UploadCategory.POST);
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth-student/notice/council", newCouncil.getId(), UploadCategory.POST);
 
-        return Header.OK(response(newCouncil, fileApiResponseList));
+            return Header.OK(response(newCouncil, fileApiResponseList));
+        } else {
+            return Header.OK(response(newCouncil));
+        }
     }
 
     @Override
@@ -189,18 +193,23 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.deleteFileList(council.getFileList());
-        council.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth-student/notice/council", council.getId(), UploadCategory.POST);
-
         council
                 .setTitle(councilApiRequest.getTitle())
                 .setContent(councilApiRequest.getContent())
                 .setStatus(councilApiRequest.getStatus());
         councilRepository.save(council);
 
-        return Header.OK(response(council, fileApiResponseList));
+        if(council.getFileList() != null) {
+            fileService.deleteFileList(council.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth-student/notice/council", council.getId(), UploadCategory.POST);
+
+            return Header.OK(response(council, fileApiResponseList));
+        } else {
+            return Header.OK(response(council));
+        }
     }
 
     @Override

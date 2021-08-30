@@ -45,9 +45,7 @@ public class AlertService {
     private UserService userService;
 
     @Transactional
-    public Header<AlertApiResponse> create(Authentication authentication, AlertApiRequest alertApiRequest) {
-        User user = userService.getUser(authentication);
-
+    public Header<AlertApiResponse> create(User user, AlertApiRequest alertApiRequest) {
         Alert alert = Alert.builder()
                 .user(user)
                 .firstCategory(alertApiRequest.getFirstCategory())
@@ -72,9 +70,7 @@ public class AlertService {
         return Header.OK(response(newAlert));
     }
 
-    public Header<List<AlertApiResponse>> readAllAlert(Authentication authentication, Pageable pageable) {
-        User user = userService.getUser(authentication);
-
+    public Header<List<AlertApiResponse>> readAllAlert(User user, Pageable pageable) {
         Page<Alert> alerts = alertRepository.findAllByUserId(user.getId(), pageable);
         List<AlertApiResponse> alertApiResponseList = alerts.stream().map(this::response).collect(Collectors.toList());
 
@@ -89,9 +85,7 @@ public class AlertService {
     }
 
 
-    public Header<AlertApiResponse> checkAlert(Authentication authentication, Long id) {
-        User user = userService.getUser(authentication);
-
+    public Header<AlertApiResponse> checkAlert(User user, Long id) {
         Alert alert = alertRepository.findById(id).orElseThrow(() -> new AlertNotFoundException(id));
         if (alert.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(id);

@@ -21,7 +21,7 @@ public class SiteInformationController {
 
     @PostMapping("")
     public Header<SiteInformationApiResponse> create(@ModelAttribute FileUploadToSiteRequest request) {
-        return siteInformationService.create(request);
+        return siteInformationService.create(request.getSiteInformationApiRequest(), request.getFiles());
     }
 
     @GetMapping("")
@@ -31,7 +31,7 @@ public class SiteInformationController {
 
     @PutMapping("")
     public Header<SiteInformationApiResponse> update(@ModelAttribute FileUploadToSiteRequest request) {
-        return siteInformationService.update(request);
+        return siteInformationService.update(request.getSiteInformationApiRequest(), request.getFiles());
     }
 
     @DeleteMapping("{id}")

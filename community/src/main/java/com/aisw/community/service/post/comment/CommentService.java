@@ -48,10 +48,7 @@ public class CommentService {
 
     @Transactional
     @CacheEvict(value = "commentSearchByPost", key = "#boardId")
-    public Header<CommentApiResponse> create(Authentication authentication, Long boardId, Header<CommentApiRequest> request) {
-        CommentApiRequest commentApiRequest = request.getData();
-
-        User user = userService.getUser(authentication);
+    public Header<CommentApiResponse> create(User user, Long boardId, CommentApiRequest commentApiRequest) {
         Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
                 () -> new PostNotFoundException(commentApiRequest.getBoardId()));
         List<Comment> commentList = board.getCommentList();
@@ -88,18 +85,17 @@ public class CommentService {
         } else {
             alertApiRequest.setContent(comment.getContent().substring(0, 20));
         }
-        if(user.getId() != board.getUser().getId()) alertService.create(authentication, alertApiRequest);
+        if(user.getId() != board.getUser().getId()) alertService.create(user, alertApiRequest);
 
         return Header.OK(response(newComment));
     }
 
     @Transactional
     @CacheEvict(value = "commentSearchByPost", key = "#boardId")
-    public Header delete(Authentication authentication, Long boardId, Long commentId) {
+    public Header delete(User user, Long boardId, Long commentId) {
         Comment comment = commentRepository.findCommentByIdWithSuperComment(commentId).orElseThrow(
                 () -> new CommentNotFoundException(commentId));
 
-        User user = userService.getUser(authentication);
         if (comment.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }

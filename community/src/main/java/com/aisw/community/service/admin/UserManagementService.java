@@ -41,16 +41,14 @@ public class UserManagementService {
     }
 
     @CacheEvict(value = "userManagementReadAll", allEntries = true)
-    public Header<UserManagementApiResponse> changeRole(Header<UserManagementApiRequest> request) {
-        UserManagementApiRequest userManagementApiRequest = request.getData();
-
+    public Header<UserManagementApiResponse> changeRole(UserManagementApiRequest userManagementApiRequest) {
         User user = userRepository.findById(userManagementApiRequest.getId())
                 .orElseThrow(() -> new UserNotFoundException(userManagementApiRequest.getId()));
 
         user.setRole(userManagementApiRequest.getRole());
-        User updateUser = userRepository.save(user);
+        userRepository.save(user);
 
-        return Header.OK(response(updateUser));
+        return Header.OK(response(user));
     }
 
     private UserManagementApiResponse response(User user) {

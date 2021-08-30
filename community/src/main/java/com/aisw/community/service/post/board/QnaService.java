@@ -121,10 +121,14 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .build();
         Qna newQna = qnaRepository.save(qna);
 
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
 
-        return Header.OK(response(newQna, fileApiResponseList));
+            return Header.OK(response(newQna, fileApiResponseList));
+        } else {
+            return Header.OK(response(newQna));
+        }
     }
 
     @Override
@@ -231,11 +235,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.deleteFileList(qna.getFileList());
-        qna.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
-
         qna
                 .setWriter((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
                 .setTitle(qnaApiRequest.getTitle())
@@ -244,7 +243,17 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         qna.setSubject(qnaApiRequest.getSubject());
         qnaRepository.save(qna);
 
-        return Header.OK(response(qna, fileApiResponseList));
+        if(qna.getFileList() != null) {
+            fileService.deleteFileList(qna.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
+
+            return Header.OK(response(qna, fileApiResponseList));
+        } else {
+            return Header.OK(response(qna));
+        }
     }
 
     @Override

@@ -107,10 +107,14 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                 .build();
         University newUniversity = universityRepository.save(university);
 
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth/notice/university", newUniversity.getId(), UploadCategory.POST);
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth/notice/university", newUniversity.getId(), UploadCategory.POST);
 
-        return Header.OK(response(newUniversity, fileApiResponseList));
+            return Header.OK(response(newUniversity, fileApiResponseList));
+        } else {
+            return Header.OK(response(newUniversity));
+        }
     }
 
     @Override
@@ -192,11 +196,6 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
             throw new NotEqualUserException(user.getId());
         }
 
-        fileService.deleteFileList(university.getFileList());
-        university.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth/notice/university", university.getId(), UploadCategory.POST);
-
         university
                 .setTitle(universityApiRequest.getTitle())
                 .setContent(universityApiRequest.getContent())
@@ -204,7 +203,17 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
         university.setCampus(universityApiRequest.getCampus());
         universityRepository.save(university);
 
-        return Header.OK(response(university, fileApiResponseList));
+        if(university.getFileList() != null) {
+            fileService.deleteFileList(university.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth/notice/university", university.getId(), UploadCategory.POST);
+
+            return Header.OK(response(university, fileApiResponseList));
+        } else {
+            return Header.OK(response(university));
+        }
     }
 
     @Override

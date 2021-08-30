@@ -38,7 +38,6 @@ public class UserRepositoryTest extends CommunityApplicationTests{
 //                .password(password)
                 .phoneNumber(phoneNumber)
                 .grade(grade)
-                .studentId(studentId)
                 .gender(gender)
 //                .university(university)
 //                .collegeName(collegeName)

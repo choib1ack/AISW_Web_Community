@@ -105,10 +105,14 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .build();
         Department newDepartment = departmentRepository.save(department);
 
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth-student/notice/department", newDepartment.getId(), UploadCategory.POST);
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth-student/notice/department", newDepartment.getId(), UploadCategory.POST);
 
-        return Header.OK(response(newDepartment, fileApiResponseList));
+            return Header.OK(response(newDepartment, fileApiResponseList));
+        } else {
+            return Header.OK(response(newDepartment));
+        }
     }
 
     @Override
@@ -188,10 +192,6 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
         if(department.getUser().getId() != user.getId()) {
             throw new NotEqualUserException(user.getId());
         }
-        fileService.deleteFileList(department.getFileList());
-        department.getFileList().clear();
-        List<FileApiResponse> fileApiResponseList =
-                fileService.uploadFiles(files, "/auth-student/notice/department", department.getId(), UploadCategory.POST);
 
         department
                 .setTitle(departmentApiRequest.getTitle())
@@ -199,7 +199,17 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .setStatus(departmentApiRequest.getStatus());
         departmentRepository.save(department);
 
-        return Header.OK(response(department, fileApiResponseList));
+        if(department.getFileList() != null) {
+            fileService.deleteFileList(department.getFileList());
+        }
+        if(files != null) {
+            List<FileApiResponse> fileApiResponseList =
+                    fileService.uploadFiles(files, "/auth-student/notice/department", department.getId(), UploadCategory.POST);
+
+            return Header.OK(response(department, fileApiResponseList));
+        } else {
+            return Header.OK(response(department));
+        }
     }
 
     @Override
