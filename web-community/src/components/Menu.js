@@ -15,6 +15,7 @@ import Badge from 'react-bootstrap/Badge'
 import transitions from "@material-ui/core/styles/transitions";
 import {useMediaQuery} from "react-responsive";
 import Hamburger from 'hamburger-react';
+import Row from "react-bootstrap/Row";
 
 
 export default function Menu() {
@@ -31,6 +32,7 @@ export default function Menu() {
 
     const handleJoinFailure = (result) => console.log(result);
     const handleLoginFailure = (result) => console.log(result);
+    const handleModalShow = () => setModalShow(!modalShow);
 
     const decodingAccessToken = (accessToken) => {
         try {
@@ -140,65 +142,6 @@ export default function Menu() {
     }, [isTabletOrMobile]);
 
     return (
-// <<<<<<< HEAD
-//         <div className="Menu">
-//             <Grid className="navBar">
-//                 <Row className="navBar_menus" style={{borderBottom: 'solid 1px #d0d0d0', padding: '15px'}}>
-//                     <Col xs={3}>
-//                         <Link to="/">
-//                             <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
-//
-//                         </Link>
-//                     </Col>
-//                     <Col xs={6}>
-//                         <Link to="/notice">
-//                             <button className="Menu-button" name="notice" onClick={handleClickTab}
-//                                     style={{color: menu.active === 1 ? "#0472FD" : "dimgrey"}}>
-//                                 공지사항
-//                             </button>
-//                         </Link>
-//                         <Link to="/board">
-//                             <button className="Menu-button" name="board" onClick={handleClickTab}
-//                                     style={{color: menu.active === 2 ? "#0472FD" : "dimgrey"}}>
-//                                 게시판
-//                             </button>
-//                         </Link>
-//                         <Link to="/deptInfo">
-//                             <button className="Menu-button" name="dept_info" onClick={handleClickTab}
-//                                     style={{color: menu.active === 3 ? "#0472FD" : "dimgrey"}}>
-//                                 학과정보
-//                             </button>
-//                         </Link>
-//
-//                         <Link to="/goodInfo">
-//                             <button className="Menu-button" name="site" onClick={handleClickTab}
-//                                     style={{color: menu.active === 4 ? "#0472FD" : "dimgrey"}}>
-//                                 유용한사이트
-//                             </button>
-//                         </Link>
-//
-//                         <Link to="/faq">
-//                             <button className="Menu-button" name="faq" onClick={handleClickTab}
-//                                     style={{color: menu.active === 5 ? "#0472FD" : "dimgrey"}}>
-//                                 FAQ
-//                             </button>
-//                         </Link>
-//                     </Col>
-//
-//                     {
-//                         (accessToken && user.decoded) ?
-//                             (
-//                                 <>
-//                                     <Col xs={3}>
-//                                             <button className="Menu-button" onClick={() => setModalShow(true)} style={{overflow:'visible'}}>
-//                                                 {user.decoded.name}
-//                                                 <Badge variant="primary" pill style={{padding:"5px", transform:'translate(0px, -10px)'}}>{menu.unread_alert}</Badge>
-//                                             </button>
-//                                         <Link to="/manager">
-//                                             <button className="Menu-button" name="manage_page" onClick={handleClickTab}
-//                                                     style={{color: menu.active == 6 ? "#0472FD" : "dimgrey"}}>
-//                                                 관리자페이지
-// =======
         <div>
             <div className="Menu p-lg-3 p-sm-2">
                 <div className="align-self-center">
@@ -208,7 +151,25 @@ export default function Menu() {
                 </div>
 
                 {isTabletOrMobile ?
-                    <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded/>
+                    <Row>
+                        {(accessToken && user.decoded) ?
+                            (
+                                <div className="align-self-center">
+                                    <div>
+                                        <button className="Menu-button" onClick={handleModalShow}>
+                                            {user.decoded.name}
+                                        </button>
+                                    </div>
+
+                                    {modalShow ? <MyPage
+                                        myPageShow={modalShow}
+                                        setMyPageShow={handleModalShow}
+                                    /> : null}
+                                </div>
+                            ) : null}
+                        <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded
+                                   style={{justifyContent: 'right'}}/>
+                    </Row>
                     :
                     <>
                         <div className="align-self-center">
@@ -248,7 +209,7 @@ export default function Menu() {
                             (accessToken && user.decoded) ?
                                 (
                                     <div className="align-self-center">
-                                        <button className="Menu-button" onClick={() => setModalShow(true)}
+                                        <button className="Menu-button" onClick={handleModalShow}
                                                 style={{overflow: 'visible'}}>
                                             {user.decoded.name}
                                             <Badge variant="primary" pill style={{
@@ -271,7 +232,7 @@ export default function Menu() {
 
                                         {modalShow ? <MyPage
                                             myPageShow={modalShow}
-                                            setMyPageShow={setModalShow}
+                                            setMyPageShow={handleModalShow}
                                         /> : null}
                                     </div>
                                 ) : (
@@ -350,12 +311,6 @@ export default function Menu() {
                             (accessToken && user.decoded) ?
                                 (
                                     <div className="align-self-center">
-                                        <div>
-                                            <button className="Menu-button" onClick={() => setModalShow(true)}>
-                                                {user.decoded.name}
-                                                {/*>>>>>>> main*/}
-                                            </button>
-                                        </div>
                                         {
                                             ADMIN_ROLE.includes(user.decoded.role) ?
                                                 <div>
@@ -370,11 +325,6 @@ export default function Menu() {
                                                 :
                                                 null
                                         }
-
-                                        {modalShow ? <MyPage
-                                            myPageShow={modalShow}
-                                            setMyPageShow={setModalShow}
-                                        /> : null}
                                     </div>
                                 ) : (
                                     <div className="align-self-center">
@@ -410,7 +360,6 @@ export default function Menu() {
                                     </div>
                                 )
                         }
-
                     </div>
                 )
             }

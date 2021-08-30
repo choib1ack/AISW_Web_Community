@@ -1,17 +1,37 @@
 .MyPage {
     position: fixed;
     top: 30px;
-    right: 0;
+    right: 20px;
     z-index: 1000;
     display: none;
-    width: 50%;
+    width: 500px;
     height: 100%;
     overflow: hidden;
     outline: 0;
 }
 
+.logout-btn {
+    float: right;
+    font-size: 12px;
+    color: #cdcdcd;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.logout-btn:hover {
+    color: black;
+}
+
 @media screen and (max-width: 768px) {
     .MyPage {
-        width: 70%;
+        right: 10px;
+        width: 400px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .MyPage {
+        right: 10px;
+        width: 300px;
     }
 }
