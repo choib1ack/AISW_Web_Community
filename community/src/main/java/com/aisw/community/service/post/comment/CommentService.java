@@ -79,13 +79,17 @@ public class CommentService {
                 .commentId(newComment.getId())
                 .firstCategory(board.getFirstCategory())
                 .secondCategory(board.getSecondCategory())
-                .postId(board.getId()).build();
+                .postId(board.getId())
+                .userId(board.getUser().getId())
+                .build();
         if(comment.getContent().length() < 20) {
             alertApiRequest.setContent(comment.getContent());
         } else {
             alertApiRequest.setContent(comment.getContent().substring(0, 20));
         }
-        if(user.getId() != board.getUser().getId()) alertService.create(user, alertApiRequest);
+        if(user.getId() != board.getUser().getId()) {
+            alertService.create(alertApiRequest);
+        }
 
         return Header.OK(response(newComment));
     }

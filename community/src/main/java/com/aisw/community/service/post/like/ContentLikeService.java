@@ -70,7 +70,8 @@ public class ContentLikeService {
                 alertApiRequest
                         .setFirstCategory(comment.getBoard().getFirstCategory())
                         .setSecondCategory(comment.getBoard().getSecondCategory())
-                        .setPostId(comment.getBoard().getId());
+                        .setPostId(comment.getBoard().getId())
+                        .setUserId(comment.getUser().getId());
                 if(comment.getContent().length() < 20) {
                     alertApiRequest.setContent(comment.getContent());
                 } else {
@@ -99,7 +100,8 @@ public class ContentLikeService {
                 alertApiRequest
                         .setFirstCategory(board.getFirstCategory())
                         .setSecondCategory(board.getSecondCategory())
-                        .setPostId(board.getId());
+                        .setPostId(board.getId())
+                        .setUserId(board.getUser().getId());
                 if(board.getContent().length() < 20) {
                     alertApiRequest.setContent(board.getContent());
                 } else {
@@ -112,7 +114,7 @@ public class ContentLikeService {
 
         if(!me) {
             alertApiRequest.setContentLikeId(newContentLike.getId());
-            alertService.create(user, alertApiRequest);
+            alertService.create(alertApiRequest);
         }
 
         return Header.OK(response(newContentLike));
