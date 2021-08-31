@@ -13,10 +13,13 @@ import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_POST, BOARD_FILE_API} from "../../constants";
 import {useHistory} from "react-router-dom";
+import {Checkbox} from "semantic-ui-react";
 
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
+    const [anonymousState, setAnonymousState] = useState(true);
+
     const history = useHistory();
     const board_type = useRef();
     board_type.current = watch("board_type");
@@ -59,7 +62,7 @@ function NewBoard() {
 
                 let temp = {
                     content: data.content,
-                    is_anonymous: data.anonymous,
+                    is_anonymous: anonymousState,
                     status: 'GENERAL',
                     title: data.title,
                 };
@@ -77,7 +80,7 @@ function NewBoard() {
                 formData.append('files', data.file[i]);
             }
             formData.append(`${apiRequest}.content`, data.content);
-            formData.append(`${apiRequest}.isAnonymous`, data.anonymous);
+            formData.append(`${apiRequest}.isAnonymous`, anonymousState);
             formData.append(`${apiRequest}.status`, 'GENERAL');
             formData.append(`${apiRequest}.title`, data.title);
 
@@ -98,9 +101,9 @@ function NewBoard() {
 
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
                     <Row>
-                        <Form.Check type="checkbox" className="ml-4 mb-3" label="익명"
-                                    defaultValue={false}
-                                    name="anonymous" ref={register}
+                        <Checkbox label='익명' checked={anonymousState}
+                                  onChange={() => setAnonymousState(!anonymousState)}
+                                  className="ml-4 mb-2"
                         />
                     </Row>
                     <Row>

@@ -48,7 +48,6 @@ export default function WriteComment({board_id, board_category, Refresh}) {
 
     return (
         <div className="mt-5 mb-3">
-            {/*<Checkbox label='익명' checked={anonymousState}/>*/}
             <Checkbox label='익명' checked={anonymousState} onChange={handleAnonymousCheck}/>
             <InputGroup className="border-1" style={{borderRadius: '10px', border: 'solid 1px #E3E3E3'}}>
                 <FormControl
