@@ -230,10 +230,11 @@ export default function Menu() {
                                                  style={{borderRadius: 50, marginRight: 10}}
                                                  alt="..."/>
                                             {user.decoded.name}
+                                            {menu.unread_alert>0?
                                             <Badge variant="primary" pill style={{
                                                 padding: "5px",
                                                 transform: 'translate(0px, -10px)'
-                                            }}>{menu.unread_alert}</Badge>
+                                            }}>{menu.unread_alert}</Badge>:null}
                                         </button>
                                         {
                                             ADMIN_ROLE.includes(user.decoded.role) ?
