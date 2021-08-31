@@ -171,7 +171,7 @@ function UserAuthModal(props){
 
                         <select value={role}
                                 onChange={handleRoleChange}>
-                            <option value="GENERAL">GENERAL</option>
+                            <option value="ROLE_GENERAL">ROLE_GENERAL</option>
                             <option value="ROLE_STUDENT">ROLE_STUDENT</option>
                             <option value="ROLE_COUNCIL">ROLE_COUNCIL</option>
                             <option value="ROLE_ADMIN">ROLE_ADMIN</option>
