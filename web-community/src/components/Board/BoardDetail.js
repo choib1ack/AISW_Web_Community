@@ -76,7 +76,6 @@ export default function BoardDetail({match}) {
 
         await axiosApi.post('/like/press', {data: data})
             .then((res) => {
-                alert("게시글에 좋아요를 눌렀습니다");
                 dispatch({type: 'PRESS'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
@@ -87,7 +86,6 @@ export default function BoardDetail({match}) {
     const handleLikeCancelClick = async () => {
         await axiosApi.delete(`/like/remove/${id}?target=POST`)
             .then((res) => {
-                alert("게시글에 좋아요를 취소했습니다");
                 dispatch({type: 'REMOVE'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
@@ -214,8 +212,6 @@ export default function BoardDetail({match}) {
                     </div>
 
                     <div className="p-4" style={{minHeight: "100px"}}>
-                        {/*좋아요*/}
-
                         {likeState.press ? <span style={{float: "right", fontSize: '13px', color: '#FF6262'}}>
                                 <img src={likeImage} onClick={handleLikeCancelClick}
                                      style={{cursor: "pointer"}}/> {likeState.num}</span> :
