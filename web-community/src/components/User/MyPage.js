@@ -10,9 +10,7 @@ import {useHistory} from "react-router-dom";
 import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 import newIcon from "../../icon/new_icon.png"
-import moreIcon from "../../icon/more_icon.png"
-import {useDispatch, useSelector} from "react-redux";
-import {resetDecoded} from "../../features/userSlice";
+import {useSelector} from "react-redux";
 
 
 export default function MyPage(props) {
@@ -22,8 +20,8 @@ export default function MyPage(props) {
     const [currentPage, setCurrentPage] = useState(0);
     const [loading, setLoading] = useState(false);
 
+    const user = useSelector(state => state.user);
     const {name, department} = useSelector(state => state.user.decoded);
-    const dispatch = useDispatch();
 
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
@@ -32,7 +30,6 @@ export default function MyPage(props) {
         setShow(false);
 
         window.localStorage.clear();
-
         history.push('/')   // 홈으로 가기
     }
 
@@ -74,7 +71,7 @@ export default function MyPage(props) {
 
             <Modal show={props.myPageShow} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage"
                    onHide={handleMyPageClose}>
-                <Modal.Header closeButton style={{border: 'none'}}>
+                <Modal.Header closeButton style={{border: 'none', paddingBottom: 10}}>
                     <Modal.Title
                         id="contained-modal-title-vcenter"
                         style={{fontSize: '16px'}}
@@ -84,13 +81,11 @@ export default function MyPage(props) {
                 </Modal.Header>
                 <Modal.Body className="show-grid" style={{padding: "0px"}}>
                     <Container style={{padding: 'none'}}>
-
-                        <Row style={{margin: "20px 30px"}}>
-                            <Col xs={1} md={1}>
-                                <img src={PersonImage}/>
-                            </Col>
-                            <Col xs={8} md={8}>
-
+                        <Row className="ml-auto mt-3 mb-4">
+                            <img className="align-self-center" width={40} src={user.imageUrl}
+                                 style={{borderRadius: 50, marginLeft: 10}}
+                                 alt="..."/>
+                            <Col style={{display: 'flex', justifyContent: 'space-between'}}>
                                 <div style={{marginLeft: "10px"}}>
                                     <p style={{fontSize: '14px', marginBottom: "0px"}}>{name}</p>
                                     <p style={{
@@ -98,14 +93,13 @@ export default function MyPage(props) {
                                         color: '#8C8C8C'
                                     }}> {department}</p>
                                 </div>
-                            </Col>
-                            <Col xs={3} md={3}
-                                 style={{textAlign: 'center', fontSize: '12px', color: '#8C8C8C'}}>
-                                <p style={{cursor: 'pointer'}} onClick={handleShow}>로그아웃</p>
+                                <div>
+                                    <p onClick={handleShow} className="logout-btn">로그아웃</p>
+                                </div>
                             </Col>
                         </Row>
 
-                        <p style={{color: '#0472FD', margin: '5px'}}>알림</p>
+                        <p style={{color: '#0472FD', margin: 10}}>알림</p>
 
                         <div style={{
                             height: '200px',
@@ -140,7 +134,7 @@ function MakeAlertList(props) {
         borderRadius: '10px',
         backgroundColor: '#FFFFFF',
         border: '1px solid #E3E3E3',
-        margin: '10px 30px 10px 30px',
+        margin: '10px 20px 10px 20px',
         padding: '15px',
         height: '70px',
         cursor: 'pointer'
@@ -149,7 +143,7 @@ function MakeAlertList(props) {
         borderRadius: '10px',
         backgroundColor: '#FFFFFF',
         border: '1px solid #E3E3E3',
-        margin: '10px 30px 10px 30px',
+        margin: '10px 20px 10px 20px',
         padding: '15px',
         height: '70px',
         cursor: 'pointer',
@@ -272,7 +266,7 @@ function MakeAlertList(props) {
 
     if (props.loading) return <Loading/>;
     if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
-    if (alertList.list.length == 0) return <div>데이터가 없습니다.</div>;
+    if (alertList.list.length === 0) return <div>데이터가 없습니다.</div>;
 
     return (
         <>

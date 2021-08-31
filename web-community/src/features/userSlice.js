@@ -28,7 +28,8 @@ export const userSlice = createSlice({
         userData: null,
         isOnline: false,
         error: null,
-        decoded: null
+        decoded: null,
+        imageUrl: '',
     },
     reducers: {
         setUserData: (state, action) => {
@@ -39,7 +40,10 @@ export const userSlice = createSlice({
         },
         resetDecoded: (state) => {
             state.decoded = null;
-        }
+        },
+        setImageUrl: (state, action) => {
+            state.imageUrl = action.payload;
+        },
     },
     extraReducers: {
         // [checkExist.fulfilled]: (state, action) => {
@@ -59,6 +63,6 @@ export const userSlice = createSlice({
     }
 })
 
-export const {setUserData, setDecoded, resetDecoded} = userSlice.actions
+export const {setUserData, setDecoded, resetDecoded, setImageUrl} = userSlice.actions
 
 export default userSlice.reducer
