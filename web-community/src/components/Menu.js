@@ -181,8 +181,9 @@ export default function Menu() {
                                     </div>
                                 </>
                             ) : null}
-                        <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded
-                                   style={{justifyContent: 'right'}}/>
+                        <div style={{marginRight: 20}}>
+                            <Hamburger toggled={isOpen} toggle={setOpen} color="dimgrey" size={20} rounded/>
+                        </div>
                     </Row>
                     :
                     <>
