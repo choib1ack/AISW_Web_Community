@@ -7,6 +7,7 @@ import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
 import {BlueButton} from "../Button/BlueButton";
 import SubjectList from "./SubjectList";
+import {useSelector} from "react-redux";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);
@@ -17,6 +18,7 @@ function BoardList({match}) {
             search_type: "select_title",
             keyword: ""
         });
+    const {decoded} = useSelector((state) => state.user);
 
     window.scrollTo(0, 0);
 
@@ -125,7 +127,10 @@ function BoardList({match}) {
                 selected_subject_list={selectedSubject}
             />
 
-            <BlueButton match={match} type='newBoard' title="글쓰기"/>
+            {decoded ?
+                <BlueButton match={match} type='newNotice' title="글쓰기"/>
+                : null
+            }
         </div>
     );
 }
