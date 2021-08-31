@@ -23,7 +23,7 @@ function GoodInfo() {
                     setLoading(false);
                     return;
                 }
-                const response = await axiosApi.get("/auth-admin/site");
+                const response = await axiosApi.get("/site");
                 setSiteData(Object.values(response.data.data));
                 setLoading(false);
             } catch (e) {
