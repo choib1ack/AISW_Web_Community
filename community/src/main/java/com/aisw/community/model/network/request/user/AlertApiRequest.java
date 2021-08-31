@@ -26,4 +26,6 @@ public class AlertApiRequest {
     private Long postId;
 
     private String content;
+
+    private Long userId;
 }

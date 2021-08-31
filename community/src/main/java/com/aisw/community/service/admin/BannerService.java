@@ -52,7 +52,7 @@ public class BannerService {
     })
     public Header<BannerApiResponse> create(BannerApiRequest bannerApiRequest, MultipartFile[] files) {
         String url = bannerApiRequest.getLinkUrl();
-        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
             bannerApiRequest.setLinkUrl("http://" + url);
         }
 
@@ -106,7 +106,7 @@ public class BannerService {
                 () -> new BannerNotFoundException(bannerApiRequest.getId()));
 
         String url = bannerApiRequest.getLinkUrl();
-        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
             bannerApiRequest.setLinkUrl("http://" + url);
         }
 

@@ -45,9 +45,9 @@ public class AlertService {
     private UserService userService;
 
     @Transactional
-    public Header<AlertApiResponse> create(User user, AlertApiRequest alertApiRequest) {
+    public Header<AlertApiResponse> create(AlertApiRequest alertApiRequest) {
         Alert alert = Alert.builder()
-                .user(user)
+                .user(userService.getUser(alertApiRequest.getUserId()))
                 .firstCategory(alertApiRequest.getFirstCategory())
                 .secondCategory(alertApiRequest.getSecondCategory())
                 .postId(alertApiRequest.getPostId())

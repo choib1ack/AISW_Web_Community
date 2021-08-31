@@ -2,6 +2,7 @@ package com.aisw.community.service.user;
 
 import com.aisw.community.component.advice.exception.PhoneNumberNotSuitableException;
 import com.aisw.community.component.advice.exception.SignUpNotSuitableException;
+import com.aisw.community.component.advice.exception.UserNotFoundException;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
@@ -93,6 +94,10 @@ public class UserService {
     public User getUser(Authentication authentication) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return principal.getUser();
+    }
+
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
     private UserApiResponse response(User user) {

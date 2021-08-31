@@ -49,7 +49,7 @@ public class SiteInformationService {
     })
     public Header<SiteInformationApiResponse> create(SiteInformationApiRequest siteInformationApiRequest, MultipartFile[] files) {
         String url = siteInformationApiRequest.getLinkUrl();
-        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
             siteInformationApiRequest.setLinkUrl("http://" + url);
         }
 
@@ -108,7 +108,7 @@ public class SiteInformationService {
                 .orElseThrow(() -> new SiteCategoryNameNotFoundException(siteInformationApiRequest.getCategory()));
 
         String url = siteInformationApiRequest.getLinkUrl();
-        if (!url.startsWith("http://") || !url.startsWith("https://")) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
             siteInformationApiRequest.setLinkUrl("http://" + url);
         }
 

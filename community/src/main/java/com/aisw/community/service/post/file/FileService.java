@@ -64,7 +64,7 @@ public class FileService {
         String fileName = fileStorageService.storeFile(multipartFile);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(prefix + "/file/download/")
+                .path((prefix != null) ? prefix + "/file/download/" : "/file/download/")
                 .path(fileName)
                 .toUriString();
 
