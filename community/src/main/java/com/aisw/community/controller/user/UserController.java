@@ -57,9 +57,10 @@ class UserController {
     }
 
     @GetMapping("/auth/alert/{id}")
-    public Header<AlertApiResponse> checkAlert(Authentication authentication, @PathVariable Long id) {
+    public Long checkAlert(Authentication authentication, @PathVariable Long id) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        return alertService.checkAlert(principal.getUser(), id);
+        alertService.checkAlert(principal.getUser(), id);
+        return alertService.getNumberOfUnreadAlert(principal.getUser().getId());
     }
 
     @GetMapping("/auth/refresh")
