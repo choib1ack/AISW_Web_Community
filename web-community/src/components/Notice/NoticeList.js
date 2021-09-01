@@ -1,7 +1,5 @@
-import Container from "react-bootstrap/Container";
 import Title from "../Title";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import searchImage from "../../icon/search_black.png";
 import React, {useState} from "react";
 import MakeNoticeList from "./MakeNoticeList"
@@ -18,7 +16,6 @@ export default function NoticeList({match}) {
             search_type: "select_title",
             keyword: ""
         });
-
     const {decoded} = useSelector((state) => state.user);
 
     window.scrollTo(0, 0);

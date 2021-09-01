@@ -106,11 +106,9 @@ export default function BoardDetail({match}) {
                 let response;
                 if (decoded) {
                     response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`);
-                } else {
-                    response = await axiosApi.get(`/board/${board_category}/comment/${id}`);
+                } else {    // 로그인 안 했으면 좋아요 기록이 없으니까
+                    response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment/${id}`);
                 }
-
-                console.log(response.data.data);
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
 
                 dispatch({
