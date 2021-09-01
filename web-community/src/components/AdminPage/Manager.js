@@ -17,13 +17,14 @@ function Manager({match}) {
     const active_change_dispatch = useDispatch();
     active_change_dispatch(setActiveTab(6));
 
-    // const user = useSelector(state => state.user);
-    // if (!(user.decoded.role === "ROLE_ADMIN" || user.decoded.role === "ROLE_ADMIN")){
-    //     if(!alert('접근 권한이 없습니다!')){
-    //         window.history.back();
-    //     }
-    //     return;
-    // }
+    const user = useSelector(state => state.user);
+
+    if (!(user.decoded.role === "ROLE_ADMIN" || user.decoded.role === "ROLE_DEVELOPER")){
+        if (!alert('접근 권한이 없습니다!')) {
+            window.history.back();
+        }
+        return(<></>);
+    }
 
     return (
         <div className='Manager'>
