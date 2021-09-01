@@ -5,6 +5,8 @@ import {useAccordionToggle} from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import Title from "./Title";
 import axios from "axios";
+import {useDispatch} from "react-redux";
+import {setActiveTab} from "../features/menuSlice";
 
 
 function FAQ(props) {
@@ -29,6 +31,9 @@ function FAQ(props) {
     const [faqData, setFaqData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(5));
 
     useEffect(() => {
         const fetchFaqData = async () => {

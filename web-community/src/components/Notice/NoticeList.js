@@ -8,7 +8,8 @@ import MakeNoticeList from "./MakeNoticeList"
 import SelectButton from "../Button/SelectButton";
 import {BlueButton} from "../Button/BlueButton";
 import {NOTICE_WRITE_ROLE} from "../../constants";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {setActiveTab} from "../../features/menuSlice";
 
 export default function NoticeList({match}) {
     const [category, setCategory] = useState(0);
@@ -20,6 +21,8 @@ export default function NoticeList({match}) {
         });
 
     const {decoded} = useSelector((state) => state.user);
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(1));
 
     window.scrollTo(0, 0);
 
@@ -33,6 +36,7 @@ export default function NoticeList({match}) {
             setSearchData({...searchData, keyword: "", search: 0});
         }
     }
+
 
     const handleSearchTypeChange = (event) => {
         setSearchData({...searchData, search_type: event.target.value})

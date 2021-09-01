@@ -6,11 +6,16 @@ import Title from "../Title";
 import Card from "react-bootstrap/Card";
 import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
+import {useDispatch} from "react-redux";
+import {setActiveTab} from "../../features/menuSlice";
 
 function GoodInfo() {
     const [siteData, setSiteData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(4));
 
     window.scrollTo(0, 0);
 

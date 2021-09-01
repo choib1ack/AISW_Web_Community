@@ -14,9 +14,10 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axiosApi from "../../axiosApi";
 import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import downloadFile from '../../features/downloadFile';
 import {AttachmentFile} from "../Notice/NoticeDetail";
+import {setActiveTab} from "../../features/menuSlice";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -33,6 +34,9 @@ export default function BoardDetail({match}) {
     const handleClose = () => setShow(false);
 
     const {decoded} = useSelector(state => state.user);
+
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(2));
 
     window.scrollTo(0, 0);
 
