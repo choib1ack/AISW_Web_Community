@@ -128,7 +128,7 @@ function BoardList({match}) {
             />
 
             {decoded ?
-                <BlueButton match={match} type='newNotice' title="글쓰기"/>
+                <BlueButton match={match} type='newBoard' title="글쓰기"/>
                 : null
             }
         </div>

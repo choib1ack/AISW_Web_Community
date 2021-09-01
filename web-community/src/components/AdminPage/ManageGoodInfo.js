@@ -23,7 +23,7 @@ function ManageGoodInfo({match}) {
                 setError(null);
                 //setSiteData(null);
                 setLoading(true);
-                if(siteData) {
+                if (siteData) {
                     setLoading(false);
                     return;
                 }
@@ -67,16 +67,16 @@ function ManageGoodInfo({match}) {
 
 export default ManageGoodInfo;
 
-function AddCategoryButton({setSiteData}){
+function AddCategoryButton({setSiteData}) {
     const [showCategoryModal, setShowCategoryModal] = useState(false);
 
-    const handleAddCategoryModalShow = () =>{
+    const handleAddCategoryModalShow = () => {
         setShowCategoryModal(true);
     }
 
-    return(
+    return (
         <>
-            <Row style={{marginTop: '3rem'}} >
+            <Row style={{marginTop: '3rem'}}>
                 <Col>
                     <BorderButton content='+ 새 카테고리 추가하기' onClick={handleAddCategoryModalShow}/>
                 </Col>
@@ -108,7 +108,7 @@ function MakeSiteList({categories, setSiteData}) {
     )
 }
 
-function CategoryBox({category_info,setSiteData}) {
+function CategoryBox({category_info, setSiteData}) {
     const [showSiteAddModal, setShowSiteAddModal] = useState(false);
     const [showCategoryEditModal, setShowCategoryEditModal] = useState(false);
 
@@ -134,45 +134,45 @@ function CategoryBox({category_info,setSiteData}) {
     return (
         <>
             <p style={style}>{category_info.name}
-                <img src={edit_icon} height="12px" style={{paddingLeft:'10px', cursor:'pointer'}} onClick={handleCategoryEditModalShow}/>
+                <img src={edit_icon} height="12px" style={{paddingLeft: '10px', cursor: 'pointer'}}
+                     onClick={handleCategoryEditModalShow}/>
             </p>
 
-
             <Row>
-                {category_info.site_information_api_response_list.length>0?category_info.site_information_api_response_list.map((data, index) => (
+                {category_info.site_information_api_response_list.length > 0 ? category_info.site_information_api_response_list.map((data, index) => (
                     <SiteBox
                         key={index}
                         site_info={data}
                         setSiteData={setSiteData}
                         category_name={category_info.name}
                     />
-                )):null}
+                )) : null}
                 <Col lg={2} md={2} sm={2}>
                     <img src={addWebPageImage} style={add_btn_style} onClick={handleSiteAddModalShow}/>
                 </Col>
             </Row>
 
-            {showSiteAddModal?<SiteModal
+            {showSiteAddModal ? <SiteModal
                 show={showSiteAddModal}
                 setShow={setShowSiteAddModal}
                 setSiteData={setSiteData}
                 category_name={category_info.name}
-            />:null}
+            /> : null}
 
-            {showCategoryEditModal?<CategoryModal
+            {showCategoryEditModal ? <CategoryModal
                 mode="update"
                 id={category_info.id}
                 name={category_info.name}
                 showCategoryModal={showCategoryEditModal}
                 setShowCategoryModal={setShowCategoryEditModal}
                 setSiteData={setSiteData} // 새로고침용
-            />:null}
+            /> : null}
 
         </>
     )
 }
 
-function SiteBox({site_info,setSiteData, category_name}) {
+function SiteBox({site_info, setSiteData, category_name}) {
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
     let style = {
@@ -188,16 +188,17 @@ function SiteBox({site_info,setSiteData, category_name}) {
     return (
         <>
             <Col lg={2} md={2} sm={2} id={site_info.id}>
-                <img src={site_info.file_api_response_list[0].file_download_uri} style={style} onClick={handleUpdateModalShow} />
+                <img src={site_info.file_api_response_list[0].file_download_uri} style={style}
+                     onClick={handleUpdateModalShow}/>
             </Col>
-            {showUpdateModal?<SiteModal
+            {showUpdateModal ? <SiteModal
                 show={showUpdateModal}
                 setShow={setShowUpdateModal}
                 info={site_info}
                 setSiteData={setSiteData}
                 category_name={category_name}
                 file_info={site_info.file_api_response_list[0]}
-            />:null}
+            /> : null}
         </>
     )
 }

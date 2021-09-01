@@ -143,16 +143,8 @@ function SiteModal(props) {
             formData.append('siteInformationApiRequest.id', props.info.id);
         }
 
-        // print form data log
-        // console.log("FormData Log-----------");
-        // for (let value of formData.values()) {
-        //     console.log(value);
-        // }
-
-
         if (mode === "add") {
             axiosApi.post("/auth-admin/site", formData).then(res => {
-
                 props.setShow(false);
                 alert('새 사이트가 등록되었습니다.')
                 props.setSiteData(null);
