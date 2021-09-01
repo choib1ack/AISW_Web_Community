@@ -33,6 +33,19 @@
     color: #0472FD;
     transition: all ease 0.1s;
 }
+.Menu-button-active {
+    padding: 7px 30px;
+    background-color: Transparent;
+    background-repeat: no-repeat;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none !important;
+    font-size: 14px;
+    color: #0472FD;
+    font-weight: bold;
+    transition: all ease 0.1s;
+}
 
 @media screen and (max-width: 768px) {
     .Menu-button {

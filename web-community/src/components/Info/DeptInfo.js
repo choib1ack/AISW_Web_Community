@@ -5,8 +5,14 @@ import Title from "../Title";
 import Table from "react-bootstrap/Table";
 import {useHistory} from "react-router-dom";
 import './DeptInfo.css';
+import {useDispatch} from "react-redux";
+import {setActiveTab} from "../../features/menuSlice";
 
 function DeptInfo() {
+
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(3));
+
     let textBox = {
         textAlign: 'left',
         padding: '20px',

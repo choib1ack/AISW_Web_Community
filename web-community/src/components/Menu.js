@@ -44,33 +44,6 @@ export default function Menu() {
         }
     }
 
-    const handleClickTab = (event) => {
-        let name = event.target.name;
-        switch (name) {
-            case "logo":
-                dispatch(setActiveTab(0));
-                break;
-            case "notice":
-                dispatch(setActiveTab(1));
-                break;
-            case "board":
-                dispatch(setActiveTab(2));
-                break;
-            case "dept_info":
-                dispatch(setActiveTab(3));
-                break;
-            case "site":
-                dispatch(setActiveTab(4));
-                break;
-            case "faq":
-                dispatch(setActiveTab(5));
-                break;
-            case "manage_page":
-                dispatch(setActiveTab(6));
-                break;
-        }
-    }
-
     // 구글 연동 회원가입 성공시
     async function handleJoinSuccess(result) {
         const username = result.tokenObj.idpId + '_' + result.profileObj.googleId;
@@ -150,7 +123,7 @@ export default function Menu() {
             <div className="Menu p-lg-3 p-sm-2">
                 <div className="align-self-center">
                     <Link to="/">
-                        <img src={logo} style={{width: "120px"}} name="logo" onClick={handleClickTab} alt='...'/>
+                        <img src={logo} style={{width: "120px"}} name="logo" alt='...'/>
                     </Link>
                 </div>
 
@@ -189,32 +162,32 @@ export default function Menu() {
                     <>
                         <div className="align-self-center">
                             <Link to="/notice">
-                                <button className="Menu-button" name="notice" onClick={handleClickTab}
-                                        style={{color: menu.active === 1 ? "#0472FD" : "dimgrey"}}>
+                                <button className={menu.active === 1?"Menu-button-active":"Menu-button"}
+                                        name="notice">
                                     공지사항
                                 </button>
                             </Link>
                             <Link to="/board">
-                                <button className="Menu-button" name="board" onClick={handleClickTab}
-                                        style={{color: menu.active === 2 ? "#0472FD" : "dimgrey"}}>
+                                <button className={menu.active === 2?"Menu-button-active":"Menu-button"}
+                                        name="board">
                                     게시판
                                 </button>
                             </Link>
                             <Link to="/deptInfo">
-                                <button className="Menu-button" name="dept_info" onClick={handleClickTab}
-                                        style={{color: menu.active === 3 ? "#0472FD" : "dimgrey"}}>
+                                <button className={menu.active === 3?"Menu-button-active":"Menu-button"}
+                                        name="dept_info">
                                     학과정보
                                 </button>
                             </Link>
                             <Link to="/goodInfo">
-                                <button className="Menu-button" name="site" onClick={handleClickTab}
-                                        style={{color: menu.active === 4 ? "#0472FD" : "dimgrey"}}>
+                                <button className={menu.active === 4?"Menu-button-active":"Menu-button"}
+                                        name="site">
                                     유용한사이트
                                 </button>
                             </Link>
                             <Link to="/faq">
-                                <button className="Menu-button" name="faq" onClick={handleClickTab}
-                                        style={{color: menu.active === 5 ? "#0472FD" : "dimgrey"}}>
+                                <button className={menu.active === 5?"Menu-button-active":"Menu-button"}
+                                        name="faq">
                                     FAQ
                                 </button>
                             </Link>
@@ -230,17 +203,17 @@ export default function Menu() {
                                                  style={{borderRadius: 50, marginRight: 10}}
                                                  alt="..."/>
                                             {user.decoded.name}
+                                            {menu.unread_alert>0?
                                             <Badge variant="primary" pill style={{
                                                 padding: "5px",
                                                 transform: 'translate(0px, -10px)'
-                                            }}>{menu.unread_alert}</Badge>
+                                            }}>{menu.unread_alert}</Badge>:null}
                                         </button>
                                         {
                                             ADMIN_ROLE.includes(user.decoded.role) ?
                                                 <Link to="/manager">
-                                                    <button className="Menu-button" name="manage_page"
-                                                            onClick={handleClickTab}
-                                                            style={{color: menu.active == 6 ? "#0472FD" : "dimgrey"}}>
+                                                    <button className={menu.active === 6?"Menu-button-active":"Menu-button"}
+                                                            name="manage_page">
                                                         관리자페이지
                                                     </button>
                                                 </Link>
@@ -291,35 +264,35 @@ export default function Menu() {
                     <div>
                         <div>
                             <Link to="/notice">
-                                <button className="Menu-button" name="notice" onClick={handleClickTab}>
+                                <button className={menu.active === 1?"Menu-button-active":"Menu-button"} name="notice">
                                     공지사항
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/board">
-                                <button className="Menu-button" name="board" onClick={handleClickTab}>
+                                <button className={menu.active === 2?"Menu-button-active":"Menu-button"} name="board">
                                     게시판
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/deptInfo">
-                                <button className="Menu-button" name="dept_info" onClick={handleClickTab}>
+                                <button className={menu.active === 3?"Menu-button-active":"Menu-button"} name="dept_info">
                                     학과정보
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/goodInfo">
-                                <button className="Menu-button" name="site" onClick={handleClickTab}>
+                                <button className={menu.active === 4?"Menu-button-active":"Menu-button"} name="site">
                                     유용한사이트
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/faq">
-                                <button className="Menu-button" name="faq" onClick={handleClickTab}>
+                                <button className={menu.active === 5?"Menu-button-active":"Menu-button"} name="faq">
                                     FAQ
                                 </button>
                             </Link>
@@ -333,9 +306,7 @@ export default function Menu() {
                                             ADMIN_ROLE.includes(user.decoded.role) ?
                                                 <div>
                                                     <Link to="/manager">
-                                                        <button className="Menu-button" name="manage_page"
-                                                                onClick={handleClickTab}
-                                                                style={{color: menu.active == 6 ? "#0472FD" : "dimgrey"}}>
+                                                        <button className={menu.active === 6?"Menu-button-active":"Menu-button"} name="manage_page">
                                                             관리자페이지
                                                         </button>
                                                     </Link>

@@ -7,7 +7,9 @@ import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
 import {BlueButton} from "../Button/BlueButton";
 import SubjectList from "./SubjectList";
+
 import {useSelector} from "react-redux";
+import {setActiveTab} from "../../features/menuSlice";
 
 function BoardList({match}) {
     const [category, setCategory] = useState(0);
@@ -21,6 +23,10 @@ function BoardList({match}) {
     const {decoded} = useSelector((state) => state.user);
 
     window.scrollTo(0, 0);
+
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(2));
+
 
     const handleSearchTextChange = (event) => {
         setSearchData(
