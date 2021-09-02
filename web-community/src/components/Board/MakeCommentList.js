@@ -158,6 +158,7 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
                     </Card.Body>
                 </Card>
                 <MakeReCommentList
+                    board_id={id}
                     board_category={board_category}
                     boardReCommentData={data.sub_comment}
                     Refresh={Refresh}
