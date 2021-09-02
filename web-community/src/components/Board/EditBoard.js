@@ -35,7 +35,7 @@ function EditBoard({match}) {
                     setModalShow(true);
                 })
                 .catch(error => {
-                    console.log(error);
+                    // console.log(error);
                     alert("글 게시에 실패하였습니다.");
                 })
         } else {
@@ -44,7 +44,7 @@ function EditBoard({match}) {
             ).then((res) => {
                 setModalShow(true)
             }).catch(error => {
-                console.log(error);
+                // console.log(error);
                 alert("글 게시에 실패하였습니다.");
             })
         }
@@ -114,11 +114,16 @@ function EditBoard({match}) {
         setFiles(files.concat(array));
     }
 
+    const ReplaceLink = () => {
+        history.goBack();
+    }
+
     return (
         <div className="EditBoard">
             <Container>
-                <FinishModal show={modalShow} link={`/board`}
-                             title="게시판" body="글 수정이 완료되었습니다 !"/>
+                <FinishModal show={modalShow}
+                             // link={`/board/${board_category}/${id}`}
+                             title="게시판" body="글 수정이 완료되었습니다 !" replace_link={ReplaceLink}/>
 
                 <Title text='게시글 수정' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>

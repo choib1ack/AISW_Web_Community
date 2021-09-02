@@ -17,7 +17,7 @@ import {Checkbox} from "semantic-ui-react";
 
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
-    const [modalShow, setModalShow] = useState(false);
+    const [modalState, setModalState] = useState({show:false, id:null, category:null});
     const [anonymousState, setAnonymousState] = useState(true);
 
     const history = useHistory();
@@ -31,19 +31,19 @@ function NewBoard() {
         if (type === 'file') {
             axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}/upload`, data)
                 .then((res) => {
-                    setModalShow(true)
+                    setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
                 })
                 .catch(error => {
-                    console.log(error);
+                    // console.log(error);
                     alert("글 게시에 실패하였습니다.");
                 })
         } else {
             axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`,
                 {data: data},
             ).then((res) => {
-                setModalShow(true)
+                setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
             }).catch(error => {
-                console.log(error);
+                // console.log(error);
                 alert("글 게시에 실패하였습니다.");
             })
         }
@@ -91,10 +91,16 @@ function NewBoard() {
         }
     }
 
+    const ReplaceLink = () => {
+        history.replace(`/board/${modalState.category}/${modalState.id}`);
+    }
+
     return (
         <div className="NewBoard">
             <Container>
-                <FinishModal show={modalShow} link={`/board`}
+                <FinishModal show={modalState.show}
+                             // link={`/board`}
+                             replace_link={ReplaceLink}
                              title="게시판" body="글 게시가 완료되었습니다 !"/>
 
                 <Title text='새 게시글 작성' type='1'/>
