@@ -7,6 +7,7 @@ import Title from "./Title";
 import axios from "axios";
 import {useDispatch} from "react-redux";
 import {setActiveTab} from "../features/menuSlice";
+import Loading from "./Loading";
 
 
 function FAQ(props) {
@@ -55,18 +56,24 @@ function FAQ(props) {
         fetchFaqData();
     }, []);
 
+    if (loading) return <Loading/>;
+    if (error) return (
+        <p>에러가 발생했습니다{error.toString()}</p>
+    );
+    if (!faqData) return null;
+
     return (
         <div className="FAQ">
             <Container>
                 <Title text='FAQ' type='1'/>
-
-                {faqData!=null?faqData.map((data, index) =>(
+                {console.log(faqData)}
+                {faqData.length > 0 ? faqData.map((data, index) => (
                     <FaqItem
                         index={index}
                         question={data.question}
                         answer={data.answer}
                     />
-                )):null}
+                )) : <p>데이터가 없습니다.</p>}
 
             </Container>
         </div>
