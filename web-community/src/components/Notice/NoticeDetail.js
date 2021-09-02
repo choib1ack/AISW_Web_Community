@@ -130,7 +130,7 @@ export default function NoticeDetail({match}) {
                         paddingBottom: '10px'
                     }}>
                         <p style={{color: "#0472FD", fontSize: '12px'}}
-                           className="mb-1">{Category(notice_category)}></p>
+                           className="mb-1">{Category(notice_category)}</p>
                         <p style={{fontSize: '16x'}} className="d-inline-block mr-1">{noticeDetailData.title}</p>
                         {noticeDetailData.file_api_response_list[0] == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}
