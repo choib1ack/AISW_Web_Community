@@ -22,17 +22,10 @@ export default function MakeNoticeList(props) {
         }
     );
 
+    const [curPage, setCurPage] = useState(0);
+
     const setPagination = (now_page) => {
-        setNoticeData({
-            ...noticeData,
-            normal: {
-                ...noticeData.normal,
-                page_info: {
-                    ...noticeData.normal.page_info,
-                    "current_page": now_page
-                }
-            }
-        })
+        setCurPage(now_page);
     }
 
     const [loading, setLoading] = useState(false);
@@ -72,7 +65,8 @@ export default function MakeNoticeList(props) {
                     break;
             }
         }
-        url += search_data.search > 0 ? "" : "?page=" + (noticeData.normal.page_info.current_page);
+        url += search_data.search > 0 ? "" : "?page=" + curPage;
+        console.log(url);
         return url;
     }
 
@@ -133,7 +127,7 @@ export default function MakeNoticeList(props) {
 
                 const response = await axiosApi.get(url(props.category));
 
-                if (noticeData.normal.page_info.current_page === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                     setNoticeData({
                         ...noticeData,
                         fix_notice: response.data.data.notice_api_notice_response_list,
@@ -160,7 +154,7 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.searchData.search]);
+    }, [props.category, props.searchData.search, curPage]);
 
     if (loading) return <Loading/>;
     if (error) return <tr>
@@ -244,9 +238,12 @@ export default function MakeNoticeList(props) {
                 ))}
                 </tbody>
             </table>
+
             <Pagination
-                pageInfo={noticeData.normal.page_info}
-                setPagination={setPagination}/>
+                current_page={curPage}
+                total_pages={noticeData.normal.page_info.total_pages}
+                setPagination={setPagination}
+            />
         </>
     );
 }

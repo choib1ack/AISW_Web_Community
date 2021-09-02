@@ -25,18 +25,10 @@ export default function MakeBoardList(props) {
         }
     );
 
-    const setPagination = (now_page) => {
+    const [curPage, setCurPage] = useState(0);
 
-        setBoardData({
-            ...boardData,
-            normal: {
-                ...boardData.normal,
-                page_info: {
-                    ...boardData.normal.page_info,
-                    "current_page": now_page
-                }
-            }
-        })
+    const setPagination = (now_page) => {
+        setCurPage(now_page);
     }
 
     let search_data = props.searchData;
@@ -77,11 +69,12 @@ export default function MakeBoardList(props) {
         if (props.selected_subject_list.length !== 0) {
             url += "/subject";
         }
-        url += search_data.search > 0 ? "" : "?page=" + (boardData.normal.page_info.current_page);
+        url += search_data.search > 0 ? "" : "?page=" + curPage;
         if (props.selected_subject_list.length !== 0) {
             // console.log("서브젝트");
             url += "&subject=" + props.selected_subject_list.join(",");
         }
+        console.log(url);
         return url;
     }
 
@@ -111,7 +104,7 @@ export default function MakeBoardList(props) {
 
 
     const indexing = (index) => {
-        let current_max = boardData.normal.page_info.total_elements - (boardData.normal.page_info.current_page * 10); // 현재 페이지에서 max값
+        let current_max = boardData.normal.page_info.total_elements - (curPage * 10); // 현재 페이지에서 max값
         return current_max - index.toString();
     }
 
@@ -170,7 +163,7 @@ export default function MakeBoardList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.searchData.search, props.selected_subject_list]);
+    }, [props.category, props.searchData.search, props.selected_subject_list, curPage]);
 
     if (loading) return <Loading/>;
     if (error) return (
@@ -257,7 +250,8 @@ export default function MakeBoardList(props) {
                 </tbody>
             </table>
             <Pagination
-                pageInfo={boardData.normal.page_info}
+                current_page={curPage}
+                total_pages={boardData.normal.page_info.total_pages}
                 setPagination={setPagination}
             />
         </>
