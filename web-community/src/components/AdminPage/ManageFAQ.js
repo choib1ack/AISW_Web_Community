@@ -83,15 +83,18 @@ function ManageFAQ() {
 
                         <tbody className={'english_table type2'}>
 
-                        {faqData!=null?faqData.map(data=>(
+                        {console.log(faqData)}
+
+                        {faqData && faqData.length>0?faqData.map((data, index)=>(
                             <FaqManageItem
+                                index={index}
                                 id={data.id}
                                 question={data.question}
                                 answer={data.answer}
                                 setFaqData={setFaqData}
                                 Refresh={Refresh}
                                 />
-                        )):<div>데이터가 없습니다</div>}
+                        )):<tr><td colSpan={2}>데이터가 없습니다</td></tr>}
                         </tbody>
                     </Table>
                 </div>
@@ -101,14 +104,14 @@ function ManageFAQ() {
 
 }export default ManageFAQ;
 
-function FaqManageItem({question, answer, id, Refresh}){
+function FaqManageItem({question, answer, id, Refresh, index}){
 
     const [updateModalShow, setUpdateModalShow] = useState(false);
 
     const handleFaqModalShow = () => setUpdateModalShow(true);
 
     return(
-        <tr key={id}>
+        <tr key={index}>
             <td>
                 <div style={{textAlign:"left", padding:"10px 20px"}}>
                     <p style={{fontWeight:"bold"}}>

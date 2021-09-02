@@ -37,13 +37,13 @@ function DeptInfo() {
             <Title text='기본요건' type='2'/>
             <p style={textBox}>
                 - 120학점 이수<br/>
-                - 필수 전공 과목 이수 <span style={{marginLeft: "10px", color: "#0472fd", cursor: "pointer"}}
+                - 필수 전공 과목 이수 <span className="link-underline"
                                     onClick={() => ToLink("/Booklet")}>[학번별 학사요람 확인하기]</span> <br/>
-                - 필수 교양 과목 이수 <span style={{marginLeft: "10px", color: "#0472fd", cursor: "pointer"}}
+                - 필수 교양 과목 이수 <span className="link-underline"
                                     onClick={() => ToLink("/EssentialElective")}>[학번별 필수 교양 확인하기]</span> <br/>
                 - 17학번부터 트렉제 적용. 동일 트랙에서 3개 교과목 이상 이수 필수. (단 4개 교과목 중 1개는 다른 트랙에서 수강 가능) <br/>
                 - 이 외 학점은 추천과목/선택가능과목 내에서 수강 가능 <a href="https://sw.gachon.ac.kr/cms/?p=17" target="_blank"
-                                                   style={{marginLeft: "10px", color: "#0472fd"}}> [수강 가능 교양 과목
+                                                   className="link-underline" > [수강 가능 교양 과목
                 확인하기] </a>
             </p>
             <p style={{textAlign: "left"}}>
@@ -74,7 +74,7 @@ function DeptInfo() {
                     <th style={{width: "50%", textAlign: "center"}}>인증 능력</th>
                 </tr>
                 </thead>
-                <tbody className="english_table">
+                <tbody className="english_table type2">
                 <tr>
                     <td>TOEIC</td>
                     <td style={{textAlign: "center", paddingLeft: "0px"}}>700점 이상</td>

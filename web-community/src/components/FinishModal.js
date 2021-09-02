@@ -6,7 +6,10 @@ import {Link} from "react-router-dom";
 export default function FinishModal(props) {
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
+    const handleClose = () => {
+        setShow(false);
+        props.replace_link();
+    }
 
     useEffect(() => {
         if (props.show === true) {
@@ -21,11 +24,11 @@ export default function FinishModal(props) {
             </Modal.Header>
             <Modal.Body>{props.body}</Modal.Body>
             <Modal.Footer>
-                <Link to={props.link}>
+                {/*<Link to={props.link}>*/}
                     <Button variant="primary" onClick={handleClose}>
                         확인
                     </Button>
-                </Link>
+                {/*</Link>*/}
             </Modal.Footer>
         </Modal>
     );

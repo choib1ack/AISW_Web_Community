@@ -73,3 +73,15 @@ body{
     background-color: #e7f1ff;
     /*transition: all ease 0.3s;*/
 }
+
+.link-underline {
+    margin-left: 10px;
+    color: #0472fd;
+    transition: all ease 0.2s;
+}
+.link-underline:hover {
+    color: #85b7f5;
+    cursor: pointer;
+    text-decoration:underline;
+    transition: all ease 0.2s;
+}
