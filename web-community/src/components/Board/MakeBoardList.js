@@ -124,6 +124,7 @@ export default function MakeBoardList(props) {
     // <tr> 전체에 링크 연결
     let history = useHistory();
     const ToLink = (url) => {
+        history.push(`/board/${props.category}`);
         history.push(url);
     }
 
@@ -205,7 +206,7 @@ export default function MakeBoardList(props) {
                 <tbody>
                 {boardData.fix_urgent !== null && props.searchData.search == 0 ? boardData.fix_urgent.map(data => (
                     <tr key={data.id}
-                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                        onClick={() => ToLink(`/board/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                         <td>{status(data.status)}</td>
                         <td>
@@ -219,7 +220,7 @@ export default function MakeBoardList(props) {
                 )) : null}
                 {boardData.fix_notice !== null && props.searchData.search == 0 ? boardData.fix_notice.map(data => (
                     <tr key={data.id}
-                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                        onClick={() => ToLink(`/board/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                         <td>{status(data.status)}</td>
                         <td>
@@ -234,7 +235,7 @@ export default function MakeBoardList(props) {
                 {boardData.normal.data.map((data, index) =>
                     (
                         <tr key={data.id}
-                            onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                            onClick={() => ToLink(`/board/${categoryName(props.category) === 0 ?
                                 data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                             <td>{indexing(index)}</td>
                             <td>
