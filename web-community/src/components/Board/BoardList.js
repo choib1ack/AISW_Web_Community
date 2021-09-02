@@ -7,7 +7,7 @@ import SelectButton from "../Button/SelectButton";
 import MakeBoardList from "./MakeBoardList";
 import {BlueButton} from "../Button/BlueButton";
 import SubjectList from "./SubjectList";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setActiveTab} from "../../features/menuSlice";
 
 function BoardList({match}) {
@@ -25,6 +25,7 @@ function BoardList({match}) {
     const active_change_dispatch = useDispatch();
     active_change_dispatch(setActiveTab(2));
 
+    const user = useSelector(state => state.user);
 
     const handleSearchTextChange = (event) => {
         setSearchData(
@@ -130,8 +131,8 @@ function BoardList({match}) {
                 setSearchData={setSearchData}
                 selected_subject_list={selectedSubject}
             />
-
-            <BlueButton match={match} type='newBoard' title="글쓰기"/>
+            {console.log(user)}
+            {user.decoded == null?null:<BlueButton match={match} type='newBoard' title="글쓰기" className="mb-3"/>}
         </div>
     );
 }
