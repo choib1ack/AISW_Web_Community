@@ -9,13 +9,12 @@ import WriteComment from "./WriteComment";
 import "./Board.css"
 import MakeCommentList from "./MakeCommentList";
 import Loading from '../Loading';
-import {Link, useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import axiosApi from "../../axiosApi";
-import {AUTH_BOARD_DELETE, AUTH_BOARD_GET} from "../../constants";
-import {useSelector} from "react-redux";
-import downloadFile from '../../features/downloadFile';
+import {AUTH_BOARD_DELETE, AUTH_BOARD_GET, BOARD_GET} from "../../constants";
+import {useDispatch, useSelector} from "react-redux";
 import {AttachmentFile} from "../Notice/NoticeDetail";
 
 export default function BoardDetail({match}) {
@@ -107,7 +106,7 @@ export default function BoardDetail({match}) {
                 if (decoded) {
                     response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment&like/${id}`);
                 } else {    // 로그인 안 했으면 좋아요 기록이 없으니까
-                    response = await axiosApi.get(`/${AUTH_BOARD_GET[board_category]}/board/${board_category}/comment/${id}`);
+                    response = await axiosApi.get(`${BOARD_GET[board_category]}/board/${board_category}/comment/${id}`);
                 }
                 setBoardDetailData(response.data.data); // 데이터는 response.data 안에
 
