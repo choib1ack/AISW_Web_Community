@@ -56,7 +56,7 @@ class UserController {
         return alertService.readAllAlert(principal.getUser(), pageable);
     }
 
-    @GetMapping("/auth/alert/{id}")
+    @PutMapping("/auth/alert/{id}")
     public Long checkAlert(Authentication authentication, @PathVariable Long id) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         alertService.checkAlert(principal.getUser(), id);
