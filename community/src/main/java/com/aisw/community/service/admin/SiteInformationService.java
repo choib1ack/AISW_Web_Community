@@ -6,19 +6,19 @@ import com.aisw.community.model.entity.admin.SiteCategory;
 import com.aisw.community.model.entity.admin.SiteInformation;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
-import com.aisw.community.model.network.request.admin.FileUploadToSiteRequest;
 import com.aisw.community.model.network.request.admin.SiteInformationApiRequest;
 import com.aisw.community.model.network.response.admin.SiteInformationApiResponse;
 import com.aisw.community.model.network.response.admin.SiteInformationWithFileApiResponse;
+import com.aisw.community.model.network.response.admin.SiteInformationByCategoryResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
+import com.aisw.community.repository.admin.CustomSiteInformationRepository;
 import com.aisw.community.repository.admin.SiteCategoryRepository;
 import com.aisw.community.repository.admin.SiteInformationRepository;
-import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,10 +34,10 @@ public class SiteInformationService {
     private SiteInformationRepository siteInformationRepository;
 
     @Autowired
-    private SiteCategoryRepository siteCategoryRepository;
+    private CustomSiteInformationRepository customSiteInformationRepository;
 
     @Autowired
-    private FileRepository fileRepository;
+    private SiteCategoryRepository siteCategoryRepository;
 
     @Autowired
     private FileService fileService;
@@ -65,7 +65,7 @@ public class SiteInformationService {
                 .build();
         SiteInformation newSiteInformation = siteInformationRepository.save(siteInformation);
 
-        if(files != null) {
+        if (files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, null, newSiteInformation.getId(), UploadCategory.SITE);
 
@@ -75,23 +75,30 @@ public class SiteInformationService {
         }
     }
 
-    @Cacheable(value = "readSite")
+    //    @Cacheable(value = "readSite")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
-        List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
-        List<SiteCategory> siteCategoryList = siteCategoryRepository.findAll();
-        siteCategoryList.stream().forEach(category -> {
-            SiteInformationWithFileApiResponse siteInformationWithFileApiResponse =
-                    new SiteInformationWithFileApiResponse(category.getId(), category.getName());
-            siteInformationWithFileApiResponseList.add(siteInformationWithFileApiResponse);
-        });
+        List<SiteInformationByCategoryResponse> siteInformationByCategoryResponseList = customSiteInformationRepository.findAllGroupByCategory();
+        siteInformationByCategoryResponseList.stream().forEach(siteInformation -> System.out.println(siteInformation.getName() + " " + siteInformation.getSiteInformation()));
 
-        List<SiteInformation> siteInformationList = siteInformationRepository.findAllFetchJoinWithFile();
-        siteInformationList.stream().forEach(siteInformation -> siteInformationWithFileApiResponseList.stream()
-                .forEach(siteInformationWithFileApiResponse -> {
-                    if (siteInformation.getSiteCategory().getId().equals(siteInformationWithFileApiResponse.getId())) {
-                        siteInformationWithFileApiResponse.getSiteInformationApiResponseList().add(response(siteInformation));
-                    }
-                }));
+        List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
+        SiteInformationWithFileApiResponse siteInformationWithFileApiResponse = null;
+        String prev = "";
+        for(int i = 0; i < siteInformationByCategoryResponseList.size(); i++) {
+            SiteInformationByCategoryResponse now = siteInformationByCategoryResponseList.get(i);
+            if(prev.equals("") || !prev.equals(now.getName())) {
+                if(siteInformationWithFileApiResponse != null) {
+                    siteInformationWithFileApiResponseList.add(siteInformationWithFileApiResponse);
+                }
+                siteInformationWithFileApiResponse = new SiteInformationWithFileApiResponse(now.getId(), now.getName());
+                prev = now.getName();
+            }
+            if(now.getSiteInformation() != null) {
+                siteInformationWithFileApiResponse.getSiteInformationApiResponseList().add(response(now.getSiteInformation()));
+            }
+        }
+        if(siteInformationWithFileApiResponse != null) {
+            siteInformationWithFileApiResponseList.add(siteInformationWithFileApiResponse);
+        }
 
         return Header.OK(siteInformationWithFileApiResponseList);
     }
@@ -120,13 +127,13 @@ public class SiteInformationService {
                 .setSiteCategory(siteCategory);
         siteInformationRepository.save(siteInformation);
 
-        if(siteInformation.getFileList() != null) {
+        if (siteInformation.getFileList() != null) {
             fileService.deleteFileList(siteInformation.getFileList());
+            siteInformation.getFileList().clear();
         }
-        if(files != null) {
+        if (files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, null, siteInformation.getId(), UploadCategory.SITE);
-
             return Header.OK(response(siteInformation, fileApiResponseList));
         } else {
             return Header.OK(response(siteInformation));
@@ -157,8 +164,7 @@ public class SiteInformationService {
                 .createdBy(siteInformation.getCreatedBy())
                 .updatedAt(siteInformation.getUpdatedAt())
                 .updatedBy(siteInformation.getUpdatedBy())
-                .fileApiResponseList(siteInformation.getFileList().stream()
-                        .map(file -> fileService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileService.getFileList(siteInformation.getFileList()))
                 .build();
 
         return siteInformationApiResponse;

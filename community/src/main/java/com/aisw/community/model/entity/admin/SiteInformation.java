@@ -22,6 +22,7 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
+@ToString(exclude = {"fileList", "siteCategory"})
 public class SiteInformation {
 
     @Id

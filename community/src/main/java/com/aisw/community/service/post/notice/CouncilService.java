@@ -201,11 +201,11 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
 
         if(council.getFileList() != null) {
             fileService.deleteFileList(council.getFileList());
+            council.getFileList().clear();
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, "/auth-student/notice/council", council.getId(), UploadCategory.POST);
-
             return Header.OK(response(council, fileApiResponseList));
         } else {
             return Header.OK(response(council));
@@ -271,7 +271,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .isWriter((user.getId() == council.getUser().getId()) ? true : false)
                 .build();
         if (council.getFileList() != null) {
-            councilApiResponse.setFileApiResponseList(fileService.getFileList(council.getFileList(), UploadCategory.POST, council.getId()));
+            councilApiResponse.setFileApiResponseList(fileService.getFileList(council.getFileList()));
         }
 
         return councilApiResponse;

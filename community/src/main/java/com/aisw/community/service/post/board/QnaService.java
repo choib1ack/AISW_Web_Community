@@ -245,11 +245,11 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
 
         if(qna.getFileList() != null) {
             fileService.deleteFileList(qna.getFileList());
+            qna.getFileList().clear();
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
-
             return Header.OK(response(qna, fileApiResponseList));
         } else {
             return Header.OK(response(qna));
@@ -299,7 +299,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .category(qna.getCategory())
                 .build();
         if (qna.getFileList() != null) {
-            qnaApiResponse.setFileApiResponseList(fileService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()));
+            qnaApiResponse.setFileApiResponseList(fileService.getFileList(qna.getFileList()));
         }
 
         return qnaApiResponse;
@@ -343,7 +343,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .category(qna.getCategory())
                 .userId(qna.getUser().getId())
                 .checkLike(false)
-                .fileApiResponseList(fileService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()))
+                .fileApiResponseList(fileService.getFileList(qna.getFileList()))
                 .commentApiResponseList(commentService.searchByPost(qna.getId()))
                 .build();
     }
@@ -365,7 +365,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .category(qna.getCategory())
                 .userId(qna.getUser().getId())
                 .checkLike(false)
-                .fileApiResponseList(fileService.getFileList(qna.getFileList(), UploadCategory.POST, qna.getId()))
+                .fileApiResponseList(fileService.getFileList(qna.getFileList()))
                 .build();
 
         List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(user, qna.getId());
