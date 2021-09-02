@@ -121,11 +121,11 @@ public class BannerService {
 
         if(banner.getFileList() != null) {
             fileService.deleteFileList(banner.getFileList());
+            banner.getFileList().clear();
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, null, banner.getId(), UploadCategory.BANNER);
-
             return Header.OK(response(banner, fileApiResponseList));
         } else {
             return Header.OK(response(banner));
@@ -177,8 +177,7 @@ public class BannerService {
                 .createdBy(banner.getCreatedBy())
                 .updatedAt(banner.getUpdatedAt())
                 .updatedBy(banner.getUpdatedBy())
-                .fileApiResponseList(banner.getFileList().stream()
-                        .map(file -> fileService.response(file)).collect(Collectors.toList()))
+                .fileApiResponseList(fileService.getFileList(banner.getFileList()))
                 .build();
 
         return bannerApiResponse;

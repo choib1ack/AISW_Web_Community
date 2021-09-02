@@ -110,12 +110,14 @@ public class FileService {
                 .body(resource);
     }
 
-    public List<FileApiResponse> getFileList(List<File> fileList, UploadCategory category, Long id) {
+    public List<FileApiResponse> getFileList(List<File> fileList) {
         return fileList.stream().map(this::response).collect(Collectors.toList());
     }
 
     public void deleteFileList(List<File> fileList) {
-        fileList.stream().forEach(file -> fileStorageService.deleteFile(file));
+        fileList.stream().forEach(file -> {
+            fileStorageService.deleteFile(file);
+        });
     }
 
     public FileApiResponse response(File file) {

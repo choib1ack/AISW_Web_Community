@@ -235,11 +235,11 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
 
         if(free.getFileList() != null) {
             fileService.deleteFileList(free.getFileList());
+            free.getFileList().clear();
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, "/board/free", free.getId(), UploadCategory.POST);
-
             return Header.OK(response(free, fileApiResponseList));
         } else {
             return Header.OK(response(free));
@@ -288,7 +288,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .category(free.getCategory())
                 .build();
         if (free.getFileList() != null) {
-            freeApiResponse.setFileApiResponseList(fileService.getFileList(free.getFileList(), UploadCategory.POST, free.getId()));
+            freeApiResponse.setFileApiResponseList(fileService.getFileList(free.getFileList()));
         }
 
         return freeApiResponse;
@@ -330,7 +330,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .category(free.getCategory())
                 .userId(free.getUser().getId())
                 .checkLike(false)
-                .fileApiResponseList(fileService.getFileList(free.getFileList(), UploadCategory.POST, free.getId()))
+                .fileApiResponseList(fileService.getFileList(free.getFileList()))
                 .commentApiResponseList(commentService.searchByPost(free.getId()))
                 .build();
     }
@@ -351,7 +351,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .category(free.getCategory())
                 .checkLike(false)
                 .userId(free.getUser().getId())
-                .fileApiResponseList(fileService.getFileList(free.getFileList(), UploadCategory.POST, free.getId()))
+                .fileApiResponseList(fileService.getFileList(free.getFileList()))
                 .build();
 
         List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(user, free.getId());

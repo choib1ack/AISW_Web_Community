@@ -232,11 +232,11 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
 
         if(job.getFileList() != null) {
             fileService.deleteFileList(job.getFileList());
+            job.getFileList().clear();
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, "/board/job", job.getId(), UploadCategory.POST);
-
             return Header.OK(response(job, fileApiResponseList));
         } else {
             return Header.OK(response(job));
@@ -285,7 +285,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .category(job.getCategory())
                 .build();
         if (job.getFileList() != null) {
-            jobApiResponse.setFileApiResponseList(fileService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()));
+            jobApiResponse.setFileApiResponseList(fileService.getFileList(job.getFileList()));
         }
 
         return jobApiResponse;
@@ -327,7 +327,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .category(job.getCategory())
                 .userId(job.getUser().getId())
                 .checkLike(false)
-                .fileApiResponseList(fileService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()))
+                .fileApiResponseList(fileService.getFileList(job.getFileList()))
                 .commentApiResponseList(commentService.searchByPost(job.getId()))
                 .build();
     }
@@ -348,7 +348,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .category(job.getCategory())
                 .checkLike(false)
                 .userId(job.getUser().getId())
-                .fileApiResponseList(fileService.getFileList(job.getFileList(), UploadCategory.POST, job.getId()))
+                .fileApiResponseList(fileService.getFileList(job.getFileList()))
                 .build();
 
         List<CommentApiResponse> commentApiResponseList = commentService.searchByPost(user, job.getId());
