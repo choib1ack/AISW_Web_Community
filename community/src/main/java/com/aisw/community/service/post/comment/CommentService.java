@@ -61,14 +61,11 @@ public class CommentService {
                 .board(boardRepository.getOne(commentApiRequest.getBoardId()))
                 .build();
 
+        // 익명 선택 시 익명 고유 번호 부여
         if(!commentApiRequest.getIsAnonymous()) comment.setWriter(user.getName());
         else {
-            if(board.getUser().getId() == user.getId()) {
-                comment.setWriter("글쓴이");
-                System.out.println("123");
-            }
+            if(board.getUser().getId() == user.getId()) comment.setWriter("글쓴이");
             else {
-                System.out.println("456");
                 List<Comment> commentList = board.getCommentList();
                 long cnt = 1;
                 for(Comment c : commentList) {
@@ -84,8 +81,6 @@ public class CommentService {
                 comment.setWriter("익명" + cnt);
             }
         }
-        System.out.println(comment.getWriter());
-
         Comment newComment = commentRepository.save(comment);
 
         AlertApiRequest alertApiRequest = AlertApiRequest.builder()
