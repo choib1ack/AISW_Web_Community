@@ -69,9 +69,14 @@ export default function Join() {
         return /^[0-9]{2,3}-[0-9]{3,4}-[0-9]{4}/.test(phone);
     }
 
+    const replaceLink = () =>{
+        history.replace('/');
+    }
+
+
     return (
         <Container className="p-5">
-            <FinishModal show={modalShow} link={`/`}
+            <FinishModal show={modalShow} replace_link={replaceLink}
                          title="회원가입" body="회원가입이 완료되었습니다 !"/>
 
             <h3 className="font-weight-bold mb-5">
