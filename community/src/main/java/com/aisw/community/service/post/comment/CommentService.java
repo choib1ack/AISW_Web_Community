@@ -58,7 +58,7 @@ public class CommentService {
                 .board(board)
                 .user(user)
                 .superComment(superComment)
-                .board(boardRepository.getOne(commentApiRequest.getBoardId()))
+                .board(board)
                 .build();
 
         // 익명 선택 시 익명 고유 번호 부여
@@ -73,9 +73,8 @@ public class CommentService {
                         if (c.getUser().getId() == user.getId()) {
                             comment.setWriter(c.getWriter());
                             break;
-                        } else {
-                            cnt = Math.max(cnt, Long.parseLong(c.getWriter().replace("익명", "")) + 1);
-                        }
+                        } else cnt = Math.max(cnt,
+                                Long.parseLong(c.getWriter().replace("익명", "")) + 1);
                     }
                 }
                 comment.setWriter("익명" + cnt);
@@ -88,7 +87,6 @@ public class CommentService {
                 .firstCategory(board.getFirstCategory())
                 .secondCategory(board.getSecondCategory())
                 .postId(board.getId())
-                .userId(board.getUser().getId())
                 .build();
         if(comment.getContent().length() < 20) {
             alertApiRequest.setContent(comment.getContent());
@@ -96,6 +94,11 @@ public class CommentService {
             alertApiRequest.setContent(comment.getContent().substring(0, 20));
         }
         if(user.getId() != board.getUser().getId()) {
+            alertApiRequest.setUserId(board.getUser().getId());
+            alertService.create(alertApiRequest);
+        }
+        if(superComment != null && user.getId() != superComment.getUser().getId()) {
+            alertApiRequest.setUserId(superComment.getUser().getId());
             alertService.create(alertApiRequest);
         }
 
