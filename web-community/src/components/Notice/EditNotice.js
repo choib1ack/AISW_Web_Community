@@ -8,7 +8,7 @@ import classNames from "classnames";
 import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import {useSelector} from "react-redux";
-import FinishModal from "../FinishModal";
+import FinishModal from "../Modal/FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import {useHistory, useLocation} from "react-router-dom";
 import WriteEditorContainer from "../WriteEditorContainer";

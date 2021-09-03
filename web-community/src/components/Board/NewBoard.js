@@ -6,7 +6,7 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Title from "../Title";
 import {useForm} from "react-hook-form";
-import FinishModal from "../FinishModal";
+import FinishModal from "../Modal/FinishModal";
 import {useSelector} from "react-redux";
 import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
@@ -17,7 +17,7 @@ import {Checkbox} from "semantic-ui-react";
 
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
-    const [modalState, setModalState] = useState({show:false, id:null, category:null});
+    const [modalState, setModalState] = useState({show: false, id: null, category: null});
     const [anonymousState, setAnonymousState] = useState(true);
 
     const history = useHistory();
@@ -31,7 +31,7 @@ function NewBoard() {
         if (type === 'file') {
             axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}/upload`, data)
                 .then((res) => {
-                    setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
+                    setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
                 })
                 .catch(error => {
                     // console.log(error);
@@ -41,7 +41,7 @@ function NewBoard() {
             axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`,
                 {data: data},
             ).then((res) => {
-                setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
+                setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
             }).catch(error => {
                 // console.log(error);
                 alert("글 게시에 실패하였습니다.");
@@ -99,7 +99,7 @@ function NewBoard() {
         <div className="NewBoard">
             <Container>
                 <FinishModal show={modalState.show}
-                             // link={`/board`}
+                    // link={`/board`}
                              replace_link={ReplaceLink}
                              title="게시판" body="글 게시가 완료되었습니다 !"/>
 
@@ -118,7 +118,7 @@ function NewBoard() {
                                 <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
-                                    {role === 'ROLE_GENERAL'?null:<option value="qna">과목별게시판</option>}
+                                    {role === 'ROLE_GENERAL' ? null : <option value="qna">과목별게시판</option>}
                                     <option value="job">취업게시판</option>
                                 </Form.Control>
                             </Form.Group>
@@ -181,7 +181,8 @@ export function checkTitle(title) {
 }
 
 export function checkContent(content) {
-    if (content === null) {
+    let replace = content.replace("\n", "").replace("<p></p>","");
+    if (replace === '') {
         alert("내용을 입력하세요.");
         return false;
     }

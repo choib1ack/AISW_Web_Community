@@ -17,6 +17,7 @@ import {AUTH_BOARD_DELETE, AUTH_BOARD_GET, BOARD_GET} from "../../constants";
 import {useDispatch, useSelector} from "react-redux";
 import {AttachmentFile} from "../Notice/NoticeDetail";
 import {setActiveTab} from "../../features/menuSlice";
+import CheckModal from "../Modal/CheckModal";
 
 export default function BoardDetail({match}) {
     const [boardDetailData, setBoardDetailData] = useState(null);
@@ -147,30 +148,13 @@ export default function BoardDetail({match}) {
             })
     }
 
-    function CustomModal() {
-        return (
-            <>
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>삭제</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>정말로 삭제 하시겠습니까 ?</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            아니오
-                        </Button>
-                        <Button variant="primary" onClick={deleteBoard}>
-                            네
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </>
-        )
-    }
-
     return (
         <div className="BoardDetail">
-            <CustomModal/>
+            <CheckModal show={show}
+                        title="삭제" body="정말로 삭제 하시겠습니까?"
+                        handleYes={deleteBoard}
+                        handleNo={handleClose}
+            />
 
             <Container>
                 <Title text='게시판' type='1'/>

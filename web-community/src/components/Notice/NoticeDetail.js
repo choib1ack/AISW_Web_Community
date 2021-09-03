@@ -4,14 +4,13 @@ import fileImage from "../../icon/file.svg";
 import Title from "../Title";
 import {ListButton} from "../Button/ListButton";
 import Loading from "../Loading";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
 import axiosApi from "../../axiosApi";
 import {ADMIN_ROLE, AUTH_NOTICE_DELETE, AUTH_NOTICE_GET, NOTICE_WRITE_ROLE} from "../../constants";
 import downloadFile from "../../features/downloadFile";
 import {useDispatch, useSelector} from "react-redux";
 import {setActiveTab} from "../../features/menuSlice";
+import CheckModal from "../Modal/CheckModal";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -80,30 +79,13 @@ export default function NoticeDetail({match}) {
             })
     }
 
-    function CustomModal() {
-        return (
-            <>
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>삭제</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>정말로 삭제 하시겠습니까 ?</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            아니오
-                        </Button>
-                        <Button variant="primary" onClick={deleteNotice}>
-                            네
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </>
-        )
-    }
-
     return (
         <div className="NoticeDetail">
-            <CustomModal/>
+            <CheckModal show={show}
+                        title="삭제" body="정말로 삭제 하시겠습니까?"
+                        handleYes={deleteNotice}
+                        handleNo={handleClose}
+            />
 
             <Container>
                 <Title text='공지사항' type='1'/>

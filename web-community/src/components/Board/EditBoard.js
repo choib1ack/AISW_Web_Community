@@ -2,7 +2,7 @@ import {useForm} from "react-hook-form";
 import React, {useCallback, useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import Container from "react-bootstrap/Container";
-import FinishModal from "../FinishModal";
+import FinishModal from "../Modal/FinishModal";
 import Title from "../Title";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";

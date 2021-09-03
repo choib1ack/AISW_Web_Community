@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import {useSelector} from "react-redux";
-import FinishModal from "../FinishModal";
+import FinishModal from "../Modal/FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
