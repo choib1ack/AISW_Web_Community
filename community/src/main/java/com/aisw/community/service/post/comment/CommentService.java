@@ -46,21 +46,12 @@ public class CommentService {
     @Transactional
     @CacheEvict(value = "commentSearchByPost", key = "#boardId")
     public Header<CommentApiResponse> create(User user, Long boardId, CommentApiRequest commentApiRequest) {
-        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
+        Board board = boardRepository.findByIdWithComment(commentApiRequest.getBoardId()).orElseThrow(
                 () -> new PostNotFoundException(commentApiRequest.getBoardId()));
-        List<Comment> commentList = board.getCommentList();
-        long cnt = 1;
-        for(int i = commentList.size() - 1; i >= 0; i--) {
-            if(commentList.get(i).getWriter().startsWith("익명")) {
-                cnt = Long.parseLong(commentList.get(i).getWriter().substring(2)) + 1;
-                break;
-            }
-        }
 
         Comment superComment = commentApiRequest.getSuperCommentId() != null ?
                 getRootComment(commentApiRequest.getSuperCommentId()) : null;
         Comment comment = Comment.builder()
-                .writer((commentApiRequest.getIsAnonymous() == true) ? "익명" + cnt : user.getName())
                 .content(commentApiRequest.getContent())
                 .isAnonymous(commentApiRequest.getIsAnonymous())
                 .isDeleted(false)
@@ -69,6 +60,31 @@ public class CommentService {
                 .superComment(superComment)
                 .board(boardRepository.getOne(commentApiRequest.getBoardId()))
                 .build();
+
+        if(!commentApiRequest.getIsAnonymous()) comment.setWriter(user.getName());
+        else {
+            if(board.getUser().getId() == user.getId()) {
+                comment.setWriter("글쓴이");
+                System.out.println("123");
+            }
+            else {
+                System.out.println("456");
+                List<Comment> commentList = board.getCommentList();
+                long cnt = 1;
+                for(Comment c : commentList) {
+                    if(c.getWriter().startsWith("익명")) {
+                        if (c.getUser().getId() == user.getId()) {
+                            comment.setWriter(c.getWriter());
+                            break;
+                        } else {
+                            cnt = Math.max(cnt, Long.parseLong(c.getWriter().replace("익명", "")) + 1);
+                        }
+                    }
+                }
+                comment.setWriter("익명" + cnt);
+            }
+        }
+        System.out.println(comment.getWriter());
 
         Comment newComment = commentRepository.save(comment);
 
