@@ -12,6 +12,7 @@ import com.aisw.community.model.network.response.user.UserApiResponse;
 import com.aisw.community.model.network.response.user.VerificationApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @CacheEvict(value = "userManagementReadAll", allEntries = true)
     public Header<UserApiResponse> signup(UserApiRequest userApiRequest) {
         if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
             throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
@@ -73,6 +75,7 @@ public class UserService {
         return Header.OK(response);
     }
 
+    @CacheEvict(value = "userManagementReadAll", allEntries = true)
     public Header<UserApiResponse> update(User user, UserApiRequest userApiRequest) {
         user
                 .setName(userApiRequest.getName())
@@ -86,6 +89,7 @@ public class UserService {
         return Header.OK(response(newUser));
     }
 
+    @CacheEvict(value = "userManagementReadAll", allEntries = true)
     public Header delete(User user) {
         userRepository.delete(user);
         return Header.OK();
