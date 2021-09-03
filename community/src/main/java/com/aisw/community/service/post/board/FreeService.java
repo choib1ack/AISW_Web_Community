@@ -54,37 +54,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     private ContentLikeService contentLikeService;
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "freeReadAll", allEntries = true),
-            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<FreeApiResponse> create(User user, FreeApiRequest freeApiRequest) {
-        Free free = Free.builder()
-                .title(freeApiRequest.getTitle())
-                .writer((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .content(freeApiRequest.getContent())
-                .status(freeApiRequest.getStatus())
-                .firstCategory(FirstCategory.BOARD)
-                .secondCategory(SecondCategory.FREE)
-                .likes(0L)
-                .user(user)
-                .build();
-
-        Free newFree = freeRepository.save(free);
-        return Header.OK(response(newFree));
-    }
-
-    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "freeReadAll", allEntries = true),
@@ -169,38 +138,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .map(free -> responseWithCommentAndLike(user, free))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = "freeReadAll", allEntries = true),
-            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<FreeApiResponse> update(User user, FreeApiRequest freeApiRequest) {
-        Free free = freeRepository.findById(freeApiRequest.getId()).orElseThrow(
-                () -> new PostNotFoundException(freeApiRequest.getId()));
-        if (free.getUser().getId() != user.getId()) {
-            throw new NotEqualUserException(user.getId());
-        }
-
-        free
-                .setWriter((freeApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .setTitle(freeApiRequest.getTitle())
-                .setContent(freeApiRequest.getContent())
-                .setStatus(freeApiRequest.getStatus());
-        freeRepository.save(free);
-
-        return Header.OK(response(free));
     }
 
     @Override

@@ -49,36 +49,6 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
     private FileService fileService;
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "departmentReadAll", allEntries = true),
-            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
-            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
-            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "noticeReadAll", allEntries = true),
-            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<DepartmentApiResponse> create(User user, DepartmentApiRequest departmentApiRequest) {
-        Department department = Department.builder()
-                .title(departmentApiRequest.getTitle())
-                .writer(user.getName())
-                .content(departmentApiRequest.getContent())
-                .status(departmentApiRequest.getStatus())
-                .firstCategory(FirstCategory.NOTICE)
-                .secondCategory(SecondCategory.DEPARTMENT)
-                .user(user)
-                .build();
-
-        Department newDepartment = departmentRepository.save(department);
-        return Header.OK(response(newDepartment));
-    }
-
-    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "departmentReadAll", allEntries = true),
@@ -138,37 +108,6 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .map(department -> response(user, department))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = "departmentReadAll", allEntries = true),
-            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
-            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
-            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "noticeReadAll", allEntries = true),
-            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<DepartmentApiResponse> update(User user, DepartmentApiRequest departmentApiRequest) {
-        Department department = departmentRepository.findById(departmentApiRequest.getId()).orElseThrow(
-                () -> new PostNotFoundException(departmentApiRequest.getId()));
-        if(department.getUser().getId() != user.getId()) {
-            throw new NotEqualUserException(user.getId());
-        }
-
-        department
-                .setTitle(departmentApiRequest.getTitle())
-                .setContent(departmentApiRequest.getContent())
-                .setStatus(departmentApiRequest.getStatus());
-        departmentRepository.save(department);
-
-        return Header.OK(response(department));
     }
 
     @Override

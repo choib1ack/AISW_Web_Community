@@ -61,38 +61,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     private FileService fileService;
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<QnaApiResponse> create(User user, QnaApiRequest qnaApiRequest) {
-        Qna qna = Qna.builder()
-                .title(qnaApiRequest.getTitle())
-                .writer((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .content(qnaApiRequest.getContent())
-                .status(qnaApiRequest.getStatus())
-                .subject(qnaApiRequest.getSubject())
-                .firstCategory(FirstCategory.BOARD)
-                .secondCategory(SecondCategory.QNA)
-                .likes(0L)
-                .user(user)
-                .build();
-
-        Qna newQna = qnaRepository.save(qna);
-        return Header.OK(response(newQna));
-    }
-
-    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "qnaReadAll", allEntries = true),
@@ -178,39 +146,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .map(qna -> (user == null) ? responseWithComment(qna) : responseWithCommentAndLike(user, qna))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<QnaApiResponse> update(User user, QnaApiRequest qnaApiRequest) {
-        Qna qna = qnaRepository.findById(qnaApiRequest.getId()).orElseThrow(
-                () -> new PostNotFoundException(qnaApiRequest.getId()));
-        if(qna.getUser().getId() != user.getId()) {
-            throw new NotEqualUserException(user.getId());
-        }
-
-        qna
-                .setWriter((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .setTitle(qnaApiRequest.getTitle())
-                .setContent(qnaApiRequest.getContent())
-                .setStatus(qnaApiRequest.getStatus());
-        qna.setSubject(qnaApiRequest.getSubject());
-        qnaRepository.save(qna);
-
-        return Header.OK(response(qna));
     }
 
     @Override

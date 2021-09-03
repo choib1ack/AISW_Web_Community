@@ -27,7 +27,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class FreeController implements BoardPostController<FreeApiRequest, FreeApiResponse, FreeDetailApiResponse, BoardResponseDTO> {
+public class FreeController implements BoardPostController<FileUploadToFreeRequest, FreeApiResponse, FreeDetailApiResponse, BoardResponseDTO> {
 
     @Autowired
     private FreeService freeService;
@@ -37,16 +37,6 @@ public class FreeController implements BoardPostController<FreeApiRequest, FreeA
 
     @Override
     @PostMapping("/auth/board/free")
-    public Header<FreeApiResponse> create(Authentication authentication, @RequestBody Header<FreeApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        FreeApiRequest freeApiRequest = request.getData();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
-        }
-        return freeService.create(principal.getUser(), freeApiRequest);
-    }
-
-    @PostMapping("/auth/board/free/upload")
     public Header<FreeApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToFreeRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getFreeApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
@@ -70,16 +60,6 @@ public class FreeController implements BoardPostController<FreeApiRequest, FreeA
 
     @Override
     @PutMapping("/auth/board/free")
-    public Header<FreeApiResponse> update(Authentication authentication, @RequestBody Header<FreeApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        FreeApiRequest freeApiRequest = request.getData();
-        if (freeApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(freeApiRequest.getStatus().getTitle());
-        }
-        return freeService.update(principal.getUser(), request.getData());
-    }
-
-    @PutMapping("/auth/board/free/upload")
     public Header<FreeApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToFreeRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getFreeApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {

@@ -26,7 +26,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class UniversityController implements NoticePostController<UniversityApiRequest, UniversityApiResponse, NoticeResponseDTO> {
+public class UniversityController implements NoticePostController<FileUploadToUniversityRequest, UniversityApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private UniversityService universityService;
@@ -36,16 +36,6 @@ public class UniversityController implements NoticePostController<UniversityApiR
 
     @Override
     @PostMapping("/auth-admin/notice/university")
-    public Header<UniversityApiResponse> create(Authentication authentication, @RequestBody Header<UniversityApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        UniversityApiRequest universityApiRequest = request.getData();
-        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
-        }
-        return universityService.create(principal.getUser(), universityApiRequest);
-    }
-
-    @PostMapping("/auth-admin/notice/university/upload")
     public Header<UniversityApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToUniversityRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if(request.getUniversityApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
@@ -63,16 +53,6 @@ public class UniversityController implements NoticePostController<UniversityApiR
 
     @Override
     @PutMapping("/auth-admin/notice/university")
-    public Header<UniversityApiResponse> update(Authentication authentication, @RequestBody Header<UniversityApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        UniversityApiRequest universityApiRequest = request.getData();
-        if(universityApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(universityApiRequest.getStatus().getTitle());
-        }
-        return universityService.update(principal.getUser(), universityApiRequest);
-    }
-
-    @PutMapping("/auth-admin/notice/university/upload")
     public Header<UniversityApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToUniversityRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if(request.getUniversityApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
