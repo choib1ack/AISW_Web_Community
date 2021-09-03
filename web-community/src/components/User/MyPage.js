@@ -1,10 +1,8 @@
 import React, {useEffect, useState} from "react";
-import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import PersonImage from "../../image/person.svg"
 import './MyPage.css';
 import {useHistory} from "react-router-dom";
 import Loading from "../Loading";
@@ -12,10 +10,14 @@ import axiosApi from "../../axiosApi";
 import newIcon from "../../icon/new_icon.png"
 import {useDispatch, useSelector} from "react-redux";
 import {setUnreadAlert} from "../../features/menuSlice";
+import CheckModal from "../Modal/CheckModal";
+import {resetDecoded} from "../../features/userSlice";
+
 
 
 export default function MyPage(props) {
-    const [show, setShow] = useState(false);
+    const [showLogout, setShowLogout] = useState(false);
+    const [showWithdrawal, setShowWithdrawal] = useState(false);
     const history = useHistory();
 
     const [currentPage, setCurrentPage] = useState(0);
@@ -23,15 +25,30 @@ export default function MyPage(props) {
 
     const user = useSelector(state => state.user);
     const {name, department} = useSelector(state => state.user.decoded);
+    const dispatch = useDispatch();
 
-    const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
+    const handleShowLogout = () => setShowLogout(true);
+    const handleCloseLogout = () => setShowLogout(false);
+    const handleShowWithdrawal = () => setShowWithdrawal(true);
+    const handleCloseWithdrawal = () => setShowWithdrawal(false);
 
     const handleLogout = () => {
-        setShow(false);
+        setShowLogout(false);
 
         window.localStorage.clear();
-        history.push('/')   // 홈으로 가기
+        history.push('/');  // 홈으로 가기
+    }
+
+    const handleWithdrawal = async () => {
+        setShowWithdrawal(false);
+
+        await axiosApi.delete('/auth/user').then(r => {
+            window.localStorage.clear();
+            dispatch(resetDecoded());
+            history.push('/');
+        }).catch(e => {
+            alert("회원탈퇴를 하지 못했습니다.");
+        });
     }
 
     const handleScroll = (e) => {
@@ -53,22 +70,16 @@ export default function MyPage(props) {
 
     return (
         <div>
-            <>
-                <Modal show={show} onHide={handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>로그아웃</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>정말로 로그아웃 하시겠습니까 ?</Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            아니오
-                        </Button>
-                        <Button variant="primary" onClick={handleLogout}>
-                            네
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </>
+            <CheckModal show={showLogout}
+                        title="로그아웃" body="정말로 로그아웃 하시겠습니까?"
+                        handleYes={handleLogout}
+                        handleNo={handleCloseLogout}
+            />
+            <CheckModal show={showWithdrawal}
+                        title="회원탈퇴" body="정말로 회원탈퇴 하시겠습니까?"
+                        handleYes={handleWithdrawal}
+                        handleNo={handleCloseWithdrawal}
+            />
 
             <Modal show={props.myPageShow} aria-labelledby="contained-modal-title-vcenter" bsPrefix="MyPage"
                    onHide={handleMyPageClose}>
@@ -95,7 +106,8 @@ export default function MyPage(props) {
                                     }}> {department}</p>
                                 </div>
                                 <div>
-                                    <p onClick={handleShow} className="logout-btn">로그아웃</p>
+                                    <p onClick={handleShowWithdrawal} className="withdrawal-btn">회원탈퇴</p>
+                                    <p onClick={handleShowLogout} className="logout-btn">로그아웃</p>
                                 </div>
                             </Col>
                         </Row>

@@ -114,10 +114,6 @@ export default function Menu() {
         }
     }, [isTabletOrMobile]);
 
-    useEffect(() => {
-        console.log(user.imageUrl);
-    }, [user.imageUrl]);
-
     return (
         <div>
             <div className="Menu p-lg-3 p-sm-2">
