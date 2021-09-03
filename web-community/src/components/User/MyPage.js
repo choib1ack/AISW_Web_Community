@@ -10,7 +10,8 @@ import {useHistory} from "react-router-dom";
 import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 import newIcon from "../../icon/new_icon.png"
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {setUnreadAlert} from "../../features/menuSlice";
 
 
 export default function MyPage(props) {
@@ -197,12 +198,15 @@ function MakeAlertList(props) {
 
         return `${Math.floor(betweenTimeDay / 365)}년 전`;
     }
-
+    const dispatch = useDispatch();
     const ToLink = async (data) => {
 
-        props.history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
+        await axiosApi.put("/auth/alert/" + data.id)
+            .then(res=>{
+                dispatch(setUnreadAlert(res.data));
+            });
 
-        await axiosApi.get("/auth/alert/" + data.id);
+        props.history.push(`/board/${data.second_category.toLowerCase()}/${data.post_id}`);
     }
 
     const fetchMyPageData = async () => {
