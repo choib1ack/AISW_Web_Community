@@ -55,7 +55,7 @@ function NewBoard() {
 
         if (data.file.length === 0) {   // 파일이 없을 경우
             if (checkTitle(data.title) && checkContent(data.content)) {
-                if ((data.board_type === 'free' || data.board_type === 'jbo') && role === 'ROLE_GENERAL') {
+                if (data.board_type === 'qna' && role === 'ROLE_GENERAL') {
                     alert('자유게시판과 취업게시판 외에는 글을 게시할 수 없습니다!');
                     return;
                 }
