@@ -49,11 +49,6 @@ export default function NewNotice() {
 
         if (data.file.length === 0) {   // 파일이 없을 경우
             if (checkTitle(data.title) && checkContent(data.content)) {
-                if (data.board_type !== 'council' && role === 'ROLE_COUNCIL') {
-                    alert('학생회 카테고리 외에는 글을 게시할 수 없습니다!');
-                    return;
-                }
-
                 let temp = {
                     content: data.content,
                     status: 'GENERAL',
@@ -102,8 +97,8 @@ export default function NewNotice() {
                             <Form.Group>
                                 <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
                                               name="board_type" ref={register}>
-                                    <option value="university">학교 홈페이지</option>
-                                    <option value="department">학과사무실</option>
+                                    {role === 'ROLE_COUNCIL' ? null : <option value="university">학교 홈페이지</option>}
+                                    {role === 'ROLE_COUNCIL' ? null : <option value="department">학과사무실</option>}
                                     <option value="council">학생회</option>
                                 </Form.Control>
                             </Form.Group>

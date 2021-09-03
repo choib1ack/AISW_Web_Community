@@ -19,6 +19,7 @@ function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
     const [modalState, setModalState] = useState({show: false, id: null, category: null});
     const [anonymousState, setAnonymousState] = useState(true);
+    const [isReview, setIsReview] = useState(true);
 
     const history = useHistory();
     const board_type = useRef();
@@ -34,7 +35,6 @@ function NewBoard() {
                     setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
                 })
                 .catch(error => {
-                    // console.log(error);
                     alert("글 게시에 실패하였습니다.");
                 })
         } else {
@@ -43,7 +43,6 @@ function NewBoard() {
             ).then((res) => {
                 setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
             }).catch(error => {
-                // console.log(error);
                 alert("글 게시에 실패하였습니다.");
             })
         }
@@ -55,15 +54,10 @@ function NewBoard() {
 
         if (data.file.length === 0) {   // 파일이 없을 경우
             if (checkTitle(data.title) && checkContent(data.content)) {
-                if ((data.board_type === 'free' || data.board_type === 'jbo') && role === 'ROLE_GENERAL') {
-                    alert('자유게시판과 취업게시판 외에는 글을 게시할 수 없습니다!');
-                    return;
-                }
-
                 let temp = {
                     content: data.content,
                     is_anonymous: anonymousState,
-                    status: 'GENERAL',
+                    status: isReview ? 'REVIEW' : 'GENERAL',
                     title: data.title,
                 };
 
@@ -81,7 +75,7 @@ function NewBoard() {
             }
             formData.append(`${apiRequest}.content`, data.content);
             formData.append(`${apiRequest}.isAnonymous`, anonymousState);
-            formData.append(`${apiRequest}.status`, 'GENERAL');
+            formData.append(`${apiRequest}.status`, isReview ? 'REVIEW' : 'GENERAL');
             formData.append(`${apiRequest}.title`, data.title);
 
             if (data.board_type === 'qna') {
@@ -99,7 +93,6 @@ function NewBoard() {
         <div className="NewBoard">
             <Container>
                 <FinishModal show={modalState.show}
-                    // link={`/board`}
                              replace_link={ReplaceLink}
                              title="게시판" body="글 게시가 완료되었습니다 !"/>
 
@@ -111,6 +104,13 @@ function NewBoard() {
                                   onChange={() => setAnonymousState(!anonymousState)}
                                   className="ml-4 mb-2"
                         />
+                        {board_type.current === "job" ?
+                            <Checkbox label='취업 후기' checked={isReview}
+                                      onChange={() => setIsReview(!isReview)}
+                                      className="ml-4 mb-2"
+                            />
+                            : null
+                        }
                     </Row>
                     <Row>
                         <Col>
@@ -181,7 +181,7 @@ export function checkTitle(title) {
 }
 
 export function checkContent(content) {
-    let replace = content.replace("\n", "").replace("<p></p>","");
+    let replace = content.replace("\n", "").replace("<p></p>", "");
     if (replace === '') {
         alert("내용을 입력하세요.");
         return false;

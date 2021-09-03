@@ -27,92 +27,89 @@ function EditBoard({match}) {
     const {role} = useSelector(state => state.user.decoded);
 
     const [files, setFiles] = useState(detail.file_api_response_list);
+    const [deleteList, setDeleteList] = useState([]);
 
-    function putBoard(data, path, type) {
-        if (type === 'file') {
-            axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
-                .then((res) => {
-                    setModalShow(true);
-                })
-                .catch(error => {
-                    // console.log(error);
-                    alert("글 게시에 실패하였습니다.");
-                })
-        } else {
-            axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}`,
-                {data: data},
-            ).then((res) => {
+    function putBoard(data, path) {
+        // if (type === 'file') {
+        //     axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
+        //         .then((res) => {
+        //             setModalShow(true);
+        //         })
+        //         .catch(error => {
+        //             // console.log(error);
+        //             alert("글 게시에 실패하였습니다.");
+        //         })
+        // } else {
+        axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
+            .then((res) => {
                 setModalShow(true)
-            }).catch(error => {
-                // console.log(error);
+            })
+            .catch(error => {
                 alert("글 게시에 실패하였습니다.");
             })
-        }
+        // }
     }
-
-    useEffect(() => {
-        console.log(files);
-    }, [files]);
 
     const onSubmit = (data) => {
         data.content = write.value;
         data.board_type = board_category;
 
-        // if (data.file.length === 0) {
-            if (checkTitle(data.title) && checkContent(data.content)) {
-                if (data.board_type !== 'free' && role === 'ROLE_GENERAL') {
-                    alert('자유게시판 외에는 글을 게시할 수 없습니다!');
-                    return;
-                }
+        if (checkTitle(data.title) && checkContent(data.content)) {
+            // let temp = {
+            //     content: data.content,
+            //     id: id,
+            //     is_anonymous: detail.writer === '익명',
+            //     status: "GENERAL",
+            //     title: data.title
+            // };
+            //
+            // if (data.board_type === 'qna') {
+            //     temp.subject = data.subject;
+            // }
+            // putBoard(temp, data.board_type, null);
 
-                let temp = {
-                    content: data.content,
-                    id: id,
-                    is_anonymous: detail.writer === '익명',
-                    status: "GENERAL",
-                    title: data.title
-                };
+            const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
-                if (data.board_type === 'qna') {
-                    temp.subject = data.subject;
-                }
-                putBoard(temp, data.board_type, null);
+            let formData = new FormData();
+            for (let i = 0; i < data.file.length; i++) {    // 추가할 파일
+                formData.append('files', data.file[i]);
             }
-        // }
-        // else {
-        //     const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
-        //
-        //     let formData = new FormData();
-        //     for (let i = 0; i < data.file.length; i++) {
-        //         formData.append('files', data.file[i]);
-        //     }
-        //     formData.append(`${apiRequest}.content`, data.content);
-        //     formData.append(`${apiRequest}.id`, id);
-        //     formData.append(`${apiRequest}.isAnonymous`, detail.writer === '익명');
-        //     formData.append(`${apiRequest}.status`, 'GENERAL');
-        //     formData.append(`${apiRequest}.title`, data.title);
-        //
-        //     if (data.board_type === 'qna') {
-        //         formData.append(`${apiRequest}.subject`, data.subject);
-        //     }
-        //     putBoard(formData, data.board_type, 'file');
-        // }
+            for (let i = 0; i < deleteList.length; i++) {   // 지울 파일
+                formData.append('delFileIds', deleteList[i]);
+            }
+
+            formData.append(`${apiRequest}.content`, data.content);
+            formData.append(`${apiRequest}.id`, id);
+            formData.append(`${apiRequest}.isAnonymous`, detail.writer === '익명');
+            formData.append(`${apiRequest}.status`, 'GENERAL');
+            formData.append(`${apiRequest}.title`, data.title);
+
+            if (data.board_type === 'qna') {
+                formData.append(`${apiRequest}.subject`, data.subject);
+            }
+            putBoard(formData, data.board_type);
+        }
     }
 
-    const onRemove = useCallback(idx => {
-            setFiles(files.filter((file, index) => index !== idx));
+    const onRemove = useCallback(id => {
+            setFiles(files.filter((file) => file.id !== id));
+            setDeleteList(prevState => [...prevState, id]);
         },
         [files],
     );
 
-    const handleFileChange = (e) => {
-        let array = [];
-        for (let i = 0; i < e.target.files.length; i++) {
-            array.push(e.target.files[i]);
-        }
+    useEffect(() => {
+        console.log(deleteList);
+    }, [deleteList]);
 
-        setFiles(files.concat(array));
-    }
+    // const handleFileChange = (e) => {
+    //     let array = [];
+    //     for (let i = 0; i < e.target.files.length; i++) {
+    //         array.push(e.target.files[i]);
+    //     }
+    //
+    //     setFiles(files.concat(array));
+    // }
 
     const ReplaceLink = () => {
         history.goBack();
@@ -122,7 +119,6 @@ function EditBoard({match}) {
         <div className="EditBoard">
             <Container>
                 <FinishModal show={modalShow}
-                             // link={`/board/${board_category}/${id}`}
                              title="게시판" body="글 수정이 완료되었습니다 !" replace_link={ReplaceLink}/>
 
                 <Title text='게시글 수정' type='1'/>
@@ -136,6 +132,7 @@ function EditBoard({match}) {
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
                                     <option value="qna">과목별게시판</option>
+                                    <option value="job">취업게시판</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
@@ -165,11 +162,10 @@ function EditBoard({match}) {
                     </Row>
 
                     <Row>
-                        {/*<Col>*/}
-                        {/*    <FileList file={files} onRemove={onRemove}/>*/}
-                        {/*    <input multiple ref={register} type="file" name="file" style={{float: 'left'}}*/}
-                        {/*           onChange={handleFileChange}/>*/}
-                        {/*</Col>*/}
+                        <Col>
+                            <FileList file={files} onRemove={onRemove}/>
+                            <input multiple ref={register} type="file" name="file" style={{float: 'left'}}/>
+                        </Col>
                         <Col>
                             <Button variant="primary" type="submit" className="float-right m-1">
                                 수정하기
@@ -190,14 +186,16 @@ function EditBoard({match}) {
 export default EditBoard;
 
 const FileList = ({file, onRemove}) => {
+    console.log(file);
+
     if (file.length === 0) return null;
     return (
         <Row className="ml-0">
             {
-                file.map((data, idx) => (
-                    <div key={idx} className="float-left mb-3 mr-3">
+                file.map((data) => (
+                    <div key={data.id} className="float-left mb-3 mr-3">
                         <button type="button" className="btn btn-sm btn-outline-danger"
-                                onClick={() => onRemove(idx)}>
+                                onClick={() => onRemove(data.id)}>
                             {data.file_name}{data.name} X
                         </button>
                     </div>
