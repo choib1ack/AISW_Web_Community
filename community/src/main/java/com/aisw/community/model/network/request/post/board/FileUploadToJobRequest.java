@@ -13,5 +13,7 @@ public class FileUploadToJobRequest {
 
     private JobApiRequest jobApiRequest;
 
+    private Long[] delFileIds;
+
     private MultipartFile[] files;
 }

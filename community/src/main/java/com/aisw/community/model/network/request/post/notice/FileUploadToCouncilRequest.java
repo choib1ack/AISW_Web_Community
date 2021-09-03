@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadToCouncilRequest {
 
     private CouncilApiRequest councilApiRequest;
+    
+    private Long[] delFileIds;
 
     private MultipartFile[] files;
 }

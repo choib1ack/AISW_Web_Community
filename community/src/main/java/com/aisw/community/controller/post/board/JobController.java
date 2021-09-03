@@ -20,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -86,8 +88,11 @@ public class JobController implements BoardPostController<JobApiRequest, JobApiR
                 || request.getJobApiRequest().getStatus().equals(BulletinStatus.NOTICE)) {
             throw new PostStatusNotSuitableException(request.getJobApiRequest().getStatus().getTitle());
         }
-
-        return jobService.update(principal.getUser(), request.getJobApiRequest(), request.getFiles());
+        List<Long> delFileIdList = null;
+        if(request.getDelFileIds() != null) {
+            delFileIdList = Arrays.asList(request.getDelFileIds());
+        }
+        return jobService.update(principal.getUser(), request.getJobApiRequest(), request.getFiles(), delFileIdList);
     }
 
     @Override

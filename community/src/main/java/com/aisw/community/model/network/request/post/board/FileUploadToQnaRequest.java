@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadToQnaRequest {
 
     private QnaApiRequest qnaApiRequest;
+    
+    private Long[] delFileIds;
 
     private MultipartFile[] files;
 }

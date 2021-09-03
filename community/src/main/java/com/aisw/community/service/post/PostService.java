@@ -5,6 +5,8 @@ import com.aisw.community.model.network.Header;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface PostService<Req, Res, ListRes> {
 
     Header<Res> create(User user, Req request);
@@ -13,7 +15,7 @@ public interface PostService<Req, Res, ListRes> {
 
     Header<Res> update(User user, Req request);
 
-    Header<Res> update(User user, Req request, MultipartFile[] files);
+    Header<Res> update(User user, Req request, MultipartFile[] files, List<Long> delFileIdList);
 
     Header delete(User user, Long id);
 

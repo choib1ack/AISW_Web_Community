@@ -3,6 +3,7 @@ package com.aisw.community.service.post.board;
 import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
 import com.aisw.community.model.entity.post.board.Free;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -218,7 +219,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<FreeApiResponse> update(User user, FreeApiRequest freeApiRequest, MultipartFile[] files) {
+    public Header<FreeApiResponse> update(User user, FreeApiRequest freeApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
         Free free = freeRepository.findById(freeApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(freeApiRequest.getId()));
 
@@ -233,9 +234,17 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .setStatus(freeApiRequest.getStatus());
         freeRepository.save(free);
 
-        if(free.getFileList() != null) {
-            fileService.deleteFileList(free.getFileList());
-            free.getFileList().clear();
+        if(free.getFileList() != null && delFileIdList != null) {
+            List<File> delFileList = new ArrayList<>();
+            for(File file : free.getFileList()) {
+                if(delFileIdList.contains(file.getId())) {
+                    fileService.deleteFile(file);
+                    delFileList.add(file);
+                }
+            }
+            for (File file : delFileList) {
+                free.getFileList().remove(file);
+            }
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =

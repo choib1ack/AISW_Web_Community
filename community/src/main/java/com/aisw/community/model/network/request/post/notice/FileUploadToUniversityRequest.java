@@ -13,5 +13,7 @@ public class FileUploadToUniversityRequest {
 
     private UniversityApiRequest universityApiRequest;
 
+    private Long[] delFileIds;
+
     private MultipartFile[] files;
 }

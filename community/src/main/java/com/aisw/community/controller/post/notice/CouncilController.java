@@ -21,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -76,7 +78,11 @@ public class CouncilController implements NoticePostController<CouncilApiRequest
         if (request.getCouncilApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(request.getCouncilApiRequest().getStatus().getTitle());
         }
-        return councilService.update(principal.getUser(), request.getCouncilApiRequest(), request.getFiles());
+        List<Long> delFileIdList = null;
+        if(request.getDelFileIds() != null) {
+            delFileIdList = Arrays.asList(request.getDelFileIds());
+        }
+        return councilService.update(principal.getUser(), request.getCouncilApiRequest(), request.getFiles(), delFileIdList);
     }
 
     @Override

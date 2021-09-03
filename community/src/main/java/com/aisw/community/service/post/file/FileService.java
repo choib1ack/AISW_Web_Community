@@ -115,9 +115,11 @@ public class FileService {
     }
 
     public void deleteFileList(List<File> fileList) {
-        fileList.stream().forEach(file -> {
-            fileStorageService.deleteFile(file);
-        });
+        fileList.stream().forEach(file -> fileStorageService.deleteFile(file));
+    }
+
+    public void deleteFile(File file) {
+        fileStorageService.deleteFile(file);
     }
 
     public FileApiResponse response(File file) {
