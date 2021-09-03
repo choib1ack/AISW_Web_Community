@@ -123,7 +123,7 @@ export default function MakeBoardList(props) {
     // <tr> 전체에 링크 연결
     let history = useHistory();
     const ToLink = (url) => {
-        history.push(`/board/${props.category}`);
+        history.push(`/board/category/prev/${props.category}`);
         history.push(url);
     }
 

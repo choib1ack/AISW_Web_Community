@@ -56,10 +56,14 @@ export default function EditNotice({match}) {
         }
     }
 
+    const ReplaceLink = () => {
+        history.goBack();
+    }
+
     return (
         <div className="EditNotice">
             <Container>
-                <FinishModal show={modalShow} link={`/notice`}
+                <FinishModal show={modalShow} replace_link={ReplaceLink}
                              title="공지사항" body="글 수정이 완료되었습니다 !"/>
 
                 <Title text='공지사항 수정' type='1'/>

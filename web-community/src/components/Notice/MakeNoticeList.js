@@ -115,7 +115,7 @@ export default function MakeNoticeList(props) {
     // <tr> 전체에 링크 연결
     let history = useHistory();
     const ToLink = (url) => {
-        history.push(`/notice/${props.category}`);
+        history.push(`/notice/category/prev/${props.category}`);
         history.push(url);
     }
 

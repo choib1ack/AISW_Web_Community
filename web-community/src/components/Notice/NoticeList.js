@@ -99,7 +99,7 @@ export default function NoticeList({match}) {
             />
 
             {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
-                <BlueButton match={match} type='newNotice' title="글쓰기"/>
+                <BlueButton type='/notice/newNotice' title="글쓰기"/>
                 : null
             }
 
