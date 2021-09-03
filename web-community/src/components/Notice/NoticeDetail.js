@@ -8,9 +8,9 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import {useHistory} from "react-router-dom";
 import axiosApi from "../../axiosApi";
-import {AUTH_NOTICE_DELETE, AUTH_NOTICE_GET} from "../../constants";
+import {ADMIN_ROLE, AUTH_NOTICE_DELETE, AUTH_NOTICE_GET, NOTICE_WRITE_ROLE} from "../../constants";
 import downloadFile from "../../features/downloadFile";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setActiveTab} from "../../features/menuSlice";
 
 export default function NoticeDetail({match}) {
@@ -19,14 +19,13 @@ export default function NoticeDetail({match}) {
     const [error, setError] = useState(null);
     const [htmlContent, setHtmlContent] = useState(null);
     let history = useHistory();
+    const {decoded} = useSelector((state) => state.user);
 
     const {notice_category, id} = match.params;
 
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
-
-    console.log(noticeDetailData);
 
     window.scrollTo(0, 0);
 
@@ -109,15 +108,19 @@ export default function NoticeDetail({match}) {
             <Container>
                 <Title text='공지사항' type='1'/>
 
-                {noticeDetailData && noticeDetailData.is_writer &&
-                <div style={{display: "flex"}}>
-                    <p className="edit-btn"
-                       style={{marginLeft: "auto"}}
-                       onClick={handleEdit}>수정</p>
-                    <p className="delete-btn"
-                       style={{marginLeft: "10px"}}
-                       onClick={handleShow}>삭제</p>
-                </div>
+                {
+                    noticeDetailData && noticeDetailData.is_writer && (
+                        (notice_category === 'council' && NOTICE_WRITE_ROLE.includes(decoded.role)) ||
+                        (notice_category !== 'council' && ADMIN_ROLE.includes(decoded.role))
+                    ) &&
+                    <div style={{display: "flex"}}>
+                        <p className="edit-btn"
+                           style={{marginLeft: "auto"}}
+                           onClick={handleEdit}>수정</p>
+                        <p className="delete-btn"
+                           style={{marginLeft: "10px"}}
+                           onClick={handleShow}>삭제</p>
+                    </div>
                 }
 
                 <div className="text-left mb-4"
