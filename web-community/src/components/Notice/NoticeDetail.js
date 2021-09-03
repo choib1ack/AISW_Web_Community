@@ -10,6 +10,8 @@ import {useHistory} from "react-router-dom";
 import axiosApi from "../../axiosApi";
 import {AUTH_NOTICE_DELETE, AUTH_NOTICE_GET} from "../../constants";
 import downloadFile from "../../features/downloadFile";
+import {useDispatch} from "react-redux";
+import {setActiveTab} from "../../features/menuSlice";
 
 export default function NoticeDetail({match}) {
     const [noticeDetailData, setNoticeDetailData] = useState(null);
@@ -27,6 +29,9 @@ export default function NoticeDetail({match}) {
     console.log(noticeDetailData);
 
     window.scrollTo(0, 0);
+
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(1));
 
     const Category = (c) => {
         switch (c) {

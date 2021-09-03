@@ -17,7 +17,7 @@ import {Checkbox} from "semantic-ui-react";
 
 function NewBoard() {
     const {register, handleSubmit, watch} = useForm({mode: "onChange"});
-    const [modalShow, setModalShow] = useState(false);
+    const [modalState, setModalState] = useState({show:false, id:null, category:null});
     const [anonymousState, setAnonymousState] = useState(true);
 
     const history = useHistory();
@@ -31,19 +31,19 @@ function NewBoard() {
         if (type === 'file') {
             axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}/upload`, data)
                 .then((res) => {
-                    setModalShow(true)
+                    setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
                 })
                 .catch(error => {
-                    console.log(error);
+                    // console.log(error);
                     alert("글 게시에 실패하였습니다.");
                 })
         } else {
             axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`,
                 {data: data},
             ).then((res) => {
-                setModalShow(true)
+                setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
             }).catch(error => {
-                console.log(error);
+                // console.log(error);
                 alert("글 게시에 실패하였습니다.");
             })
         }
@@ -55,8 +55,8 @@ function NewBoard() {
 
         if (data.file.length === 0) {   // 파일이 없을 경우
             if (checkTitle(data.title) && checkContent(data.content)) {
-                if (data.board_type !== 'free' && role === 'ROLE_GENERAL') {
-                    alert('자유게시판 외에는 글을 게시할 수 없습니다!');
+                if ((data.board_type === 'free' || data.board_type === 'jbo') && role === 'ROLE_GENERAL') {
+                    alert('자유게시판과 취업게시판 외에는 글을 게시할 수 없습니다!');
                     return;
                 }
 
@@ -91,10 +91,16 @@ function NewBoard() {
         }
     }
 
+    const ReplaceLink = () => {
+        history.replace(`/board/${modalState.category}/${modalState.id}`);
+    }
+
     return (
         <div className="NewBoard">
             <Container>
-                <FinishModal show={modalShow} link={`/board`}
+                <FinishModal show={modalState.show}
+                             // link={`/board`}
+                             replace_link={ReplaceLink}
                              title="게시판" body="글 게시가 완료되었습니다 !"/>
 
                 <Title text='새 게시글 작성' type='1'/>
@@ -112,7 +118,7 @@ function NewBoard() {
                                 <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
-                                    <option value="qna">과목별게시판</option>
+                                    {role === 'ROLE_GENERAL'?null:<option value="qna">과목별게시판</option>}
                                     <option value="job">취업게시판</option>
                                 </Form.Control>
                             </Form.Group>
@@ -142,20 +148,23 @@ function NewBoard() {
                             <WriteEditorContainer type="new"/>
                         </Col>
                     </Row>
+                    <Row className="pb-3">
+                        <Col>
+                            <div style={{justifyContent: 'space-between'}}>
+                                <input multiple ref={register} type="file" name="file" style={{float: 'left'}}/>
 
-                    <div style={{justifyContent: 'space-between'}}>
-                        <input multiple ref={register} type="file" name="file" style={{float: 'left'}}/>
-
-                        <div style={{float: "right"}}>
-                            <Button variant="secondary" className="mr-2"
-                                    onClick={() => history.goBack()}>
-                                취소하기
-                            </Button>
-                            <Button variant="primary" type="submit">
-                                등록하기
-                            </Button>
-                        </div>
-                    </div>
+                                <div style={{float: "right"}}>
+                                    <Button variant="secondary" className="mr-2"
+                                            onClick={() => history.goBack()}>
+                                        취소하기
+                                    </Button>
+                                    <Button variant="primary" type="submit">
+                                        등록하기
+                                    </Button>
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
 
                 </Form>
             </Container>

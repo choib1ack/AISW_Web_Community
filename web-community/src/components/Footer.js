@@ -6,8 +6,8 @@ import './Footer.css';
 import logo from "../image/logo4.png";
 export default function Footer() {
     return (
-        <Grid className="Footer">
-            <Row style={{backgroundColor: '#F5F5F5', padding: '15px'}}>
+        <Grid className="Footer mt-5" >
+            <Row style={{backgroundColor: '#F5F5F5', padding: '15px'}} >
                 <Col xs={3} className="col-align">
                     <img src={logo} style={{width:"120px"}} alt="..."/>
                 </Col>

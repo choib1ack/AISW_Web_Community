@@ -8,7 +8,7 @@ import Loading from "./Loading";
 import HomeSiteImageSlide from "./HomeSiteImageSlide";
 import {CarouselList} from "./AdminPage/CarouselList";
 import {useDispatch, useSelector} from "react-redux";
-import {setUnreadAlert} from "../features/menuSlice";
+import {setActiveTab, setUnreadAlert} from "../features/menuSlice";
 import axiosApi from "../axiosApi";
 
 export default function Home() {
@@ -24,7 +24,9 @@ export default function Home() {
 
     const [accessToken, setAccessToken] = useState(window.localStorage.getItem('ACCESS_TOKEN'));
     const user = useSelector(state => state.user);
+
     const dispatch = useDispatch();
+    dispatch(setActiveTab(0));
 
     useEffect(() => {
         const fetchHomeData = async () => {

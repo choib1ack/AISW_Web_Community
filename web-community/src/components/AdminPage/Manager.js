@@ -4,12 +4,26 @@ import Title from "../Title";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import {useHistory} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {setActiveTab} from "../../features/menuSlice";
 
 function Manager({match}) {
 
     let history = useHistory();
     const ToLink = (url) => {
         history.push(url);
+    }
+
+    const active_change_dispatch = useDispatch();
+    active_change_dispatch(setActiveTab(6));
+
+    const user = useSelector(state => state.user);
+
+    if (!(user.decoded.role === "ROLE_ADMIN" || user.decoded.role === "ROLE_DEVELOPER")){
+        if (!alert('접근 권한이 없습니다!')) {
+            window.history.back();
+        }
+        return(<></>);
     }
 
     return (
