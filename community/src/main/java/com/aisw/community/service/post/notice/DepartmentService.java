@@ -4,6 +4,7 @@ import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.notice.Department;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -186,7 +187,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<DepartmentApiResponse> update(User user, DepartmentApiRequest departmentApiRequest, MultipartFile[] files) {
+    public Header<DepartmentApiResponse> update(User user, DepartmentApiRequest departmentApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
         Department department = departmentRepository.findById(departmentApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(departmentApiRequest.getId()));
         if(department.getUser().getId() != user.getId()) {
@@ -199,9 +200,17 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
                 .setStatus(departmentApiRequest.getStatus());
         departmentRepository.save(department);
 
-        if(department.getFileList() != null) {
-            fileService.deleteFileList(department.getFileList());
-            department.getFileList().clear();
+        if(department.getFileList() != null && delFileIdList != null) {
+            List<File> delFileList = new ArrayList<>();
+            for(File file : department.getFileList()) {
+                if(delFileIdList.contains(file.getId())) {
+                    fileService.deleteFile(file);
+                    delFileList.add(file);
+                }
+            }
+            for (File file : delFileList) {
+                department.getFileList().remove(file);
+            }
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =

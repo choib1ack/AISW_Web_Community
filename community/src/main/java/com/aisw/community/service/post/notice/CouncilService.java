@@ -4,6 +4,7 @@ import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -186,7 +187,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<CouncilApiResponse> update(User user, CouncilApiRequest councilApiRequest, MultipartFile[] files) {
+    public Header<CouncilApiResponse> update(User user, CouncilApiRequest councilApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
         Council council = councilRepository.findById(councilApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(councilApiRequest.getId()));
         if (council.getUser().getId() != user.getId()) {
@@ -199,9 +200,17 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
                 .setStatus(councilApiRequest.getStatus());
         councilRepository.save(council);
 
-        if(council.getFileList() != null) {
-            fileService.deleteFileList(council.getFileList());
-            council.getFileList().clear();
+        if(council.getFileList() != null && delFileIdList != null) {
+            List<File> delFileList = new ArrayList<>();
+            for(File file : council.getFileList()) {
+                if(delFileIdList.contains(file.getId())) {
+                    fileService.deleteFile(file);
+                    delFileList.add(file);
+                }
+            }
+            for (File file : delFileList) {
+                council.getFileList().remove(file);
+            }
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =

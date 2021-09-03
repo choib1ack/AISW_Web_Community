@@ -4,6 +4,7 @@ import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
 import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
 import com.aisw.community.config.auth.PrincipalDetails;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -189,7 +190,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<UniversityApiResponse> update(User user, UniversityApiRequest universityApiRequest, MultipartFile[] files) {
+    public Header<UniversityApiResponse> update(User user, UniversityApiRequest universityApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
         University university = universityRepository.findById(universityApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(universityApiRequest.getId()));
         if(university.getUser().getId() != user.getId()) {
@@ -203,9 +204,17 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
         university.setCampus(universityApiRequest.getCampus());
         universityRepository.save(university);
 
-        if(university.getFileList() != null) {
-            fileService.deleteFileList(university.getFileList());
-            university.getFileList().clear();
+        if(university.getFileList() != null && delFileIdList != null) {
+            List<File> delFileList = new ArrayList<>();
+            for(File file : university.getFileList()) {
+                if(delFileIdList.contains(file.getId())) {
+                    fileService.deleteFile(file);
+                    delFileList.add(file);
+                }
+            }
+            for (File file : delFileList) {
+                university.getFileList().remove(file);
+            }
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =

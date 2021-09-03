@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -84,7 +85,11 @@ public class QnaController implements BoardPostController<QnaApiRequest, QnaApiR
         if (request.getQnaApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(request.getQnaApiRequest().getStatus().getTitle());
         }
-        return qnaService.update(principal.getUser(), request.getQnaApiRequest(), request.getFiles());
+        List<Long> delFileIdList = null;
+        if(request.getDelFileIds() != null) {
+            delFileIdList = Arrays.asList(request.getDelFileIds());
+        }
+        return qnaService.update(principal.getUser(), request.getQnaApiRequest(), request.getFiles(), delFileIdList);
     }
 
     @Override

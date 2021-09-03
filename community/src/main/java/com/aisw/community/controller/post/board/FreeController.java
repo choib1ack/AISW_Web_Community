@@ -22,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -83,7 +85,12 @@ public class FreeController implements BoardPostController<FreeApiRequest, FreeA
         if (request.getFreeApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(request.getFreeApiRequest().getStatus().getTitle());
         }
-        return freeService.update(principal.getUser(), request.getFreeApiRequest(), request.getFiles());
+        List<Long> delFileIdList = null;
+        if(request.getDelFileIds() != null) {
+            delFileIdList = Arrays.asList(request.getDelFileIds());
+            delFileIdList.stream().forEach(System.out::println);
+        }
+        return freeService.update(principal.getUser(), request.getFreeApiRequest(), request.getFiles(), delFileIdList);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.aisw.community.component.advice.exception.PostStatusNotSuitableExcept
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.board.QJob;
 import com.aisw.community.model.entity.post.board.Qna;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -228,7 +229,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<QnaApiResponse> update(User user, QnaApiRequest qnaApiRequest, MultipartFile[] files) {
+    public Header<QnaApiResponse> update(User user, QnaApiRequest qnaApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
         Qna qna = qnaRepository.findById(qnaApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(qnaApiRequest.getId()));
         if(qna.getUser().getId() != user.getId()) {
@@ -243,9 +244,17 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         qna.setSubject(qnaApiRequest.getSubject());
         qnaRepository.save(qna);
 
-        if(qna.getFileList() != null) {
-            fileService.deleteFileList(qna.getFileList());
-            qna.getFileList().clear();
+        if(qna.getFileList() != null && delFileIdList != null) {
+            List<File> delFileList = new ArrayList<>();
+            for(File file : qna.getFileList()) {
+                if(delFileIdList.contains(file.getId())) {
+                    fileService.deleteFile(file);
+                    delFileList.add(file);
+                }
+            }
+            for (File file : delFileList) {
+                qna.getFileList().remove(file);
+            }
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =

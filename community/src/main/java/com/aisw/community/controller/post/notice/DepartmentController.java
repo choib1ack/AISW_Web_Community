@@ -21,6 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -76,7 +78,11 @@ public class DepartmentController implements NoticePostController<DepartmentApiR
         if(request.getDepartmentApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
             throw new PostStatusNotSuitableException(request.getDepartmentApiRequest().getStatus().getTitle());
         }
-        return departmentService.update(principal.getUser(), request.getDepartmentApiRequest(), request.getFiles());
+        List<Long> delFileIdList = null;
+        if(request.getDelFileIds() != null) {
+            delFileIdList = Arrays.asList(request.getDelFileIds());
+        }
+        return departmentService.update(principal.getUser(), request.getDepartmentApiRequest(), request.getFiles(), delFileIdList);
     }
 
     @Override

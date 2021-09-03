@@ -13,5 +13,7 @@ public class FileUploadToFreeRequest {
 
     private FreeApiRequest freeApiRequest;
 
+    private Long[] delFileIds;
+
     private MultipartFile[] files;
 }
