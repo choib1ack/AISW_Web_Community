@@ -10,7 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setActiveTab} from "../../features/menuSlice";
 
 export default function NoticeList({match}) {
-    const [category, setCategory] = useState(0);
+    const [category, setCategory] = useState(!match.params.notice_category? 0 : parseInt(match.params.notice_category));
     const [searchData, setSearchData] = useState(
         {
             search: 0,

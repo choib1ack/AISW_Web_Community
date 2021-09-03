@@ -13,11 +13,6 @@ import axiosApi from "../axiosApi";
 
 export default function Home() {
 
-    let history = useHistory();
-    const ToLink = (url) => {
-        history.push(url);
-    }
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [homeData, setHomeData] = useState(null);
@@ -43,30 +38,27 @@ export default function Home() {
                         .then(res => {
                                 setHomeData(res.data.data);
                                 dispatch(setUnreadAlert(res.data.data.unread_alert));
+                                setLoading(false);
                             }
                         );
                 }else{
                     await axios.get("/home")
                         .then(res => {
                                 setHomeData(res.data.data);
+                                setLoading(false);
                             }
                         );
                 }
-
-
-
             } catch (e) {
                 setError(e);
             }
-            setLoading(false);
         };
 
         fetchHomeData();
     }, []);
 
-
-    if (loading) return <Loading/>;
     if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
+    if (loading) return <Loading/>;
     if (!homeData) return <div>데이터가 없습니다.</div>;
 
     return (

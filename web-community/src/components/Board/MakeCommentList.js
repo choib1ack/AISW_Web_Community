@@ -11,9 +11,6 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
     const [boardCommentData, setBoardCommentData] = useState(board_comment_data);
     const auth_url = (board_category === 'qna' ? 'auth-student' : 'auth');
 
-    // const [loading, setLoading] = useState(false);
-    // const [error, setError] = useState(null);
-
     const dateFormat = (s) => {
         let result = "";
         result += s.substring(5, 7) + "/" + s.substring(8, 10) + "  " + s.substring(11, 16);

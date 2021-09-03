@@ -11,7 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setActiveTab} from "../../features/menuSlice";
 
 function BoardList({match}) {
-    const [category, setCategory] = useState(0);
+    const [category, setCategory] = useState(!match.params.board_category? 0 : parseInt(match.params.board_category));
     const [selectedSubject, setSelectedSubject] = useState([]); // 과목별 게시판
     const [searchData, setSearchData] = useState(
         {
@@ -25,8 +25,6 @@ function BoardList({match}) {
 
     const active_change_dispatch = useDispatch();
     active_change_dispatch(setActiveTab(2));
-
-    const user = useSelector(state => state.user);
 
     const handleSearchTextChange = (event) => {
         setSearchData(
