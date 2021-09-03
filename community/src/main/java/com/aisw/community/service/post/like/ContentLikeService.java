@@ -40,9 +40,6 @@ public class ContentLikeService {
     @Autowired
     private AlertService alertService;
 
-    @Autowired
-    private UserService userService;
-
     @Transactional
     public Header<ContentLikeApiResponse> pressLike(User user, ContentLikeApiRequest contentLikeApiRequest) {
         ContentLike newContentLike;

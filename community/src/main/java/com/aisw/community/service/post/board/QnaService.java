@@ -124,7 +124,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
 
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
 
             return Header.OK(response(newQna, fileApiResponseList));
         } else {
@@ -258,7 +258,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
             return Header.OK(response(qna, fileApiResponseList));
         } else {
             return Header.OK(response(qna));

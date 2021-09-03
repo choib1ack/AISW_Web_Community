@@ -110,7 +110,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
 
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth/notice/university", newUniversity.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth/notice/university", newUniversity.getId(), UploadCategory.POST);
 
             return Header.OK(response(newUniversity, fileApiResponseList));
         } else {
@@ -218,7 +218,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth/notice/university", university.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth/notice/university", university.getId(), UploadCategory.POST);
             return Header.OK(response(university, fileApiResponseList));
         } else {
             return Header.OK(response(university));

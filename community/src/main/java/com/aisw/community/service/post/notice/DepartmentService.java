@@ -108,7 +108,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
 
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth-student/notice/department", newDepartment.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth-student/notice/department", newDepartment.getId(), UploadCategory.POST);
 
             return Header.OK(response(newDepartment, fileApiResponseList));
         } else {
@@ -214,7 +214,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth-student/notice/department", department.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth-student/notice/department", department.getId(), UploadCategory.POST);
             return Header.OK(response(department, fileApiResponseList));
         } else {
             return Header.OK(response(department));

@@ -29,6 +29,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,18 +52,17 @@ public class FileService {
     private SiteInformationRepository siteInformationRepository;
 
     @Transactional
-    public List<FileApiResponse> uploadFiles(MultipartFile[] multipartFiles, String prefix, Long id, UploadCategory category) {
+    public List<FileApiResponse> uploadFiles(MultipartFile[] multipartFiles, String username, String prefix, Long id, UploadCategory category) {
         return Arrays.asList(multipartFiles)
                 .stream()
-                .map(file -> upload(file, prefix, id, category))
+                .map(file -> upload(file, username, prefix, id, category))
                 .map(file -> response(file))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public File upload(MultipartFile multipartFile, String prefix, Long id, UploadCategory category) {
-        String fileName = fileStorageService.storeFile(multipartFile);
-
+    public File upload(MultipartFile multipartFile, String username, String prefix, Long id, UploadCategory category) {
+        String fileName = fileStorageService.storeFile(multipartFile, username);
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path((prefix != null) ? prefix + "/file/download/" : "/file/download/")
                 .path(fileName)
@@ -112,6 +112,20 @@ public class FileService {
 
     public List<FileApiResponse> getFileList(List<File> fileList) {
         return fileList.stream().map(this::response).collect(Collectors.toList());
+    }
+
+    public String getNewFileName(String fileName) {
+        List<File> fileList = fileRepository.findAllByFileNameStartingWithAndFileNameEndsWith(
+                fileName.substring(0, fileName.indexOf(".")), fileName.substring(fileName.indexOf(".")));
+        for(File file : fileList) {
+            System.out.println(file.getFileName());
+        }
+        if(fileList != null) {
+            Long index = fileList.size() + 1L;
+            fileName = fileName.substring(0, fileName.indexOf(".")) + "(" + index + ")"
+                    + fileName.substring(fileName.indexOf("."));
+        }
+        return fileName;
     }
 
     public void deleteFileList(List<File> fileList) {

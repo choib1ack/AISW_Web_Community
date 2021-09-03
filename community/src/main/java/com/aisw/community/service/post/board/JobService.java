@@ -114,7 +114,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         Job newJob = jobRepository.save(job);
         if (files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/board/job", newJob.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/board/job", newJob.getId(), UploadCategory.POST);
 
             return Header.OK(response(newJob, fileApiResponseList));
         } else {
@@ -246,7 +246,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/board/job", job.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/board/job", job.getId(), UploadCategory.POST);
             return Header.OK(response(job, fileApiResponseList));
         } else {
             return Header.OK(response(job));

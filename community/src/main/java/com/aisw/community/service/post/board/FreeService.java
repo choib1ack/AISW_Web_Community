@@ -115,7 +115,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
 
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/board/free", newFree.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/board/free", newFree.getId(), UploadCategory.POST);
 
             return Header.OK(response(newFree, fileApiResponseList));
         } else {
@@ -248,7 +248,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/board/free", free.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/board/free", free.getId(), UploadCategory.POST);
             return Header.OK(response(free, fileApiResponseList));
         } else {
             return Header.OK(response(free));

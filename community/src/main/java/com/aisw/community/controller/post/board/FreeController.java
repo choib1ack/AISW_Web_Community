@@ -88,7 +88,6 @@ public class FreeController implements BoardPostController<FreeApiRequest, FreeA
         List<Long> delFileIdList = null;
         if(request.getDelFileIds() != null) {
             delFileIdList = Arrays.asList(request.getDelFileIds());
-            delFileIdList.stream().forEach(System.out::println);
         }
         return freeService.update(principal.getUser(), request.getFreeApiRequest(), request.getFiles(), delFileIdList);
     }

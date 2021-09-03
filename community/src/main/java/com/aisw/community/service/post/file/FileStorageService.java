@@ -26,6 +26,9 @@ public class FileStorageService {
     private final Path fileStorageLocation;
 
     @Autowired
+    private FileService fileService;
+
+    @Autowired
     public FileStorageService(FileStorageProperties fileStorageProperties) {
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath().normalize();
@@ -36,13 +39,15 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file, String username) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
             if (fileName.contains("..")) {
                 throw new FileStorageException("Invalid File Name: " + fileName);
             }
+            fileName = username + "_" +fileName;
+            fileName = fileService.getNewFileName(fileName);
 
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
