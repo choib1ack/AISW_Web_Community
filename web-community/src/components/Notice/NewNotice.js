@@ -7,7 +7,7 @@ import Button from "react-bootstrap/Button";
 import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import {useSelector} from "react-redux";
-import FinishModal from "../FinishModal";
+import FinishModal from "../Modal/FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
@@ -16,7 +16,7 @@ import {useHistory} from "react-router-dom";
 
 export default function NewNotice() {
     const {register, handleSubmit} = useForm({mode: "onChange"});
-    const [modalShow, setModalShow] = useState(false);
+    const [modalState, setModalState] = useState({show:false, id:null, category:null});
     const history = useHistory();
 
     const write = useSelector(state => state.write);
@@ -26,7 +26,7 @@ export default function NewNotice() {
         if (type === 'file') {
             axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}/upload`, data)
                 .then((res) => {
-                    setModalShow(true);
+                    setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
                 })
                 .catch(error => {
                     console.log(error);
@@ -36,7 +36,7 @@ export default function NewNotice() {
             axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
                 {data: data}
             ).then((res) => {
-                setModalShow(true);
+                setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
             }).catch(error => {
                 console.log(error);
                 alert("글 게시에 실패하였습니다.");
@@ -49,11 +49,6 @@ export default function NewNotice() {
 
         if (data.file.length === 0) {   // 파일이 없을 경우
             if (checkTitle(data.title) && checkContent(data.content)) {
-                if (data.board_type !== 'council' && role === 'ROLE_COUNCIL') {
-                    alert('학생회 카테고리 외에는 글을 게시할 수 없습니다!');
-                    return;
-                }
-
                 let temp = {
                     content: data.content,
                     status: 'GENERAL',
@@ -84,10 +79,15 @@ export default function NewNotice() {
         }
     }
 
+    const ReplaceLink = () => {
+        history.replace(`/notice/${modalState.category}/${modalState.id}`);
+    }
+
     return (
         <div className="NewNotice">
             <Container>
-                <FinishModal show={modalShow} link={`/notice`}
+                <FinishModal show={modalState.show}
+                             replace_link={ReplaceLink}
                              title="공지사항" body="글 게시가 완료되었습니다 !"/>
 
                 <Title text='새 공지사항 작성' type='1'/>
@@ -97,8 +97,8 @@ export default function NewNotice() {
                             <Form.Group>
                                 <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
                                               name="board_type" ref={register}>
-                                    <option value="university">학교 홈페이지</option>
-                                    <option value="department">학과사무실</option>
+                                    {role === 'ROLE_COUNCIL' ? null : <option value="university">학교 홈페이지</option>}
+                                    {role === 'ROLE_COUNCIL' ? null : <option value="department">학과사무실</option>}
                                     <option value="council">학생회</option>
                                 </Form.Control>
                             </Form.Group>

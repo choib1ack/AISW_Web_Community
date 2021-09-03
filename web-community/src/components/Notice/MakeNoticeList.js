@@ -5,6 +5,9 @@ import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 import Pagination from "../PaginationCustom";
 import './Notice.css';
+import {NOTICE_WRITE_ROLE} from "../../constants";
+import {BlueButton} from "../Button/BlueButton";
+import {useSelector} from "react-redux";
 
 export default function MakeNoticeList(props) {
 
@@ -23,6 +26,7 @@ export default function MakeNoticeList(props) {
     );
 
     const [curPage, setCurPage] = useState(0);
+    const {decoded} = useSelector((state) => state.user);
 
     const setPagination = (now_page) => {
         setCurPage(now_page);
@@ -115,6 +119,7 @@ export default function MakeNoticeList(props) {
     // <tr> 전체에 링크 연결
     let history = useHistory();
     const ToLink = (url) => {
+        history.push(`/notice/category/prev/${props.category}`);
         history.push(url);
     }
 
@@ -125,43 +130,45 @@ export default function MakeNoticeList(props) {
                 setError(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(url(props.category));
-
-                if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
-                    setNoticeData({
-                        ...noticeData,
-                        fix_notice: response.data.data.notice_api_notice_response_list,
-                        fix_urgent: response.data.data.notice_api_urgent_response_list,
-                        normal: {
-                            page_info: response.data.pagination,
-                            data: response.data.data.notice_api_response_list
-                        }
-                    })
-                } else {
-                    setNoticeData({
-                        ...noticeData,
-                        normal: {
-                            page_info: response.data.pagination,
-                            data: response.data.data.notice_api_response_list
-                        }
-                    })
-                }
+                await axiosApi.get(url(props.category)).then((res) =>{
+                    if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                        setNoticeData({
+                            ...noticeData,
+                            fix_notice: res.data.data.notice_api_notice_response_list,
+                            fix_urgent: res.data.data.notice_api_urgent_response_list,
+                            normal: {
+                                page_info: res.data.pagination,
+                                data: res.data.data.notice_api_response_list
+                            }
+                        })
+                    } else {
+                        setNoticeData({
+                            ...noticeData,
+                            normal: {
+                                page_info: res.data.pagination,
+                                data: res.data.data.notice_api_response_list
+                            }
+                        })
+                    }
+                    setLoading(false);
+                });
 
             } catch (e) {
                 setError(e);
             }
-            setLoading(false);
+
         };
 
         fetchNoticeData();
     }, [props.category, props.searchData.search, curPage]);
 
-    if (loading) return <Loading/>;
     if (error) return <tr>
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
     </tr>;
+    if (loading) return <Loading/>;
     if (!noticeData.normal.data || noticeData.normal.data.length === 0)
         return (
+            <>
             <table className="table-style">
                 <thead>
                 <tr>
@@ -178,6 +185,13 @@ export default function MakeNoticeList(props) {
                 </tr>
                 </tbody>
             </table>
+
+
+                {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
+                    <BlueButton type='/notice/newNotice' title="글쓰기"/>
+                    : null
+                }
+                </>
         );
     return (
         <>
@@ -194,7 +208,7 @@ export default function MakeNoticeList(props) {
                 <tbody>
                 {noticeData.fix_urgent !== null && props.searchData.search === 0 ? noticeData.fix_urgent.map(data => (
                     <tr key={data.id}
-                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                        onClick={() => ToLink(`/notice/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                         <td>{status(data.status)}</td>
                         <td>
@@ -209,7 +223,7 @@ export default function MakeNoticeList(props) {
 
                 {noticeData.fix_notice !== null && props.searchData.search === 0 ? noticeData.fix_notice.map(data => (
                     <tr key={data.id}
-                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                        onClick={() => ToLink(`/notice/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                         <td>{status(data.status)}</td>
                         <td>
@@ -224,7 +238,7 @@ export default function MakeNoticeList(props) {
 
                 {noticeData.normal.data.map((data, index) => (
                     <tr key={data.id}
-                        onClick={() => ToLink(`${props.match.url}/${categoryName(props.category) === 0 ?
+                        onClick={() => ToLink(`/notice/${categoryName(props.category) === 0 ?
                             data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
                         <td>{indexing(index)}</td>
                         <td>
@@ -244,6 +258,11 @@ export default function MakeNoticeList(props) {
                 total_pages={noticeData.normal.page_info.total_pages}
                 setPagination={setPagination}
             />
+
+            {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
+                <BlueButton type='/notice/newNotice' title="글쓰기"/>
+                : null
+            }
         </>
     );
 }

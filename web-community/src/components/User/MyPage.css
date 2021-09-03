@@ -22,6 +22,18 @@
     color: black;
 }
 
+.withdrawal-btn {
+    float: right;
+    font-size: 14px;
+    color: #cdcdcd;
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.withdrawal-btn:hover {
+    color: #ff6262;
+}
+
 @media screen and (max-width: 768px) {
     .MyPage {
         right: 10px;

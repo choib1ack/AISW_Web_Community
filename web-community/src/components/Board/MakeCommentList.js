@@ -11,9 +11,6 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
     const [boardCommentData, setBoardCommentData] = useState(board_comment_data);
     const auth_url = (board_category === 'qna' ? 'auth-student' : 'auth');
 
-    // const [loading, setLoading] = useState(false);
-    // const [error, setError] = useState(null);
-
     const dateFormat = (s) => {
         let result = "";
         result += s.substring(5, 7) + "/" + s.substring(8, 10) + "  " + s.substring(11, 16);
@@ -52,11 +49,11 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
             await axiosApi.post('/like/press',
                 {data: data}
             ).then((res) => {
-                alert("댓글에 좋아요를 눌렀습니다");
+                // alert("댓글에 좋아요를 눌렀습니다");
                 dispatch({type: 'PRESS'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
+                // console.log(errorObject);
                 alert("좋아요 클릭 에러!" + errorObject);
             })
         }
@@ -64,11 +61,11 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
         const handleLikeCancelClick = async (comment_id) => {
             await axiosApi.delete(`/like/remove/${comment_id}?target=COMMENT`
             ).then((res) => {
-                alert("댓글에 좋아요를 취소했습니다");
+                // alert("댓글에 좋아요를 취소했습니다");
                 dispatch({type: 'REMOVE'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
+                // console.log(errorObject);
                 alert("좋아요 클릭 에러!" + errorObject);
             })
         }
@@ -109,7 +106,7 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
                                 <img src={likeGrayImage} onClick={() => handleLikeClick(data.id)}
                                      style={{cursor: "pointer"}}/> {likeState.num}</span>}
 
-                        <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
+                        <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.writer}
                             <span style={{color: "#8C8C8C", fontSize: '12px', marginLeft: "10px"}}>
                                 {dateFormat(data.created_at.substring(0, 16))}</span>
                         </Card.Title>

@@ -8,7 +8,7 @@ import classNames from "classnames";
 import React, {useState} from "react";
 import {useForm} from "react-hook-form";
 import {useSelector} from "react-redux";
-import FinishModal from "../FinishModal";
+import FinishModal from "../Modal/FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import {useHistory, useLocation} from "react-router-dom";
 import WriteEditorContainer from "../WriteEditorContainer";
@@ -56,10 +56,14 @@ export default function EditNotice({match}) {
         }
     }
 
+    const ReplaceLink = () => {
+        history.goBack();
+    }
+
     return (
         <div className="EditNotice">
             <Container>
-                <FinishModal show={modalShow} link={`/notice`}
+                <FinishModal show={modalShow} replace_link={ReplaceLink}
                              title="공지사항" body="글 수정이 완료되었습니다 !"/>
 
                 <Title text='공지사항 수정' type='1'/>

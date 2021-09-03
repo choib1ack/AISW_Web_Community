@@ -9,7 +9,7 @@ export function BlueButton(props) {
     return (
         <Row>
             <Col>
-                <Link to={`${props.match.url}/${props.type}`}>
+                <Link to={`${props.type}`}>
                     <Button className="Menu-button blue-button"
                             style={{float: 'right', marginBottom: '3rem'}}>
                         {props.title}
