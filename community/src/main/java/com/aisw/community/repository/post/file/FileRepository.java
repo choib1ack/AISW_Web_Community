@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface FileRepository extends JpaRepository<File, Long> {
 
-    List<File> findAllByFileNameStartingWithAndFileNameEndsWith(String fileName, String extension);
+    List<File> findAllByStoredFileNameStartingWithAndStoredFileNameEndsWith(String prefix, String extension);
 }

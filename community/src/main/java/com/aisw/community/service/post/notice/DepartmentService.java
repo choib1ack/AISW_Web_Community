@@ -287,6 +287,9 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
     }
 
     private DepartmentApiResponse response(Department department, List<FileApiResponse> fileApiResponseList) {
+        if(department.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(department.getFileList()));
+        }
         return DepartmentApiResponse.builder()
                 .id(department.getId())
                 .title(department.getTitle())

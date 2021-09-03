@@ -304,7 +304,10 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     }
 
     private FreeApiResponse response(Free free, List<FileApiResponse> fileApiResponseList) {
-        FreeApiResponse freeApiResponse = FreeApiResponse.builder()
+        if(free.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(free.getFileList()));
+        }
+        return FreeApiResponse.builder()
                 .id(free.getId())
                 .title(free.getTitle())
                 .writer(free.getWriter())
@@ -319,8 +322,6 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .category(free.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return freeApiResponse;
     }
 
     private FreeDetailApiResponse responseWithComment(Free free) {

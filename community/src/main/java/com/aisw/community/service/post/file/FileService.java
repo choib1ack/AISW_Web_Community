@@ -62,25 +62,28 @@ public class FileService {
 
     @Transactional
     public File upload(MultipartFile multipartFile, String username, String prefix, Long id, UploadCategory category) {
-        String fileName = fileStorageService.storeFile(multipartFile, username);
+        String[] storeFile = fileStorageService.storeFile(multipartFile, username);
+        String fileName = storeFile[0];
+        String storedFileName = storeFile[1];
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path((prefix != null) ? prefix + "/file/download/" : "/file/download/")
-                .path(fileName)
+                .path(storedFileName)
                 .toUriString();
 
         File file = File.builder()
                 .fileName(fileName)
+                .storedFileName(storedFileName)
                 .fileDownloadUri(fileDownloadUri)
                 .fileSize(multipartFile.getSize())
                 .fileType(multipartFile.getContentType())
                 .build();
-        if(category.getTitle().equals("post")) {
+        if (category.getTitle().equals("post")) {
             Bulletin bulletin = bulletinRepository.findById(id).orElseThrow(() -> new PostNotFoundException(id));
             file.setBulletin(bulletin);
-        } else if(category.getTitle().equals("banner")) {
+        } else if (category.getTitle().equals("banner")) {
             Banner banner = bannerRepository.findById(id).orElseThrow(() -> new BannerNotFoundException(id));
             file.setBanner(banner);
-        } else if(category.getTitle().equals("site")) {
+        } else if (category.getTitle().equals("site")) {
             SiteInformation siteInformation = siteInformationRepository.findById(id)
                     .orElseThrow(() -> new SiteInformationNotFoundException(id));
             file.setSiteInformation(siteInformation);
@@ -115,16 +118,20 @@ public class FileService {
     }
 
     public String getNewFileName(String fileName) {
-        List<File> fileList = fileRepository.findAllByFileNameStartingWithAndFileNameEndsWith(
-                fileName.substring(0, fileName.indexOf(".")), fileName.substring(fileName.indexOf(".")));
-        for(File file : fileList) {
-            System.out.println(file.getFileName());
+        String prefix = fileName.substring(0, fileName.indexOf("."));
+        String extension = fileName.substring(fileName.indexOf("."));
+        List<File> fileList =
+                fileRepository.findAllByStoredFileNameStartingWithAndStoredFileNameEndsWith(prefix, extension);
+        Long index = 0L;
+        for (int i = 0; i < fileList.size(); i++) {
+            String number = fileList.get(i).getStoredFileName()
+                    .replace(prefix, "")
+                    .replace(extension, "")
+                    .replace("(", "")
+                    .replace(")", "");
+            index = Math.max(index, Long.parseLong(number));
         }
-        if(fileList != null) {
-            Long index = fileList.size() + 1L;
-            fileName = fileName.substring(0, fileName.indexOf(".")) + "(" + index + ")"
-                    + fileName.substring(fileName.indexOf("."));
-        }
+        fileName = prefix + "(" + (index + 1) + ")" + extension;
         return fileName;
     }
 

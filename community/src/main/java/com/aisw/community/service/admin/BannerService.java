@@ -195,7 +195,10 @@ public class BannerService {
     }
 
     private BannerApiResponse response(Banner banner, List<FileApiResponse> fileApiResponseList) {
-        BannerApiResponse bannerApiResponse = BannerApiResponse.builder()
+        if(banner.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(banner.getFileList()));
+        }
+        return BannerApiResponse.builder()
                 .id(banner.getId())
                 .name(banner.getName())
                 .content(banner.getContent())
@@ -209,7 +212,5 @@ public class BannerService {
                 .updatedBy(banner.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return bannerApiResponse;
     }
 }

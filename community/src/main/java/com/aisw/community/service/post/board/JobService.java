@@ -302,7 +302,10 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     }
 
     private JobApiResponse response(Job job, List<FileApiResponse> fileApiResponseList) {
-        JobApiResponse jobApiResponse = JobApiResponse.builder()
+        if(job.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(job.getFileList()));
+        }
+        return JobApiResponse.builder()
                 .id(job.getId())
                 .title(job.getTitle())
                 .writer(job.getWriter())
@@ -317,8 +320,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .category(job.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return jobApiResponse;
     }
 
     private JobDetailApiResponse responseWithComment(Job job) {

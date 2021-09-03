@@ -293,6 +293,9 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
     }
 
     private UniversityApiResponse response(University university, List<FileApiResponse> fileApiResponseList) {
+        if(university.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(university.getFileList()));
+        }
         return UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())

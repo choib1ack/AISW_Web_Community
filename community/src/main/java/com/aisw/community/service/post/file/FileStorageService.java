@@ -39,20 +39,20 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file, String username) {
+    public String[] storeFile(MultipartFile file, String username) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
             if (fileName.contains("..")) {
                 throw new FileStorageException("Invalid File Name: " + fileName);
             }
-            fileName = username + "_" +fileName;
-            fileName = fileService.getNewFileName(fileName);
+            String storedFileName = username + "_" +fileName;
+            storedFileName = fileService.getNewFileName(storedFileName);
 
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            Path targetLocation = this.fileStorageLocation.resolve(storedFileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-            return fileName;
+            return new String[] {fileName, storedFileName};
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file: " + fileName, ex);
         }

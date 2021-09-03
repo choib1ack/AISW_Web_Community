@@ -315,7 +315,10 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     }
 
     private QnaApiResponse response(Qna qna, List<FileApiResponse> fileApiResponseList) {
-        QnaApiResponse qnaApiResponse = QnaApiResponse.builder()
+        if(qna.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(qna.getFileList()));
+        }
+        return QnaApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
                 .writer(qna.getWriter())
@@ -331,8 +334,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .category(qna.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return qnaApiResponse;
     }
 
     private QnaDetailApiResponse responseWithComment(Qna qna) {

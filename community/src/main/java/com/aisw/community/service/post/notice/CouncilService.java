@@ -287,6 +287,9 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
     }
 
     private CouncilApiResponse response(Council council, List<FileApiResponse> fileApiResponseList) {
+        if(council.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(council.getFileList()));
+        }
         return CouncilApiResponse.builder()
                 .id(council.getId())
                 .title(council.getTitle())

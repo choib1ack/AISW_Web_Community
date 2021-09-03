@@ -182,7 +182,10 @@ public class SiteInformationService {
     }
 
     private SiteInformationApiResponse response(SiteInformation siteInformation, List<FileApiResponse> fileApiResponseList) {
-        SiteInformationApiResponse siteInformationApiResponse = SiteInformationApiResponse.builder()
+        if(siteInformation.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(siteInformation.getFileList()));
+        }
+        return SiteInformationApiResponse.builder()
                 .id(siteInformation.getId())
                 .name(siteInformation.getName())
                 .content(siteInformation.getContent())
@@ -195,7 +198,5 @@ public class SiteInformationService {
                 .updatedBy(siteInformation.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return siteInformationApiResponse;
     }
 }
