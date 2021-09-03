@@ -17,7 +17,7 @@ export default function NoticeList({match}) {
             search_type: "select_title",
             keyword: ""
         });
-    const {decoded} = useSelector((state) => state.user);
+
     const active_change_dispatch = useDispatch();
     active_change_dispatch(setActiveTab(1));
 
@@ -98,10 +98,6 @@ export default function NoticeList({match}) {
                 setSearchData={setSearchData}
             />
 
-            {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
-                <BlueButton type='/notice/newNotice' title="글쓰기"/>
-                : null
-            }
 
         </div>
     );

@@ -5,6 +5,9 @@ import Loading from "../Loading";
 import axiosApi from "../../axiosApi";
 import Pagination from "../PaginationCustom";
 import './Notice.css';
+import {NOTICE_WRITE_ROLE} from "../../constants";
+import {BlueButton} from "../Button/BlueButton";
+import {useSelector} from "react-redux";
 
 export default function MakeNoticeList(props) {
 
@@ -23,6 +26,7 @@ export default function MakeNoticeList(props) {
     );
 
     const [curPage, setCurPage] = useState(0);
+    const {decoded} = useSelector((state) => state.user);
 
     const setPagination = (now_page) => {
         setCurPage(now_page);
@@ -164,6 +168,7 @@ export default function MakeNoticeList(props) {
     if (loading) return <Loading/>;
     if (!noticeData.normal.data || noticeData.normal.data.length === 0)
         return (
+            <>
             <table className="table-style">
                 <thead>
                 <tr>
@@ -180,6 +185,13 @@ export default function MakeNoticeList(props) {
                 </tr>
                 </tbody>
             </table>
+
+
+                {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
+                    <BlueButton type='/notice/newNotice' title="글쓰기"/>
+                    : null
+                }
+                </>
         );
     return (
         <>
@@ -246,6 +258,11 @@ export default function MakeNoticeList(props) {
                 total_pages={noticeData.normal.page_info.total_pages}
                 setPagination={setPagination}
             />
+
+            {decoded && NOTICE_WRITE_ROLE.includes(decoded.role) ?
+                <BlueButton type='/notice/newNotice' title="글쓰기"/>
+                : null
+            }
         </>
     );
 }

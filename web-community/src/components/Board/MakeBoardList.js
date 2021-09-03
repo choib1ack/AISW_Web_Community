@@ -6,6 +6,8 @@ import Loading from "../Loading";
 import Pagination from "../PaginationCustom";
 import './Board.css';
 import '../Notice/Notice.css';
+import {useSelector} from "react-redux";
+import {BlueButton} from "../Button/BlueButton";
 
 export default function MakeBoardList(props) {
 
@@ -26,6 +28,7 @@ export default function MakeBoardList(props) {
     );
 
     const [curPage, setCurPage] = useState(0);
+    const {decoded} = useSelector((state) => state.user);
 
     const setPagination = (now_page) => {
         setCurPage(now_page);
@@ -135,7 +138,7 @@ export default function MakeBoardList(props) {
                 setLoading(true);
 
                 await axios.get(url(props.category))
-                    .then((res)=>{
+                    .then((res) => {
                         if (boardData.normal.page_info.current_page === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                             setBoardData({
                                 ...boardData,
@@ -175,22 +178,29 @@ export default function MakeBoardList(props) {
     if (loading) return <Loading/>;
     if (!boardData.normal.data || boardData.normal.data.length === 0)
         return (
-            <table className="table-style">
-                <thead>
-                <tr>
-                    <th>no</th>
-                    <th className="table-title">제목</th>
-                    <th>작성자</th>
-                    <th>등록일</th>
-                    <th>조회</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td colSpan={5}>데이터가 없습니다.</td>
-                </tr>
-                </tbody>
-            </table>
+            <>
+                <table className="table-style">
+                    <thead>
+                    <tr>
+                        <th>no</th>
+                        <th className="table-title">제목</th>
+                        <th>작성자</th>
+                        <th>등록일</th>
+                        <th>조회</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colSpan={5}>데이터가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                {decoded ?
+                    <BlueButton type='/board/newBoard' title="글쓰기"/>
+                    : null
+                }
+            </>
         );
     return (
         <>
@@ -256,6 +266,11 @@ export default function MakeBoardList(props) {
                 total_pages={boardData.normal.page_info.total_pages}
                 setPagination={setPagination}
             />
+
+            {decoded ?
+                <BlueButton type='/board/newBoard' title="글쓰기"/>
+                : null
+            }
         </>
     );
 }

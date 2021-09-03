@@ -19,7 +19,7 @@ function BoardList({match}) {
             search_type: "select_title",
             keyword: ""
         });
-    const {decoded} = useSelector((state) => state.user);
+
 
     window.scrollTo(0, 0);
 
@@ -130,11 +130,7 @@ function BoardList({match}) {
                 setSearchData={setSearchData}
                 selected_subject_list={selectedSubject}
             />
-            
-            {decoded ?
-                <BlueButton type='/board/newBoard' title="글쓰기"/>
-                : null
-            }
+
 
         </div>
     );
