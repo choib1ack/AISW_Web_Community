@@ -21,14 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SiteInformationService {
@@ -80,7 +78,7 @@ public class SiteInformationService {
 
     @Cacheable(value = "siteRead")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
-        List<SiteInformationByCategoryResponse> siteInformationByCategoryResponseList = customSiteInformationRepository.findAllGroupByCategory();
+        List<SiteInformationByCategoryResponse> siteInformationByCategoryResponseList = customSiteInformationRepository.findAllByCategory();
         siteInformationByCategoryResponseList.stream().forEach(siteInformation -> System.out.println(siteInformation.getName() + " " + siteInformation.getSiteInformation()));
 
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();

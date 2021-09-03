@@ -346,7 +346,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAll(pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
@@ -356,7 +356,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
@@ -366,7 +366,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
@@ -377,26 +377,23 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
 
     public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
 
-    public Page<Qna> searchByStatus(Pageable pageable) {
-        Page<Qna> qnas = qnaRepository.findAllByStatusIn(
-                Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
-
-        return qnas;
+    public List<Qna> searchByStatus() {
+        return qnaRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, Page<Qna> qnasByStatus) {
+    private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, List<Qna> qnasByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(qnas.stream()
                         .map(qna -> BoardApiResponse.builder()

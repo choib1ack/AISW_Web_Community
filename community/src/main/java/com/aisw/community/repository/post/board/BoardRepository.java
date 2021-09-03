@@ -23,7 +23,7 @@ public interface BoardRepository<T extends Board> extends JpaRepository<T, Long>
 
     Page<Board> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Board> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
+    List<Board> findTop10ByStatusIn(List<BulletinStatus> statusList);
 
     @Query("select board from Board board left join fetch board.commentList where board.id = :id")
     Optional<Board> findByIdWithComment(Long id);

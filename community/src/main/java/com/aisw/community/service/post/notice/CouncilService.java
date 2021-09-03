@@ -249,7 +249,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
     @Cacheable(value = "councilReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Council> councils = councilRepository.findAll(pageable);
-        Page<Council> councilsByStatus = searchByStatus(pageable);
+        List<Council> councilsByStatus = searchByStatus();
 
         return getListHeader(councils, councilsByStatus);
     }
@@ -259,7 +259,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByWriterContaining(writer, pageable);
-        Page<Council> councilsByStatus = searchByStatus(pageable);
+        List<Council> councilsByStatus = searchByStatus();
 
         return getListHeader(councils, councilsByStatus);
     }
@@ -269,7 +269,7 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Council> councils = councilRepository.findAllByTitleContaining(title, pageable);
-        Page<Council> councilsByStatus = searchByStatus(pageable);
+        List<Council> councilsByStatus = searchByStatus();
 
         return getListHeader(councils, councilsByStatus);
     }
@@ -280,20 +280,16 @@ public class CouncilService implements NoticePostService<CouncilApiRequest, Coun
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Council> councils = councilRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Council> councilsByStatus = searchByStatus(pageable);
+        List<Council> councilsByStatus = searchByStatus();
 
         return getListHeader(councils, councilsByStatus);
     }
 
-    public Page<Council> searchByStatus(Pageable pageable) {
-        Page<Council> councils = councilRepository.findAllByStatusIn(
-                Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
-
-        return councils;
+    public List<Council> searchByStatus() {
+        return councilRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<NoticeResponseDTO> getListHeader
-            (Page<Council> councils, Page<Council> councilsByStatus) {
+    private Header<NoticeResponseDTO> getListHeader(Page<Council> councils, List<Council> councilsByStatus) {
         NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(councils.stream()
                         .map(notice -> NoticeApiResponse.builder()

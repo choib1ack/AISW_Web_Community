@@ -1,5 +1,6 @@
 package com.aisw.community.repository.post.board;
 
+import com.aisw.community.model.entity.post.board.Board;
 import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -25,5 +26,5 @@ public interface FreeRepository extends JpaRepository<Free, Long> {
 
     Page<Free> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Free> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
+    List<Free> findTop10ByStatusIn(List<BulletinStatus> statusList);
 }
