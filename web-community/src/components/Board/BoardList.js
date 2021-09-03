@@ -132,7 +132,7 @@ function BoardList({match}) {
             />
             
             {decoded ?
-                <BlueButton match={match} type='newBoard' title="글쓰기"/>
+                <BlueButton type='/board/newBoard' title="글쓰기"/>
                 : null
             }
 
