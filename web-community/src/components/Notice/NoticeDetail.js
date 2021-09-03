@@ -51,10 +51,12 @@ export default function NoticeDetail({match}) {
                 setNoticeDetailData(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${AUTH_NOTICE_GET[notice_category]}/notice/${notice_category}/${id}`);
+                await axiosApi.get(`/${AUTH_NOTICE_GET[notice_category]}/notice/${notice_category}/${id}`)
+                    .then((res)=>{
+                        setNoticeDetailData(res.data.data); // 데이터는 response.data 안에
+                        setHtmlContent(res.data.data.content);
+                     });
 
-                setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
-                setHtmlContent(response.data.data.content);
             } catch (e) {
                 setError(e);
             }

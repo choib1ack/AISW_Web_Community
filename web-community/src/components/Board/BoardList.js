@@ -26,8 +26,6 @@ function BoardList({match}) {
     const active_change_dispatch = useDispatch();
     active_change_dispatch(setActiveTab(2));
 
-    const user = useSelector(state => state.user);
-
     const handleSearchTextChange = (event) => {
         setSearchData(
             {

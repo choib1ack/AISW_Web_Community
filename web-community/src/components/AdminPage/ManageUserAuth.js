@@ -162,16 +162,6 @@ function UserAuthModal(props){
                         <Modal.Title>회원 권한 수정</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/*<Form style={{padding:'10px'}}>*/}
-                        {/*    <Form.Group as={Row} className="mb-3">*/}
-                        {/*        <Form.Label column sm="2">*/}
-                        {/*            질문*/}
-                        {/*        </Form.Label>*/}
-                        {/*        <Col sm="10">*/}
-                        {/*            <Form.Control type="text" defaultValue={role} name="question" onChange={handleInputChange}/>*/}
-                        {/*        </Col>*/}
-                        {/*    </Form.Group>*/}
-                        {/*</Form>*/}
 
                         <select value={role}
                                 onChange={handleRoleChange}>

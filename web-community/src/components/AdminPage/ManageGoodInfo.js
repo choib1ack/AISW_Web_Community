@@ -21,21 +21,20 @@ function ManageGoodInfo({match}) {
         const fetchSiteData = async () => {
             try {
                 setError(null);
-                //setSiteData(null);
                 setLoading(true);
                 if (siteData) {
                     setLoading(false);
                     return;
                 }
 
-                const response = await axiosApi.get("/auth-admin/site/");
-
-                setSiteData(Object.values(response.data.data));
-                setLoading(false);
+                await axiosApi.get("/auth-admin/site/")
+                    .then((res)=>{
+                        setSiteData(Object.values(res.data.data));
+                        setLoading(false);
+                    });
             } catch (e) {
                 setError(e);
             }
-
         };
 
         fetchSiteData();

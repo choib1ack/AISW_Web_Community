@@ -247,15 +247,14 @@ function MakeAlertList(props) {
                             list: [alertList.list.concat(items)],
                             page_info: res.data.pagination
                         });
-
-                        // console.log(res);
+                    props.setLoading(false);
                     }
                 );
 
         } catch (e) {
             setError(e);
         }
-        props.setLoading(false);
+
     };
 
 
@@ -264,8 +263,8 @@ function MakeAlertList(props) {
     }, [props.currentPage]);
 
 
-    if (props.loading) return <Loading/>;
     if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
+    if (props.loading) return <Loading/>;
     if (alertList.list.length === 0) return <div>데이터가 없습니다.</div>;
 
     return (

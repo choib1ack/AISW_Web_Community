@@ -35,12 +35,12 @@ function ManageFAQ() {
                 await axios.get("/faq")
                     .then((res)=>{
                         setFaqData(res.data.data);
+                        setLoading(false);
                     });
 
             } catch (e) {
                 setError(e);
             }
-            setLoading(false);
         };
 
         fetchFaqData();
@@ -48,9 +48,8 @@ function ManageFAQ() {
 
     const handleFaqAddModalShow = () => setShow(true);
 
-
-    if (loading) return <Loading/>;
     if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
+    if (loading) return <Loading/>;
 
     return (
         <div className='ManageFAQ'>

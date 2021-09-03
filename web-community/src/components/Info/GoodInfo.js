@@ -28,9 +28,12 @@ function GoodInfo() {
                     setLoading(false);
                     return;
                 }
-                const response = await axiosApi.get("/site");
-                setSiteData(Object.values(response.data.data));
-                setLoading(false);
+                await axiosApi.get("/site")
+                    .then((res)=>{
+                        setSiteData(Object.values(res.data.data));
+                        setLoading(false);
+                    });
+
             } catch (e) {
                 setError(e);
             }
@@ -39,8 +42,8 @@ function GoodInfo() {
         fetchSiteData();
     }, []);
 
-    if (loading) return <Loading/>;
     if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
+    if (loading) return <Loading/>;
     if (!siteData) return null;
 
     return (
