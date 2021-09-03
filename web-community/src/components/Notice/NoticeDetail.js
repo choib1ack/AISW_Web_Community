@@ -49,10 +49,12 @@ export default function NoticeDetail({match}) {
                 setNoticeDetailData(null);
                 setLoading(true);
 
-                const response = await axiosApi.get(`/${AUTH_NOTICE_GET[notice_category]}/notice/${notice_category}/${id}`);
+                await axiosApi.get(`/${AUTH_NOTICE_GET[notice_category]}/notice/${notice_category}/${id}`)
+                    .then((res)=>{
+                        setNoticeDetailData(res.data.data); // 데이터는 response.data 안에
+                        setHtmlContent(res.data.data.content);
+                     });
 
-                setNoticeDetailData(response.data.data); // 데이터는 response.data 안에
-                setHtmlContent(response.data.data.content);
             } catch (e) {
                 setError(e);
             }
@@ -115,7 +117,7 @@ export default function NoticeDetail({match}) {
                         paddingBottom: '10px'
                     }}>
                         <p style={{color: "#0472FD", fontSize: '12px'}}
-                           className="mb-1">{Category(notice_category)}></p>
+                           className="mb-1">{Category(notice_category)}</p>
                         <p style={{fontSize: '16x'}} className="d-inline-block mr-1">{noticeDetailData.title}</p>
                         {noticeDetailData.file_api_response_list[0] == null ? "" :
                             <img src={fileImage} className="d-inline-block"/>}

@@ -12,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadToDepartmentRequest {
 
     private DepartmentApiRequest departmentApiRequest;
+    
+    private Long[] delFileIds;
 
     private MultipartFile[] files;
 }

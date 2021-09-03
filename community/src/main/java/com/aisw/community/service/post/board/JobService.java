@@ -3,6 +3,7 @@ package com.aisw.community.service.post.board;
 import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
 import com.aisw.community.model.entity.post.board.Job;
+import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.BulletinStatus;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -216,7 +218,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<JobApiResponse> update(User user, JobApiRequest jobApiRequest, MultipartFile[] files) {
+    public Header<JobApiResponse> update(User user, JobApiRequest jobApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
         Job job = jobRepository.findById(jobApiRequest.getId()).orElseThrow(
                 () -> new PostNotFoundException(jobApiRequest.getId()));
         if (job.getUser().getId() != user.getId()) {
@@ -230,9 +232,17 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .setStatus(jobApiRequest.getStatus());
         jobRepository.save(job);
 
-        if(job.getFileList() != null) {
-            fileService.deleteFileList(job.getFileList());
-            job.getFileList().clear();
+        if(job.getFileList() != null && delFileIdList != null) {
+            List<File> delFileList = new ArrayList<>();
+            for(File file : job.getFileList()) {
+                if(delFileIdList.contains(file.getId())) {
+                    fileService.deleteFile(file);
+                    delFileList.add(file);
+                }
+            }
+            for (File file : delFileList) {
+                job.getFileList().remove(file);
+            }
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =

@@ -10,6 +10,7 @@ import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import {useSelector} from "react-redux";
 
 function ManageUserAuth() {
 
@@ -18,6 +19,7 @@ function ManageUserAuth() {
     const [error, setError] = useState(null);
 
     const [refresh, setRefresh] = useState(0);
+
 
 
     const Refresh = () => {
@@ -121,6 +123,8 @@ function UserAuthModal(props){
 
     const [role, setRole] = useState(props.role);
 
+    const admin_role = useSelector(state => state.user.decoded.role);
+
     const handleRoleChange = (event) => {
         setRole(event.target.value);
     }
@@ -158,23 +162,13 @@ function UserAuthModal(props){
                         <Modal.Title>회원 권한 수정</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/*<Form style={{padding:'10px'}}>*/}
-                        {/*    <Form.Group as={Row} className="mb-3">*/}
-                        {/*        <Form.Label column sm="2">*/}
-                        {/*            질문*/}
-                        {/*        </Form.Label>*/}
-                        {/*        <Col sm="10">*/}
-                        {/*            <Form.Control type="text" defaultValue={role} name="question" onChange={handleInputChange}/>*/}
-                        {/*        </Col>*/}
-                        {/*    </Form.Group>*/}
-                        {/*</Form>*/}
 
                         <select value={role}
                                 onChange={handleRoleChange}>
                             <option value="ROLE_GENERAL">ROLE_GENERAL</option>
                             <option value="ROLE_STUDENT">ROLE_STUDENT</option>
                             <option value="ROLE_COUNCIL">ROLE_COUNCIL</option>
-                            <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+                            {admin_role === 'ROLE_DEVELOPER'?<option value="ROLE_ADMIN">ROLE_ADMIN</option>:null}
                         </select>
 
                     </Modal.Body>

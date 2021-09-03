@@ -16,7 +16,7 @@ import {useHistory} from "react-router-dom";
 
 export default function NewNotice() {
     const {register, handleSubmit} = useForm({mode: "onChange"});
-    const [modalShow, setModalShow] = useState(false);
+    const [modalState, setModalState] = useState({show:false, id:null, category:null});
     const history = useHistory();
 
     const write = useSelector(state => state.write);
@@ -26,7 +26,7 @@ export default function NewNotice() {
         if (type === 'file') {
             axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}/upload`, data)
                 .then((res) => {
-                    setModalShow(true);
+                    setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
                 })
                 .catch(error => {
                     console.log(error);
@@ -36,7 +36,7 @@ export default function NewNotice() {
             axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
                 {data: data}
             ).then((res) => {
-                setModalShow(true);
+                setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
             }).catch(error => {
                 console.log(error);
                 alert("글 게시에 실패하였습니다.");
@@ -84,10 +84,15 @@ export default function NewNotice() {
         }
     }
 
+    const ReplaceLink = () => {
+        history.replace(`/notice/${modalState.category}/${modalState.id}`);
+    }
+
     return (
         <div className="NewNotice">
             <Container>
-                <FinishModal show={modalShow} link={`/notice`}
+                <FinishModal show={modalState.show}
+                             replace_link={ReplaceLink}
                              title="공지사항" body="글 게시가 완료되었습니다 !"/>
 
                 <Title text='새 공지사항 작성' type='1'/>

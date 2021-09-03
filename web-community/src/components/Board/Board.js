@@ -9,6 +9,7 @@ function Board({match}) {
     return (
         <>
             <Route exact path={match.path} component={BoardList}/>
+            <Route exact path={`${match.path}/category/prev/:board_category`} component={BoardList}/>
             <Route path={`${match.path}/newBoard`} component={NewBoard}/>
             <Route exact path={`${match.path}/:board_category/:id`} component={BoardDetail}/>
             <Route path={`${match.path}/:board_category/:id/edit`} component={EditBoard}/>
