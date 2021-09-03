@@ -9,8 +9,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 import static com.aisw.community.model.entity.admin.QBanner.banner;
 
 @RequiredArgsConstructor

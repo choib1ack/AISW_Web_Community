@@ -53,17 +53,21 @@ public class AlertService {
                 .postId(alertApiRequest.getPostId())
                 .content(alertApiRequest.getContent()).build();
 
-        if (alertApiRequest.getCommentId() != null) {
+        if (alertApiRequest.getCommentId() != null) { // 댓글일 경우
             Comment comment = commentRepository.findById(alertApiRequest.getCommentId())
                     .orElseThrow(() -> new CommentNotFoundException(alertApiRequest.getCommentId()));
             alert.setComment(comment);
+            // 댓글
             if (comment.getSuperComment() == null) alert.setAlertCategory(AlertCategory.COMMENT);
+            // 대댓글
             else alert.setAlertCategory(AlertCategory.NESTED_COMMENT);
-        } else if (alertApiRequest.getContentLikeId() != null) {
+        } else if (alertApiRequest.getContentLikeId() != null) { // 좋아요일 경우
             ContentLike contentLike = contentLikeRepository.findById(alertApiRequest.getContentLikeId())
                     .orElseThrow(() -> new ContentLikeNotFoundException(alertApiRequest.getContentLikeId()));
             alert.setContentLike(contentLike);
+            // 게시물 좋아요
             if (contentLike.getBoard() != null) alert.setAlertCategory(AlertCategory.LIKE_POST);
+            // 댓글 좋아요
             else if (contentLike.getComment() != null) alert.setAlertCategory(AlertCategory.LIKE_COMMENT);
         }
         Alert newAlert = alertRepository.save(alert);

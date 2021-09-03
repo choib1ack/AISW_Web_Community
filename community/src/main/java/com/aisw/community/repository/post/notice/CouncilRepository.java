@@ -1,6 +1,7 @@
 package com.aisw.community.repository.post.notice;
 
 import com.aisw.community.model.entity.post.board.Free;
+import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.post.notice.Council;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import org.springframework.data.domain.Page;
@@ -23,5 +24,5 @@ public interface CouncilRepository extends JpaRepository<Council, Long> {
 
     Page<Council> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Council> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
+    List<Council> findTop10ByStatusIn(List<BulletinStatus> statusList);
 }

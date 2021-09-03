@@ -18,7 +18,7 @@ public class CustomSiteInformationRepositoryImpl implements CustomSiteInformatio
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<SiteInformationByCategoryResponse> findAllGroupByCategory() {
+    public List<SiteInformationByCategoryResponse> findAllByCategory() {
         return jpaQueryFactory.from(siteInformation)
                 .select(Projections.constructor(SiteInformationByCategoryResponse.class,
                         siteCategory.id,

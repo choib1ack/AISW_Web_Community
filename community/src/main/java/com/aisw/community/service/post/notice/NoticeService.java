@@ -28,7 +28,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
     @Cacheable(value = "noticeReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAll(pageable);
-        Page<Notice> noticesByStatus = searchByStatus(pageable);
+        List<Notice> noticesByStatus = searchByStatus();
 
         return getListHeader(notices, noticesByStatus);
     }
@@ -38,7 +38,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByWriterContaining(writer, pageable);
-        Page<Notice> noticesByStatus = searchByStatus(pageable);
+        List<Notice> noticesByStatus = searchByStatus();
 
         return getListHeader(notices, noticesByStatus);
     }
@@ -48,7 +48,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContaining(title, pageable);
-        Page<Notice> noticesByStatus = searchByStatus(pageable);
+        List<Notice> noticesByStatus = searchByStatus();
 
         return getListHeader(notices, noticesByStatus);
     }
@@ -58,20 +58,16 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Notice> notices = noticeRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Notice> noticesByStatus = searchByStatus(pageable);
+        List<Notice> noticesByStatus = searchByStatus();
 
         return getListHeader(notices, noticesByStatus);
     }
 
-    public Page<Notice> searchByStatus(Pageable pageable) {
-        Page<Notice> notices = noticeRepository.findAllByStatusIn(
-                Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
-
-        return notices;
+    public List<Notice> searchByStatus() {
+        return noticeRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<NoticeResponseDTO> getListHeader
-            (Page<Notice> notices, Page<Notice> noticesByStatus) {
+    private Header<NoticeResponseDTO> getListHeader(Page<Notice> notices, List<Notice> noticesByStatus) {
         NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(notices.stream()
                         .map(notice -> NoticeApiResponse.builder()

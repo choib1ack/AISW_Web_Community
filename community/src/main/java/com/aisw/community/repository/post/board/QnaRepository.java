@@ -23,7 +23,7 @@ public interface QnaRepository extends JpaRepository<Qna, Long> {
 
     Page<Qna> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Qna> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
+    List<Qna> findTop10ByStatusIn(List<BulletinStatus> statusList);
 
     Page<Qna> findAllBySubjectIn(List<String> subject, Pageable pageable);
 }

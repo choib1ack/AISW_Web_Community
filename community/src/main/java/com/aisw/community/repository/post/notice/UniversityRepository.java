@@ -2,6 +2,7 @@ package com.aisw.community.repository.post.notice;
 
 import com.aisw.community.model.entity.post.board.Free;
 import com.aisw.community.model.entity.post.notice.Department;
+import com.aisw.community.model.entity.post.notice.Notice;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.enumclass.BulletinStatus;
 import org.springframework.data.domain.Page;
@@ -24,5 +25,5 @@ public interface UniversityRepository extends JpaRepository<University, Long> {
 
     Page<University> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<University> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
+    List<University> findTop10ByStatusIn(List<BulletinStatus> statusList);
 }

@@ -194,6 +194,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
 
     @Override
     @Caching(evict = {
+            @CacheEvict(value = "commentSearchByPost", key = "#id"),
             @CacheEvict(value = "freeReadAll", allEntries = true),
             @CacheEvict(value = "freeSearchByWriter", allEntries = true),
             @CacheEvict(value = "freeSearchByTitle", allEntries = true),
@@ -333,7 +334,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     @Cacheable(value = "freeReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Free> frees = freeRepository.findAll(pageable);
-        Page<Free> freesByStatus = searchByStatus(pageable);
+        List<Free> freesByStatus = searchByStatus();
 
         return getListHeader(frees, freesByStatus);
     }
@@ -343,7 +344,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
-        Page<Free> freesByStatus = searchByStatus(pageable);
+        List<Free> freesByStatus = searchByStatus();
 
         return getListHeader(frees, freesByStatus);
     }
@@ -353,7 +354,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
-        Page<Free> freesByStatus = searchByStatus(pageable);
+        List<Free> freesByStatus = searchByStatus();
 
         return getListHeader(frees, freesByStatus);
     }
@@ -364,20 +365,16 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Free> frees = freeRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Free> freesByStatus = searchByStatus(pageable);
+        List<Free> freesByStatus = searchByStatus();
 
         return getListHeader(frees, freesByStatus);
     }
 
-    public Page<Free> searchByStatus(Pageable pageable) {
-        Page<Free> frees = freeRepository.findAllByStatusIn(
-                Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
-
-        return frees;
+    public List<Free> searchByStatus() {
+        return freeRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<BoardResponseDTO> getListHeader
-            (Page<Free> frees, Page<Free> freesByStatus) {
+    private Header<BoardResponseDTO> getListHeader(Page<Free> frees, List<Free> freesByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(frees.stream()
                         .map(free -> BoardApiResponse.builder()

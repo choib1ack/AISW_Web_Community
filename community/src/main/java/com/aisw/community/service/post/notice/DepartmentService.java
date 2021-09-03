@@ -249,7 +249,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
     @Cacheable(value = "departmentReadAll", key = "#pageable.pageNumber")
     public Header<NoticeResponseDTO> readAll(Pageable pageable) {
         Page<Department> departments = departmentRepository.findAll(pageable);
-        Page<Department> departmentsByStatus = searchByStatus(pageable);
+        List<Department> departmentsByStatus = searchByStatus();
 
         return getListHeader(departments, departmentsByStatus);
     }
@@ -259,7 +259,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByWriterContaining(writer, pageable);
-        Page<Department> departmentsByStatus = searchByStatus(pageable);
+        List<Department> departmentsByStatus = searchByStatus();
 
         return getListHeader(departments, departmentsByStatus);
     }
@@ -269,7 +269,7 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<NoticeResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Department> departments = departmentRepository.findAllByTitleContaining(title, pageable);
-        Page<Department> departmentsByStatus = searchByStatus(pageable);
+        List<Department> departmentsByStatus = searchByStatus();
 
         return getListHeader(departments, departmentsByStatus);
     }
@@ -280,20 +280,16 @@ public class DepartmentService implements NoticePostService<DepartmentApiRequest
     public Header<NoticeResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Department> departments = departmentRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Department> departmentsByStatus = searchByStatus(pageable);
+        List<Department> departmentsByStatus = searchByStatus();
 
         return getListHeader(departments, departmentsByStatus);
     }
 
-    public Page<Department> searchByStatus(Pageable pageable) {
-        Page<Department> departments = departmentRepository.findAllByStatusIn(
-                Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
-
-        return departments;
+    public List<Department> searchByStatus() {
+        return departmentRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<NoticeResponseDTO> getListHeader
-            (Page<Department> departments, Page<Department> departmentsByStatus) {
+    private Header<NoticeResponseDTO> getListHeader(Page<Department> departments, List<Department> departmentsByStatus) {
         NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(departments.stream()
                         .map(notice -> NoticeApiResponse.builder()

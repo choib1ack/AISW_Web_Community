@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface CustomSiteInformationRepository {
 
-    List<SiteInformationByCategoryResponse> findAllGroupByCategory();
+    List<SiteInformationByCategoryResponse> findAllByCategory();
 }

@@ -21,14 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SiteInformationService {
@@ -47,7 +45,7 @@ public class SiteInformationService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteInformationApiResponse> create(User user, SiteInformationApiRequest siteInformationApiRequest, MultipartFile[] files) {
@@ -78,9 +76,9 @@ public class SiteInformationService {
         }
     }
 
-    @Cacheable(value = "readSite")
+    @Cacheable(value = "siteRead")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
-        List<SiteInformationByCategoryResponse> siteInformationByCategoryResponseList = customSiteInformationRepository.findAllGroupByCategory();
+        List<SiteInformationByCategoryResponse> siteInformationByCategoryResponseList = customSiteInformationRepository.findAllByCategory();
         siteInformationByCategoryResponseList.stream().forEach(siteInformation -> System.out.println(siteInformation.getName() + " " + siteInformation.getSiteInformation()));
 
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
@@ -108,7 +106,7 @@ public class SiteInformationService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteInformationApiResponse> update(User user, SiteInformationApiRequest siteInformationApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
@@ -152,7 +150,7 @@ public class SiteInformationService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header delete(Long id) {

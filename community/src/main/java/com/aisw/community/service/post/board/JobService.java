@@ -191,6 +191,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
 
     @Override
     @Caching(evict = {
+            @CacheEvict(value = "commentSearchByPost", key = "#id"),
             @CacheEvict(value = "jobReadAll", allEntries = true),
             @CacheEvict(value = "jobSearchByWriter", allEntries = true),
             @CacheEvict(value = "jobSearchByTitle", allEntries = true),
@@ -330,9 +331,9 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
     public Header<JobResponseDTO> readAll(Pageable pageable) {
         Page<Job> jobs = jobRepository.findAll(pageable);
-        Page<Job> freesByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
-        return getListHeader(jobs, freesByStatus);
+        return getListHeader(jobs, jobsByStatus);
     }
 
     @Override
@@ -340,7 +341,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<JobResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Job> jobs = jobRepository.findAllByWriterContaining(writer, pageable);
-        Page<Job> jobsByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
         return getListHeader(jobs, jobsByStatus);
     }
@@ -350,7 +351,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<JobResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Job> jobs = jobRepository.findAllByTitleContaining(title, pageable);
-        Page<Job> jobsByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
         return getListHeader(jobs, jobsByStatus);
     }
@@ -361,18 +362,16 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     public Header<JobResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Job> jobs = jobRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Job> jobsByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
         return getListHeader(jobs, jobsByStatus);
     }
 
-    public Page<Job> searchByStatus(Pageable pageable) {
-        Page<Job> jobs = jobRepository.findAllByStatus(BulletinStatus.REVIEW, pageable);
-
-        return jobs;
+    public List<Job> searchByStatus() {
+        return jobRepository.findTop10ByStatus(BulletinStatus.REVIEW);
     }
 
-    private Header<JobResponseDTO> getListHeader(Page<Job> jobs, Page<Job> jobsByStatus) {
+    private Header<JobResponseDTO> getListHeader(Page<Job> jobs, List<Job> jobsByStatus) {
         JobResponseDTO jobResponseDTO = JobResponseDTO.builder()
                 .boardApiResponseList(jobs.stream()
                         .map(job -> BoardApiResponse.builder()
