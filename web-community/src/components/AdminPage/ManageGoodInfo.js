@@ -27,7 +27,7 @@ function ManageGoodInfo({match}) {
                     return;
                 }
 
-                await axiosApi.get("/auth-admin/site/")
+                await axiosApi.get("/site")
                     .then((res)=>{
                         setSiteData(Object.values(res.data.data));
                         setLoading(false);
@@ -40,8 +40,8 @@ function ManageGoodInfo({match}) {
         fetchSiteData();
     }, [siteData]);
 
-    if (loading) return <Loading/>;
     if (error) return <p> 에러가 발생했습니다{error.toString()}</p>;
+    if (loading) return <Loading/>;
     if (!siteData) return null;
 
     return (

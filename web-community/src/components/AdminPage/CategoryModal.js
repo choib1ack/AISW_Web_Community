@@ -75,7 +75,7 @@ function CategoryModal(props) {
                     <Modal.Title>{props.mode == "add" ? "새 카테고리 추가" : "카테고리 수정"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form>
+                    <Form onSubmit={e => { e.preventDefault(); }}>
                         <Form.Group className="mb-3">
                             <Form.Label>새 카테고리 명<span style={{color: "#FF0000"}}> *</span></Form.Label>
                             <Form.Control type="text" placeholder="" defaultValue={newCategoryName} name="category_name"
