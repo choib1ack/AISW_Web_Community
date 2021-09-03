@@ -34,6 +34,11 @@ export const AUTH_BOARD_GET = {
     'qna': 'auth-student',
     'job': 'auth'
 };
+export const BOARD_GET = {
+    'free': '',
+    'qna': '/auth-student',
+    'job': ''
+}
 export const AUTH_BOARD_POST = {
     'free': 'auth',
     'qna': 'auth-student',
