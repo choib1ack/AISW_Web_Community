@@ -191,6 +191,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
 
     @Override
     @Caching(evict = {
+            @CacheEvict(value = "commentSearchByPost", key = "#id"),
             @CacheEvict(value = "jobReadAll", allEntries = true),
             @CacheEvict(value = "jobSearchByWriter", allEntries = true),
             @CacheEvict(value = "jobSearchByTitle", allEntries = true),

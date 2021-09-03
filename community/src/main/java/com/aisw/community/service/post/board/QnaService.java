@@ -202,6 +202,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
 
     @Override
     @Caching(evict = {
+            @CacheEvict(value = "commentSearchByPost", key = "#id"),
             @CacheEvict(value = "qnaReadAll", allEntries = true),
             @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
             @CacheEvict(value = "qnaSearchByTitle", allEntries = true),

@@ -47,7 +47,7 @@ public class SiteInformationService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteInformationApiResponse> create(User user, SiteInformationApiRequest siteInformationApiRequest, MultipartFile[] files) {
@@ -78,7 +78,7 @@ public class SiteInformationService {
         }
     }
 
-    @Cacheable(value = "readSite")
+    @Cacheable(value = "siteRead")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
         List<SiteInformationByCategoryResponse> siteInformationByCategoryResponseList = customSiteInformationRepository.findAllGroupByCategory();
         siteInformationByCategoryResponseList.stream().forEach(siteInformation -> System.out.println(siteInformation.getName() + " " + siteInformation.getSiteInformation()));
@@ -108,7 +108,7 @@ public class SiteInformationService {
 
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteInformationApiResponse> update(User user, SiteInformationApiRequest siteInformationApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
@@ -152,7 +152,7 @@ public class SiteInformationService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header delete(Long id) {

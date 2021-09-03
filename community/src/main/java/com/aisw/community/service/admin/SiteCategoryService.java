@@ -17,7 +17,7 @@ public class SiteCategoryService {
     private SiteCategoryRepository siteCategoryRepository;
 
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteCategoryApiResponse> create(String name) {
@@ -28,7 +28,7 @@ public class SiteCategoryService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header<SiteCategoryApiResponse> update(Long id, String name) {
@@ -42,7 +42,7 @@ public class SiteCategoryService {
     }
 
     @Caching(evict = {
-            @CacheEvict(value = "readSite", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
     public Header delete(Long id) {

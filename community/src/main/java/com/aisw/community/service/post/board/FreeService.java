@@ -194,6 +194,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
 
     @Override
     @Caching(evict = {
+            @CacheEvict(value = "commentSearchByPost", key = "#id"),
             @CacheEvict(value = "freeReadAll", allEntries = true),
             @CacheEvict(value = "freeSearchByWriter", allEntries = true),
             @CacheEvict(value = "freeSearchByTitle", allEntries = true),
