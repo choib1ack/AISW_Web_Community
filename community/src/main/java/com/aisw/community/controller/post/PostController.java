@@ -11,9 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface PostController<Req, Res, ListRes> {
 
-    Header<Res> create(Authentication authentication, Header<Req> request);
+    Header<Res> create(Authentication authentication, Req request);
 
-    Header<Res> update(Authentication authentication, Header<Req> request);
+    Header<Res> update(Authentication authentication, Req request);
 
     Header delete(Authentication authentication, Long id);
 

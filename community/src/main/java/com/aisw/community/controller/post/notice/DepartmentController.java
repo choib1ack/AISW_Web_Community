@@ -26,7 +26,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class DepartmentController implements NoticePostController<DepartmentApiRequest, DepartmentApiResponse, NoticeResponseDTO> {
+public class DepartmentController implements NoticePostController<FileUploadToDepartmentRequest, DepartmentApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private DepartmentService departmentService;
@@ -36,16 +36,6 @@ public class DepartmentController implements NoticePostController<DepartmentApiR
 
     @Override
     @PostMapping("/auth-admin/notice/department")
-    public Header<DepartmentApiResponse> create(Authentication authentication, @RequestBody Header<DepartmentApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        DepartmentApiRequest departmentApiRequest = request.getData();
-        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
-        }
-        return departmentService.create(principal.getUser(), departmentApiRequest);
-    }
-
-    @PostMapping("/auth-admin/notice/department/upload")
     public Header<DepartmentApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToDepartmentRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if(request.getDepartmentApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
@@ -63,16 +53,6 @@ public class DepartmentController implements NoticePostController<DepartmentApiR
 
     @Override
     @PutMapping("/auth-admin/notice/department")
-    public Header<DepartmentApiResponse> update(Authentication authentication, @RequestBody Header<DepartmentApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        DepartmentApiRequest departmentApiRequest = request.getData();
-        if(departmentApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(departmentApiRequest.getStatus().getTitle());
-        }
-        return departmentService.update(principal.getUser(), departmentApiRequest);
-    }
-
-    @PutMapping("/auth-admin/notice/department/upload")
     public Header<DepartmentApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToDepartmentRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if(request.getDepartmentApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {

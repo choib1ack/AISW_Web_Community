@@ -2,6 +2,8 @@ package com.aisw.community.service.admin;
 
 import com.aisw.community.component.advice.exception.BannerNotFoundException;
 import com.aisw.community.model.entity.admin.Banner;
+import com.aisw.community.model.entity.post.file.File;
+import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +53,7 @@ public class BannerService {
             @CacheEvict(value = "bannerRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<BannerApiResponse> create(BannerApiRequest bannerApiRequest, MultipartFile[] files) {
+    public Header<BannerApiResponse> create(User user, BannerApiRequest bannerApiRequest, MultipartFile[] files) {
         String url = bannerApiRequest.getLinkUrl();
         if (!url.startsWith("http://") && !url.startsWith("https://")) {
             bannerApiRequest.setLinkUrl("http://" + url);
@@ -70,7 +73,7 @@ public class BannerService {
 
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, null, newBanner.getId(), UploadCategory.BANNER);
+                    fileService.uploadFiles(files, user.getUsername(), null, newBanner.getId(), UploadCategory.BANNER);
 
             return Header.OK(response(newBanner, fileApiResponseList));
         } else {
@@ -101,7 +104,7 @@ public class BannerService {
             @CacheEvict(value = "bannerRead", allEntries = true),
             @CacheEvict(value = "home", allEntries = true)
     })
-    public Header<BannerApiResponse> update(BannerApiRequest bannerApiRequest, MultipartFile[] files) {
+    public Header<BannerApiResponse> update(User user, BannerApiRequest bannerApiRequest, MultipartFile[] files, List<Long> delFileIdList) {
         Banner banner = bannerRepository.findById(bannerApiRequest.getId()).orElseThrow(
                 () -> new BannerNotFoundException(bannerApiRequest.getId()));
 
@@ -119,13 +122,21 @@ public class BannerService {
                 .setLinkUrl(bannerApiRequest.getLinkUrl());
         bannerRepository.save(banner);
 
-        if(banner.getFileList() != null) {
-            fileService.deleteFileList(banner.getFileList());
-            banner.getFileList().clear();
+        if(banner.getFileList() != null && delFileIdList != null) {
+            List<File> delFileList = new ArrayList<>();
+            for(File file : banner.getFileList()) {
+                if(delFileIdList.contains(file.getId())) {
+                    fileService.deleteFile(file);
+                    delFileList.add(file);
+                }
+            }
+            for (File file : delFileList) {
+                banner.getFileList().remove(file);
+            }
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, null, banner.getId(), UploadCategory.BANNER);
+                    fileService.uploadFiles(files, user.getUsername(), null, banner.getId(), UploadCategory.BANNER);
             return Header.OK(response(banner, fileApiResponseList));
         } else {
             return Header.OK(response(banner));
@@ -184,7 +195,10 @@ public class BannerService {
     }
 
     private BannerApiResponse response(Banner banner, List<FileApiResponse> fileApiResponseList) {
-        BannerApiResponse bannerApiResponse = BannerApiResponse.builder()
+        if(banner.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(banner.getFileList()));
+        }
+        return BannerApiResponse.builder()
                 .id(banner.getId())
                 .name(banner.getName())
                 .content(banner.getContent())
@@ -198,7 +212,5 @@ public class BannerService {
                 .updatedBy(banner.getUpdatedBy())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return bannerApiResponse;
     }
 }

@@ -49,37 +49,6 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
     private FileService fileService;
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "universityReadAll", allEntries = true),
-            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
-            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
-            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "noticeReadAll", allEntries = true),
-            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<UniversityApiResponse> create(User user, UniversityApiRequest universityApiRequest) {
-        University university = University.builder()
-                .title(universityApiRequest.getTitle())
-                .writer(user.getName())
-                .content(universityApiRequest.getContent())
-                .status(universityApiRequest.getStatus())
-                .campus(universityApiRequest.getCampus())
-                .firstCategory(FirstCategory.NOTICE)
-                .secondCategory(SecondCategory.UNIVERSITY)
-                .user(user)
-                .build();
-
-        University newUniversity = universityRepository.save(university);
-        return Header.OK(response(newUniversity));
-    }
-
-    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "universityReadAll", allEntries = true),
@@ -110,7 +79,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
 
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth/notice/university", newUniversity.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth/notice/university", newUniversity.getId(), UploadCategory.POST);
 
             return Header.OK(response(newUniversity, fileApiResponseList));
         } else {
@@ -140,38 +109,6 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                 .map(university -> response(user, university))
                 .map(Header::OK)
                 .orElseThrow(() -> new PostNotFoundException(id));
-    }
-
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = "universityReadAll", allEntries = true),
-            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
-            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
-            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "noticeReadAll", allEntries = true),
-            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
-            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<UniversityApiResponse> update(User user, UniversityApiRequest universityApiRequest) {
-        University university = universityRepository.findById(universityApiRequest.getId()).orElseThrow(
-                () -> new PostNotFoundException(universityApiRequest.getId()));
-        if(university.getUser().getId() != user.getId()) {
-            throw new NotEqualUserException(user.getId());
-        }
-
-        university
-                .setTitle(universityApiRequest.getTitle())
-                .setContent(universityApiRequest.getContent())
-                .setStatus(universityApiRequest.getStatus());
-        university.setCampus(universityApiRequest.getCampus());
-        universityRepository.save(university);
-
-        return Header.OK(response(university));
     }
 
     @Override
@@ -218,7 +155,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth/notice/university", university.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth/notice/university", university.getId(), UploadCategory.POST);
             return Header.OK(response(university, fileApiResponseList));
         } else {
             return Header.OK(response(university));
@@ -293,6 +230,9 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
     }
 
     private UniversityApiResponse response(University university, List<FileApiResponse> fileApiResponseList) {
+        if(university.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(university.getFileList()));
+        }
         return UniversityApiResponse.builder()
                 .id(university.getId())
                 .title(university.getTitle())

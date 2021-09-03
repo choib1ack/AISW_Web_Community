@@ -43,9 +43,6 @@ public class CommentService {
     @Autowired
     private AlertService alertService;
 
-    @Autowired
-    private UserService userService;
-
     @Transactional
     @CacheEvict(value = "commentSearchByPost", key = "#boardId")
     public Header<CommentApiResponse> create(User user, Long boardId, CommentApiRequest commentApiRequest) {

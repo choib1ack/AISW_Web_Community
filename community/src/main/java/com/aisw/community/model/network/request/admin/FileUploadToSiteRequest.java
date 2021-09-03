@@ -13,5 +13,7 @@ public class FileUploadToSiteRequest {
 
     private SiteInformationApiRequest siteInformationApiRequest;
 
+    private Long[] delFileIds;
+
     private MultipartFile[] files;
 }

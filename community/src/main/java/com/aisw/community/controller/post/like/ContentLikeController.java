@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/like")
+@RequestMapping("/auth/like")
 public class ContentLikeController {
 
     @Autowired

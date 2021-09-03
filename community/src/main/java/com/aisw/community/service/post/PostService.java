@@ -9,11 +9,7 @@ import java.util.List;
 
 public interface PostService<Req, Res, ListRes> {
 
-    Header<Res> create(User user, Req request);
-
     Header<Res> create(User user, Req request, MultipartFile[] files);
-
-    Header<Res> update(User user, Req request);
 
     Header<Res> update(User user, Req request, MultipartFile[] files, List<Long> delFileIdList);
 
