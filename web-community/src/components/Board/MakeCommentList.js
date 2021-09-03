@@ -106,7 +106,7 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
                                 <img src={likeGrayImage} onClick={() => handleLikeClick(data.id)}
                                      style={{cursor: "pointer"}}/> {likeState.num}</span>}
 
-                        <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
+                        <Card.Title className="mb-2" style={{fontSize: '14px'}}>{data.writer}
                             <span style={{color: "#8C8C8C", fontSize: '12px', marginLeft: "10px"}}>
                                 {dateFormat(data.created_at.substring(0, 16))}</span>
                         </Card.Title>
