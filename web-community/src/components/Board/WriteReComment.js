@@ -31,7 +31,6 @@ export default function WriteReComment({board_id, board_category, Refresh, displ
             Refresh();
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject.valueOf());
             alert("에러!" + errorObject);
         })
     }

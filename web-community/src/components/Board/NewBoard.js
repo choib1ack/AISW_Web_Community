@@ -23,7 +23,7 @@ function NewBoard() {
 
     const history = useHistory();
     const board_type = useRef();
-    board_type.current = watch("board_type");
+    board_type.current = watch("board_type", "free");
 
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
@@ -63,11 +63,6 @@ function NewBoard() {
     const ReplaceLink = () => {
         history.replace(`/board/${modalState.category}/${modalState.id}`);
     }
-
-    useEffect(() => {
-        board_type.current = 'free';
-        console.log(board_type.current);
-    }, [])
 
     return (
         <div className="NewBoard">

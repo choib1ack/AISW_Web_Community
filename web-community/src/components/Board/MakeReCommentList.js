@@ -26,7 +26,6 @@ export default function MakeReCommentList({board_id, board_category, Refresh, bo
             // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
             alert("에러!" + errorObject);
         })
     }
@@ -38,7 +37,6 @@ export default function MakeReCommentList({board_id, board_category, Refresh, bo
             // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
             alert("좋아요 클릭 에러!" + errorObject);
         })
     }

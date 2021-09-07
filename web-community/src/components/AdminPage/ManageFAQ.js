@@ -180,7 +180,6 @@ function FaqModal(props){
                     props.Refresh();
                 })
                 .catch(error => {
-                    console.log(error);
                     alert("새 질문/답변 등록에 실패했습니다.");
                 })
         }else{
@@ -196,7 +195,6 @@ function FaqModal(props){
                     props.Refresh();
                 })
                 .catch(error => {
-                    console.log(error);
                     alert("새 질문/답변 등록에 실패했습니다.");
                 })
         }
@@ -210,7 +208,6 @@ function FaqModal(props){
                 props.Refresh();
             })
             .catch(error => {
-                console.log(error);
                 alert("질문/답변 삭제에 실패했습니다.");
             });
     }

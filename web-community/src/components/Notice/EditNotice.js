@@ -77,10 +77,6 @@ export default function EditNotice({match}) {
         [files],
     );
 
-    useEffect(() => {
-        console.log(deleteList);
-    }, [deleteList]);
-
     const ReplaceLink = () => {
         history.goBack();
     }

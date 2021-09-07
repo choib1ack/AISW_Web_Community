@@ -78,10 +78,6 @@ function EditBoard({match}) {
         [files],
     );
 
-    useEffect(() => {
-        console.log(deleteList);
-    }, [deleteList]);
-
     const ReplaceLink = () => {
         history.goBack();
     }
@@ -201,8 +197,6 @@ function EditBoard({match}) {
 export default EditBoard;
 
 export const FileList = ({file, onRemove}) => {
-    console.log(file);
-
     if (file.length === 0) return null;
     return (
         <Row className="ml-0">

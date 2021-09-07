@@ -128,8 +128,6 @@ function BannerModal(props) {
                 alert("배너 정보가 삭제되었습니다");
                 window.location.reload();
             }).catch(error => {
-                let errorObject = JSON.parse(JSON.stringify(error));
-                console.log(errorObject);
                 alert("배너 삭제에 실패하였습니다.");
             })
     }
@@ -173,7 +171,6 @@ function BannerModal(props) {
                 alert("새 배너 등록 완료!")
                 window.location.reload();
             }).catch(error => {
-                console.log(error);
                 alert("새 배너 등록에 실패하였습니다.");
             })
         } else {
@@ -181,7 +178,6 @@ function BannerModal(props) {
                 alert("배너 수정 완료!")
                 window.location.reload();
             }).catch(error => {
-                console.log(error);
                 alert("배너 수정에 실패하였습니다.");
             })
         }

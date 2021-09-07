@@ -28,7 +28,6 @@ export default function NewNotice() {
                 setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
             })
             .catch(error => {
-                console.log(error);
                 alert("글 게시에 실패하였습니다.");
             })
     }
