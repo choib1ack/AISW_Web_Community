@@ -13,15 +13,19 @@ import {checkContent, checkTitle} from "./NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import {useHistory, useLocation} from "react-router-dom";
 import axiosApi from "../../axiosApi";
-import {AUTH_BOARD_PUT, BOARD_FILE_API} from "../../constants";
+import {AUTH_BOARD_POST, AUTH_BOARD_PUT, BOARD_FILE_API} from "../../constants";
+import {Checkbox} from "semantic-ui-react";
 
 function EditBoard({match}) {
     const {register, handleSubmit} = useForm({mode: "onChange"});
     const [modalShow, setModalShow] = useState(false);
     const location = useLocation();
     const history = useHistory();
+    const [isReview, setIsReview] = useState(true);
 
     const {detail, content} = location.state;
+    const [anonymousState, setAnonymousState] = useState(detail.writer === '익명');
+
     const {board_category, id} = match.params;
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
@@ -29,65 +33,74 @@ function EditBoard({match}) {
     const [files, setFiles] = useState(detail.file_api_response_list);
     const [deleteList, setDeleteList] = useState([]);
 
-    function putBoard(data, path) {
-        // if (type === 'file') {
-        //     axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
-        //         .then((res) => {
-        //             setModalShow(true);
-        //         })
-        //         .catch(error => {
-        //             // console.log(error);
-        //             alert("글 게시에 실패하였습니다.");
-        //         })
-        // } else {
-        axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
-            .then((res) => {
+    function putBoard(data, path, type) {
+        if (type === 'file') {
+            axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
+                .then((res) => {
+                    setModalShow(true);
+                })
+                .catch(error => {
+                    // console.log(error);
+                    alert("글 게시에 실패하였습니다.");
+                })
+        } else {
+            // axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
+            //     .then((res) => {
+            //         setModalShow(true)
+            //     })
+            //     .catch(error => {
+            //         alert("글 게시에 실패하였습니다.");
+            //     })
+            axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}`,
+                {data: data},
+            ).then((res) => {
                 setModalShow(true)
-            })
-            .catch(error => {
+            }).catch(error => {
                 alert("글 게시에 실패하였습니다.");
             })
-        // }
+        }
     }
 
     const onSubmit = (data) => {
         data.content = write.value;
         data.board_type = board_category;
 
-        if (checkTitle(data.title) && checkContent(data.content)) {
-            // let temp = {
-            //     content: data.content,
-            //     id: id,
-            //     is_anonymous: detail.writer === '익명',
-            //     status: "GENERAL",
-            //     title: data.title
-            // };
-            //
-            // if (data.board_type === 'qna') {
-            //     temp.subject = data.subject;
-            // }
-            // putBoard(temp, data.board_type, null);
+        if (data.file.length === 0) {   // 파일이 없을 경우
+            if (checkTitle(data.title) && checkContent(data.content)) {
+                let temp = {
+                    content: data.content,
+                    id: id,
+                    is_anonymous: anonymousState,
+                    status: data.board_type === 'job' ? (isReview ? 'REVIEW' : 'GENERAL') : data.status,
+                    title: data.title
+                };
 
-            const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
+                if (data.board_type === 'qna') {
+                    temp.subject = data.subject;
+                }
+                putBoard(temp, data.board_type, null);
+            } else {
+                const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
-            let formData = new FormData();
-            for (let i = 0; i < data.file.length; i++) {    // 추가할 파일
-                formData.append('files', data.file[i]);
+                let formData = new FormData();
+                for (let i = 0; i < data.file.length; i++) {    // 추가할 파일
+                    formData.append('files', data.file[i]);
+                }
+                for (let i = 0; i < deleteList.length; i++) {   // 지울 파일
+                    formData.append('delFileIds', deleteList[i]);
+                }
+
+                formData.append(`${apiRequest}.content`, data.content);
+                formData.append(`${apiRequest}.id`, id);
+                formData.append(`${apiRequest}.isAnonymous`, anonymousState);
+                formData.append(`${apiRequest}.status`, data.board_type === 'job' ? (isReview ? 'REVIEW' : 'GENERAL') : data.status);
+                formData.append(`${apiRequest}.title`, data.title);
+
+                if (data.board_type === 'qna') {
+                    formData.append(`${apiRequest}.subject`, data.subject);
+                }
+                putBoard(formData, data.board_type, 'file');
             }
-            for (let i = 0; i < deleteList.length; i++) {   // 지울 파일
-                formData.append('delFileIds', deleteList[i]);
-            }
-
-            formData.append(`${apiRequest}.content`, data.content);
-            formData.append(`${apiRequest}.id`, id);
-            formData.append(`${apiRequest}.isAnonymous`, detail.writer === '익명');
-            formData.append(`${apiRequest}.status`, 'GENERAL');
-            formData.append(`${apiRequest}.title`, data.title);
-
-            if (data.board_type === 'qna') {
-                formData.append(`${apiRequest}.subject`, data.subject);
-            }
-            putBoard(formData, data.board_type);
         }
     }
 
@@ -123,6 +136,50 @@ function EditBoard({match}) {
 
                 <Title text='게시글 수정' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
+                    {role === 'ROLE_ADMIN' && (board_category === 'free' || board_category === 'qna') &&
+                    <Row className="pl-3 pb-3">
+                        <Form.Check
+                            required type="radio"
+                            label="긴급"
+                            name="status"
+                            value="URGENT"
+                            ref={register}
+                            defaultChecked={detail.status === 'URGENT'}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="공지"
+                            name="status"
+                            value="NOTICE"
+                            ref={register}
+                            defaultChecked={detail.status === 'NOTICE'}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="일반"
+                            name="status"
+                            value="GENERAL"
+                            ref={register}
+                            defaultChecked={detail.status === 'GENERAL'}
+                            className="m-1"
+                        />
+                    </Row>
+                    }
+                    <Row>
+                        <Checkbox label='익명' checked={anonymousState}
+                                  onChange={() => setAnonymousState(!anonymousState)}
+                                  className="ml-4 mb-2"
+                        />
+                        {board_category === "job" ?
+                            <Checkbox label='취업 후기' checked={isReview}
+                                      onChange={() => setIsReview(!isReview)}
+                                      className="ml-4 mb-2"
+                            />
+                            : null
+                        }
+                    </Row>
                     <Row>
                         <Col>
                             <Form.Group>

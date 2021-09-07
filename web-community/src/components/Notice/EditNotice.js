@@ -24,7 +24,8 @@ export default function EditNotice({match}) {
     const {detail, content} = location.state;
     const {notice_category, id} = match.params;
 
-    const write = useSelector(state => state.write)
+    const write = useSelector(state => state.write);
+    const {role} = useSelector(state => state.user.decoded);
 
     function putNotice(data, path) {
         axiosApi.put(`/${AUTH_NOTICE_PUT[path]}/notice/${path}`,
@@ -39,11 +40,14 @@ export default function EditNotice({match}) {
 
     const onSubmit = (data) => {
         data.content = write.value;
+        if (role !== 'ROLE_ADMIN') {
+            data.status = 'GENERAL';
+        }
 
         if (checkTitle(data.title) && checkContent(data.content)) {
             let temp = {
                 content: data.content,
-                status: "GENERAL",
+                status: data.status,
                 title: data.title,
                 id: id
             };
@@ -68,6 +72,37 @@ export default function EditNotice({match}) {
 
                 <Title text='공지사항 수정' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
+                    {role === 'ROLE_ADMIN' &&
+                    <Row className="pl-3 pb-3">
+                        <Form.Check
+                            required type="radio"
+                            label="긴급"
+                            name="status"
+                            value="URGENT"
+                            ref={register}
+                            defaultChecked={detail.status==='URGENT'}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="공지"
+                            name="status"
+                            value="NOTICE"
+                            ref={register}
+                            defaultChecked={detail.status==='NOTICE'}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="일반"
+                            name="status"
+                            value="GENERAL"
+                            ref={register}
+                            defaultChecked={detail.status==='GENERAL'}
+                            className="m-1"
+                        />
+                    </Row>
+                    }
                     <Row>
                         <Col>
                             <Form.Group>

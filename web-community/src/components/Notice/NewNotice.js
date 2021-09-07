@@ -16,7 +16,7 @@ import {useHistory} from "react-router-dom";
 
 export default function NewNotice() {
     const {register, handleSubmit} = useForm({mode: "onChange"});
-    const [modalState, setModalState] = useState({show:false, id:null, category:null});
+    const [modalState, setModalState] = useState({show: false, id: null, category: null});
     const history = useHistory();
 
     const write = useSelector(state => state.write);
@@ -26,7 +26,7 @@ export default function NewNotice() {
         if (type === 'file') {
             axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}/upload`, data)
                 .then((res) => {
-                    setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
+                    setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
                 })
                 .catch(error => {
                     console.log(error);
@@ -36,7 +36,7 @@ export default function NewNotice() {
             axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
                 {data: data}
             ).then((res) => {
-                setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
+                setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
             }).catch(error => {
                 console.log(error);
                 alert("글 게시에 실패하였습니다.");
@@ -46,12 +46,15 @@ export default function NewNotice() {
 
     const onSubmit = (data) => {
         data.content = write.value;
+        if (role !== 'ROLE_ADMIN') {
+            data.status = 'GENERAL';
+        }
 
         if (data.file.length === 0) {   // 파일이 없을 경우
             if (checkTitle(data.title) && checkContent(data.content)) {
                 let temp = {
                     content: data.content,
-                    status: 'GENERAL',
+                    status: data.status,
                     title: data.title
                 };
 
@@ -69,7 +72,7 @@ export default function NewNotice() {
                 formData.append('files', data.file[i]);
             }
             formData.append(`${apiRequest}.content`, data.content);
-            formData.append(`${apiRequest}.status`, 'GENERAL');
+            formData.append(`${apiRequest}.status`, data.status);
             formData.append(`${apiRequest}.title`, data.title);
 
             if (data.board_type === 'university') {
@@ -92,6 +95,35 @@ export default function NewNotice() {
 
                 <Title text='새 공지사항 작성' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
+                    {role === 'ROLE_ADMIN' &&
+                    <Row className="pl-3 pb-3">
+                        <Form.Check
+                            required type="radio"
+                            label="긴급"
+                            name="status"
+                            value="URGENT"
+                            ref={register}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="공지"
+                            name="status"
+                            value="NOTICE"
+                            ref={register}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="일반"
+                            name="status"
+                            value="GENERAL"
+                            ref={register}
+                            className="m-1"
+                        />
+                    </Row>
+                    }
+
                     <Row>
                         <Col>
                             <Form.Group>
