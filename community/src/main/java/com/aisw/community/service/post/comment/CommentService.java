@@ -43,36 +43,43 @@ public class CommentService {
     @Autowired
     private AlertService alertService;
 
-    @Autowired
-    private UserService userService;
-
     @Transactional
     @CacheEvict(value = "commentSearchByPost", key = "#boardId")
     public Header<CommentApiResponse> create(User user, Long boardId, CommentApiRequest commentApiRequest) {
-        Board board = boardRepository.findById(commentApiRequest.getBoardId()).orElseThrow(
+        Board board = boardRepository.findByIdWithComment(commentApiRequest.getBoardId()).orElseThrow(
                 () -> new PostNotFoundException(commentApiRequest.getBoardId()));
-        List<Comment> commentList = board.getCommentList();
-        long cnt = 1;
-        for(int i = commentList.size() - 1; i >= 0; i--) {
-            if(commentList.get(i).getWriter().startsWith("익명")) {
-                cnt = Long.parseLong(commentList.get(i).getWriter().substring(2)) + 1;
-                break;
-            }
-        }
 
         Comment superComment = commentApiRequest.getSuperCommentId() != null ?
                 getRootComment(commentApiRequest.getSuperCommentId()) : null;
         Comment comment = Comment.builder()
-                .writer((commentApiRequest.getIsAnonymous() == true) ? "익명" + cnt : user.getName())
                 .content(commentApiRequest.getContent())
                 .isAnonymous(commentApiRequest.getIsAnonymous())
                 .isDeleted(false)
                 .board(board)
                 .user(user)
                 .superComment(superComment)
-                .board(boardRepository.getOne(commentApiRequest.getBoardId()))
+                .board(board)
                 .build();
 
+        // 익명 선택 시 익명 고유 번호 부여
+        if(!commentApiRequest.getIsAnonymous()) comment.setWriter(user.getName());
+        else {
+            if(board.getUser().getId() == user.getId()) comment.setWriter("글쓴이");
+            else {
+                List<Comment> commentList = board.getCommentList();
+                long cnt = 1;
+                for(Comment c : commentList) {
+                    if(c.getWriter().startsWith("익명")) {
+                        if (c.getUser().getId() == user.getId()) {
+                            comment.setWriter(c.getWriter());
+                            break;
+                        } else cnt = Math.max(cnt,
+                                Long.parseLong(c.getWriter().replace("익명", "")) + 1);
+                    }
+                }
+                comment.setWriter("익명" + cnt);
+            }
+        }
         Comment newComment = commentRepository.save(comment);
 
         AlertApiRequest alertApiRequest = AlertApiRequest.builder()
@@ -80,7 +87,6 @@ public class CommentService {
                 .firstCategory(board.getFirstCategory())
                 .secondCategory(board.getSecondCategory())
                 .postId(board.getId())
-                .userId(board.getUser().getId())
                 .build();
         if(comment.getContent().length() < 20) {
             alertApiRequest.setContent(comment.getContent());
@@ -88,6 +94,11 @@ public class CommentService {
             alertApiRequest.setContent(comment.getContent().substring(0, 20));
         }
         if(user.getId() != board.getUser().getId()) {
+            alertApiRequest.setUserId(board.getUser().getId());
+            alertService.create(alertApiRequest);
+        }
+        if(superComment != null && user.getId() != superComment.getUser().getId()) {
+            alertApiRequest.setUserId(superComment.getUser().getId());
             alertService.create(alertApiRequest);
         }
 

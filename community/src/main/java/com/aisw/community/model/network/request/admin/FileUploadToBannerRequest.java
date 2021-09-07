@@ -13,5 +13,7 @@ public class FileUploadToBannerRequest {
 
     private BannerApiRequest bannerApiRequest;
 
+    private Long[] delFileIds;
+
     private MultipartFile[] files;
 }

@@ -31,6 +31,8 @@ public class File {
 
     private String fileName;
 
+    private String storedFileName;
+
     private String fileDownloadUri;
 
     private String fileType;

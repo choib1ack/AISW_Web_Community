@@ -13,6 +13,7 @@ import com.aisw.community.model.network.response.user.VerificationApiResponse;
 import com.aisw.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -89,7 +90,47 @@ public class UserService {
         return Header.OK(response(newUser));
     }
 
-    @CacheEvict(value = "userManagementReadAll", allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = "bannerRead", allEntries = true),
+            @CacheEvict(value = "siteRead", allEntries = true),
+            @CacheEvict(value = "userManagementReadAll", allEntries = true),
+            @CacheEvict(value = "freeReadAll", allEntries = true),
+            @CacheEvict(value = "freeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "freeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "jobReadAll", allEntries = true),
+            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
+            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "qnaReadAll", allEntries = true),
+            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
+            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "boardReadAll", allEntries = true),
+            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
+            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "councilReadAll", allEntries = true),
+            @CacheEvict(value = "councilSearchByWriter", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitle", allEntries = true),
+            @CacheEvict(value = "councilSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "departmentReadAll", allEntries = true),
+            @CacheEvict(value = "departmentSearchByWriter", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitle", allEntries = true),
+            @CacheEvict(value = "departmentSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "universityReadAll", allEntries = true),
+            @CacheEvict(value = "universitySearchByWriter", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitle", allEntries = true),
+            @CacheEvict(value = "universitySearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "noticeReadAll", allEntries = true),
+            @CacheEvict(value = "noticeSearchByWriter", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitle", allEntries = true),
+            @CacheEvict(value = "noticeSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
+            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
+            @CacheEvict(value = "home", allEntries = true)
+    })
     public Header delete(User user) {
         userRepository.delete(user);
         return Header.OK();

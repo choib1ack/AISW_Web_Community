@@ -26,7 +26,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class CouncilController implements NoticePostController<CouncilApiRequest, CouncilApiResponse, NoticeResponseDTO> {
+public class CouncilController implements NoticePostController<FileUploadToCouncilRequest, CouncilApiResponse, NoticeResponseDTO> {
 
     @Autowired
     private CouncilService councilService;
@@ -36,16 +36,6 @@ public class CouncilController implements NoticePostController<CouncilApiRequest
 
     @Override
     @PostMapping("/auth-council/notice/council")
-    public Header<CouncilApiResponse> create(Authentication authentication, @RequestBody Header<CouncilApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        CouncilApiRequest councilApiRequest = request.getData();
-        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
-        }
-        return councilService.create(principal.getUser(), councilApiRequest);
-    }
-
-    @PostMapping("/auth-council/notice/council/upload")
     public Header<CouncilApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToCouncilRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getCouncilApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
@@ -63,16 +53,6 @@ public class CouncilController implements NoticePostController<CouncilApiRequest
 
     @Override
     @PutMapping("/auth-council/notice/council")
-    public Header<CouncilApiResponse> update(Authentication authentication, @RequestBody Header<CouncilApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        CouncilApiRequest councilApiRequest = request.getData();
-        if (councilApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(councilApiRequest.getStatus().getTitle());
-        }
-        return councilService.update(principal.getUser(), councilApiRequest);
-    }
-
-    @PutMapping("/auth-council/notice/council/upload")
     public Header<CouncilApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToCouncilRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getCouncilApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {

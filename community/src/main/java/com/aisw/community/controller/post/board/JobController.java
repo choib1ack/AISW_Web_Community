@@ -25,7 +25,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class JobController implements BoardPostController<JobApiRequest, JobApiResponse, JobDetailApiResponse, JobResponseDTO> {
+public class JobController implements BoardPostController<FileUploadToJobRequest, JobApiResponse, JobDetailApiResponse, JobResponseDTO> {
 
     @Autowired
     private JobService jobService;
@@ -35,17 +35,6 @@ public class JobController implements BoardPostController<JobApiRequest, JobApiR
 
     @Override
     @PostMapping("/auth/board/job")
-    public Header<JobApiResponse> create(Authentication authentication, @RequestBody Header<JobApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        JobApiRequest jobApiRequest = request.getData();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
-                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
-            throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
-        }
-        return jobService.create(principal.getUser(), jobApiRequest);
-    }
-
-    @PostMapping("/auth/board/job/upload")
     public Header<JobApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToJobRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getJobApiRequest().getStatus().equals(BulletinStatus.URGENT)
@@ -71,17 +60,6 @@ public class JobController implements BoardPostController<JobApiRequest, JobApiR
 
     @Override
     @PutMapping("/auth/board/job")
-    public Header<JobApiResponse> update(Authentication authentication, @RequestBody Header<JobApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        JobApiRequest jobApiRequest = request.getData();
-        if (jobApiRequest.getStatus().equals(BulletinStatus.URGENT)
-                || jobApiRequest.getStatus().equals(BulletinStatus.NOTICE)) {
-            throw new PostStatusNotSuitableException(jobApiRequest.getStatus().getTitle());
-        }
-        return jobService.update(principal.getUser(), jobApiRequest);
-    }
-
-    @PutMapping("/auth/board/job/upload")
     public Header<JobApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToJobRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getJobApiRequest().getStatus().equals(BulletinStatus.URGENT)

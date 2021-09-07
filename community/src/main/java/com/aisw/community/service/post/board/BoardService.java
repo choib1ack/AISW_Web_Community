@@ -28,7 +28,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
     @Cacheable(value = "boardReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Board> boards = boardRepository.findAll(pageable);
-        Page<Board> boardsByStatus = searchByStatus(pageable);
+        List<Board> boardsByStatus = searchByStatus();
 
         return getListHeader(boards, boardsByStatus);
     }
@@ -38,7 +38,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByWriterContaining(writer, pageable);
-        Page<Board> boardsByStatus = searchByStatus(pageable);
+        List<Board> boardsByStatus = searchByStatus();
 
         return getListHeader(boards, boardsByStatus);
     }
@@ -48,7 +48,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByTitleContaining(title, pageable);
-        Page<Board> boardsByStatus = searchByStatus(pageable);
+        List<Board> boardsByStatus = searchByStatus();
 
         return getListHeader(boards, boardsByStatus);
     }
@@ -58,20 +58,16 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #content, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Board> boards = boardRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Board> boardsByStatus = searchByStatus(pageable);
+        List<Board> boardsByStatus = searchByStatus();
 
         return getListHeader(boards, boardsByStatus);
     }
 
-    public Page<Board> searchByStatus(Pageable pageable) {
-        Page<Board> boards = boardRepository.findAllByStatusIn(
-                Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
-
-        return boards;
+    public List<Board> searchByStatus() {
+        return boardRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<BoardResponseDTO> getListHeader
-            (Page<Board> boards, Page<Board> boardsByStatus) {
+    private Header<BoardResponseDTO> getListHeader(Page<Board> boards, List<Board> boardsByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(boards.stream()
                         .map(board -> BoardApiResponse.builder()
@@ -82,7 +78,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
                                 .status(board.getStatus())
                                 .views(board.getViews())
                                 .writer(board.getWriter())
-                                .hasFile((board.getFileList().size() != 0) ? true : false)
+//                                .hasFile((board.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -97,7 +93,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
                     .status(board.getStatus())
                     .views(board.getViews())
                     .writer(board.getWriter())
-                    .hasFile((board.getFileList().size() != 0) ? true : false)
+//                    .hasFile((board.getFileList().size() != 0) ? true : false)
                     .build();
             if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);

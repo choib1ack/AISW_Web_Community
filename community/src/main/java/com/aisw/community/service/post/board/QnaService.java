@@ -61,38 +61,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     private FileService fileService;
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<QnaApiResponse> create(User user, QnaApiRequest qnaApiRequest) {
-        Qna qna = Qna.builder()
-                .title(qnaApiRequest.getTitle())
-                .writer((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .content(qnaApiRequest.getContent())
-                .status(qnaApiRequest.getStatus())
-                .subject(qnaApiRequest.getSubject())
-                .firstCategory(FirstCategory.BOARD)
-                .secondCategory(SecondCategory.QNA)
-                .likes(0L)
-                .user(user)
-                .build();
-
-        Qna newQna = qnaRepository.save(qna);
-        return Header.OK(response(newQna));
-    }
-
-    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "qnaReadAll", allEntries = true),
@@ -124,7 +92,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
 
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth-student/board/qna", newQna.getId(), UploadCategory.POST);
 
             return Header.OK(response(newQna, fileApiResponseList));
         } else {
@@ -181,39 +149,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "qnaReadAll", allEntries = true),
-            @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
-            @CacheEvict(value = "qnaSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<QnaApiResponse> update(User user, QnaApiRequest qnaApiRequest) {
-        Qna qna = qnaRepository.findById(qnaApiRequest.getId()).orElseThrow(
-                () -> new PostNotFoundException(qnaApiRequest.getId()));
-        if(qna.getUser().getId() != user.getId()) {
-            throw new NotEqualUserException(user.getId());
-        }
-
-        qna
-                .setWriter((qnaApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .setTitle(qnaApiRequest.getTitle())
-                .setContent(qnaApiRequest.getContent())
-                .setStatus(qnaApiRequest.getStatus());
-        qna.setSubject(qnaApiRequest.getSubject());
-        qnaRepository.save(qna);
-
-        return Header.OK(response(qna));
-    }
-
-    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "qnaReadAll", allEntries = true),
@@ -258,7 +193,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/auth-student/board/qna", qna.getId(), UploadCategory.POST);
             return Header.OK(response(qna, fileApiResponseList));
         } else {
             return Header.OK(response(qna));
@@ -267,6 +202,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
 
     @Override
     @Caching(evict = {
+            @CacheEvict(value = "commentSearchByPost", key = "#id"),
             @CacheEvict(value = "qnaReadAll", allEntries = true),
             @CacheEvict(value = "qnaSearchByWriter", allEntries = true),
             @CacheEvict(value = "qnaSearchByTitle", allEntries = true),
@@ -315,7 +251,10 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     }
 
     private QnaApiResponse response(Qna qna, List<FileApiResponse> fileApiResponseList) {
-        QnaApiResponse qnaApiResponse = QnaApiResponse.builder()
+        if(qna.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(qna.getFileList()));
+        }
+        return QnaApiResponse.builder()
                 .id(qna.getId())
                 .title(qna.getTitle())
                 .writer(qna.getWriter())
@@ -331,8 +270,6 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .category(qna.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return qnaApiResponse;
     }
 
     private QnaDetailApiResponse responseWithComment(Qna qna) {
@@ -409,7 +346,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     @Cacheable(value = "qnaReadAll", key = "#pageable.pageNumber")
     public Header<BoardResponseDTO> readAll(Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAll(pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
@@ -419,7 +356,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
@@ -429,7 +366,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<BoardResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
@@ -440,26 +377,23 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
     public Header<BoardResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Qna> qnas = qnaRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
 
     public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
-        Page<Qna> qnasByStatus = searchByStatus(pageable);
+        List<Qna> qnasByStatus = searchByStatus();
 
         return getListHeader(qnas, qnasByStatus);
     }
 
-    public Page<Qna> searchByStatus(Pageable pageable) {
-        Page<Qna> qnas = qnaRepository.findAllByStatusIn(
-                Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE), pageable);
-
-        return qnas;
+    public List<Qna> searchByStatus() {
+        return qnaRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, Page<Qna> qnasByStatus) {
+    private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, List<Qna> qnasByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(qnas.stream()
                         .map(qna -> BoardApiResponse.builder()

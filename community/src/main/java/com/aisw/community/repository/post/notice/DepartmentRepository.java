@@ -24,5 +24,5 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
     Page<Department> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Department> findAllByStatusIn(List<BulletinStatus> statusList, Pageable pageable);
+    List<Department> findTop10ByStatusIn(List<BulletinStatus> statusList);
 }

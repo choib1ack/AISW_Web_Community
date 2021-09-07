@@ -52,38 +52,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     @Autowired
     private FileService fileService;
 
-
-    @Override
-    @Caching(evict = {
-            @CacheEvict(value = "jobReadAll", allEntries = true),
-            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<JobApiResponse> create(User user, JobApiRequest jobApiRequest) {
-        Job job = Job.builder()
-                .title(jobApiRequest.getTitle())
-                .writer((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .content(jobApiRequest.getContent())
-                .status(jobApiRequest.getStatus())
-                .firstCategory(FirstCategory.BOARD)
-                .secondCategory(SecondCategory.JOB)
-                .likes(0L)
-                .user(user)
-                .build();
-
-        Job newJob = jobRepository.save(job);
-        return Header.OK(response(newJob));
-    }
-
     @Override
     @Transactional
     @Caching(evict = {
@@ -114,7 +82,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         Job newJob = jobRepository.save(job);
         if (files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/board/job", newJob.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/board/job", newJob.getId(), UploadCategory.POST);
 
             return Header.OK(response(newJob, fileApiResponseList));
         } else {
@@ -171,38 +139,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(value = "jobReadAll", allEntries = true),
-            @CacheEvict(value = "jobSearchByWriter", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitle", allEntries = true),
-            @CacheEvict(value = "jobSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "boardReadAll", allEntries = true),
-            @CacheEvict(value = "boardSearchByWriter", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitle", allEntries = true),
-            @CacheEvict(value = "boardSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByWriter", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitle", allEntries = true),
-            @CacheEvict(value = "bulletinSearchByTitleOrContent", allEntries = true),
-            @CacheEvict(value = "home", allEntries = true)
-    })
-    public Header<JobApiResponse> update(User user, JobApiRequest jobApiRequest) {
-        Job job = jobRepository.findById(jobApiRequest.getId()).orElseThrow(
-                () -> new PostNotFoundException(jobApiRequest.getId()));
-        if (job.getUser().getId() != user.getId()) {
-            throw new NotEqualUserException(user.getId());
-        }
-
-        job
-                .setWriter((jobApiRequest.getIsAnonymous() == true) ? "익명" : user.getName())
-                .setTitle(jobApiRequest.getTitle())
-                .setContent(jobApiRequest.getContent())
-                .setStatus(jobApiRequest.getStatus());
-        jobRepository.save(job);
-
-        return Header.OK(response(job));
-    }
-
-    @Override
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "jobReadAll", allEntries = true),
@@ -246,7 +182,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         }
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
-                    fileService.uploadFiles(files, "/board/job", job.getId(), UploadCategory.POST);
+                    fileService.uploadFiles(files, user.getUsername(), "/board/job", job.getId(), UploadCategory.POST);
             return Header.OK(response(job, fileApiResponseList));
         } else {
             return Header.OK(response(job));
@@ -255,6 +191,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
 
     @Override
     @Caching(evict = {
+            @CacheEvict(value = "commentSearchByPost", key = "#id"),
             @CacheEvict(value = "jobReadAll", allEntries = true),
             @CacheEvict(value = "jobSearchByWriter", allEntries = true),
             @CacheEvict(value = "jobSearchByTitle", allEntries = true),
@@ -302,7 +239,10 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     }
 
     private JobApiResponse response(Job job, List<FileApiResponse> fileApiResponseList) {
-        JobApiResponse jobApiResponse = JobApiResponse.builder()
+        if(job.getFileList() != null) {
+            fileApiResponseList.addAll(fileService.getFileList(job.getFileList()));
+        }
+        return JobApiResponse.builder()
                 .id(job.getId())
                 .title(job.getTitle())
                 .writer(job.getWriter())
@@ -317,8 +257,6 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .category(job.getCategory())
                 .fileApiResponseList(fileApiResponseList)
                 .build();
-
-        return jobApiResponse;
     }
 
     private JobDetailApiResponse responseWithComment(Job job) {
@@ -393,9 +331,9 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     @Cacheable(value = "jobReadAll", key = "#pageable.pageNumber")
     public Header<JobResponseDTO> readAll(Pageable pageable) {
         Page<Job> jobs = jobRepository.findAll(pageable);
-        Page<Job> freesByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
-        return getListHeader(jobs, freesByStatus);
+        return getListHeader(jobs, jobsByStatus);
     }
 
     @Override
@@ -403,7 +341,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#writer, #pageable.pageNumber)")
     public Header<JobResponseDTO> searchByWriter(String writer, Pageable pageable) {
         Page<Job> jobs = jobRepository.findAllByWriterContaining(writer, pageable);
-        Page<Job> jobsByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
         return getListHeader(jobs, jobsByStatus);
     }
@@ -413,7 +351,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
             key = "T(com.aisw.community.component.util.KeyCreatorBean).createKey(#title, #pageable.pageNumber)")
     public Header<JobResponseDTO> searchByTitle(String title, Pageable pageable) {
         Page<Job> jobs = jobRepository.findAllByTitleContaining(title, pageable);
-        Page<Job> jobsByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
         return getListHeader(jobs, jobsByStatus);
     }
@@ -424,18 +362,16 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
     public Header<JobResponseDTO> searchByTitleOrContent(String title, String content, Pageable pageable) {
         Page<Job> jobs = jobRepository
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
-        Page<Job> jobsByStatus = searchByStatus(pageable);
+        List<Job> jobsByStatus = searchByStatus();
 
         return getListHeader(jobs, jobsByStatus);
     }
 
-    public Page<Job> searchByStatus(Pageable pageable) {
-        Page<Job> jobs = jobRepository.findAllByStatus(BulletinStatus.REVIEW, pageable);
-
-        return jobs;
+    public List<Job> searchByStatus() {
+        return jobRepository.findTop10ByStatus(BulletinStatus.REVIEW);
     }
 
-    private Header<JobResponseDTO> getListHeader(Page<Job> jobs, Page<Job> jobsByStatus) {
+    private Header<JobResponseDTO> getListHeader(Page<Job> jobs, List<Job> jobsByStatus) {
         JobResponseDTO jobResponseDTO = JobResponseDTO.builder()
                 .boardApiResponseList(jobs.stream()
                         .map(job -> BoardApiResponse.builder()

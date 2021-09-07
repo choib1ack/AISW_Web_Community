@@ -20,6 +20,9 @@
     - Docker 20.10.7
 
 - Frontend
+    - React 17.0.1
+    - Redux 4.0.5
+    - Bootstrap 4.5.3
 
 ---
 

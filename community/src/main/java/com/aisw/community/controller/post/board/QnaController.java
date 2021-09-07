@@ -27,7 +27,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-public class QnaController implements BoardPostController<QnaApiRequest, QnaApiResponse, QnaDetailApiResponse, BoardResponseDTO> {
+public class QnaController implements BoardPostController<FileUploadToQnaRequest, QnaApiResponse, QnaDetailApiResponse, BoardResponseDTO> {
 
     @Autowired
     private QnaService qnaService;
@@ -37,16 +37,6 @@ public class QnaController implements BoardPostController<QnaApiRequest, QnaApiR
 
     @Override
     @PostMapping("/auth-student/board/qna")
-    public Header<QnaApiResponse> create(Authentication authentication, @RequestBody Header<QnaApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        QnaApiRequest qnaApiRequest = request.getData();
-        if (qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
-        }
-        return qnaService.create(principal.getUser(), qnaApiRequest);
-    }
-
-    @PostMapping("/auth-student/board/qna/upload")
     public Header<QnaApiResponse> create(Authentication authentication, @ModelAttribute FileUploadToQnaRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getQnaApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {
@@ -70,16 +60,6 @@ public class QnaController implements BoardPostController<QnaApiRequest, QnaApiR
 
     @Override
     @PutMapping("/auth-student/board/qna")
-    public Header<QnaApiResponse> update(Authentication authentication, @RequestBody Header<QnaApiRequest> request) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        QnaApiRequest qnaApiRequest = request.getData();
-        if (qnaApiRequest.getStatus().equals(BulletinStatus.REVIEW)) {
-            throw new PostStatusNotSuitableException(qnaApiRequest.getStatus().getTitle());
-        }
-        return qnaService.update(principal.getUser(), qnaApiRequest);
-    }
-
-    @PutMapping("/auth-student/board/qna/upload")
     public Header<QnaApiResponse> update(Authentication authentication, @ModelAttribute FileUploadToQnaRequest request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         if (request.getQnaApiRequest().getStatus().equals(BulletinStatus.REVIEW)) {

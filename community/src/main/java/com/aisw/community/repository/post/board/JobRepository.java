@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
@@ -22,5 +23,5 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     Page<Job> findAllByTitleContainingOrContentContaining(String title, String content, Pageable pageable);
 
-    Page<Job> findAllByStatus(BulletinStatus status, Pageable pageable);
+    List<Job> findTop10ByStatus(BulletinStatus status);
 }
