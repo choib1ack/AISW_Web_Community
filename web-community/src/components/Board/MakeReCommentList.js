@@ -78,7 +78,7 @@ export default function MakeReCommentList({board_id, board_category, Refresh, bo
                                      style={{cursor: "pointer"}}/> {data.likes}</span>}
 
                                 <Card.Title className="mb-2"
-                                            style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
+                                            style={{fontSize: '14px'}}>{data.writer}
                                     <span style={{
                                         color: "#8C8C8C",
                                         fontSize: '12px',
