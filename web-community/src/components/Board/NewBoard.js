@@ -11,7 +11,7 @@ import {useSelector} from "react-redux";
 import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
-import {AUTH_BOARD_POST, BOARD_FILE_API} from "../../constants";
+import {ADMIN_ROLE, AUTH_BOARD_POST, BOARD_FILE_API} from "../../constants";
 import {useHistory} from "react-router-dom";
 import {Checkbox} from "semantic-ui-react";
 
@@ -43,6 +43,7 @@ function NewBoard() {
 
         if (checkTitle(data.title) && checkContent(data.content)) {
             const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
+            data.status = ADMIN_ROLE.includes(role) ? data.status : 'GENERAL';
 
             let formData = new FormData();
             for (let i = 0; i < data.file.length; i++) {
@@ -74,7 +75,7 @@ function NewBoard() {
                 <Title text='새 게시글 작성' type='1'/>
 
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
-                    {role === 'ROLE_ADMIN' && (board_type.current === 'free' || board_type.current === 'qna') &&
+                    {ADMIN_ROLE.includes(role) && (board_type.current === 'free' || board_type.current === 'qna') &&
                     <Row className="pl-3 pb-3">
                         <Form.Check
                             required type="radio"

@@ -11,7 +11,7 @@ import FinishModal from "../Modal/FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
-import {AUTH_NOTICE_POST, NOTICE_FILE_API} from "../../constants";
+import {ADMIN_ROLE, AUTH_NOTICE_POST, NOTICE_FILE_API, NOTICE_WRITE_ROLE} from "../../constants";
 import {useHistory} from "react-router-dom";
 
 export default function NewNotice() {
@@ -34,9 +34,7 @@ export default function NewNotice() {
 
     const onSubmit = (data) => {
         data.content = write.value;
-        if (role !== 'ROLE_ADMIN') {
-            data.status = 'GENERAL';
-        }
+        data.status = NOTICE_WRITE_ROLE.includes(role) ? data.status : 'GENERAL';
 
         if (checkTitle(data.title) && checkContent(data.content)) {
             const apiRequest = NOTICE_FILE_API[data.board_type]; // 카테고리별 다르게 적용
@@ -69,7 +67,7 @@ export default function NewNotice() {
 
                 <Title text='새 공지사항 작성' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
-                    {role === 'ROLE_ADMIN' &&
+                    {NOTICE_WRITE_ROLE.includes(role) &&
                     <Row className="pl-3 pb-3">
                         <Form.Check
                             required type="radio"
