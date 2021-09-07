@@ -28,11 +28,11 @@ export default function MakeBoardList(props) {
         }
     );
 
-    const [curPage, setCurPage] = useState(0);
+    // const [curPage, setCurPage] = useState(0);
     const {decoded} = useSelector((state) => state.user);
 
     const setPagination = (now_page) => {
-        setCurPage(now_page);
+        props.setCurPage(now_page);
     }
 
     let search_data = props.searchData;
@@ -73,7 +73,7 @@ export default function MakeBoardList(props) {
         if (props.selected_subject_list.length !== 0) {
             url += "/subject";
         }
-        url += search_data.search > 0 ? "" : "?page=" + curPage;
+        url += search_data.search > 0 ? "" : "?page=" + props.curPage;
         if (props.selected_subject_list.length !== 0) {
             url += "&subject=" + props.selected_subject_list.join(",");
         }
@@ -107,7 +107,7 @@ export default function MakeBoardList(props) {
 
 
     const indexing = (index) => {
-        let current_max = boardData.normal.page_info.total_elements - (curPage * 10); // 현재 페이지에서 max값
+        let current_max = boardData.normal.page_info.total_elements - (props.curPage * 10); // 현재 페이지에서 max값
         return current_max - index.toString();
     }
 
@@ -141,9 +141,9 @@ export default function MakeBoardList(props) {
                 await axios.get(url(props.category))
                     .then((res) => {
                         if(props.category !== 3){ // 전체 or 자유 or 과목별 게시판일 경우
-                            if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                            if (props.curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                                 setBoardData({
-                                    ...boardData,
+                                    fix_review: null,
                                     fix_notice: res.data.data.board_api_notice_response_list,
                                     fix_urgent: res.data.data.board_api_urgent_response_list,
                                     normal: {
@@ -161,11 +161,10 @@ export default function MakeBoardList(props) {
                                 })
                             }
                         }else{ // 취업게시판일 경우
-                            {console.log("curPage="+curPage)}
-                            {console.log(res)}
-                            if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                            if (props.curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                                 setBoardData({
-                                    ...boardData,
+                                    fix_notice: null,
+                                    fix_urgent: null,
                                     fix_review: res.data.data.board_api_review_response_list,
                                     normal: {
                                         page_info: res.data.pagination,
@@ -183,7 +182,7 @@ export default function MakeBoardList(props) {
                             }
 
                         }
-                        setLoading(false);
+                        // setLoading(false);
                     })
 
             } catch (e) {
@@ -192,8 +191,11 @@ export default function MakeBoardList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.searchData.search, props.selected_subject_list, curPage]);
+    }, [props.category, props.searchData.search, props.selected_subject_list, props.curPage]);
 
+    useEffect(()=>{
+        setLoading(false);
+    }, [boardData])
 
     if (error) return (
         <tr>
@@ -305,7 +307,7 @@ export default function MakeBoardList(props) {
                 </tbody>
             </table>
             <Pagination
-                current_page={curPage}
+                current_page={props.curPage}
                 total_pages={boardData.normal.page_info.total_pages}
                 setPagination={setPagination}
             />
