@@ -19,7 +19,7 @@ export default function MakeReCommentList({board_id, board_category, Refresh, bo
             "comment_id": comment_id
         }
 
-        await axiosApi.post('/like/press/',
+        await axiosApi.post('/auth/like/press/',
             {data: data}
         ).then((res) => {
             alert("댓글에 좋아요를 눌렀습니다");
@@ -31,13 +31,13 @@ export default function MakeReCommentList({board_id, board_category, Refresh, bo
     }
 
     const handleLikeRemoveClick = async (comment_id) => {
-        await axiosApi.delete(`/like/remove/${comment_id}?target=COMMENT`
+        await axiosApi.delete(`/auth/like/remove/${comment_id}?target=COMMENT`
         ).then((res) => {
             alert("댓글에 좋아요를 취소했습니다");
             // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            alert("좋아요 클릭 에러!" + errorObject);
+            console.log(errorObject);
         })
     }
 

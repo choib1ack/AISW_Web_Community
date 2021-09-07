@@ -78,22 +78,22 @@ export default function BoardDetail({match}) {
             "board_id": Number(id),
         }
 
-        await axiosApi.post('/like/press', {data: data})
+        await axiosApi.post('/auth/like/press', {data: data})
             .then((res) => {
                 dispatch({type: 'PRESS'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
-                alert("좋아요 누름 에러!" + errorObject);
+                console.log(errorObject);
             })
     }
 
     const handleLikeCancelClick = async () => {
-        await axiosApi.delete(`/like/remove/${id}?target=POST`)
+        await axiosApi.delete(`/auth/like/remove/${id}?target=POST`)
             .then((res) => {
                 dispatch({type: 'REMOVE'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
-                alert("좋아요 취소 에러!" + errorObject);
+                console.log(errorObject);
             })
     }
 
