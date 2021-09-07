@@ -33,74 +33,41 @@ function EditBoard({match}) {
     const [files, setFiles] = useState(detail.file_api_response_list);
     const [deleteList, setDeleteList] = useState([]);
 
-    function putBoard(data, path, type) {
-        if (type === 'file') {
-            axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
-                .then((res) => {
-                    setModalShow(true);
-                })
-                .catch(error => {
-                    // console.log(error);
-                    alert("글 게시에 실패하였습니다.");
-                })
-        } else {
-            // axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}/upload`, data)
-            //     .then((res) => {
-            //         setModalShow(true)
-            //     })
-            //     .catch(error => {
-            //         alert("글 게시에 실패하였습니다.");
-            //     })
-            axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}`,
-                {data: data},
-            ).then((res) => {
-                setModalShow(true)
-            }).catch(error => {
+    function putBoard(data, path) {
+        axiosApi.put(`/${AUTH_BOARD_PUT[path]}/board/${path}`, data)
+            .then((res) => {
+                setModalShow(true);
+            })
+            .catch(error => {
                 alert("글 게시에 실패하였습니다.");
             })
-        }
     }
 
     const onSubmit = (data) => {
         data.content = write.value;
         data.board_type = board_category;
 
-        if (data.file.length === 0) {   // 파일이 없을 경우
-            if (checkTitle(data.title) && checkContent(data.content)) {
-                let temp = {
-                    content: data.content,
-                    id: id,
-                    is_anonymous: anonymousState,
-                    status: data.board_type === 'job' ? (isReview ? 'REVIEW' : 'GENERAL') : data.status,
-                    title: data.title
-                };
+        if (checkTitle(data.title) && checkContent(data.content)) {
+            const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
-                if (data.board_type === 'qna') {
-                    temp.subject = data.subject;
-                }
-                putBoard(temp, data.board_type, null);
-            } else {
-                const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
-
-                let formData = new FormData();
-                for (let i = 0; i < data.file.length; i++) {    // 추가할 파일
-                    formData.append('files', data.file[i]);
-                }
-                for (let i = 0; i < deleteList.length; i++) {   // 지울 파일
-                    formData.append('delFileIds', deleteList[i]);
-                }
-
-                formData.append(`${apiRequest}.content`, data.content);
-                formData.append(`${apiRequest}.id`, id);
-                formData.append(`${apiRequest}.isAnonymous`, anonymousState);
-                formData.append(`${apiRequest}.status`, data.board_type === 'job' ? (isReview ? 'REVIEW' : 'GENERAL') : data.status);
-                formData.append(`${apiRequest}.title`, data.title);
-
-                if (data.board_type === 'qna') {
-                    formData.append(`${apiRequest}.subject`, data.subject);
-                }
-                putBoard(formData, data.board_type, 'file');
+            let formData = new FormData();
+            for (let i = 0; i < data.file.length; i++) {    // 추가할 파일
+                formData.append('files', data.file[i]);
             }
+            for (let i = 0; i < deleteList.length; i++) {   // 지울 파일
+                formData.append('delFileIds', deleteList[i]);
+            }
+
+            formData.append(`${apiRequest}.content`, data.content);
+            formData.append(`${apiRequest}.id`, id);
+            formData.append(`${apiRequest}.isAnonymous`, anonymousState);
+            formData.append(`${apiRequest}.status`, data.board_type === 'job' ? (isReview ? 'REVIEW' : 'GENERAL') : data.status);
+            formData.append(`${apiRequest}.title`, data.title);
+
+            if (data.board_type === 'qna') {
+                formData.append(`${apiRequest}.subject`, data.subject);
+            }
+            putBoard(formData, data.board_type, 'file');
         }
     }
 
@@ -114,15 +81,6 @@ function EditBoard({match}) {
     useEffect(() => {
         console.log(deleteList);
     }, [deleteList]);
-
-    // const handleFileChange = (e) => {
-    //     let array = [];
-    //     for (let i = 0; i < e.target.files.length; i++) {
-    //         array.push(e.target.files[i]);
-    //     }
-    //
-    //     setFiles(files.concat(array));
-    // }
 
     const ReplaceLink = () => {
         history.goBack();
@@ -242,7 +200,7 @@ function EditBoard({match}) {
 
 export default EditBoard;
 
-const FileList = ({file, onRemove}) => {
+export const FileList = ({file, onRemove}) => {
     console.log(file);
 
     if (file.length === 0) return null;

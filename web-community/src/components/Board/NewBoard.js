@@ -28,45 +28,20 @@ function NewBoard() {
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
 
-    function postBoard(data, path, type) {
-        if (type === 'file') {
-            axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}/upload`, data)
-                .then((res) => {
-                    setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
-                })
-                .catch(error => {
-                    alert("글 게시에 실패하였습니다.");
-                })
-        } else {
-            axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`,
-                {data: data},
-            ).then((res) => {
+    function postBoard(data, path) {
+        axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`, data)
+            .then((res) => {
                 setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
-            }).catch(error => {
+            })
+            .catch(error => {
                 alert("글 게시에 실패하였습니다.");
             })
-        }
-
     }
 
     const onSubmit = (data) => {
         data.content = write.value;
 
-        if (data.file.length === 0) {   // 파일이 없을 경우
-            if (checkTitle(data.title) && checkContent(data.content)) {
-                let temp = {
-                    content: data.content,
-                    is_anonymous: anonymousState,
-                    status: board_type.current === 'job' ? (isReview ? 'REVIEW' : 'GENERAL') : data.status,
-                    title: data.title,
-                };
-
-                if (data.board_type === 'qna') {
-                    temp.subject = data.subject;
-                }
-                postBoard(temp, data.board_type, null);
-            }
-        } else {
+        if (checkTitle(data.title) && checkContent(data.content)) {
             const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
             let formData = new FormData();
