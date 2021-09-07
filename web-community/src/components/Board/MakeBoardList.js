@@ -17,6 +17,7 @@ export default function MakeBoardList(props) {
         {
             fix_notice: null,
             fix_urgent: null,
+            fix_review: null,
             normal: {
                 page_info: {
                     "current_page": 0,
@@ -99,8 +100,8 @@ export default function MakeBoardList(props) {
                 return '긴급';
             case "NOTICE":
                 return "공지";
-            // case "GENERAL":
-            //     return "일반";
+            case "REVIEW":
+                return "리뷰";
         }
     }
 
@@ -139,24 +140,48 @@ export default function MakeBoardList(props) {
 
                 await axios.get(url(props.category))
                     .then((res) => {
-                        if (boardData.normal.page_info.current_page === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
-                            setBoardData({
-                                ...boardData,
-                                fix_notice: res.data.data.board_api_notice_response_list,
-                                fix_urgent: res.data.data.board_api_urgent_response_list,
-                                normal: {
-                                    page_info: res.data.pagination,
-                                    data: res.data.data.board_api_response_list
-                                }
-                            })
-                        } else {
-                            setBoardData({
-                                ...boardData,
-                                normal: {
-                                    page_info: res.data.pagination,
-                                    data: res.data.data.board_api_response_list
-                                }
-                            })
+                        if(props.category !== 3){ // 전체 or 자유 or 과목별 게시판일 경우
+                            if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                                setBoardData({
+                                    ...boardData,
+                                    fix_notice: res.data.data.board_api_notice_response_list,
+                                    fix_urgent: res.data.data.board_api_urgent_response_list,
+                                    normal: {
+                                        page_info: res.data.pagination,
+                                        data: res.data.data.board_api_response_list
+                                    }
+                                })
+                            } else {
+                                setBoardData({
+                                    ...boardData,
+                                    normal: {
+                                        page_info: res.data.pagination,
+                                        data: res.data.data.board_api_response_list
+                                    }
+                                })
+                            }
+                        }else{ // 취업게시판일 경우
+                            {console.log("curPage="+curPage)}
+                            {console.log(res)}
+                            if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                                setBoardData({
+                                    ...boardData,
+                                    fix_review: res.data.data.board_api_review_response_list,
+                                    normal: {
+                                        page_info: res.data.pagination,
+                                        data: res.data.data.board_api_response_list
+                                    }
+                                })
+                            } else {
+                                setBoardData({
+                                    ...boardData,
+                                    normal: {
+                                        page_info: res.data.pagination,
+                                        data: res.data.data.board_api_response_list
+                                    }
+                                })
+                            }
+
                         }
                         setLoading(false);
                     })
@@ -215,6 +240,8 @@ export default function MakeBoardList(props) {
                 </tr>
                 </thead>
                 <tbody>
+                {console.log(boardData)}
+
                 {boardData.fix_urgent !== null && props.searchData.search == 0 ? boardData.fix_urgent.map(data => (
                     <tr key={data.id}
                         onClick={() => ToLink(`/board/${categoryName(props.category) === 0 ?
@@ -243,6 +270,22 @@ export default function MakeBoardList(props) {
                         <td>{data.views}</td>
                     </tr>
                 )) : null}
+                {console.log(boardData.fix_review)}
+                {boardData.fix_review != null && props.searchData.search == 0 ? boardData.fix_review.map(data => (
+                    <tr key={data.id}
+                        onClick={() => ToLink(`/board/${categoryName(props.category) === 0 ?
+                            data.category.toLowerCase() : categoryName(props.category)}/${data.id}`)}>
+                        <td>리뷰</td>
+                        <td>
+                            {data.title}
+                            <img src={fileImage} style={attachment(data.attachment_file)}/>
+                        </td>
+                        <td>{data.writer}</td>
+                        <td>{data.created_at.substring(0, 10)}</td>
+                        <td>{data.views}</td>
+                    </tr>
+                )) : null}
+                
                 {boardData.normal.data.map((data, index) =>
                     (
                         <tr key={data.id}
