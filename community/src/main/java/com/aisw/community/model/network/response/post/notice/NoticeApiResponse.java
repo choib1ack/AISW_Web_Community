@@ -32,4 +32,6 @@ public class NoticeApiResponse {
     private LocalDateTime createdAt;
 
     private Long views;
+
+    private Boolean hasFile;
 }

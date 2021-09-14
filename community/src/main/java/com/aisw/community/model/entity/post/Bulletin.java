@@ -7,6 +7,7 @@ import com.aisw.community.model.enumclass.FirstCategory;
 import com.aisw.community.model.enumclass.SecondCategory;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -66,6 +67,7 @@ public class Bulletin {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user; // user id
 
+    @BatchSize(size = 10)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "bulletin", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<File> fileList;
 

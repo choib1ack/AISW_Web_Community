@@ -2,8 +2,6 @@ package com.aisw.community.service.post.notice;
 
 import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
-import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
-import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.notice.University;
 import com.aisw.community.model.entity.user.User;
@@ -13,23 +11,19 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.notice.FileUploadToUniversityRequest;
 import com.aisw.community.model.network.request.post.notice.UniversityApiRequest;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeApiResponse;
 import com.aisw.community.model.network.response.post.notice.NoticeResponseDTO;
 import com.aisw.community.model.network.response.post.notice.UniversityApiResponse;
-import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.repository.post.notice.UniversityRepository;
 import com.aisw.community.service.post.file.FileService;
-import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -256,7 +250,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
         Page<University> universities = universityRepository.findAll(pageable);
         List<University> universitiesByStatus = searchByStatus();
 
-        return getListHeader(universities, universitiesByStatus);
+        return response(universities, universitiesByStatus);
     }
 
     @Override
@@ -266,7 +260,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
         Page<University> universities = universityRepository.findAllByWriterContaining(writer, pageable);
         List<University> universitiesByStatus = searchByStatus();
 
-        return getListHeader(universities, universitiesByStatus);
+        return response(universities, universitiesByStatus);
     }
 
     @Override
@@ -276,7 +270,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
         Page<University> universities = universityRepository.findAllByTitleContaining(title, pageable);
         List<University> universitiesByStatus = searchByStatus();
 
-        return getListHeader(universities, universitiesByStatus);
+        return response(universities, universitiesByStatus);
     }
 
     @Override
@@ -287,14 +281,14 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         List<University> universitiesByStatus = searchByStatus();
 
-        return getListHeader(universities, universitiesByStatus);
+        return response(universities, universitiesByStatus);
     }
 
     public List<University> searchByStatus() {
         return universityRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<NoticeResponseDTO> getListHeader(Page<University> universities, List<University> universitiesByStatus) {
+    private Header<NoticeResponseDTO> response(Page<University> universities, List<University> universitiesByStatus) {
         NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(universities.stream()
                         .map(notice -> NoticeApiResponse.builder()
@@ -305,6 +299,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                                 .status(notice.getStatus())
                                 .views(notice.getViews())
                                 .writer(notice.getWriter())
+                                .hasFile((notice.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -319,6 +314,7 @@ public class UniversityService implements NoticePostService<UniversityApiRequest
                     .status(notice.getStatus())
                     .views(notice.getViews())
                     .writer(notice.getWriter())
+                    .hasFile((notice.getFileList().size() != 0) ? true : false)
                     .build();
             if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 noticeApiNoticeResponseList.add(noticeApiResponse);

@@ -333,7 +333,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         Page<Job> jobs = jobRepository.findAll(pageable);
         List<Job> jobsByStatus = searchByStatus();
 
-        return getListHeader(jobs, jobsByStatus);
+        return response(jobs, jobsByStatus);
     }
 
     @Override
@@ -343,7 +343,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         Page<Job> jobs = jobRepository.findAllByWriterContaining(writer, pageable);
         List<Job> jobsByStatus = searchByStatus();
 
-        return getListHeader(jobs, jobsByStatus);
+        return response(jobs, jobsByStatus);
     }
 
     @Override
@@ -353,7 +353,7 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
         Page<Job> jobs = jobRepository.findAllByTitleContaining(title, pageable);
         List<Job> jobsByStatus = searchByStatus();
 
-        return getListHeader(jobs, jobsByStatus);
+        return response(jobs, jobsByStatus);
     }
 
     @Override
@@ -364,37 +364,39 @@ public class JobService implements BoardPostService<JobApiRequest, JobApiRespons
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         List<Job> jobsByStatus = searchByStatus();
 
-        return getListHeader(jobs, jobsByStatus);
+        return response(jobs, jobsByStatus);
     }
 
     public List<Job> searchByStatus() {
         return jobRepository.findTop10ByStatus(BulletinStatus.REVIEW);
     }
 
-    private Header<JobResponseDTO> getListHeader(Page<Job> jobs, List<Job> jobsByStatus) {
+    private Header<JobResponseDTO> response(Page<Job> jobs, List<Job> jobsByStatus) {
         JobResponseDTO jobResponseDTO = JobResponseDTO.builder()
                 .boardApiResponseList(jobs.stream()
-                        .map(job -> BoardApiResponse.builder()
-                                .id(job.getId())
-                                .title(job.getTitle())
-                                .category(job.getCategory())
-                                .createdAt(job.getCreatedAt())
-                                .status(job.getStatus())
-                                .views(job.getViews())
-                                .writer(job.getWriter())
+                        .map(board -> BoardApiResponse.builder()
+                                .id(board.getId())
+                                .title(board.getTitle())
+                                .category(board.getCategory())
+                                .createdAt(board.getCreatedAt())
+                                .status(board.getStatus())
+                                .views(board.getViews())
+                                .writer(board.getWriter())
+                                .hasFile((board.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
 
         jobResponseDTO.setBoardApiReviewResponseList(jobsByStatus.stream()
-                .map(job -> BoardApiResponse.builder()
-                        .id(job.getId())
-                        .title(job.getTitle())
-                        .category(job.getCategory())
-                        .createdAt(job.getCreatedAt())
-                        .status(job.getStatus())
-                        .views(job.getViews())
-                        .writer(job.getWriter())
+                .map(board -> BoardApiResponse.builder()
+                        .id(board.getId())
+                        .title(board.getTitle())
+                        .category(board.getCategory())
+                        .createdAt(board.getCreatedAt())
+                        .status(board.getStatus())
+                        .views(board.getViews())
+                        .writer(board.getWriter())
+                        .hasFile((board.getFileList().size() != 0) ? true : false)
                         .build())
                 .collect(Collectors.toList()));
 
