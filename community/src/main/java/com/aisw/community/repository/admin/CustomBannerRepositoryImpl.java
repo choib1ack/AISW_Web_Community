@@ -4,6 +4,7 @@ import com.aisw.community.model.entity.admin.Banner;
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +21,6 @@ public class CustomBannerRepositoryImpl implements CustomBannerRepository {
     @Override
     public Page<Banner> findAllFetchJoinWithFile(Pageable pageable) {
         QueryResults<Banner> queryResults = jpaQueryFactory.selectFrom(banner)
-                .leftJoin(banner.fileList)
-                .fetchJoin()
                 .orderBy(banner.startDate.asc(), banner.endDate.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

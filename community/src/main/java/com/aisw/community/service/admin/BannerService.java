@@ -40,12 +40,6 @@ public class BannerService {
     private BannerRepository bannerRepository;
 
     @Autowired
-    private CustomBannerRepository customBannerRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
-
-    @Autowired
     private FileService fileService;
 
     @Transactional
@@ -83,7 +77,7 @@ public class BannerService {
 
     @Cacheable(value = "bannerRead", key = "#pageable.pageNumber")
     public Header<List<BannerApiResponse>> readAll(Pageable pageable) {
-        Page<Banner> bannerList = customBannerRepository.findAllFetchJoinWithFile(pageable);
+        Page<Banner> bannerList = bannerRepository.findAll(pageable);
 
         List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
                 .map(this::response)

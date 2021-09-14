@@ -18,4 +18,6 @@ public interface BannerRepository extends JpaRepository<Banner, Long> {
 
     @Query("select banner from Banner banner left join fetch banner.fileList where banner.id = :id")
     Optional<Banner> findById(Long id);
+
+    Page<Banner> findAll(Pageable pageable);
 }

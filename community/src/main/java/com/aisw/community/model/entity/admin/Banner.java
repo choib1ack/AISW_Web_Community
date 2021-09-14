@@ -3,6 +3,7 @@ package com.aisw.community.model.entity.admin;
 import com.aisw.community.model.entity.post.file.File;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -12,10 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -56,7 +54,8 @@ public class Banner {
     @LastModifiedBy
     private String updatedBy;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true, cascade = CascadeType.ALL)
+    @BatchSize(size = 1)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "banner", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<File> fileList;
 
     @PrePersist
