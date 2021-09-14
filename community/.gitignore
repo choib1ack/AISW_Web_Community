@@ -5,7 +5,7 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 /src/main/generated/
-/src/main/java/com/aisw/community/resources/application.properties
+/src/main/resources/application.properties
 Dockerfile
 
 ### STS ###
