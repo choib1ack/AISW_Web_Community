@@ -19,27 +19,25 @@ export default function MakeReCommentList({board_id, board_category, Refresh, bo
             "comment_id": comment_id
         }
 
-        await axiosApi.post('/like/press/',
+        await axiosApi.post('/auth/like/press/',
             {data: data}
         ).then((res) => {
             alert("댓글에 좋아요를 눌렀습니다");
             // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
             alert("에러!" + errorObject);
         })
     }
 
     const handleLikeRemoveClick = async (comment_id) => {
-        await axiosApi.delete(`/like/remove/${comment_id}?target=COMMENT`
+        await axiosApi.delete(`/auth/like/remove/${comment_id}?target=COMMENT`
         ).then((res) => {
             alert("댓글에 좋아요를 취소했습니다");
             // setIsLatest(false);
         }).catch(error => {
             let errorObject = JSON.parse(JSON.stringify(error));
             console.log(errorObject);
-            alert("좋아요 클릭 에러!" + errorObject);
         })
     }
 
@@ -80,7 +78,7 @@ export default function MakeReCommentList({board_id, board_category, Refresh, bo
                                      style={{cursor: "pointer"}}/> {data.likes}</span>}
 
                                 <Card.Title className="mb-2"
-                                            style={{fontSize: '14px'}}>{data.is_anonymous ? "익명" : data.writer}
+                                            style={{fontSize: '14px'}}>{data.writer}
                                     <span style={{
                                         color: "#8C8C8C",
                                         fontSize: '12px',

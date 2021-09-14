@@ -12,6 +12,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setUnreadAlert} from "../../features/menuSlice";
 import CheckModal from "../Modal/CheckModal";
 import {resetDecoded} from "../../features/userSlice";
+import TimeExpression from "../TimeExpression";
 
 
 
@@ -187,29 +188,7 @@ function MakeAlertList(props) {
         }
     }
 
-    // 출처 : https://kdinner.tistory.com/68
-    const timeExpression = (value) => {
-        const now = new Date();
-        const timeValue = new Date(value);
 
-        const betweenTime = Math.floor((now.getTime() - timeValue.getTime()) / 1000 / 60);
-        if (betweenTime < 1) return '방금';
-        if (betweenTime < 60) {
-            return `${betweenTime}분 전`;
-        }
-
-        const betweenTimeHour = Math.floor(betweenTime / 60);
-        if (betweenTimeHour < 24) {
-            return `${betweenTimeHour}시간 전`;
-        }
-
-        const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
-        if (betweenTimeDay < 365) {
-            return `${betweenTimeDay}일 전`;
-        }
-
-        return `${Math.floor(betweenTimeDay / 365)}년 전`;
-    }
     const dispatch = useDispatch();
     const ToLink = async (data) => {
 
@@ -245,7 +224,7 @@ function MakeAlertList(props) {
                                         float: 'right',
                                         fontSize: '11px',
                                         color: '#8C8C8C'
-                                    }}>{timeExpression(data.created_at)}</p>
+                                    }}>{TimeExpression(data.created_at)}</p>
                                     <p style={{
                                         fontSize: '12px',
                                         marginBottom: '5px'

@@ -55,8 +55,6 @@ function CategoryModal(props) {
 
         } else { // update
             axiosApi.put("/auth-admin/site/category/" + props.id + "?name=" + category_name).then(res => {
-
-                // console.log(res);
                 props.setShowCategoryModal(false);
                 alert('카테고리 정보가 수정되었습니다.')
                 props.setSiteData(null);

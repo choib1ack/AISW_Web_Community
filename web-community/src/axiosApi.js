@@ -59,7 +59,9 @@ const axiosApi = () => {
 
             // 접근 권한 없을 때
             if (err.response.status === 403) {
-                if (!alert('접근 권한이 없습니다!')) {
+                if (err.response.data.path === '/auth/like/press') {
+                    alert('좋아요를 누를 권한이 없습니다. 로그인 해주세요.');
+                } else if (!alert('접근 권한이 없습니다!')) {
                     window.history.back();
                 }
             }

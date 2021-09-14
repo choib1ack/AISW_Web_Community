@@ -11,57 +11,32 @@ import FinishModal from "../Modal/FinishModal";
 import {checkContent, checkTitle} from "../Board/NewBoard";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
-import {AUTH_NOTICE_POST, NOTICE_FILE_API} from "../../constants";
+import {ADMIN_ROLE, AUTH_NOTICE_POST, NOTICE_FILE_API, NOTICE_WRITE_ROLE} from "../../constants";
 import {useHistory} from "react-router-dom";
 
 export default function NewNotice() {
     const {register, handleSubmit} = useForm({mode: "onChange"});
-    const [modalState, setModalState] = useState({show:false, id:null, category:null});
+    const [modalState, setModalState] = useState({show: false, id: null, category: null});
     const history = useHistory();
 
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
 
-    function postNotice(data, path, type) {
-        if (type === 'file') {
-            axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}/upload`, data)
-                .then((res) => {
-                    setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
-                })
-                .catch(error => {
-                    console.log(error);
-                    alert("글 게시에 실패하였습니다.");
-                })
-        } else {
-            axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`,
-                {data: data}
-            ).then((res) => {
-                setModalState({show:true, id:res.data.data.id, category:res.data.data.category.toLowerCase()});
-            }).catch(error => {
-                console.log(error);
+    function postNotice(data, path) {
+        axiosApi.post(`/${AUTH_NOTICE_POST[path]}/notice/${path}`, data)
+            .then((res) => {
+                setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
+            })
+            .catch(error => {
                 alert("글 게시에 실패하였습니다.");
             })
-        }
     }
 
     const onSubmit = (data) => {
         data.content = write.value;
+        data.status = NOTICE_WRITE_ROLE.includes(role) ? data.status : 'GENERAL';
 
-        if (data.file.length === 0) {   // 파일이 없을 경우
-            if (checkTitle(data.title) && checkContent(data.content)) {
-                let temp = {
-                    content: data.content,
-                    status: 'GENERAL',
-                    title: data.title
-                };
-
-                if (data.board_type === 'university') {
-                    temp.campus = 'COMMON';
-                }
-
-                postNotice(temp, data.board_type, null);
-            }
-        } else {
+        if (checkTitle(data.title) && checkContent(data.content)) {
             const apiRequest = NOTICE_FILE_API[data.board_type]; // 카테고리별 다르게 적용
 
             let formData = new FormData();
@@ -69,7 +44,7 @@ export default function NewNotice() {
                 formData.append('files', data.file[i]);
             }
             formData.append(`${apiRequest}.content`, data.content);
-            formData.append(`${apiRequest}.status`, 'GENERAL');
+            formData.append(`${apiRequest}.status`, data.status);
             formData.append(`${apiRequest}.title`, data.title);
 
             if (data.board_type === 'university') {
@@ -92,6 +67,35 @@ export default function NewNotice() {
 
                 <Title text='새 공지사항 작성' type='1'/>
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
+                    {NOTICE_WRITE_ROLE.includes(role) &&
+                    <Row className="pl-3 pb-3">
+                        <Form.Check
+                            required type="radio"
+                            label="긴급"
+                            name="status"
+                            value="URGENT"
+                            ref={register}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="공지"
+                            name="status"
+                            value="NOTICE"
+                            ref={register}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="일반"
+                            name="status"
+                            value="GENERAL"
+                            ref={register}
+                            className="m-1"
+                        />
+                    </Row>
+                    }
+
                     <Row>
                         <Col>
                             <Form.Group>

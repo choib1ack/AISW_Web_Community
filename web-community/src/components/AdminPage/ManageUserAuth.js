@@ -149,7 +149,6 @@ function UserAuthModal(props){
                 props.Refresh();
             })
             .catch(error => {
-                console.log(error);
                 alert("회원 권한 변경에 실패했습니다.");
             })
     }

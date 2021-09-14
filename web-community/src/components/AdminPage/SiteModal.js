@@ -150,7 +150,6 @@ function SiteModal(props) {
                 props.setSiteData(null);
             }).catch(err => {
                 alert('새 사이트 등록에 실패했습니다.')
-                console.log(err);
             })
         } else {
             axiosApi.put("/auth-admin/site", formData).then(res => {
@@ -159,7 +158,6 @@ function SiteModal(props) {
                 props.setSiteData(null);
             }).catch(err => {
                 alert('사이트 정보 변경에 실패했습니다.')
-                console.log(err);
             })
         }
 

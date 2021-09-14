@@ -46,27 +46,25 @@ export default function MakeCommentList({id, board_category, Refresh, board_comm
                 "comment_id": comment_id
             }
 
-            await axiosApi.post('/like/press',
+            await axiosApi.post('/auth/like/press',
                 {data: data}
             ).then((res) => {
                 // alert("댓글에 좋아요를 눌렀습니다");
                 dispatch({type: 'PRESS'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
-                // console.log(errorObject);
-                alert("좋아요 클릭 에러!" + errorObject);
+                console.log(errorObject);
             })
         }
 
         const handleLikeCancelClick = async (comment_id) => {
-            await axiosApi.delete(`/like/remove/${comment_id}?target=COMMENT`
+            await axiosApi.delete(`/auth/like/remove/${comment_id}?target=COMMENT`
             ).then((res) => {
                 // alert("댓글에 좋아요를 취소했습니다");
                 dispatch({type: 'REMOVE'});
             }).catch(error => {
                 let errorObject = JSON.parse(JSON.stringify(error));
-                // console.log(errorObject);
-                alert("좋아요 클릭 에러!" + errorObject);
+                console.log(errorObject);
             })
         }
 

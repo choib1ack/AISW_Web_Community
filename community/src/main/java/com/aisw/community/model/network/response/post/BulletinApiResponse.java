@@ -29,4 +29,6 @@ public class BulletinApiResponse {
     private LocalDateTime createdAt;
 
     private Long views;
+
+    private Boolean hasFile;
 }

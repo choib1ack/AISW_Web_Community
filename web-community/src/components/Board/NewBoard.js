@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -11,7 +11,7 @@ import {useSelector} from "react-redux";
 import {subject_list} from "./SubjectList";
 import WriteEditorContainer from "../WriteEditorContainer";
 import axiosApi from "../../axiosApi";
-import {AUTH_BOARD_POST, BOARD_FILE_API} from "../../constants";
+import {ADMIN_ROLE, AUTH_BOARD_POST, BOARD_FILE_API} from "../../constants";
 import {useHistory} from "react-router-dom";
 import {Checkbox} from "semantic-ui-react";
 
@@ -23,57 +23,27 @@ function NewBoard() {
 
     const history = useHistory();
     const board_type = useRef();
-    board_type.current = watch("board_type");
+    board_type.current = watch("board_type", "free");
 
     const write = useSelector(state => state.write);
     const {role} = useSelector(state => state.user.decoded);
 
-    function postBoard(data, path, type) {
-        if (type === 'file') {
-            axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}/upload`, data)
-                .then((res) => {
-                    setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
-                })
-                .catch(error => {
-                    alert("글 게시에 실패하였습니다.");
-                })
-        } else {
-            axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`,
-                {data: data},
-            ).then((res) => {
+    function postBoard(data, path) {
+        axiosApi.post(`/${AUTH_BOARD_POST[path]}/board/${path}`, data)
+            .then((res) => {
                 setModalState({show: true, id: res.data.data.id, category: res.data.data.category.toLowerCase()});
-            }).catch(error => {
+            })
+            .catch(error => {
                 alert("글 게시에 실패하였습니다.");
             })
-        }
-
     }
 
     const onSubmit = (data) => {
         data.content = write.value;
 
-        if (data.file.length === 0) {   // 파일이 없을 경우
-            if (checkTitle(data.title) && checkContent(data.content)) {
-
-                if (data.board_type === 'qna' && role === 'ROLE_GENERAL') {
-                    alert('자유게시판과 취업게시판 외에는 글을 게시할 수 없습니다!');
-                    return;
-                }
-
-                let temp = {
-                    content: data.content,
-                    is_anonymous: anonymousState,
-                    status: isReview ? 'REVIEW' : 'GENERAL',
-                    title: data.title,
-                };
-
-                if (data.board_type === 'qna') {
-                    temp.subject = data.subject;
-                }
-                postBoard(temp, data.board_type, null);
-            }
-        } else {
+        if (checkTitle(data.title) && checkContent(data.content)) {
             const apiRequest = BOARD_FILE_API[data.board_type]; // 카테고리별 다르게 적용
+            data.status = ADMIN_ROLE.includes(role) ? data.status : 'GENERAL';
 
             let formData = new FormData();
             for (let i = 0; i < data.file.length; i++) {
@@ -81,7 +51,7 @@ function NewBoard() {
             }
             formData.append(`${apiRequest}.content`, data.content);
             formData.append(`${apiRequest}.isAnonymous`, anonymousState);
-            formData.append(`${apiRequest}.status`, isReview ? 'REVIEW' : 'GENERAL');
+            formData.append(`${apiRequest}.status`, board_type.current === 'job' ? (isReview ? 'REVIEW' : 'GENERAL') : data.status);
             formData.append(`${apiRequest}.title`, data.title);
 
             if (data.board_type === 'qna') {
@@ -105,6 +75,34 @@ function NewBoard() {
                 <Title text='새 게시글 작성' type='1'/>
 
                 <Form onSubmit={handleSubmit(onSubmit)} style={{marginTop: '3rem', marginBottom: '1rem'}}>
+                    {ADMIN_ROLE.includes(role) && (board_type.current === 'free' || board_type.current === 'qna') &&
+                    <Row className="pl-3 pb-3">
+                        <Form.Check
+                            required type="radio"
+                            label="긴급"
+                            name="status"
+                            value="URGENT"
+                            ref={register}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="공지"
+                            name="status"
+                            value="NOTICE"
+                            ref={register}
+                            className="m-1"
+                        />
+                        <Form.Check
+                            required type="radio"
+                            label="일반"
+                            name="status"
+                            value="GENERAL"
+                            ref={register}
+                            className="m-1"
+                        />
+                    </Row>
+                    }
                     <Row>
                         <Checkbox label='익명' checked={anonymousState}
                                   onChange={() => setAnonymousState(!anonymousState)}
@@ -121,7 +119,7 @@ function NewBoard() {
                     <Row>
                         <Col>
                             <Form.Group>
-                                <Form.Control as="select" defaultValue="게시판 선택" id='board_category'
+                                <Form.Control as="select" defaultValue="free" id='board_category'
                                               name="board_type" ref={register}>
                                     <option value="free">자유게시판</option>
                                     {role === 'ROLE_GENERAL' ? null : <option value="qna">과목별게시판</option>}

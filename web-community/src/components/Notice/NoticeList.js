@@ -17,6 +17,7 @@ export default function NoticeList({match}) {
             search_type: "select_title",
             keyword: ""
         });
+    const [curPage, setCurPage] = useState(0);
 
     const active_change_dispatch = useDispatch();
     active_change_dispatch(setActiveTab(1));
@@ -41,6 +42,7 @@ export default function NoticeList({match}) {
 
     const handleCategoryChange = (category_num) => {
         setCategory(category_num);
+        setCurPage(0);
 
         // 검색 초기화
         setSearchData({search: 0, search_type: "select_title", keyword: ""});
@@ -96,6 +98,8 @@ export default function NoticeList({match}) {
                 match={match}
                 searchData={searchData}
                 setSearchData={setSearchData}
+                curPage={curPage}
+                setCurPage={setCurPage}
             />
 
 

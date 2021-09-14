@@ -30,7 +30,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
         Page<Board> boards = boardRepository.findAll(pageable);
         List<Board> boardsByStatus = searchByStatus();
 
-        return getListHeader(boards, boardsByStatus);
+        return response(boards, boardsByStatus);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
         Page<Board> boards = boardRepository.findAllByWriterContaining(writer, pageable);
         List<Board> boardsByStatus = searchByStatus();
 
-        return getListHeader(boards, boardsByStatus);
+        return response(boards, boardsByStatus);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
         Page<Board> boards = boardRepository.findAllByTitleContaining(title, pageable);
         List<Board> boardsByStatus = searchByStatus();
 
-        return getListHeader(boards, boardsByStatus);
+        return response(boards, boardsByStatus);
     }
 
     @Override
@@ -60,14 +60,14 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
         Page<Board> boards = boardRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         List<Board> boardsByStatus = searchByStatus();
 
-        return getListHeader(boards, boardsByStatus);
+        return response(boards, boardsByStatus);
     }
 
     public List<Board> searchByStatus() {
         return boardRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<BoardResponseDTO> getListHeader(Page<Board> boards, List<Board> boardsByStatus) {
+    private Header<BoardResponseDTO> response(Page<Board> boards, List<Board> boardsByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(boards.stream()
                         .map(board -> BoardApiResponse.builder()
@@ -78,7 +78,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
                                 .status(board.getStatus())
                                 .views(board.getViews())
                                 .writer(board.getWriter())
-//                                .hasFile((board.getFileList().size() != 0) ? true : false)
+                                .hasFile((board.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -93,7 +93,7 @@ public class BoardService extends AbsBulletinService<BoardResponseDTO, Board> {
                     .status(board.getStatus())
                     .views(board.getViews())
                     .writer(board.getWriter())
-//                    .hasFile((board.getFileList().size() != 0) ? true : false)
+                    .hasFile((board.getFileList().size() != 0) ? true : false)
                     .build();
             if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);

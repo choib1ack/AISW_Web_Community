@@ -336,7 +336,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         Page<Free> frees = freeRepository.findAll(pageable);
         List<Free> freesByStatus = searchByStatus();
 
-        return getListHeader(frees, freesByStatus);
+        return response(frees, freesByStatus);
     }
 
     @Override
@@ -346,7 +346,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         Page<Free> frees = freeRepository.findAllByWriterContaining(writer, pageable);
         List<Free> freesByStatus = searchByStatus();
 
-        return getListHeader(frees, freesByStatus);
+        return response(frees, freesByStatus);
     }
 
     @Override
@@ -356,7 +356,7 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
         Page<Free> frees = freeRepository.findAllByTitleContaining(title, pageable);
         List<Free> freesByStatus = searchByStatus();
 
-        return getListHeader(frees, freesByStatus);
+        return response(frees, freesByStatus);
     }
 
     @Override
@@ -367,38 +367,40 @@ public class FreeService implements BoardPostService<FreeApiRequest, FreeApiResp
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         List<Free> freesByStatus = searchByStatus();
 
-        return getListHeader(frees, freesByStatus);
+        return response(frees, freesByStatus);
     }
 
     public List<Free> searchByStatus() {
         return freeRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<BoardResponseDTO> getListHeader(Page<Free> frees, List<Free> freesByStatus) {
+    private Header<BoardResponseDTO> response(Page<Free> frees, List<Free> freesByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(frees.stream()
-                        .map(free -> BoardApiResponse.builder()
-                                .id(free.getId())
-                                .title(free.getTitle())
-                                .category(free.getCategory())
-                                .createdAt(free.getCreatedAt())
-                                .status(free.getStatus())
-                                .views(free.getViews())
-                                .writer(free.getWriter())
+                        .map(board -> BoardApiResponse.builder()
+                                .id(board.getId())
+                                .title(board.getTitle())
+                                .category(board.getCategory())
+                                .createdAt(board.getCreatedAt())
+                                .status(board.getStatus())
+                                .views(board.getViews())
+                                .writer(board.getWriter())
+                                .hasFile((board.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
         List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
         List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
-        freesByStatus.stream().forEach(free -> {
+        freesByStatus.stream().forEach(board -> {
             BoardApiResponse boardApiResponse = BoardApiResponse.builder()
-                    .id(free.getId())
-                    .title(free.getTitle())
-                    .category(free.getCategory())
-                    .createdAt(free.getCreatedAt())
-                    .status(free.getStatus())
-                    .views(free.getViews())
-                    .writer(free.getWriter())
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .category(board.getCategory())
+                    .createdAt(board.getCreatedAt())
+                    .status(board.getStatus())
+                    .views(board.getViews())
+                    .writer(board.getWriter())
+                    .hasFile((board.getFileList().size() != 0) ? true : false)
                     .build();
             if (boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);

@@ -23,9 +23,6 @@ export default function Login(props) {
                 history.push('/')   // 홈으로 가기
             }
         }).catch(error => {
-            let errorObject = JSON.parse(JSON.stringify(error));
-            console.log(errorObject);
-
             alert("로그인에 실패하였습니다.") // 로그인 실패 메시지
         })
     }

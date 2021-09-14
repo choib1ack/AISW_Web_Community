@@ -25,11 +25,11 @@ export default function MakeNoticeList(props) {
         }
     );
 
-    const [curPage, setCurPage] = useState(0);
+    // const [curPage, setCurPage] = useState(0);
     const {decoded} = useSelector((state) => state.user);
 
     const setPagination = (now_page) => {
-        setCurPage(now_page);
+        props.setCurPage(now_page);
     }
 
     const [loading, setLoading] = useState(false);
@@ -69,7 +69,7 @@ export default function MakeNoticeList(props) {
                     break;
             }
         }
-        url += search_data.search > 0 ? "" : "?page=" + curPage;
+        url += search_data.search > 0 ? "" : "?page=" + props.curPage;
         console.log(url);
         return url;
     }
@@ -131,7 +131,7 @@ export default function MakeNoticeList(props) {
                 setLoading(true);
 
                 await axiosApi.get(url(props.category)).then((res) =>{
-                    if (curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
+                    if (props.curPage === 0) { // 페이지가 1일때만 top꺼 가져오고, 2번째부터는 그대로 씀
                         setNoticeData({
                             ...noticeData,
                             fix_notice: res.data.data.notice_api_notice_response_list,
@@ -160,7 +160,7 @@ export default function MakeNoticeList(props) {
         };
 
         fetchNoticeData();
-    }, [props.category, props.searchData.search, curPage]);
+    }, [props.category, props.searchData.search, props.curPage]);
 
     if (error) return <tr>
         <td colSpan={5}>에러가 발생했습니다{error.toString()}</td>
@@ -254,7 +254,7 @@ export default function MakeNoticeList(props) {
             </table>
 
             <Pagination
-                current_page={curPage}
+                current_page={props.curPage}
                 total_pages={noticeData.normal.page_info.total_pages}
                 setPagination={setPagination}
             />

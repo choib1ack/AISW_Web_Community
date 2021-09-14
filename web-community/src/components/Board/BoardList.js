@@ -19,7 +19,7 @@ function BoardList({match}) {
             search_type: "select_title",
             keyword: ""
         });
-
+    const [curPage, setCurPage] = useState(0);
 
     window.scrollTo(0, 0);
 
@@ -43,9 +43,13 @@ function BoardList({match}) {
 
     const handleCategoryChange = (category_num) => {
         setCategory(category_num);
+        setCurPage(0);
 
         // 검색 초기화
-        setSearchData({is_search: false, search_type: "select_title", keyword: ""});
+        setSearchData(
+            {search: 0,
+            search_type: "select_title",
+            keyword: ""});
 
         // 과목별 게시판 선택한 과목 초기화
         setSelectedSubject([]);
@@ -69,6 +73,8 @@ function BoardList({match}) {
     const handleRemoveSubject = (subject_name) => {
         setSelectedSubject(selectedSubject.filter(subject => subject != subject_name));
     }
+
+    {console.log("boardList-category:"+category)}
 
     return (
         <div className="Board">
@@ -129,6 +135,8 @@ function BoardList({match}) {
                 searchData={searchData}
                 setSearchData={setSearchData}
                 selected_subject_list={selectedSubject}
+                curPage={curPage}
+                setCurPage={setCurPage}
             />
 
 
