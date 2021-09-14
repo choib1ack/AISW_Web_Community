@@ -55,7 +55,7 @@ public class Banner {
     private String updatedBy;
 
     @BatchSize(size = 1)
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "banner", orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "banner", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<File> fileList;
 
     @PrePersist

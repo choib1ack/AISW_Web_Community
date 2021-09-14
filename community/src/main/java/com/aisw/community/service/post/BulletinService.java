@@ -31,7 +31,7 @@ public class BulletinService extends AbsBulletinService<BulletinResponseDTO, Bul
         Page<Bulletin> bulletins = bulletinRepository.findAllByWriterContaining(writer, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
 
-        return getListHeader(bulletins, bulletinsByStatus);
+        return response(bulletins, bulletinsByStatus);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BulletinService extends AbsBulletinService<BulletinResponseDTO, Bul
         Page<Bulletin> bulletins = bulletinRepository.findAllByTitleContaining(title, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
 
-        return getListHeader(bulletins, bulletinsByStatus);
+        return response(bulletins, bulletinsByStatus);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BulletinService extends AbsBulletinService<BulletinResponseDTO, Bul
         Page<Bulletin> bulletins = bulletinRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         Page<Bulletin> bulletinsByStatus = searchByStatus(pageable);
 
-        return getListHeader(bulletins, bulletinsByStatus);
+        return response(bulletins, bulletinsByStatus);
     }
 
     public Page<Bulletin> searchByStatus(Pageable pageable) {
@@ -61,8 +61,7 @@ public class BulletinService extends AbsBulletinService<BulletinResponseDTO, Bul
         return bulletins;
     }
 
-    private Header<BulletinResponseDTO> getListHeader
-            (Page<Bulletin> bulletins, Page<Bulletin> bulletinsByStatus) {
+    private Header<BulletinResponseDTO> response(Page<Bulletin> bulletins, Page<Bulletin> bulletinsByStatus) {
         BulletinResponseDTO bulletinResponseDTO = BulletinResponseDTO.builder()
                 .bulletinApiResponseList(bulletins.stream()
                         .map(bulletin -> BulletinApiResponse.builder()
@@ -74,6 +73,7 @@ public class BulletinService extends AbsBulletinService<BulletinResponseDTO, Bul
                                 .status(bulletin.getStatus())
                                 .views(bulletin.getViews())
                                 .writer(bulletin.getWriter())
+                                .hasFile((bulletin.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -89,6 +89,7 @@ public class BulletinService extends AbsBulletinService<BulletinResponseDTO, Bul
                     .status(bulletin.getStatus())
                     .views(bulletin.getViews())
                     .writer(bulletin.getWriter())
+                    .hasFile((bulletin.getFileList().size() != 0) ? true : false)
                     .build();
             if(bulletinApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 bulletinApiNoticeResponseList.add(bulletinApiResponse);

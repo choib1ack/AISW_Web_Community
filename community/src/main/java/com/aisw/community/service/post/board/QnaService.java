@@ -2,9 +2,6 @@ package com.aisw.community.service.post.board;
 
 import com.aisw.community.component.advice.exception.NotEqualUserException;
 import com.aisw.community.component.advice.exception.PostNotFoundException;
-import com.aisw.community.component.advice.exception.PostStatusNotSuitableException;
-import com.aisw.community.config.auth.PrincipalDetails;
-import com.aisw.community.model.entity.post.board.QJob;
 import com.aisw.community.model.entity.post.board.Qna;
 import com.aisw.community.model.entity.post.file.File;
 import com.aisw.community.model.entity.post.like.ContentLike;
@@ -15,7 +12,6 @@ import com.aisw.community.model.enumclass.SecondCategory;
 import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
-import com.aisw.community.model.network.request.post.board.FileUploadToQnaRequest;
 import com.aisw.community.model.network.request.post.board.QnaApiRequest;
 import com.aisw.community.model.network.response.post.board.BoardApiResponse;
 import com.aisw.community.model.network.response.post.board.BoardResponseDTO;
@@ -24,18 +20,15 @@ import com.aisw.community.model.network.response.post.board.QnaDetailApiResponse
 import com.aisw.community.model.network.response.post.comment.CommentApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.post.board.QnaRepository;
-import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.comment.CommentService;
 import com.aisw.community.service.post.file.FileService;
 import com.aisw.community.service.post.like.ContentLikeService;
-import com.aisw.community.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -348,7 +341,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         Page<Qna> qnas = qnaRepository.findAll(pageable);
         List<Qna> qnasByStatus = searchByStatus();
 
-        return getListHeader(qnas, qnasByStatus);
+        return response(qnas, qnasByStatus);
     }
 
     @Override
@@ -358,7 +351,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         Page<Qna> qnas = qnaRepository.findAllByWriterContaining(writer, pageable);
         List<Qna> qnasByStatus = searchByStatus();
 
-        return getListHeader(qnas, qnasByStatus);
+        return response(qnas, qnasByStatus);
     }
 
     @Override
@@ -368,7 +361,7 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
         Page<Qna> qnas = qnaRepository.findAllByTitleContaining(title, pageable);
         List<Qna> qnasByStatus = searchByStatus();
 
-        return getListHeader(qnas, qnasByStatus);
+        return response(qnas, qnasByStatus);
     }
 
     @Override
@@ -379,45 +372,47 @@ public class QnaService implements BoardPostService<QnaApiRequest, QnaApiRespons
                 .findAllByTitleContainingOrContentContaining(title, content, pageable);
         List<Qna> qnasByStatus = searchByStatus();
 
-        return getListHeader(qnas, qnasByStatus);
+        return response(qnas, qnasByStatus);
     }
 
     public Header<BoardResponseDTO> searchBySubject(List<String> subject, Pageable pageable) {
         Page<Qna> qnas = qnaRepository.findAllBySubjectIn(subject, pageable);
         List<Qna> qnasByStatus = searchByStatus();
 
-        return getListHeader(qnas, qnasByStatus);
+        return response(qnas, qnasByStatus);
     }
 
     public List<Qna> searchByStatus() {
         return qnaRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<BoardResponseDTO> getListHeader(Page<Qna> qnas, List<Qna> qnasByStatus) {
+    private Header<BoardResponseDTO> response(Page<Qna> qnas, List<Qna> qnasByStatus) {
         BoardResponseDTO boardResponseDTO = BoardResponseDTO.builder()
                 .boardApiResponseList(qnas.stream()
-                        .map(qna -> BoardApiResponse.builder()
-                                .id(qna.getId())
-                                .title(qna.getTitle())
-                                .category(qna.getCategory())
-                                .createdAt(qna.getCreatedAt())
-                                .status(qna.getStatus())
-                                .views(qna.getViews())
-                                .writer(qna.getWriter())
+                        .map(board -> BoardApiResponse.builder()
+                                .id(board.getId())
+                                .title(board.getTitle())
+                                .category(board.getCategory())
+                                .createdAt(board.getCreatedAt())
+                                .status(board.getStatus())
+                                .views(board.getViews())
+                                .writer(board.getWriter())
+                                .hasFile((board.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
         List<BoardApiResponse> boardApiNoticeResponseList = new ArrayList<>();
         List<BoardApiResponse> boardApiUrgentResponseList = new ArrayList<>();
-        qnasByStatus.stream().forEach(qna -> {
+        qnasByStatus.stream().forEach(board -> {
             BoardApiResponse boardApiResponse = BoardApiResponse.builder()
-                    .id(qna.getId())
-                    .title(qna.getTitle())
-                    .category(qna.getCategory())
-                    .createdAt(qna.getCreatedAt())
-                    .status(qna.getStatus())
-                    .views(qna.getViews())
-                    .writer(qna.getWriter())
+                    .id(board.getId())
+                    .title(board.getTitle())
+                    .category(board.getCategory())
+                    .createdAt(board.getCreatedAt())
+                    .status(board.getStatus())
+                    .views(board.getViews())
+                    .writer(board.getWriter())
+                    .hasFile((board.getFileList().size() != 0) ? true : false)
                     .build();
             if(boardApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 boardApiNoticeResponseList.add(boardApiResponse);

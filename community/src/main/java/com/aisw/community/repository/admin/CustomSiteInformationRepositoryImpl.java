@@ -27,7 +27,7 @@ public class CustomSiteInformationRepositoryImpl implements CustomSiteInformatio
                 .rightJoin(siteCategory).on(siteCategory.id.eq(siteInformation.siteCategory.id))
                 .leftJoin(siteInformation.fileList)
                 .fetchJoin()
-                .orderBy(siteCategory.name.asc())
+                .orderBy(siteCategory.name.asc(), siteInformation.createdAt.asc())
                 .fetch();
     }
 }
