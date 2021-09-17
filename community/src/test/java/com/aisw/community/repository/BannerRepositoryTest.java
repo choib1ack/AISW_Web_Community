@@ -10,17 +10,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 public class BannerRepositoryTest extends CommunityApplicationTests {
-
-    @Autowired
-    private CustomBannerRepository customBannerRepository;
-
-    @Autowired
-    private BannerRepository bannerRepository;
-
-    @Test
-    public void findAllFetchJoinWithFile() {
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("endDate").descending());
-        Page<Banner> allFetchJoinWithFile = bannerRepository.findAll(pageRequest);
-        allFetchJoinWithFile.stream().forEach(System.out::println);
-    }
+//
+//    @Autowired
+//    private CustomBannerRepository customBannerRepository;
+//
+//    @Autowired
+//    private BannerRepository bannerRepository;
+//
+//    @Test
+//    public void findAllFetchJoinWithFile() {
+//        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("endDate").descending());
+//        Page<Banner> allFetchJoinWithFile = bannerRepository.findAll(pageRequest);
+//        allFetchJoinWithFile.stream().forEach(System.out::println);
+//    }
 }

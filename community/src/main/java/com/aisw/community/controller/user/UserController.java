@@ -1,5 +1,6 @@
 package com.aisw.community.controller.user;
 
+import com.aisw.community.component.annotation.LogExecutionTime;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.request.user.UserApiRequest;
@@ -28,6 +29,7 @@ class UserController {
     private AlertService alertService;
 
     @PostMapping("/user/signup")
+    @LogExecutionTime
     public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
         return userService.signup(request.getData());
     }
@@ -38,6 +40,7 @@ class UserController {
     }
 
     @PutMapping("/auth/user")
+    @LogExecutionTime
     public Header<UserApiResponse> update(Authentication authentication, @RequestBody Header<UserApiRequest> request) {
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
         return userService.update(principal.getUser(), request.getData());
