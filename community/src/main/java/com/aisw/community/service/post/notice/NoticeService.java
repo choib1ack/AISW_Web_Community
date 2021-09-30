@@ -30,7 +30,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
         Page<Notice> notices = noticeRepository.findAll(pageable);
         List<Notice> noticesByStatus = searchByStatus();
 
-        return getListHeader(notices, noticesByStatus);
+        return response(notices, noticesByStatus);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
         Page<Notice> notices = noticeRepository.findAllByWriterContaining(writer, pageable);
         List<Notice> noticesByStatus = searchByStatus();
 
-        return getListHeader(notices, noticesByStatus);
+        return response(notices, noticesByStatus);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
         Page<Notice> notices = noticeRepository.findAllByTitleContaining(title, pageable);
         List<Notice> noticesByStatus = searchByStatus();
 
-        return getListHeader(notices, noticesByStatus);
+        return response(notices, noticesByStatus);
     }
 
     @Override
@@ -60,14 +60,14 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
         Page<Notice> notices = noticeRepository.findAllByTitleContainingOrContentContaining(title, content, pageable);
         List<Notice> noticesByStatus = searchByStatus();
 
-        return getListHeader(notices, noticesByStatus);
+        return response(notices, noticesByStatus);
     }
 
     public List<Notice> searchByStatus() {
         return noticeRepository.findTop10ByStatusIn(Arrays.asList(BulletinStatus.URGENT, BulletinStatus.NOTICE));
     }
 
-    private Header<NoticeResponseDTO> getListHeader(Page<Notice> notices, List<Notice> noticesByStatus) {
+    private Header<NoticeResponseDTO> response(Page<Notice> notices, List<Notice> noticesByStatus) {
         NoticeResponseDTO noticeResponseDTO = NoticeResponseDTO.builder()
                 .noticeApiResponseList(notices.stream()
                         .map(notice -> NoticeApiResponse.builder()
@@ -78,6 +78,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
                                 .status(notice.getStatus())
                                 .views(notice.getViews())
                                 .writer(notice.getWriter())
+                                .hasFile((notice.getFileList().size() != 0) ? true : false)
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -92,6 +93,7 @@ public class NoticeService extends AbsBulletinService<NoticeResponseDTO, Notice>
                     .status(notice.getStatus())
                     .views(notice.getViews())
                     .writer(notice.getWriter())
+                    .hasFile((notice.getFileList().size() != 0) ? true : false)
                     .build();
             if(noticeApiResponse.getStatus() == BulletinStatus.NOTICE) {
                 noticeApiNoticeResponseList.add(noticeApiResponse);

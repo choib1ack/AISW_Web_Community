@@ -24,10 +24,10 @@ public class CustomSiteInformationRepositoryImpl implements CustomSiteInformatio
                         siteCategory.id,
                         siteCategory.name,
                         siteInformation))
-                .leftJoin(siteInformation.fileList)
                 .rightJoin(siteCategory).on(siteCategory.id.eq(siteInformation.siteCategory.id))
+                .leftJoin(siteInformation.fileList)
                 .fetchJoin()
-                .orderBy(siteCategory.name.asc())
+                .orderBy(siteCategory.name.asc(), siteInformation.createdAt.asc())
                 .fetch();
     }
 }

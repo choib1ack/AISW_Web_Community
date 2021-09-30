@@ -8,12 +8,9 @@ import com.aisw.community.model.enumclass.UploadCategory;
 import com.aisw.community.model.network.Header;
 import com.aisw.community.model.network.Pagination;
 import com.aisw.community.model.network.request.admin.BannerApiRequest;
-import com.aisw.community.model.network.request.admin.FileUploadToBannerRequest;
 import com.aisw.community.model.network.response.admin.BannerApiResponse;
 import com.aisw.community.model.network.response.post.file.FileApiResponse;
 import com.aisw.community.repository.admin.BannerRepository;
-import com.aisw.community.repository.admin.CustomBannerRepository;
-import com.aisw.community.repository.post.file.FileRepository;
 import com.aisw.community.service.post.file.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,7 +19,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,12 +34,6 @@ public class BannerService {
 
     @Autowired
     private BannerRepository bannerRepository;
-
-    @Autowired
-    private CustomBannerRepository customBannerRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
 
     @Autowired
     private FileService fileService;
@@ -83,7 +73,7 @@ public class BannerService {
 
     @Cacheable(value = "bannerRead", key = "#pageable.pageNumber")
     public Header<List<BannerApiResponse>> readAll(Pageable pageable) {
-        Page<Banner> bannerList = customBannerRepository.findAllFetchJoinWithFile(pageable);
+        Page<Banner> bannerList = bannerRepository.findAll(pageable);
 
         List<BannerApiResponse> bannerApiResponseList = bannerList.stream()
                 .map(this::response)

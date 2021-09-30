@@ -13,9 +13,9 @@ import java.util.List;
 @Builder
 public class SiteInformationByCategoryResponse {
 
-    private Long id;
+    private Long categoryId;
 
-    private String name;
+    private String categoryName;
 
     private SiteInformation siteInformation;
 }
