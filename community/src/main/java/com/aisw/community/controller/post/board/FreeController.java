@@ -27,6 +27,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/api")
 public class FreeController implements BoardPostController<FileUploadToFreeRequest, FreeApiResponse, FreeDetailApiResponse, BoardResponseDTO> {
 
     @Autowired

@@ -18,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/auth-admin/banner")
+@RequestMapping("/api/auth-admin/banner")
 public class BannerController {
 
     @Autowired
