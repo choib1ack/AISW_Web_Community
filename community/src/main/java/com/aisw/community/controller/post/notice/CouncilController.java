@@ -26,6 +26,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/api")
 public class CouncilController implements NoticePostController<FileUploadToCouncilRequest, CouncilApiResponse, NoticeResponseDTO> {
 
     @Autowired
