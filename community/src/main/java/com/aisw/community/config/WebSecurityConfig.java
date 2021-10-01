@@ -55,13 +55,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider, redisProvider))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository, jwtTokenProvider, redisProvider))
                 .authorizeRequests()
-                .antMatchers("/auth/**")
+                .antMatchers("/api/auth/**")
                 .access("hasRole('ROLE_GENERAL') or hasRole('ROLE_STUDENT') or hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
-                .antMatchers("/auth-student/**")
+                .antMatchers("/api/auth-student/**")
                 .access("hasRole('ROLE_STUDENT') or hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
-                .antMatchers("/auth-council/**")
+                .antMatchers("/api/auth-council/**")
                 .access("hasRole('ROLE_COUNCIL') or hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
-                .antMatchers("/auth-admin/**")
+                .antMatchers("/api/auth-admin/**")
                 .access("hasRole('ROLE_ADMIN') or hasRole('ROLE_DEVELOPER')")
                 .anyRequest().permitAll();
         http.addFilterBefore(exceptionHandlerFilter, JwtAuthorizationFilter.class);

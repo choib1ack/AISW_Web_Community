@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 @Component
-@CrossOrigin("*")
 public abstract class AbsBulletinController<Res, Entity> {
 
     @Autowired(required = false)

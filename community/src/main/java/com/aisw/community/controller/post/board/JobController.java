@@ -25,6 +25,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/api")
 public class JobController implements BoardPostController<FileUploadToJobRequest, JobApiResponse, JobDetailApiResponse, JobResponseDTO> {
 
     @Autowired
