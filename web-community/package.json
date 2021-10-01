@@ -80,5 +80,5 @@
     "react-hook-form": "6.14.2",
     "semantic-ui-react": "2.0.2"
   },
-  "proxy": "http://13.125.104.47"
+  "proxy": "http://13.125.104.47:80"
 }

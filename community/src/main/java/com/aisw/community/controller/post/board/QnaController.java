@@ -27,6 +27,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("/api")
 public class QnaController implements BoardPostController<FileUploadToQnaRequest, QnaApiResponse, QnaDetailApiResponse, BoardResponseDTO> {
 
     @Autowired
