@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/board")
+@RequestMapping("/api/board")
 public class BoardController extends AbsBulletinController<BoardResponseDTO, Board> {
 
     @Autowired
