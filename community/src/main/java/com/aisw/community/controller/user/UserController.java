@@ -29,7 +29,6 @@ class UserController {
     private AlertService alertService;
 
     @PostMapping("/user/signup")
-    @LogExecutionTime
     public Header<UserApiResponse> signup(@RequestBody Header<UserApiRequest> request) {
         return userService.signup(request.getData());
     }

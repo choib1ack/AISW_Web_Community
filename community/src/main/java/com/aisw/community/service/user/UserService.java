@@ -3,6 +3,7 @@ package com.aisw.community.service.user;
 import com.aisw.community.component.advice.exception.PhoneNumberNotSuitableException;
 import com.aisw.community.component.advice.exception.SignUpNotSuitableException;
 import com.aisw.community.component.advice.exception.UserNotFoundException;
+import com.aisw.community.component.annotation.LogExecutionTime;
 import com.aisw.community.config.auth.PrincipalDetails;
 import com.aisw.community.model.entity.user.User;
 import com.aisw.community.model.network.Header;
@@ -29,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     @CacheEvict(value = "userManagementReadAll", allEntries = true)
+    @LogExecutionTime
     public Header<UserApiResponse> signup(UserApiRequest userApiRequest) {
         if (userApiRequest.getProvider() == null || userApiRequest.getProviderId() == null)
             throw new SignUpNotSuitableException(userApiRequest.getProvider() + "_" + userApiRequest.getProviderId());
