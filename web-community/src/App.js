@@ -18,6 +18,9 @@ import GoodInfo from "./components/Info/GoodInfo";
 import ManagerRouter from "./components/AdminPage/ManagerRouter";
 import EssentialElective from "./components/EssentialElective";
 import FAQ from "./components/FAQ";
+import axios from "axios";
+
+axios.defaults.baseURL = 'http://13.125.104.47/api'
 
 function App() {
     return (

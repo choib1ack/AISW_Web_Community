@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const axiosApi = () => {
     const defaultOptions = {
-        baseURL: 'http://localhost:8080/',
+        baseURL: 'http://13.125.104.47/api',
         headers: {
             'Content-Type': 'application/json',
         },
