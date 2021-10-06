@@ -1,8 +1,8 @@
-// export const API_SERVER_URI = 'http://13.125.104.47/api';
-export const API_SERVER_URI = 'http://localhost:8080/api';
+export const API_SERVER_URI = 'http://3.36.132.185/api';
+export const LOGIN_SERVER_URI = 'http://3.36.132.185';
 
 export const GOOGLE_CLIENT_ID = '1051028847648-3edseaslg7hqbrgo5q2thhdag9k6q10e.apps.googleusercontent.com';
-export const GOOGLE_REDIRECT_URI = 'http://ec2-13-125-214-10.ap-northeast-2.compute.amazonaws.com:80/auth/google/callback';
+export const GOOGLE_REDIRECT_URI = 'http://ec2-54-180-144-125.ap-northeast-2.compute.amazonaws.com/auth/google/callback';
 
 export const ROLE = ['ROLE_GENERAL', 'ROLE_STUDENT', 'ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
 export const NOTICE_WRITE_ROLE = ['ROLE_COUNCIL', 'ROLE_ADMIN', 'ROLE_DEVELOPER'];
