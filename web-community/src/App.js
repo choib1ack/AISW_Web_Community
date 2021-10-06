@@ -19,8 +19,9 @@ import ManagerRouter from "./components/AdminPage/ManagerRouter";
 import EssentialElective from "./components/EssentialElective";
 import FAQ from "./components/FAQ";
 import axios from "axios";
+import {API_SERVER_URI} from "./constants";
 
-axios.defaults.baseURL = 'http://13.125.104.47/api'
+axios.defaults.baseURL = API_SERVER_URI;
 
 function App() {
     return (
