@@ -101,10 +101,11 @@ export default function Menu() {
             baseURL: LOGIN_SERVER_URI
         });
 
-        instance.post(`/login`, {
-            'username': username,
-            'password': 'AISW',
-        }).then((res) => {
+        instance.post(`/login`,
+            {
+                'username': username,
+                'password': 'AISW',
+            }).then((res) => {
             window.localStorage.setItem("ACCESS_TOKEN", res.headers.authorization);
             window.localStorage.setItem("REFRESH_TOKEN", res.headers.refresh_token);
 
@@ -162,31 +163,31 @@ export default function Menu() {
                     <>
                         <div className="align-self-center">
                             <Link to="/notice">
-                                <button className={menu.active === 1?"Menu-button-active":"Menu-button"}
+                                <button className={menu.active === 1 ? "Menu-button-active" : "Menu-button"}
                                         name="notice">
                                     공지사항
                                 </button>
                             </Link>
                             <Link to="/board">
-                                <button className={menu.active === 2?"Menu-button-active":"Menu-button"}
+                                <button className={menu.active === 2 ? "Menu-button-active" : "Menu-button"}
                                         name="board">
                                     게시판
                                 </button>
                             </Link>
                             <Link to="/deptInfo">
-                                <button className={menu.active === 3?"Menu-button-active":"Menu-button"}
+                                <button className={menu.active === 3 ? "Menu-button-active" : "Menu-button"}
                                         name="dept_info">
                                     학과정보
                                 </button>
                             </Link>
                             <Link to="/goodInfo">
-                                <button className={menu.active === 4?"Menu-button-active":"Menu-button"}
+                                <button className={menu.active === 4 ? "Menu-button-active" : "Menu-button"}
                                         name="site">
                                     유용한사이트
                                 </button>
                             </Link>
                             <Link to="/faq">
-                                <button className={menu.active === 5?"Menu-button-active":"Menu-button"}
+                                <button className={menu.active === 5 ? "Menu-button-active" : "Menu-button"}
                                         name="faq">
                                     FAQ
                                 </button>
@@ -203,17 +204,18 @@ export default function Menu() {
                                                  style={{borderRadius: 50, marginRight: 10}}
                                                  alt="..."/>
                                             {user.decoded.name}
-                                            {menu.unread_alert>0?
-                                            <Badge variant="primary" pill style={{
-                                                padding: "5px",
-                                                transform: 'translate(0px, -10px)'
-                                            }}>{menu.unread_alert}</Badge>:null}
+                                            {menu.unread_alert > 0 ?
+                                                <Badge variant="primary" pill style={{
+                                                    padding: "5px",
+                                                    transform: 'translate(0px, -10px)'
+                                                }}>{menu.unread_alert}</Badge> : null}
                                         </button>
                                         {
                                             ADMIN_ROLE.includes(user.decoded.role) ?
                                                 <Link to="/manager">
-                                                    <button className={menu.active === 6?"Menu-button-active":"Menu-button"}
-                                                            name="manage_page">
+                                                    <button
+                                                        className={menu.active === 6 ? "Menu-button-active" : "Menu-button"}
+                                                        name="manage_page">
                                                         관리자페이지
                                                     </button>
                                                 </Link>
@@ -264,35 +266,39 @@ export default function Menu() {
                     <div>
                         <div>
                             <Link to="/notice">
-                                <button className={menu.active === 1?"Menu-button-active":"Menu-button"} name="notice">
+                                <button className={menu.active === 1 ? "Menu-button-active" : "Menu-button"}
+                                        name="notice">
                                     공지사항
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/board">
-                                <button className={menu.active === 2?"Menu-button-active":"Menu-button"} name="board">
+                                <button className={menu.active === 2 ? "Menu-button-active" : "Menu-button"}
+                                        name="board">
                                     게시판
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/deptInfo">
-                                <button className={menu.active === 3?"Menu-button-active":"Menu-button"} name="dept_info">
+                                <button className={menu.active === 3 ? "Menu-button-active" : "Menu-button"}
+                                        name="dept_info">
                                     학과정보
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/goodInfo">
-                                <button className={menu.active === 4?"Menu-button-active":"Menu-button"} name="site">
+                                <button className={menu.active === 4 ? "Menu-button-active" : "Menu-button"}
+                                        name="site">
                                     유용한사이트
                                 </button>
                             </Link>
                         </div>
                         <div>
                             <Link to="/faq">
-                                <button className={menu.active === 5?"Menu-button-active":"Menu-button"} name="faq">
+                                <button className={menu.active === 5 ? "Menu-button-active" : "Menu-button"} name="faq">
                                     FAQ
                                 </button>
                             </Link>
@@ -306,7 +312,9 @@ export default function Menu() {
                                             ADMIN_ROLE.includes(user.decoded.role) ?
                                                 <div>
                                                     <Link to="/manager">
-                                                        <button className={menu.active === 6?"Menu-button-active":"Menu-button"} name="manage_page">
+                                                        <button
+                                                            className={menu.active === 6 ? "Menu-button-active" : "Menu-button"}
+                                                            name="manage_page">
                                                             관리자페이지
                                                         </button>
                                                     </Link>
@@ -352,7 +360,7 @@ export default function Menu() {
                     </div>
                 )
             }
-            <hr className="mt-0"/>
+            <hr className="mt-0 mb-0"/>
         </div>
     );
 }

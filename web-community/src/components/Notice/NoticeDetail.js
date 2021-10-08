@@ -124,7 +124,7 @@ export default function NoticeDetail({match}) {
 
                         <div>
                             <p className="d-inline-block mr-3 mb-0"
-                               style={{color: "#8C8C8C", fontSize: '11px'}}>{noticeDetailData.created_by}</p>
+                               style={{color: "#8C8C8C", fontSize: '11px'}}>{noticeDetailData.writer}</p>
                             <p className="d-inline-block mb-0" style={{color: "#8C8C8C", fontSize: '11px'}}>
                                 {noticeDetailData.created_at.substring(0, 10)} {noticeDetailData.created_at.substring(11, 19)}
                                 <span className="ml-3">조회 {noticeDetailData.views}</span>
