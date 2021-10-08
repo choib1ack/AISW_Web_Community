@@ -124,6 +124,7 @@ public class BannerService {
                 banner.getFileList().remove(file);
             }
         }
+        System.out.println("test");
         if(files != null) {
             List<FileApiResponse> fileApiResponseList =
                     fileService.uploadFiles(files, user.getUsername(), null, banner.getId(), UploadCategory.BANNER);

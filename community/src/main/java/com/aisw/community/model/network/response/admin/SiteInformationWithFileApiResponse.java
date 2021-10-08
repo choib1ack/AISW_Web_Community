@@ -1,18 +1,20 @@
 package com.aisw.community.model.network.response.admin;
 
 
-import com.aisw.community.model.network.response.post.file.FileApiResponse;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@Accessors(chain = true)
 public class SiteInformationWithFileApiResponse {
 
     private Long id;
@@ -21,9 +23,7 @@ public class SiteInformationWithFileApiResponse {
 
     private List<SiteInformationApiResponse> siteInformationApiResponseList;
 
-    public SiteInformationWithFileApiResponse(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public SiteInformationWithFileApiResponse() {
         siteInformationApiResponseList = new ArrayList<>();
     }
 }

@@ -12,9 +12,6 @@ import org.springframework.data.domain.Sort;
 public class BannerRepositoryTest extends CommunityApplicationTests {
 
     @Autowired
-    private CustomBannerRepository customBannerRepository;
-
-    @Autowired
     private BannerRepository bannerRepository;
 
     @Test
