@@ -16,7 +16,7 @@ export default function Footer() {
                         경기도 성남시 수정구 성남대로 1342 / 010-1234-5678 / AI_Sw@gachon.ac.kr
                     </p>
                     <p className="Footer-p">
-                        @copyright 양희림, 장하영, 최준헌, 이원창
+                        @copyright 양희림, 장하영, 최준헌, 이상운, 이원창
                     </p>
                 </Col>
             </Row>

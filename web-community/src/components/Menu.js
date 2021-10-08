@@ -6,7 +6,7 @@ import {useDispatch, useSelector} from "react-redux";
 import MyPage from "./User/MyPage";
 import GoogleLogin from "react-google-login";
 import {setActiveTab} from "../features/menuSlice";
-import {ADMIN_ROLE, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI} from "../constants";
+import {ADMIN_ROLE, API_SERVER_URI, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI, LOGIN_SERVER_URI} from "../constants";
 import axios from "axios";
 import * as jwt from "jwt-simple";
 import {setImageUrl, setDecoded} from "../features/userSlice";
@@ -97,7 +97,11 @@ export default function Menu() {
     }
 
     function login(username) {
-        axios.post(`/login`, {
+        const instance = axios.create({
+            baseURL: LOGIN_SERVER_URI
+        });
+
+        instance.post(`/login`, {
             'username': username,
             'password': 'AISW',
         }).then((res) => {

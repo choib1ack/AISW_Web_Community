@@ -1,9 +1,10 @@
 import axios from 'axios';
+import {API_SERVER_URI} from "./constants";
 
 const axiosApi = () => {
     const defaultOptions = {
-        // baseURL: 'http://localhost:8080/',
-        baseURL: 'http://13.125.104.47:80:80/',
+
+        baseURL: API_SERVER_URI,
         headers: {
             'Content-Type': 'application/json',
         },
