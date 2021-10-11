@@ -1,5 +1,5 @@
 ## ![AISW](https://github.com/JunHeon-Ch/AISW_Web_Community/blob/main/readme/logo.PNG) 커뮤니티 플랫폼
-
+http://ec2-54-180-144-125.ap-northeast-2.compute.amazonaws.com/
 </br>
 
 > ### Description

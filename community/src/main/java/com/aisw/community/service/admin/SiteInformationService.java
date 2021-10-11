@@ -79,7 +79,6 @@ public class SiteInformationService {
     @Cacheable(value = "siteRead")
     public Header<List<SiteInformationWithFileApiResponse>> readAll() {
         List<SiteInformationByCategoryResponse> siteInformationByCategoryResponseList = customSiteInformationRepository.findAllByCategory();
-
         List<SiteInformationWithFileApiResponse> siteInformationWithFileApiResponseList = new ArrayList<>();
         SiteInformationWithFileApiResponse siteInformationWithFileApiResponse = null;
         Long prev = -1L;
@@ -89,7 +88,8 @@ public class SiteInformationService {
                 if(siteInformationWithFileApiResponse != null) {
                     siteInformationWithFileApiResponseList.add(siteInformationWithFileApiResponse);
                 }
-                siteInformationWithFileApiResponse = new SiteInformationWithFileApiResponse(now.getCategoryId(), now.getCategoryName());
+                siteInformationWithFileApiResponse = new SiteInformationWithFileApiResponse();
+                siteInformationWithFileApiResponse.setId(now.getCategoryId()).setName(now.getCategoryName());
                 prev = now.getCategoryId();
             }
             if(now.getSiteInformation() != null) {

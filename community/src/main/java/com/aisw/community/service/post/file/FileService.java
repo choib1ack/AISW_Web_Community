@@ -65,8 +65,10 @@ public class FileService {
         String[] storeFile = fileStorageService.storeFile(multipartFile, username);
         String fileName = storeFile[0];
         String storedFileName = storeFile[1];
+        String defaultPrefix = "/api";
+        String defaultSuffix = "/file/download/";
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path((prefix != null) ? prefix + "/file/download/" : "/file/download/")
+                .path((prefix != null) ? defaultPrefix + prefix + defaultSuffix : defaultPrefix + defaultSuffix)
                 .path(storedFileName)
                 .toUriString();
 
