@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import "./Home.css";
@@ -23,39 +23,39 @@ export default function Home() {
     const dispatch = useDispatch();
     dispatch(setActiveTab(0));
 
-    useEffect(() => {
-        const fetchHomeData = async () => {
-            try {
-                if (homeData != null) {
-                    return;
-                }
-
-                setLoading(true);
-                setError(null);
-
-                if(accessToken && user.decoded){ // 로그인했으면
-                    await axiosApi.get("/auth/home")
-                        .then(res => {
-                                setHomeData(res.data.data);
-                                dispatch(setUnreadAlert(res.data.data.unread_alert));
-                                setLoading(false);
-                            }
-                        );
-                }else{
-                    await axios.get("/home")
-                        .then(res => {
-                                setHomeData(res.data.data);
-                                setLoading(false);
-                            }
-                        );
-                }
-            } catch (e) {
-                setError(e);
+    const fetchHomeData = useCallback(async () => {
+        try {
+            if (homeData != null) {
+                return;
             }
-        };
 
-        fetchHomeData();
+            setLoading(true);
+            setError(null);
+
+            if (accessToken && user.decoded) { // 로그인했으면
+                await axiosApi.get("/auth/home")
+                    .then(res => {
+                            setHomeData(res.data.data);
+                            dispatch(setUnreadAlert(res.data.data.unread_alert));
+                            setLoading(false);
+                        }
+                    );
+            } else {
+                await axios.get("/home")
+                    .then(res => {
+                            setHomeData(res.data.data);
+                            setLoading(false);
+                        }
+                    );
+            }
+        } catch (e) {
+            setError(e);
+        }
     }, []);
+
+    useEffect(() => {
+        fetchHomeData();
+    }, [fetchHomeData]);
 
     if (error) return <div>에러가 발생했습니다{error.toString()}</div>;
     if (loading) return <Loading/>;
