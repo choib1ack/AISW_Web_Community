@@ -30,6 +30,387 @@ http://ec2-54-180-144-125.ap-northeast-2.compute.amazonaws.com/
 
 </br>
 
+> ### Project structure
+├─java
+│  │
+│  └─com
+│      │
+│      └─aisw
+│          │
+│          └─community
+│              │  CommunityApplication.java
+│              │
+│              ├─component
+│              │  │  LoginUserAuditorAware.java
+│              │  │
+│              │  ├─advice
+│              │  │  │  ApiErrorResponse.java
+│              │  │  │
+│              │  │  ├─exception
+│              │  │  │      AdminNotFoundException.java
+│              │  │  │      AlertNotFoundException.java
+│              │  │  │      BannerNotFoundException.java
+│              │  │  │      CanNotDetermineFileTypeException.java
+│              │  │  │      CommentNotFoundException.java
+│              │  │  │      ContentLikeAlreadyExistException.java
+│              │  │  │      ContentLikeNotFoundException.java
+│              │  │  │      FaqNotFoundException.java
+│              │  │  │      FileNotFoundException.java
+│              │  │  │      FileStorageException.java
+│              │  │  │      MyFileNotFoundException.java
+│              │  │  │      NotEqualUserException.java
+│              │  │  │      PhoneNumberNotSuitableException.java
+│              │  │  │      PostNotFoundException.java
+│              │  │  │      PostStatusNotSuitableException.java
+│              │  │  │      SignUpNotSuitableException.java
+│              │  │  │      SiteCategoryNameNotFoundException.java
+│              │  │  │      SiteCategoryNotFoundException.java
+│              │  │  │      SiteInformationNotFoundException.java
+│              │  │  │      TokenException.java
+│              │  │  │      UserNotFoundException.java
+│              │  │  │      WrongRequestException.java
+│              │  │  │
+│              │  │  └─handler
+│              │  │          ApiExceptionHandler.java
+│              │  │          ExceptionHandlerFilter.java
+│              │  │
+│              │  ├─provider
+│              │  │      JwtTokenProvider.java
+│              │  │      RedisProvider.java
+│              │  │
+│              │  └─util
+│              │          KeyCreatorBean.java
+│              │
+│              ├─config
+│              │  │  CorsConfig.java
+│              │  │  JpaConfig.java
+│              │  │  QuearydslConfig.java
+│              │  │  WebSecurityConfig.java
+│              │  │
+│              │  ├─auth
+│              │  │      PrincipalDetails.java
+│              │  │      PrincipalDetailsService.java
+│              │  │
+│              │  ├─cache
+│              │  │      CacheConfig.java
+│              │  │      RedisConfig.java
+│              │  │
+│              │  ├─document
+│              │  │      SwaggerConfig.java
+│              │  │
+│              │  ├─jwt
+│              │  │      JwtAuthenticationFilter.java
+│              │  │      JwtAuthorizationFilter.java
+│              │  │      JwtProperties.java
+│              │  │
+│              │  └─storage
+│              │          FileStorageProperties.java
+│              │
+│              ├─controller
+│              │  │  HomeController.java
+│              │  │
+│              │  ├─admin
+│              │  │      BannerController.java
+│              │  │      FaqController.java
+│              │  │      SiteCategoryController.java
+│              │  │      SiteInformationController.java
+│              │  │      UserManagementController.java
+│              │  │
+│              │  ├─post
+│              │  │  │  AbsBulletinController.java
+│              │  │  │  BulletinController.java
+│              │  │  │  PostController.java
+│              │  │  │
+│              │  │  ├─board
+│              │  │  │      BoardController.java
+│              │  │  │      BoardPostController.java
+│              │  │  │      FreeController.java
+│              │  │  │      JobController.java
+│              │  │  │      QnaController.java
+│              │  │  │
+│              │  │  ├─comment
+│              │  │  │      CommentController.java
+│              │  │  │
+│              │  │  ├─file
+│              │  │  │      FileController.java
+│              │  │  │
+│              │  │  ├─like
+│              │  │  │      ContentLikeController.java
+│              │  │  │
+│              │  │  └─notice
+│              │  │          CouncilController.java
+│              │  │          DepartmentController.java
+│              │  │          NoticeController.java
+│              │  │          NoticePostController.java
+│              │  │          UniversityController.java
+│              │  │
+│              │  └─user
+│              │          UserController.java
+│              │
+│              ├─model
+│              │  ├─entity
+│              │  │  ├─admin
+│              │  │  │      Banner.java
+│              │  │  │      Faq.java
+│              │  │  │      SiteCategory.java
+│              │  │  │      SiteInformation.java
+│              │  │  │
+│              │  │  ├─post
+│              │  │  │  │  Bulletin.java
+│              │  │  │  │
+│              │  │  │  ├─board
+│              │  │  │  │      Board.java
+│              │  │  │  │      Free.java
+│              │  │  │  │      Job.java
+│              │  │  │  │      Qna.java
+│              │  │  │  │
+│              │  │  │  ├─comment
+│              │  │  │  │      Comment.java
+│              │  │  │  │
+│              │  │  │  ├─file
+│              │  │  │  │      File.java
+│              │  │  │  │
+│              │  │  │  ├─like
+│              │  │  │  │      ContentLike.java
+│              │  │  │  │
+│              │  │  │  └─notice
+│              │  │  │          Council.java
+│              │  │  │          Department.java
+│              │  │  │          Notice.java
+│              │  │  │          University.java
+│              │  │  │
+│              │  │  └─user
+│              │  │          Alert.java
+│              │  │          User.java
+│              │  │
+│              │  ├─enumclass
+│              │  │      AlertCategory.java
+│              │  │      BulletinStatus.java
+│              │  │      Campus.java
+│              │  │      FirstCategory.java
+│              │  │      Gender.java
+│              │  │      Grade.java
+│              │  │      SecondCategory.java
+│              │  │      UploadCategory.java
+│              │  │
+│              │  └─network
+│              │      │  Header.java
+│              │      │  Pagination.java
+│              │      │
+│              │      ├─request
+│              │      │  ├─admin
+│              │      │  │      BannerApiRequest.java
+│              │      │  │      FaqApiRequest.java
+│              │      │  │      FileUploadToBannerRequest.java
+│              │      │  │      FileUploadToSiteRequest.java
+│              │      │  │      SiteInformationApiRequest.java
+│              │      │  │      UserManagementApiRequest.java
+│              │      │  │
+│              │      │  ├─post
+│              │      │  │  ├─board
+│              │      │  │  │      FileUploadToFreeRequest.java
+│              │      │  │  │      FileUploadToJobRequest.java
+│              │      │  │  │      FileUploadToQnaRequest.java
+│              │      │  │  │      FreeApiRequest.java
+│              │      │  │  │      JobApiRequest.java
+│              │      │  │  │      QnaApiRequest.java
+│              │      │  │  │
+│              │      │  │  ├─comment
+│              │      │  │  │      CommentApiRequest.java
+│              │      │  │  │
+│              │      │  │  ├─like
+│              │      │  │  │      ContentLikeApiRequest.java
+│              │      │  │  │
+│              │      │  │  └─notice
+│              │      │  │          CouncilApiRequest.java
+│              │      │  │          DepartmentApiRequest.java
+│              │      │  │          FileUploadToCouncilRequest.java
+│              │      │  │          FileUploadToDepartmentRequest.java
+│              │      │  │          FileUploadToUniversityRequest.java
+│              │      │  │          UniversityApiRequest.java
+│              │      │  │
+│              │      │  └─user
+│              │      │          AlertApiRequest.java
+│              │      │          LoginRequest.java
+│              │      │          UserApiRequest.java
+│              │      │          VerificationRequest.java
+│              │      │
+│              │      └─response
+│              │          │  HomeApiResponse.java
+│              │          │
+│              │          ├─admin
+│              │          │      BannerApiResponse.java
+│              │          │      FaqApiResponse.java
+│              │          │      HomeBannerAndSiteResponse.java
+│              │          │      SiteCategoryApiResponse.java
+│              │          │      SiteInformationApiResponse.java
+│              │          │      SiteInformationByCategoryResponse.java
+│              │          │      SiteInformationWithFileApiResponse.java
+│              │          │      UserManagementApiResponse.java
+│              │          │
+│              │          ├─post
+│              │          │  │  BulletinApiResponse.java
+│              │          │  │  BulletinResponseDTO.java
+│              │          │  │
+│              │          │  ├─board
+│              │          │  │      BoardApiResponse.java
+│              │          │  │      BoardResponseDTO.java
+│              │          │  │      FreeApiResponse.java
+│              │          │  │      FreeDetailApiResponse.java
+│              │          │  │      JobApiResponse.java
+│              │          │  │      JobDetailApiResponse.java
+│              │          │  │      JobResponseDTO.java
+│              │          │  │      QnaApiResponse.java
+│              │          │  │      QnaDetailApiResponse.java
+│              │          │  │
+│              │          │  ├─comment
+│              │          │  │      CommentApiResponse.java
+│              │          │  │
+│              │          │  ├─file
+│              │          │  │      FileApiResponse.java
+│              │          │  │
+│              │          │  ├─like
+│              │          │  │      ContentLikeApiResponse.java
+│              │          │  │
+│              │          │  └─notice
+│              │          │          CouncilApiResponse.java
+│              │          │          DepartmentApiResponse.java
+│              │          │          NoticeApiResponse.java
+│              │          │          NoticeResponseDTO.java
+│              │          │          UniversityApiResponse.java
+│              │          │
+│              │          └─user
+│              │                  AlertApiResponse.java
+│              │                  UserApiResponse.java
+│              │                  VerificationApiResponse.java
+│              │
+│              ├─repository
+│              │  ├─admin
+│              │  │      BannerRepository.java
+│              │  │      CustomSiteInformationRepository.java
+│              │  │      CustomSiteInformationRepositoryImpl.java
+│              │  │      FaqRepository.java
+│              │  │      SiteCategoryRepository.java
+│              │  │      SiteInformationRepository.java
+│              │  │
+│              │  ├─post
+│              │  │  │  BulletinRepository.java
+│              │  │  │
+│              │  │  ├─board
+│              │  │  │      BoardRepository.java
+│              │  │  │      FreeRepository.java
+│              │  │  │      JobRepository.java
+│              │  │  │      QnaRepository.java
+│              │  │  │
+│              │  │  ├─comment
+│              │  │  │      CommentRepository.java
+│              │  │  │      CustomCommentRepository.java
+│              │  │  │      CustomCommentRepositoryImpl.java
+│              │  │  │
+│              │  │  ├─file
+│              │  │  │      FileRepository.java
+│              │  │  │
+│              │  │  ├─like
+│              │  │  │      ContentLikeRepository.java
+│              │  │  │
+│              │  │  └─notice
+│              │  │          CouncilRepository.java
+│              │  │          DepartmentRepository.java
+│              │  │          NoticeRepository.java
+│              │  │          UniversityRepository.java
+│              │  │
+│              │  └─user
+│              │          AlertRepository.java
+│              │          UserRepository.java
+│              │
+│              └─service
+│                  │  HomeService.java
+│                  │
+│                  ├─admin
+│                  │      BannerService.java
+│                  │      FaqService.java
+│                  │      SiteCategoryService.java
+│                  │      SiteInformationService.java
+│                  │      UserManagementService.java
+│                  │
+│                  ├─post
+│                  │  │  AbsBulletinService.java
+│                  │  │  BulletinService.java
+│                  │  │  PostService.java
+│                  │  │
+│                  │  ├─board
+│                  │  │      BoardPostService.java
+│                  │  │      BoardService.java
+│                  │  │      FreeService.java
+│                  │  │      JobService.java
+│                  │  │      QnaService.java
+│                  │  │
+│                  │  ├─comment
+│                  │  │      CommentService.java
+│                  │  │
+│                  │  ├─file
+│                  │  │      FileService.java
+│                  │  │      FileStorageService.java
+│                  │  │
+│                  │  ├─like
+│                  │  │      ContentLikeService.java
+│                  │  │
+│                  │  └─notice
+│                  │          CouncilService.java
+│                  │          DepartmentService.java
+│                  │          NoticePostService.java
+│                  │          NoticeService.java
+│                  │          UniversityService.java
+│                  │
+│                  └─user
+│                          AlertService.java
+│                          UserService.java
+│
+└─resources
+    │  application-jwt.properties
+    │  application.properties
+    │
+    ├─static
+    │  ├─css
+    │  │      base.css
+    │  │      bootstrap-responsive.min.css
+    │  │      bootstrap-table.css
+    │  │      bootstrap.min.css
+    │  │      style.css
+    │  │
+    │  ├─images
+    │  │      glyphicons-halflings-white.png
+    │  │      glyphicons-halflings.png
+    │  │      spring_boot.png
+    │  │      spring_boot_gray.png
+    │  │      spring_boot_green.png
+    │  │
+    │  └─js
+    │          bootstrap-table.js
+    │          bootstrap.min.js
+    │          jquery-2.1.3.min.js
+    │
+    └─templates
+        │  home.html
+        │  login.html
+        │
+        ├─admin
+        │      config.html
+        │
+        ├─layout
+        │      footer.html
+        │      header.html
+        │      left.html
+        │      top.html
+        │
+        └─user
+            │  messages.html
+            │  mypage.html
+            │
+            └─login
+                    register.html
+
+
 > ### Function (수정 必)
 <details>
   <summary><b>사용자 페이지</b></summary>
