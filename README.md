@@ -31,6 +31,9 @@ http://ec2-54-180-144-125.ap-northeast-2.compute.amazonaws.com/
 </br>
 
 > ### Project structure
+<details>
+  <summary><b>Back server</b></summary>
+    
 java</br>
 &nbsp;&nbsp;│</br>
 &nbsp;&nbsp;└─com</br>
@@ -365,9 +368,13 @@ java</br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─user</br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AlertService.java</br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UserService.java</br>
+</details>
 
-
-
+<details>
+  <summary><b>Front server</b></summary>
+</details>
+    
+---
 
 > ### Function (수정 必)
 <details>
